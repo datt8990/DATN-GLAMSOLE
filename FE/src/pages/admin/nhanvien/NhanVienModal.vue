@@ -23,21 +23,12 @@
         <a-input v-if="product" v-model:value="product.diaChi" placeholder="địa chỉ" style="border-radius: 4px;" />
       </a-form-item>
 
-      <a-form-item label="Lương" name="luong" :label-col="{ span: 24 }" :rules="rules.name">
-        <a-input v-if="product" v-model:value="product.luong" placeholder="lương" style="border-radius: 4px;" />
-      </a-form-item>
 
-      <a-form-item label="só điện thoại" name="luong" :label-col="{ span: 24 }" :rules="rules.name">
+
+      <a-form-item label="só điện thoại" name="sdt" :label-col="{ span: 24 }" :rules="rules.name">
         <a-input v-if="product" v-model:value="product.sdt" placeholder="só điện thoại" style="border-radius: 4px;" />
       </a-form-item>
 
-      <a-form-item label="Ngày sinh" name="ngaySinh" :label-col="{ span: 24 }">
-        <a-date-picker v-model:value="product.ngaySinh" format="YYYY-MM-DD" style="width: 100%;" />
-      </a-form-item>
-
-      <a-form-item label="Ngày tuyển dụng" name="ngayTuyenDung" :label-col="{ span: 24 }">
-        <a-date-picker v-model:value="product.ngayTuyenDung" format="YYYY-MM-DD" style="width: 100%;" />
-      </a-form-item>
 
       <a-form-item label="Giới tính" name="gioiTinh" :label-col="{ span: 24 }">
         <a-radio-group v-model:value="product.gioiTinh">
@@ -84,8 +75,6 @@ const product = ref<NhanVienResponse>({
   diaChi: '',
   email: '',
   ma: '',
-  ngayTuyenDung: undefined,
-  ngaySinh: undefined,
   gioiTinh: true,
 });
 
@@ -97,7 +86,7 @@ const fetchProductDetails = async (id: string) => {
   try {
     const response = await getMember(id);
     const data = response.data;
-    product.value = response.data;  
+    product.value = response.data;
     product.value = {
       ...data,
       ngayTuyenDung: data.ngayTuyenDung ? dayjs(data.ngayTuyenDung) : undefined,
@@ -154,11 +143,8 @@ const handleSubmit = async () => {
     formData.append('ten', product?.value.ten?.trim());
     formData.append('email', product?.value.email?.trim() || '');
     formData.append('sdt', product?.value.sdt?.trim() || '');
-    formData.append('luong', product?.value.luong?.trim() || '');
     formData.append('diaChi', product?.value.diaChi?.trim() || '');
     formData.append('gioiTinh', product.value.gioiTinh?.toString());
-    formData.append('ngaySinh', product.value.ngaySinh ? new Date(product.value.ngaySinh).toISOString().split('T')[0] : '');
-    formData.append('ngayTuyenDung', product.value.ngayTuyenDung ? new Date(product.value.ngayTuyenDung).toISOString().split('T')[0] : '');
     if (imageFile.value) {
       formData.append('avatar', imageFile.value);
     }

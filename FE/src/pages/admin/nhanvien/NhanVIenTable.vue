@@ -30,11 +30,6 @@
                         </div>
                     </template>
 
-                    
-                    <template v-if="column.key === 'ngaySinh'">
-                        {{ record.ngaySinh ? record.ngaySinh.split('T')[0] : '' }}
-                    </template>
-
                     <template v-if="column.key === 'gioiTimh'">
                         <a-tag :color="record.gioiTimh ? 'red' : 'yellow'">
                             {{ record.gioiTimh ? 'Nam' : 'Nữ' }}
@@ -98,7 +93,6 @@ const columns: TableColumnsType = [
     { title: 'Avatar', key: 'avatar', dataIndex: 'avatar', width: 150, align: 'center' },
     { title: 'Email', key: 'email', dataIndex: 'email', width: 150, align: 'center' },
     { title: 'Số điện thoại', key: 'sdt', dataIndex: 'sdt', width: 150, align: 'center' },
-    { title: 'Ngày sinh', key: 'ngaySinh', dataIndex: 'ngaySinh', width: 150, align: 'center' },
     { title: 'Giới tính', key: 'gioiTimh', dataIndex: 'gioiTimh', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
