@@ -27,15 +27,11 @@
                         {{ products.indexOf(record) + 1 }}
                     </div>
 
-                    <template v-if="column.key === 'gioiTimh'">
-                        <a-tag :color="record.gioiTimh ? 'red' : 'yellow'">
-                            {{ record.gioiTimh ? 'Nam' : 'Nữ' }}
+                      <!-- <template v-if="column.key === 'status'">
+                        <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
+                            {{ record.status == 'ACTIVE' ? 'Đang hoa' : 'Nghỉ việc' }}
                         </a-tag>
-                    </template>
-
-                    <template v-if="column.key === 'ngaySinh'">
-                        {{ record.ngaySinh ? record.ngaySinh.split('T')[0] : '' }}
-                    </template>
+                    </template> -->
 
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
@@ -81,12 +77,11 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
-    { title: 'Mã KH', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
+    { title: 'Mã KH', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
     { title: 'Tên KH', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'SDT', key: 'sdt', dataIndex: 'sdt', width: 150, align: 'center' },
+    { title: 'Email', key: 'email', dataIndex: 'email', width: 150, align: 'center' },
     { title: 'Địa Chỉ', key: 'diaChi', dataIndex: 'diaChi', width: 150, align: 'center' },
-    { title: 'Ngày Sinh', key: 'ngaySinh', dataIndex: 'ngaySinh', width: 150, align: 'center' },
-    { title: 'Giới Tính', key: 'gioiTimh', dataIndex: 'gioiTimh', width: 150, align: 'center' },
     // { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',

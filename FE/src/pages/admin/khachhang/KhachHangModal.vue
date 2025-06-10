@@ -1,7 +1,8 @@
 <template>
   <a-modal :open="open" :title="props.title" width="600px">
     <template #footer>
-      <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
+      <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý"
+        cancel-text="Huỷ">
         <a-button type="primary">Xác nhận</a-button>
       </a-popconfirm>
       <a-button @click="closeModal">Huỷ</a-button>
@@ -16,20 +17,14 @@
         <a-input v-model:value="product.sdt" placeholder="Nhập số điện thoại" />
       </a-form-item>
 
+      <a-form-item label="Email" name="email" :label-col="{ span: 24 }">
+        <a-input v-model:value="product.email" placeholder="Nhập email khách hàng" />
+      </a-form-item>
+
       <a-form-item label="Địa chỉ" name="diaChi" :label-col="{ span: 24 }">
         <a-input v-model:value="product.diaChi" placeholder="Nhập địa chỉ" />
       </a-form-item>
 
-      <a-form-item label="Ngày sinh" name="ngaySinh" :label-col="{ span: 24 }">
-        <a-date-picker v-model:value="product.ngaySinh" format="YYYY-MM-DD" style="width: 100%;" />
-      </a-form-item>
-
-      <a-form-item label="Giới tính" name="gioiTinh" :label-col="{ span: 24 }">
-        <a-radio-group v-model:value="product.gioiTinh">
-          <a-radio :value="true">Nam</a-radio>
-          <a-radio :value="false">Nữ</a-radio>
-        </a-radio-group>
-      </a-form-item>
     </a-form>
   </a-modal>
 </template>
@@ -72,8 +67,6 @@ const fetchProductDetails = async (id: string) => {
 
     product.value = {
       ...data,
-      ngaySinh: data.ngaySinh ? dayjs(data.ngaySinh) : undefined,
-      gioiTinh: data.gioiTimh === true || data.gioiTimh === 'true'
     };
   } catch (error) {
     if (error?.response?.data?.message) {
@@ -113,11 +106,10 @@ const handleSubmit = async () => {
     const formData = new FormData();
     formData.append('id', product.value.id?.trim() || '');
     formData.append('code', product.value.code?.trim() || generateCode());
+    formData.append('email', product.value.email?.trim() || '');
     formData.append('ten', product.value.ten?.trim() || '');
     formData.append('sdt', product.value.sdt?.trim() || '');
     formData.append('diaChi', product.value.diaChi?.trim() || '');
-    formData.append('gioiTinh', product.value.gioiTinh?.toString());
-    formData.append('ngaySinh', product.value.ngaySinh ? new Date(product.value.ngaySinh).toISOString().split('T')[0] : '');
 
     const res = await modifyKhachHang(formData);
     closeModal();
