@@ -5,12 +5,7 @@ import com.be.server.infrastructure.constant.EntityLoaiHoaDon;
 import com.be.server.infrastructure.constant.EntityPhuongThucThanhToan;
 import com.be.server.infrastructure.constant.EntityTrangThaiHoaDon;
 import com.be.server.infrastructure.listener.CreateHoaDonEntityListener;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +14,8 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -75,4 +72,7 @@ public class HoaDon extends PrimaryEntity implements Serializable {
 
     @Column(name = "trang_thai_hoa_don")
     private EntityTrangThaiHoaDon trangThaiHoaDon;
+
+    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<LichSuTrangThaiHoaDon> statusHistory = new ArrayList<>();
 }

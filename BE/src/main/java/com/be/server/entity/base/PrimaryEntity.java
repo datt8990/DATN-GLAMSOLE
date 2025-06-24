@@ -2,6 +2,7 @@ package com.be.server.entity.base;
 
 import com.be.server.infrastructure.constant.EntityProperties;
 import com.be.server.infrastructure.constant.EntityStatus;
+import com.be.server.infrastructure.constant.Status;
 import com.be.server.infrastructure.listener.CreatePrimaryEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
