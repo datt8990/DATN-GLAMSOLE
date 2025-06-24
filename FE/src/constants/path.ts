@@ -62,16 +62,28 @@ export const ROUTES_CONSTANTS = {
       SAN_PHAM_CHI_TIET: {
         path: 'san-pham-chi-tiet',
         name: 'san-pham-chi-tiet-admin'
-      } ,
+      },
       THEM_SAN_PHAM_CHI_TIET: {
         path: 'them-san-pham-chi-tiet',
         name: 'them-san-pham-chi-tiet-admin'
+      },
+      THEM_NHAN_VIEN: {
+        path: 'them-nhan-vien',
+        name: 'them-nhan-vien-admin'
+      },
+      THEM_KHACH_HANG: {
+        path: 'them-khach-hang',
+        name: 'them-khach-hang-admin'
+      },
+      THEM_PHIEU_GIAM_GIA: {
+        path: 'them-phieu-giam-gia',
+        name: 'them-phieu-giam-gia-admin'
       },
       BAN_HANG: {
         path: 'ban-hang',
         name: 'ban-hang-admin'
       },
-        VOUCHER: {
+      VOUCHER: {
         path: 'voucher',
         name: 'voucher-admin'
       },

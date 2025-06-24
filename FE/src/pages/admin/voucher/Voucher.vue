@@ -19,16 +19,7 @@
     @page-change="handlePageChange" 
     @change-status="handleChangeStatus" 
   />
-  
-  <ProductModal
-    :open="state.isModalOpen" 
-    :openChangeStatus="state.isModalChangeStatus"
-    :productId="state.selectedProductId" 
-    :title="modalTitle" 
-    @closeChangeStatus="closeModalChangeStatus"
-    @close="closeModal"
-    @success="fetchProducts"
-  />
+
 </DivCustom>
 </template>
 

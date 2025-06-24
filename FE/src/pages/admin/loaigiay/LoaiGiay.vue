@@ -1,7 +1,7 @@
 <template>
   <DivCustom>
   <BreadcrumbDefault 
-    pageTitle="Quản lý loại giày" 
+    pageTitle="Quản lý danh mục" 
   />
   <ProductFilter 
     :searchQuery="state.searchQuery" 
@@ -56,7 +56,7 @@ const state = reactive({
 
 
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật kích thước' : 'Thêm kích thước'
+  return state.selectedProductId ? 'Cập nhật danh mục' : 'Thêm danh mục'
 })
 
 const updateSearchQuery = (newQuery: string) => {

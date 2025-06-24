@@ -1,0 +1,27 @@
+package com.be.server.core.admin.hoadon.model.response;
+
+import com.be.server.infrastructure.constant.EntityLoaiHoaDon;
+import com.be.server.infrastructure.constant.EntityStatus;
+
+public interface ADHoaDonChiTietResponseDetail {
+    String getMaHoaDon();
+    String getTenHoaDon();
+    String getMaHoaDonChiTiet();
+    String getTenSanPham();
+    String getAnhSanPham();
+    String getThuongHieu();
+    String getXuatSu();
+    String getMauSac();
+    String getSize();
+    Integer getSoLuong();
+    Double getGiaBan();
+    Double getThanhTien();
+    String getTenKhachHang();
+    String getSdtKH();
+    String getLoaiHoaDon();
+    String getTrangThaiHoaDon();
+    Long getNgayTao();
+    Double getPhiVanChuyen();
+    String getMaVoucher();
+    Double getTongTienSauGiam();
+}

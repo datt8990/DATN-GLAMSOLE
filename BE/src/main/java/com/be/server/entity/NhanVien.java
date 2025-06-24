@@ -26,7 +26,6 @@ import java.util.Date;
 @ToString
 @Table(name = "nhan_vien")
 @DynamicUpdate
-@EntityListeners(CreateNhanVIenEntityListener.class)
 public class NhanVien extends PrimaryEntity implements Serializable {
 
     @Column(name = "ma_nhan_vien")
@@ -34,6 +33,15 @@ public class NhanVien extends PrimaryEntity implements Serializable {
 
     @Column(name = "ten_nhan_vien")
     private String ten;
+
+    @Column(name = "tinh")
+    private String tinh;
+
+    @Column(name = "huyen")
+    private String huyen;
+
+    @Column(name = "xa")
+    private String xa;
 
     @Column(name = "so_dien_thoai")
     private String sdt;
@@ -50,14 +58,14 @@ public class NhanVien extends PrimaryEntity implements Serializable {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "cccd")
+    private String cccd;
+
     @Column(name = "gioi_timh")
     private Boolean gioiTimh;
 
     @Column(name = "chuc_vu")
     private EntityRole chucVu;
-
-    @Column(name = "luong")
-    private Double luong;
 
     @Column(name = "mat_khau")
     private String matKhau;

@@ -68,6 +68,15 @@ export const GetSanPhams = async (params: ParamsGetSanPham) => {
   return res.data
 }
 
+export const getDetailSanPham = async (id: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/detail/${id}`,
+    method: 'GET'
+  })) as AxiosResponse<DefaultResponse<SanPhamResponse>>
+
+  return res.data
+}
+
 export const getSanPham = async (id: string) => {
   const res = (await request({
     url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/${id}`,
@@ -96,44 +105,44 @@ export const modifyStatusSanPham = async (id: string) => {
   return res.data;
 }
 
-export const GetListXuatXu = async () => {
-  const res = (await request({
-    url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-xuat-xu`,
-    method: 'GET',
-  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+// export const GetListXuatXu = async () => {
+//   const res = (await request({
+//     url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-xuat-xu`,
+//     method: 'GET',
+//   })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
 
-  return res.data
-}
-
-
-export const GetListChatLieu = async () => {
-  const res = (await request({
-    url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-chat-lieu`,
-    method: 'GET',
-  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
-
-  return res.data
-}
+//   return res.data
+// }
 
 
-export const GetListLoaiDe= async () => {
-  const res = (await request({
-    url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-loai-de`,
-    method: 'GET',
-  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+// export const GetListChatLieu = async () => {
+//   const res = (await request({
+//     url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-chat-lieu`,
+//     method: 'GET',
+//   })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
 
-  return res.data
-}
+//   return res.data
+// }
 
 
-export const GetListLoaiGiay = async () => {
-  const res = (await request({
-    url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-loai-giay`,
-    method: 'GET',
-  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+// export const GetListLoaiDe= async () => {
+//   const res = (await request({
+//     url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-loai-de`,
+//     method: 'GET',
+//   })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
 
-  return res.data
-}
+//   return res.data
+// }
+
+
+// export const GetListLoaiGiay = async () => {
+//   const res = (await request({
+//     url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-loai-giay`,
+//     method: 'GET',
+//   })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+//   return res.data
+// }
 
 export const GetListSize = async () => {
   const res = (await request({

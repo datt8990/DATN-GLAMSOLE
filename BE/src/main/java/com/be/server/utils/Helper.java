@@ -228,6 +228,14 @@ public class Helper {
         return code;
     }
 
+    public static String generateCodeKhachHang() {
+        Random random = new Random();
+        int number = random.nextInt(10000);
+        String code = String.format("KH%04d", number);
+
+        return code;
+    }
+
     public static String generateCodeChatLieu() {
         Random random = new Random();
         int number = random.nextInt(10000);

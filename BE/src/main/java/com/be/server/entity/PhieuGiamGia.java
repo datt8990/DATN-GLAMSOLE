@@ -54,4 +54,7 @@ public class PhieuGiamGia extends PrimaryEntity implements Serializable {
     @Column(name = "loai_giam")
     private Boolean loaiGiam;
 
+    @Column(name = "kieu_giam")
+    private Boolean kieuGiam;
+
 }

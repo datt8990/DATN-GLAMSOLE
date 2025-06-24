@@ -1,6 +1,7 @@
 package com.be.server.entity;
 
 import com.be.server.entity.base.PrimaryEntity;
+import com.be.server.infrastructure.constant.EntityLoaiHoaDon;
 import com.be.server.infrastructure.constant.EntityPhuongThucThanhToan;
 import com.be.server.infrastructure.constant.EntityTrangThaiHoaDon;
 import com.be.server.infrastructure.listener.CreateHoaDonEntityListener;
@@ -36,8 +37,6 @@ public class HoaDon extends PrimaryEntity implements Serializable {
     @Column(name = "ten_hoa_don")
     private String ten;
 
-
-
     @Column(name = "so_dien_thoai_khach_hang")
     private String sdt;
 
@@ -47,7 +46,7 @@ public class HoaDon extends PrimaryEntity implements Serializable {
     @Column(name = "phi_van_chuyen")
     private Double phiVanChuyen;
 
-    @Column(name = "dia_chi_gia_hang")
+    @Column(name = "dia_chi_giao_hang")
     private Double diaChi;
 
     @Column(name = "tong_tien_sau_giam")
@@ -58,6 +57,9 @@ public class HoaDon extends PrimaryEntity implements Serializable {
 
     @Column(name = "ghi_chu")
     private String ghiChu;
+
+    @Column(name = "loai_hoa_don")
+    private EntityLoaiHoaDon loaiHoaDon;
 
     @ManyToOne
     @JoinColumn(name = "id_khach_hang",referencedColumnName = "id")
@@ -71,12 +73,6 @@ public class HoaDon extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_nhan_vien",referencedColumnName = "id")
     private NhanVien nhanVien;
 
-
-
     @Column(name = "trang_thai_hoa_don")
     private EntityTrangThaiHoaDon trangThaiHoaDon;
-
-
-
-
 }

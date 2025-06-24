@@ -28,7 +28,7 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/components/ui/login/Login.vue')
   },
 
-  
+
   {
     path: ROUTES_CONSTANTS.ADMIN.path,
     redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.MAUSAC.path}`,
@@ -256,6 +256,54 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: ROUTES_CONSTANTS.ADMIN.path,
+    redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.THEM_NHAN_VIEN.path}`,
+    component: () => import('@/layout/Admin.vue'),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.ADMIN.children.THEM_NHAN_VIEN.path,
+        name: ROUTES_CONSTANTS.ADMIN.children.THEM_NHAN_VIEN.name,
+        component: () => import('@/pages/admin/nhanvien/NhanVienModal.vue'),
+        // meta: {
+        //   requiresRole: ROLES.ADMIN,
+        //   requiresAuth: true
+        // }
+      }
+    ]
+  },
+  {
+    path: ROUTES_CONSTANTS.ADMIN.path,
+    redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.THEM_KHACH_HANG.path}`,
+    component: () => import('@/layout/Admin.vue'),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.ADMIN.children.THEM_KHACH_HANG.path,
+        name: ROUTES_CONSTANTS.ADMIN.children.THEM_KHACH_HANG.name,
+        component: () => import('@/pages/admin/khachhang/KhachHangModal.vue'),
+        // meta: {
+        //   requiresRole: ROLES.ADMIN,
+        //   requiresAuth: true
+        // }
+      }
+    ]
+  },
+  {
+    path: ROUTES_CONSTANTS.ADMIN.path,
+    redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.THEM_PHIEU_GIAM_GIA.path}`,
+    component: () => import('@/layout/Admin.vue'),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.ADMIN.children.THEM_PHIEU_GIAM_GIA.path,
+        name: ROUTES_CONSTANTS.ADMIN.children.THEM_PHIEU_GIAM_GIA.name,
+        component: () => import('@/pages/admin/voucher/VoucherModal.vue'),
+        // meta: {
+        //   requiresRole: ROLES.ADMIN,
+        //   requiresAuth: true
+        // }
+      }
+    ]
+  },
+  {
+    path: ROUTES_CONSTANTS.ADMIN.path,
     redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.BAN_HANG.path}`,
     component: () => import('@/layout/Admin.vue'),
     children: [
@@ -270,7 +318,7 @@ export const routes: RouteRecordRaw[] = [
       }
     ]
   },
-    {
+  {
     path: ROUTES_CONSTANTS.ADMIN.path,
     redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.VOUCHER.path}`,
     component: () => import('@/layout/Admin.vue'),

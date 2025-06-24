@@ -1,89 +1,108 @@
 <script setup lang="ts">
 import { useSidebarStore } from "@/stores/sidebar";
-import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 import SidebarItem from "./SidebarItem.vue";
 import { ROUTES_CONSTANTS } from "@/constants/path";
 
-const target = ref(null);
 const sidebarStore = useSidebarStore();
-
-// onClickOutside(target, () => {
-//   sidebarStore.isSidebarOpen = true
-// })
 
 const menuGroups = ref([
   {
     menuItems: [
-    {
+      {
         label: "Quản lý bán hàng",
-        icon: `<svg>...</svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h18v18H3V3z" />
+        </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.BAN_HANG.name,
       },
-    {
+      {
         label: "Quản lý sản phẩm",
-        icon: `<svg>...</svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
+        </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.SAN_PHAM.name,
       },
       {
         label: "Thuộc tính",
-        icon: `<svg>...</svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>`,
         children: [
           {
             label: "Quản lý màu sắc",
-            icon: `<svg>...</svg>`,
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <circle cx="12" cy="12" r="3" />
+            </svg>`,
             routeName: ROUTES_CONSTANTS.ADMIN.children.MAUSAC.name,
           },
           {
             label: "Quản lý chất liệu",
-            icon: `<svg>...</svg>`,
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+            </svg>`,
             routeName: ROUTES_CONSTANTS.ADMIN.children.CHAT_LIEU.name,
           },
           {
             label: "Quản lý loại đế",
-            icon: `<svg>...</svg>`,
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path d="M3 7h18M3 12h18M3 17h18" />
+            </svg>`,
             routeName: ROUTES_CONSTANTS.ADMIN.children.LOAI_DE.name,
           },
           {
             label: "Quản lý loại giày",
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path d="M6 18L18 6M6 6l12 12" />
+            </svg>`,
+            label: "Quản lý danh mục", 
             icon: `<svg>...</svg>`,
             routeName: ROUTES_CONSTANTS.ADMIN.children.LOAI_GIAY.name,
           },
           {
             label: "Quản lý kích thước",
-            icon: `<svg>...</svg>`,
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <circle cx="12" cy="12" r="10" />
+            </svg>`,
             routeName: ROUTES_CONSTANTS.ADMIN.children.SIZE.name,
-          },
-            {
-            label: "Quản lý xuất xứ",
-            icon: `<svg>...</svg>`,
-            routeName: ROUTES_CONSTANTS.ADMIN.children.XUAT_XU.name,
           },
           {
             label: "Quản lý thương hiệu",
-            icon: `<svg>...</svg>`,
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>`,
             routeName: ROUTES_CONSTANTS.ADMIN.children.THUONG_HIEU.name,
           },
         ],
       },
       {
-        label: "Quản lý hoán đơn",
-        icon: `<svg>...</svg>`,
+        label: "Quản lý hoá đơn",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path d="M4 6h16M4 12h8m-8 6h16" />
+        </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.HOA_DON.name,
       },
       {
         label: "Quản lý khách hàng",
-        icon: `<svg>...</svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <circle cx="12" cy="7" r="4" />
+          <path d="M5 21v-2a4 4 0 018 0v2" />
+        </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.KHACH_HANG.name,
       },
       {
         label: "Quản lý nhân viên",
-        icon: `<svg>...</svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <circle cx="12" cy="7" r="4" />
+          <path d="M16 21v-2a4 4 0 00-8 0v2" />
+        </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.NHAN_VIEN.name,
       },
-        {
+      {
         label: "Quản lý phiếu giảm giá",
-        icon: `<svg>...</svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path d="M12 8v8m4.5-4h-9" />
+        </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.VOUCHER.name,
       },
     ],
@@ -93,39 +112,32 @@ const menuGroups = ref([
 
 <template>
   <aside
-    style="background-color: rgba(0, 21, 40, 255)"
-    class="sidebar col-0 col-xl-4 bg-light text-dark vh-100 d-flex flex-column"
+    class="sidebar"
     :class="{
       'translate-x-0': !sidebarStore.isSidebarOpen,
       '-translate-x-full': sidebarStore.isSidebarOpen,
     }"
-    ref="target"
   >
-    <div
-      style="background-color: white"
-      class="d-flex justify-content-between align-items-center p-3"
-    >
-      <div class="logo-container text-center mb-4">
+    <div class="header">
+      <div class="logo-container">
         <router-link to="/">
-          <img src="/images/logo.jpg" alt="Logo" class="logo" />
+          <img src="/images/logo.jpg" alt="Tên thương hiệu logo, biểu tượng màu sắc chủ đạo trắng đen tinh tế" class="logo" />
         </router-link>
       </div>
     </div>
 
-    <!-- SIDEBAR MENU -->
-    <nav class="flex-grow-1 p-3">
-      <template v-for="menuGroup in menuGroups" :key="menuGroup.name">
+    <nav class="menu" aria-label="Menu điều hướng chính">
+      <template v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
         <div>
-          <h3 class="fs-6 text-dark">
-            {{ menuGroup.name }}
-          </h3>
-          <ul class="list-unstyled">
+          <h3 class="menu-title">{{ menuGroup.name }}</h3>
+          <ul class="list-unstyled" role="menu">
             <SidebarItem
               v-for="(menuItem, index) in menuGroup.menuItems"
               :item="menuItem"
               :key="index"
               :index="index"
-              class="nav-link text-light d-flex align-items-center p-2"
+              class="nav-link"
+              role="menuitem"
             />
           </ul>
         </div>
@@ -134,92 +146,93 @@ const menuGroups = ref([
   </aside>
 </template>
 
-
-
 <style scoped>
-aside {
-  background-color: white;
-}
-
-nav .list-unstyled {
-  background-color: white;
-}
-
-nav {
-  background-color: white;
-}
-
-nav .nav-link {
-  background-color: white;
-  transition: transform 0.3s ease-in-out;
-}
-
 .sidebar {
   background-color: white;
   width: 260px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   transition: transform 0.3s ease-in-out;
+  color: black;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  user-select: none;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  z-index: 100;
+}
+
+.header {
+  background-color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.logo {
+  width: 200px;
+  max-width: 80%;
+  object-fit: contain;
+  filter: none;
+}
+
+.menu {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.menu-title {
+  color: #222222;
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.list-unstyled {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem 1rem;
+  margin-bottom: 0.25rem;
+  color: black;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  background-color: #f3f4f6;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  color: #111827;
+  text-decoration: none;
+}
+
+.nav-link[aria-current="page"] {
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.4);
 }
 
 .translate-x-0 {
   transform: translateX(0);
 }
 
-/* Đảm bảo sidebar thu lại */
 .-translate-x-full {
-  transform: translateX(-80%);
-}
-
-/* Logo */
-.logo-container {
-  margin-right: 20px;
-}
-
-.logo {
-  width: 200px;
-  max-width: 80%;
-  display: block;
-  margin: 0 auto;
-  filter: brightness(1.2);
-}
-
-.sidebar-title {
-  color: #333 !important; /* màu xám đậm, nhìn rõ ràng */
-  font-weight: bold; /* cho nó đậm luôn nếu cần */
-  padding-left: 10px; /* căn lề đẹp hơn */
-  margin-top: 10px;
-}
-
-/* Điều chỉnh button để di chuyển lên trên */
-.sidebar-toggle-btn {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  /* Căn giữa theo chiều ngang */
-  align-items: center;
-  /* Căn giữa theo chiều dọc */
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  /* Đảm bảo nút nằm trên cùng */
-  top: 20px;
-  /* Di chuyển lên trên */
-  right: 10px;
-  /* Đảm bảo nút nằm ở góc phải */
-}
-
-/* Điều chỉnh icon trong button */
-.sidebar-toggle-btn svg {
-  fill: currentColor;
-  width: 36px;
-  /* Tăng kích thước rộng của icon */
-  height: 36px;
-  /* Tăng kích thước cao của icon */
-  margin: 0 auto;
-  /* Căn giữa icon trong button */
-  display: block;
-  /* Đảm bảo icon là block để căn giữa dễ dàng */
+  transform: translateX(-100%);
 }
 </style>

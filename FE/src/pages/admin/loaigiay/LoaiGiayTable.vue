@@ -1,7 +1,7 @@
 <template>
-    <DivCustom label="Danh sách loại giày" customClasses="mt-5">
+    <DivCustom label="Danh sách danh mục" customClasses="mt-5">
         <template #extra>
-            <a-tooltip title="Thêm loại giày">
+            <a-tooltip title="Thêm danh mục">
                 <a-button type="primary" @click="handleAddClick"
                     class="d-flex justify-content-center align-items-center px-4">
                     <PlusCircleOutlined />
@@ -27,7 +27,7 @@
                     </div>
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
-                            <a-tooltip title="Chỉnh sửa kích thước">
+                            <a-tooltip title="Chỉnh sửa danh mục">
                                 <a-button type="primary" @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EditOutlined />
