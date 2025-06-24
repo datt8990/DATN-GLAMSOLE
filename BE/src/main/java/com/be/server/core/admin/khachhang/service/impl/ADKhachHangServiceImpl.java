@@ -9,6 +9,7 @@ import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.KhachHang;
 import com.be.server.infrastructure.constant.EntityStatus;
 import com.be.server.repository.SizeRepository;
+import com.be.server.utils.CloudinaryUtils;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class ADKhachHangServiceImpl implements ADKhachHangService {
 
     public final ADKhachHangRepository adKhachHangRepository ;
+    private final CloudinaryUtils cloudinaryUtils;
 
     @Override
     public ResponseObject<?> getAllKhachHang(ADKhachHangSearchRequest request) {
@@ -70,6 +74,31 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
 
                 khachHang.setDiaChi(request.getDiaChi());
 
+                khachHang.setXa(request.getXa());
+
+                khachHang.setHuyen(request.getHuyen());
+
+                khachHang.setTinh(request.getTinh());
+
+                khachHang.setCccd(request.getCccd());
+
+                khachHang.setNgaySinh(request.getNgaySinh());
+
+                khachHang.setGioiTimh(request.getGioiTinh());
+
+                if (request.getAvatar() != null) {
+                    try {
+                        byte[] imageData = request.getAvatar().getBytes();
+                        CompletableFuture.runAsync(() -> {
+                            String imgPath = cloudinaryUtils.uploadImage(imageData, request.getId());
+                            khachHang.setAvatar(imgPath);
+                            adKhachHangRepository.save(khachHang);
+                        });
+                    } catch (IOException e) {
+                        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi đọc file ảnh: " + e.getMessage());
+                    }
+                }
+
                 adKhachHangRepository.save(khachHang);
 
                 return new ResponseObject<>(khachHang, HttpStatus.OK, "Cập nhật khách hàng thành công");
@@ -88,6 +117,32 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
         khachHang.setEmail(request.getEmail());
 
         khachHang.setDiaChi(request.getDiaChi());
+
+        khachHang.setCccd(request.getCccd());
+
+        khachHang.setXa(request.getXa());
+
+        khachHang.setHuyen(request.getHuyen());
+
+        khachHang.setTinh(request.getTinh());
+
+        khachHang.setNgaySinh(request.getNgaySinh());
+
+        khachHang.setGioiTimh(request.getGioiTinh());
+
+        if(request.getAvatar() != null){
+            try {
+                byte[] imageData = request.getAvatar().getBytes();
+                CompletableFuture.runAsync(() -> {
+                    String imgPath = cloudinaryUtils.uploadImage(imageData, request.getId());
+                    khachHang.setAvatar(imgPath);
+                    adKhachHangRepository.save(khachHang);
+                });
+            } catch (IOException e) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi đọc file ảnh: " + e.getMessage());
+            }
+        }
+
 
         khachHang.setStatus(EntityStatus.ACTIVE);
 

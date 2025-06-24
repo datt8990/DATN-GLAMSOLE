@@ -27,11 +27,22 @@
                         {{ products.indexOf(record) + 1 }}
                     </div>
 
-                      <!-- <template v-if="column.key === 'status'">
+                    <template v-if="column.key === 'avatar'">
+                        <div class="center-cell">
+                            <img :src="record.avatar" class="avatar"
+                                style="width: 50px; height: 50px; border-radius: 50%" />
+                        </div>
+                    </template>
+
+                    <template v-if="column.key === 'createdDate'">
+                        {{ formatDate(record.createdDate) }}
+                    </template>
+
+                    <template v-if="column.key === 'status'">
                         <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
-                            {{ record.status == 'ACTIVE' ? 'Đang hoa' : 'Nghỉ việc' }}
+                            {{ record.status == 'ACTIVE' ? 'Kích hoạt' : 'Ngừng kích hoạt' }}
                         </a-tag>
-                    </template> -->
+                    </template>
 
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
@@ -41,12 +52,12 @@
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <!-- <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
+                            <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
                 <a-button type="primary" class="p-2 d-flex justify-content-center align-items-center">
                     <RedoOutlined />
                 </a-button>
-            </a-popconfirm> -->
+            </a-popconfirm>
                         </div>
                     </template>
                 </template>
@@ -76,13 +87,12 @@ const router = useRouter()
 const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
-    { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
+    { title: 'STT', key: 'stt', dataIndex: 'stt', width: 150, align: 'center' },
     { title: 'Mã KH', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
     { title: 'Tên KH', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'SDT', key: 'sdt', dataIndex: 'sdt', width: 150, align: 'center' },
-    { title: 'Email', key: 'email', dataIndex: 'email', width: 150, align: 'center' },
-    { title: 'Địa Chỉ', key: 'diaChi', dataIndex: 'diaChi', width: 150, align: 'center' },
-    // { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
+    { title: 'Ngày tham gia', key: 'createdDate', dataIndex: 'createdDate', width: 150, align: 'center' },
+    { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',
         key: 'operation',
@@ -96,10 +106,17 @@ const handlePageChange = (pagination: any) => {
 }
 
 const handleAddClick = () => {
-    emit('add')
+    router.push({
+        name: 'them-khach-hang-admin',
+    });
+
 }
 
-
+const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' }; // Chỉ lấy ngày tháng năm
+    return date.toLocaleString('vi-VN', options);
+}
 
 const handleChangeStatusClick = async (id: string) => {
     try {
@@ -119,7 +136,10 @@ const handleChangeStatusClick = async (id: string) => {
 }
 
 const handleViewClick = (id: string) => {
-    emit('view', id)
+    router.push({
+        name: 'them-khach-hang-admin',
+        query: { id: id }
+    });
 }
 </script>
 

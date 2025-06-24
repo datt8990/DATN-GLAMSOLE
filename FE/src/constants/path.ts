@@ -16,113 +16,113 @@ export const ROUTES_CONSTANTS = {
   // },
 
   ADMIN: {
-    path: '/admin',
-    name: 'admin',
+    path: "/admin",
+    name: "admin",
     children: {
       MAUSAC: {
-        path: 'mau-sac',
-        name: 'mau-sac-admin'
+        path: "mau-sac",
+        name: "mau-sac-admin",
       },
       NHAN_VIEN: {
-        path: 'nhan-vien',
-        name: 'nhan-vien-admin'
+        path: "nhan-vien",
+        name: "nhan-vien-admin",
       },
       SIZE: {
-        path: 'size',
-        name: 'size-admin'
+        path: "size",
+        name: "size-admin",
       },
       THUONG_HIEU: {
-        path: 'thuong-hieu',
-        name: 'thuong-hieu-admin'
+        path: "thuong-hieu",
+        name: "thuong-hieu-admin",
       },
       XUAT_XU: {
-        path: 'xuat-xu',
-        name: 'xuat-xu-admin'
+        path: "xuat-xu",
+        name: "xuat-xu-admin",
       },
       KHACH_HANG: {
-        path: 'khach-hang',
-        name: 'khach-hang-admin'
+        path: "khach-hang",
+        name: "khach-hang-admin",
       },
       SAN_PHAM: {
-        path: 'san-pham',
-        name: 'san-pham-admin'
+        path: "san-pham",
+        name: "san-pham-admin",
       },
       LOAI_DE: {
-        path: 'loai-de',
-        name: 'loai-de-admin'
+        path: "loai-de",
+        name: "loai-de-admin",
       },
       LOAI_GIAY: {
-        path: 'loai-giay',
-        name: 'loai-giay-admin'
+        path: "loai-giay",
+        name: "loai-giay-admin",
       },
       CHAT_LIEU: {
-        path: 'chat-lieu',
-        name: 'chat-lieu-admin'
+        path: "chat-lieu",
+        name: "chat-lieu-admin",
       },
       SAN_PHAM_CHI_TIET: {
-        path: 'san-pham-chi-tiet',
-        name: 'san-pham-chi-tiet-admin'
-      } ,
+        path: "san-pham-chi-tiet",
+        name: "san-pham-chi-tiet-admin",
+      },
       THEM_SAN_PHAM_CHI_TIET: {
-        path: 'them-san-pham-chi-tiet',
-        name: 'them-san-pham-chi-tiet-admin'
+        path: "them-san-pham-chi-tiet",
+        name: "them-san-pham-chi-tiet-admin",
+      },
+      THEM_NHAN_VIEN: {
+        path: "them-nhan-vien",
+        name: "them-nhan-vien-admin",
+      },
+      THEM_KHACH_HANG: {
+        path: "them-khach-hang",
+        name: "them-khach-hang-admin",
+      },
+      THEM_PHIEU_GIAM_GIA: {
+        path: "them-phieu-giam-gia",
+        name: "them-phieu-giam-gia-admin",
       },
       BAN_HANG: {
-        path: 'ban-hang',
-        name: 'ban-hang-admin'
+        path: "ban-hang",
+        name: "ban-hang-admin",
       },
-        VOUCHER: {
-        path: 'voucher',
-        name: 'voucher-admin'
-      },
-      DOT_GIAM_GIA: {
-        path: 'dot-giam-gia',
-        name: 'dot-giam-gia-admin'
-      },
-      ADD_DOT_GIAM_GIA: {
-        path: 'add-dot-giam-gia',
-        name: 'add-dot-giam-gia-admin'
-      },
-      UPDATE_DOT_GIAM_GIA: {
-        path: 'update-dot-giam-gia/:id',
-        name: 'update-dot-giam-gia-admin'
+      VOUCHER: {
+        path: "voucher",
+        name: "voucher-admin",
       },
       HOA_DON: {
-        path: 'hoa-don',
-        name: 'hoa-don-admin'
+        path: "hoa-don",
+        name: "hoa-don-admin",
       },
       HOA_DON_DETAIL: {
-        path: 'hoa-don-detail/:maHoaDon/:id',
-        name: 'hoa-don-detail-admin'
+        path: "hoa-don-detail/:id",
+        name: "hoa-don-detail-admin",
       },
-    }
+    },
   },
 
   ROLE_SWITCH: {
-    path: '/role-switch',
-    name: 'role-switch'
+    path: "/role-switch",
+    name: "role-switch",
   },
 
   REDIRECT: {
-    path: '/redirect',
-    name: 'redirect'
+    path: "/redirect",
+    name: "redirect",
   },
 
   FORBIDDEN: {
-    path: '/error/403',
-    name: 'Forbidden'
+    path: "/error/403",
+    name: "Forbidden",
   },
 
   UNAUTHORIZED: {
-    path: '/error/401',
-    name: 'Unauthorized'
+    path: "/error/401",
+    name: "Unauthorized",
   },
   LOGIN: {
-    path: '/login',
-    name: 'Login'
+    path: "/login",
+    name: "Login",
   },
   NOT_FOUND: {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound'
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
   },
-}
+};
