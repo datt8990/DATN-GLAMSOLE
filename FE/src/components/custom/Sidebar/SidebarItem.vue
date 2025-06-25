@@ -39,7 +39,7 @@ function toggleDropdown() {
     <router-link
       v-if="!item.children"
       :to="{ name: item.routeName }"
-      class="nav-link"
+      class="nav-link w-full"
       :aria-current="isActive ? 'page' : null"
       tabindex="0"
     >
@@ -91,15 +91,15 @@ function toggleDropdown() {
 .nav-link:focus {
   background-color: #f3f4f6;
   color: #111827;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px #58bddb;
   outline: none;
 }
 
 .nav-link[aria-current="page"] {
-  background-color: #2563eb;
+  background-color: #58bddb;
   color: white;
   font-weight: 700;
-  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 2px 12px #58bddb;
 }
 
 .icon {
@@ -125,8 +125,8 @@ function toggleDropdown() {
 
 .nav-dropdown.active {
   background-color: #e0e7ff;
-  color: #3730a3;
-  box-shadow: 0 2px 8px rgba(55, 48, 163, 0.3);
+  color: #58bddb;
+  box-shadow: 0 2px 8px #58bddb;
   font-weight: 700;
 }
 
