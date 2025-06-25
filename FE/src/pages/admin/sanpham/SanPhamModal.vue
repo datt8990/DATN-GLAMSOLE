@@ -14,8 +14,26 @@
       </a-form-item>
 
       <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-        <a-form-item label="Tên thuong hiệu" name="facilityId" :label-col="{ span: 24 }">
+        <a-form-item label="Thương hiệu" name="facilityId" :label-col="{ span: 24 }">
           <a-select v-model:value="product.idThuongHieu" :options="thuongHieuOptions" placeholder="Chọn thuong hiệu" />
+        </a-form-item>
+      </a-form>
+
+      <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
+        <a-form-item label="Loại đế" name="facilityId" :label-col="{ span: 24 }">
+          <a-select v-model:value="product.idLoaiDe" :options="loaiDeOptions" placeholder="Chọn Loại đế" />
+        </a-form-item>
+      </a-form>
+
+      <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
+        <a-form-item label="Danh mục" name="facilityId" :label-col="{ span: 24 }">
+          <a-select v-model:value="product.idDanhMuc" :options="danhMucOptions" placeholder="Chọn danh mục" />
+        </a-form-item>
+      </a-form>
+
+      <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
+        <a-form-item label="Chất liệu" name="facilityId" :label-col="{ span: 24 }">
+          <a-select v-model:value="product.idChatLieu" :options="chatLieuOptions" placeholder="Chọn chất liệu" />
         </a-form-item>
       </a-form>
 
@@ -29,7 +47,7 @@
 
 <script setup lang="ts">
 import { ref, watch, defineProps, defineEmits, onMounted } from 'vue';
-import { getSanPham, type SanPhamResponse, modifySanPham, GetListThuongHieu } from '@/services/api/admin/sanpham.api';
+import { getSanPham, type SanPhamResponse, modifySanPham, GetListThuongHieu, GetListXuatXu, GetListLoaiDe, GetListDanhMuc, GetListChatLieu } from '@/services/api/admin/sanpham.api';
 import { toast } from 'vue3-toastify';
 import dayjs from 'dayjs';
 import { Row } from 'ant-design-vue';
@@ -38,7 +56,10 @@ import { Row } from 'ant-design-vue';
 const props = defineProps<{ open: boolean; productId: string | null; title: string }>();
 const emit = defineEmits(['close', 'success']);
 const thuongHieuOptions = ref<{ label: string; value: string }[]>([])
-
+const xuatXuOptions = ref<{ label: string; value: string }[]>([])
+const loaiDeOptions = ref<{ label: string; value: string }[]>([])
+const danhMucOptions = ref<{ label: string; value: string }[]>([])
+const chatLieuOptions = ref<{ label: string; value: string }[]>([])
 
 const product = ref<SanPhamResponse>({
   id: '',
@@ -46,6 +67,10 @@ const product = ref<SanPhamResponse>({
   code: '',
   moTa: '',
   idThuongHieu: '',
+  idLoaiDe: '',
+  idXuatXu: '',
+  idDanhMuc: '',
+  idChatLieu: '',
 });
 
 const productForm = ref();
@@ -61,6 +86,58 @@ const fetchThuongHieu = async () => {
     console.error('Lỗi khi lấy danh sách cơ sở:', error)
   }
 }
+
+const fetchXuatXu = async () => {
+  try {
+    const response = await GetListXuatXu()
+    xuatXuOptions.value = response.data.map(thuongHieu => ({
+      label: thuongHieu.ten,
+      value: thuongHieu.id,
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+  }
+}
+
+const fetchChatLieu = async () => {
+  try {
+    const response = await GetListChatLieu()
+    chatLieuOptions.value = response.data.map(thuongHieu => ({
+      label: thuongHieu.ten,
+      value: thuongHieu.id,
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+  }
+}
+
+
+
+const fetchLoaiDe = async () => {
+  try {
+    const response = await GetListLoaiDe()
+    loaiDeOptions.value = response.data.map(thuongHieu => ({
+      label: thuongHieu.ten,
+      value: thuongHieu.id,
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+  }
+}
+
+
+const fetchDanhMuc = async () => {
+  try {
+    const response = await GetListDanhMuc()
+    danhMucOptions.value = response.data.map(thuongHieu => ({
+      label: thuongHieu.ten,
+      value: thuongHieu.id,
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+  }
+}
+
 
 const rules = {
   ten: [{ required: true, message: 'Tên không được để trống!', trigger: 'blur' }],
@@ -120,6 +197,10 @@ const handleSubmit = async () => {
     formData.append('ten', product.value.ten?.trim() || '');
     formData.append('moTa', product.value.moTa?.trim() || '');
     formData.append('idThuongHieu', product.value.idThuongHieu?.trim() || '');
+    formData.append('idChatLieu', product.value.idChatLieu?.trim() || '');
+    formData.append('idLoaiDe', product.value.idLoaiDe?.trim() || '');
+    formData.append('idXuatXu', product.value.idXuatXu?.trim() || '');
+    formData.append('idDanhMuc', product.value.idDanhMuc?.trim() || '');
     const res = await modifySanPham(formData);
     closeModal();
     emit('success');
@@ -129,6 +210,13 @@ const handleSubmit = async () => {
   }
 };
 
-onMounted(fetchThuongHieu)
+onMounted(() => {
+  fetchThuongHieu();
+  fetchXuatXu();
+  fetchLoaiDe();
+  fetchDanhMuc();
+  fetchChatLieu();
+});
+
 const closeModal = () => emit('close');
 </script>

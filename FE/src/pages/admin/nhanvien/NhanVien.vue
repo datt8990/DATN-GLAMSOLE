@@ -20,7 +20,7 @@
     @change-status="handleChangeStatus" 
   />
   
-  <ProductModal
+  <!-- <ProductModal
     :open="state.isModalOpen" 
     :openChangeStatus="state.isModalChangeStatus"
     :productId="state.selectedProductId" 
@@ -28,7 +28,7 @@
     @closeChangeStatus="closeModalChangeStatus"
     @close="closeModal"
     @success="fetchProducts"
-  />
+  /> -->
 </DivCustom>
 </template>
 
@@ -42,6 +42,7 @@ import { getMembers, type ParamsGetMember, type NhanVienResponse } from "@/servi
 import { GetKhachHangs, type KhachHangResponse, type ParamsGetKhachHang } from '@/services/api/admin/khachhang.api';
 import { debounce } from 'lodash';
 import DivCustom from '@/components/custom/Div/DivCustomAll.vue'
+import { toast } from 'vue3-toastify';
 
 
 const state = reactive({
@@ -115,8 +116,45 @@ console.log(state.products)
 const debouncedFetchProducts = debounce(fetchProducts, 300)
 
 onMounted(() => {
-  fetchProducts()
-})
+  fetchProducts(); // Giữ nguyên việc gọi fetchProducts khi component mount
+
+  // ---- THÊM ĐOẠN CODE NÀY ----
+  const storedToast = sessionStorage.getItem('appToastMessage');
+  if (storedToast) {
+    try {
+      const { message, type } = JSON.parse(storedToast);
+
+      if (message) {
+        // Hiển thị toast dựa trên type 
+        if (type === 'success') {
+          toast.success(message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            progress: undefined,
+          });
+        } else if (type === 'error') {
+          toast.error(message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            progress: undefined,
+          });
+        }
+        // Có thể thêm các loại 'info', 'warn' nếu bạn sử dụng
+      }
+    } catch (e) {
+      console.error("Error parsing stored toast message:", e);
+    } finally {
+      // Luôn xóa thông báo khỏi sessionStorage sau khi đã xử lý
+      sessionStorage.removeItem('appToastMessage');
+    }
+  }
+});
 
 watch(
   () => [state.searchQuery, state.searchStatus],

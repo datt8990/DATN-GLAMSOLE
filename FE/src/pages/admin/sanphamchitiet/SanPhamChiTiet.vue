@@ -58,7 +58,7 @@ const state = reactive({
 
 const idSanPham = route.query.id || 'default-id';
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật khách hàng' : 'Thêm khách hàng'
+  return state.selectedProductId ? 'Cập nhật sản phẩm chi tiết  ' : 'Thêm khách hàng'
 })
 
 const updateSearchQuery = (newQuery: string) => {

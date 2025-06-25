@@ -22,12 +22,11 @@ public class MappingConstants {
     public static final String API_ADMIN_THUONG_HIEU = API_ADMIN_PREFIX + "/thuong-hieu";
     public static final String API_ADMIN_XUAT_XU = API_ADMIN_PREFIX + "/xuat-xu";
     public static final String API_ADMIN_KHACH_HANG = API_ADMIN_PREFIX + "/khach-hang";
-    public static final String API_ADMIN_DOT_GIAM_GIA = API_ADMIN_PREFIX + "/dot-giam-gia";
     public static final String API_ADMIN_NHAN_VIEN= API_ADMIN_PREFIX + "/nhan-vien";
     public static final String API_ADMIN_SAN_PHAM= API_ADMIN_PREFIX + "/san-pham";
     public static final String API_ADMIN_SAN_PHAM_CHI_TIET= API_ADMIN_PREFIX + "/san-pham-chi-tiet";
     public static final String API_ADMIN_CHAT_LIEU= API_ADMIN_PREFIX + "/chat-lieu";
-    public static final String API_ADMIN_LOAI_GIAY= API_ADMIN_PREFIX + "/loai-giay";
+    public static final String API_ADMIN_DANH_MUC= API_ADMIN_PREFIX + "/danh-muc";
     public static final String API_ADMIN_LOAI_DE= API_ADMIN_PREFIX + "/loai-de";
     public static final String API_ADMIN_BAN_HANG= API_ADMIN_PREFIX + "/ban-hang";
     public static final String API_ADMIN_HOA_DON= API_ADMIN_PREFIX + "/hoa-don";

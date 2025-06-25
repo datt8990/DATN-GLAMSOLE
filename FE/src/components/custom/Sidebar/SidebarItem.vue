@@ -86,6 +86,7 @@ function toggleDropdown() {
   user-select: none;
   outline-offset: 2px;
 }
+
 .nav-link:hover,
 .nav-link:focus {
   background-color: #f3f4f6;
@@ -93,6 +94,7 @@ function toggleDropdown() {
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   outline: none;
 }
+
 .nav-link[aria-current="page"] {
   background-color: #2563eb;
   color: white;

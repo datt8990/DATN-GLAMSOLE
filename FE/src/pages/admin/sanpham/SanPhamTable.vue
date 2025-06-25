@@ -1,7 +1,7 @@
 <template>
-    <DivCustom label="Danh sách khách hàng" customClasses="mt-5">
+    <DivCustom label="Danh sách sản phẩm" customClasses="mt-5">
         <template #extra>
-            <a-tooltip title="Thêm khách hàng">
+            <a-tooltip title="Thêm sản phẩm">
                 <a-button type="primary" @click="handleAddClick"
                     class="d-flex justify-content-center align-items-center px-4">
                     <PlusCircleOutlined />
@@ -25,6 +25,10 @@
 
                     <div v-if="column.key === 'stt'">
                         {{ products.indexOf(record) + 1 }}
+                    </div>
+
+                    <div v-if="column.key === 'tongSP'">
+                        {{ record.tongSP === null ? 0 : record.tongSP }}
                     </div>
 
                     <template v-if="column.key === 'gioiTimh'">
@@ -68,14 +72,14 @@
 <script setup lang="ts">
 //   import DivCustom from '@/components/custom/Div/DivCustom.vue'
 import DivCustom from '@/components/custom/Div/DivCustomTable.vue'
-import { EditOutlined, PlusCircleOutlined, RedoOutlined,SearchOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, PlusCircleOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import { defineEmits, defineProps, h } from 'vue'
 import { modifyStatusKhachHang } from '@/services/api/admin/khachhang.api'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import { modifyStatusSanPham } from '@/services/api/admin/sanpham.api'
-import { ROUTES_CONSTANTS } from '@/constants/path' 
+import { ROUTES_CONSTANTS } from '@/constants/path'
 
 defineProps<{
     paginationParams: { page: number; size: number }
@@ -88,10 +92,9 @@ const router = useRouter()
 const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
-    { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
+    { title: 'STT', key: 'stt', dataIndex: 'stt', width: 150, align: 'center' },
     { title: 'Mã sản phẩm', key: 'ma', dataIndex: 'ma', width: 80, align: 'center' },
     { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
-    { title: 'Thương hiệu', key: 'tenThuongHieu', dataIndex: 'tenThuongHieu', width: 150, align: 'center' },
     { title: 'Số lượng', key: 'tongSP', dataIndex: 'tongSP', width: 150, align: 'center' },
     { title: 'Mô tả', key: 'moTa', dataIndex: 'moTa', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
@@ -125,20 +128,25 @@ const handlePageChange = (pagination: any) => {
 }
 
 const handleClick = (idSanPham: string) => {
-  if (idSanPham) {
-    console.log('idSanPham', idSanPham);
-    router.push({
-      name: 'san-pham-chi-tiet-admin',
-      query: { id: idSanPham }
-    });
-  }
+    if (idSanPham) {
+        console.log('idSanPham', idSanPham);
+        router.push({
+            name: 'san-pham-chi-tiet-admin',
+            query: { id: idSanPham }
+        });
+    }
 };
 
 
 
 const handleAddClick = () => {
-    emit('add')
-}
+
+    router.push({
+        name: 'them-san-pham-chi-tiet-admin',
+    });
+
+};
+
 
 const handleViewClick = (id: string) => {
     emit('view', id)

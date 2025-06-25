@@ -1,9 +1,13 @@
 package com.be.server.entity;
 
 import com.be.server.entity.base.PrimaryEntity;
-import com.be.server.infrastructure.constant.Status;
-import com.be.server.infrastructure.listener.CreateDotGiamGiaChiTietEntityListener;
-import jakarta.persistence.*;
+import com.be.server.infrastructure.listener.CreateDotGiamGIaEntityListener;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +25,7 @@ import java.io.Serializable;
 @ToString
 @Table(name = "dot_giam_gia_chi_tiet_san_pham")
 @DynamicUpdate
-@EntityListeners(CreateDotGiamGiaChiTietEntityListener.class)
+@EntityListeners(CreateDotGiamGIaEntityListener.class)
 public class DotGiamGiaChiTietSanPham extends PrimaryEntity implements Serializable {
 
     @Column(name = "ma_dot_giam_gia_chi_tiet_san_pham")
@@ -32,9 +36,6 @@ public class DotGiamGiaChiTietSanPham extends PrimaryEntity implements Serializa
 
     @Column(name = "gia_sau_khi_giam")
     private Double giaSau;
-
-    @Enumerated(EnumType.STRING)
-    private Status trangThai;
 
     @ManyToOne
     @JoinColumn(name = "id_chi_tiet_san_pham", referencedColumnName = "id")

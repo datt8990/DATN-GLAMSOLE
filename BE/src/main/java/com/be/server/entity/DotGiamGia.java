@@ -1,11 +1,17 @@
 package com.be.server.entity;
 
 import com.be.server.entity.base.PrimaryEntity;
-import com.be.server.infrastructure.constant.StatusPromotion;
 import com.be.server.infrastructure.listener.CreateDotGiamGIaEntityListener;
 import com.be.server.infrastructure.listener.CreateSanPhamChiTietEntityListener;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
@@ -19,7 +25,6 @@ import java.util.Date;
 @ToString
 @Table(name = "dot_giam_gia")
 @DynamicUpdate
-@Builder
 @EntityListeners(CreateDotGiamGIaEntityListener.class)
 public class DotGiamGia extends PrimaryEntity implements Serializable {
 
@@ -36,11 +41,9 @@ public class DotGiamGia extends PrimaryEntity implements Serializable {
     private String moTa;
 
     @Column(name = "ngay_bat_dau")
-    private Long ngayBatDau;
+    private Date ngayBatDau;
 
     @Column(name = "ngay_ket_thuc")
-    private Long ngayKetThuc;
+    private Date ngayKetThuc;
 
-    @Enumerated(EnumType.STRING)
-    private StatusPromotion trangThai;
 }

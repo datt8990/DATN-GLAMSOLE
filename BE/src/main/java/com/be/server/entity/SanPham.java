@@ -52,6 +52,7 @@ public class SanPham extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_danh_muc",referencedColumnName = "id")
     private DanhMuc danhMuc;
 
+
     @ManyToOne
     @JoinColumn(name = "id_loai_de",referencedColumnName = "id")
     private LoaiDe loaiDe;

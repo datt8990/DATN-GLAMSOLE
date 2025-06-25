@@ -1,13 +1,11 @@
 package com.be.server.core.admin.hoadon.controller;
 
-import com.be.server.core.admin.hoadon.model.request.ADChangeStatusRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
 import com.be.server.core.admin.hoadon.service.ADHoaDonService;
 import com.be.server.infrastructure.constant.MappingConstants;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,16 +26,6 @@ public class ADHoaDonController {
     @GetMapping("/all/{maHoaDon}")
     public ResponseEntity<?> getHDCT(@PathVariable String maHoaDon) {
         return Helper.createResponseEntity(service.getAllHoaDonCT(maHoaDon));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getLSHD(@PathVariable String id) {
-        return Helper.createResponseEntity(service.getLSTTHD(id));
-    }
-
-    @PutMapping("/change-status")
-    public ResponseEntity<?> changeStatus(@ModelAttribute ADChangeStatusRequest adChangeStatusRequest) {
-         return Helper.createResponseEntity(service.changeStatus(adChangeStatusRequest));
     }
 
 }

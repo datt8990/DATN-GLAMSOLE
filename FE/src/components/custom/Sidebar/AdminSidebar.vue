@@ -55,6 +55,8 @@ const menuGroups = ref([
             icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
               <path d="M6 18L18 6M6 6l12 12" />
             </svg>`,
+            label: "Quản lý danh mục", 
+            icon: `<svg>...</svg>`,
             routeName: ROUTES_CONSTANTS.ADMIN.children.LOAI_GIAY.name,
           },
           {
@@ -63,13 +65,6 @@ const menuGroups = ref([
               <circle cx="12" cy="12" r="10" />
             </svg>`,
             routeName: ROUTES_CONSTANTS.ADMIN.children.SIZE.name,
-          },
-          {
-            label: "Quản lý xuất xứ",
-            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <path d="M12 3v18M3 12h18" />
-            </svg>`,
-            routeName: ROUTES_CONSTANTS.ADMIN.children.XUAT_XU.name,
           },
           {
             label: "Quản lý thương hiệu",
@@ -102,14 +97,6 @@ const menuGroups = ref([
           <path d="M16 21v-2a4 4 0 00-8 0v2" />
         </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.NHAN_VIEN.name,
-      },
-      {
-        label: "Quản lý đợt giảm giá",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <circle cx="12" cy="7" r="4" />
-          <path d="M16 21v-2a4 4 0 00-8 0v2" />
-        </svg>`,
-        routeName: ROUTES_CONSTANTS.ADMIN.children.DOT_GIAM_GIA.name,
       },
       {
         label: "Quản lý phiếu giảm giá",
@@ -162,7 +149,7 @@ const menuGroups = ref([
 <style scoped>
 .sidebar {
   background-color: white;
-  width: 280px;
+  width: 260px;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -192,7 +179,7 @@ const menuGroups = ref([
 
 .menu {
   flex-grow: 1;
-  padding: 0.05rem;
+  padding: 1rem;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }

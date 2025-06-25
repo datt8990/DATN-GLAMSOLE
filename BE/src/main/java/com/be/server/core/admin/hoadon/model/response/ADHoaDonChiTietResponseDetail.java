@@ -2,9 +2,6 @@ package com.be.server.core.admin.hoadon.model.response;
 
 import com.be.server.infrastructure.constant.EntityLoaiHoaDon;
 import com.be.server.infrastructure.constant.EntityStatus;
-import com.be.server.infrastructure.constant.EntityTrangThaiHoaDon;
-
-import java.time.LocalDateTime;
 
 public interface ADHoaDonChiTietResponseDetail {
     String getMaHoaDon();
@@ -21,11 +18,8 @@ public interface ADHoaDonChiTietResponseDetail {
     Double getThanhTien();
     String getTenKhachHang();
     String getSdtKH();
-    String getEmail();
-    String getDiaChi();
     String getLoaiHoaDon();
     String getTrangThaiHoaDon();
-    LocalDateTime getThoiGian();
     Long getNgayTao();
     Double getPhiVanChuyen();
     String getMaVoucher();

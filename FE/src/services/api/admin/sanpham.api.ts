@@ -48,6 +48,43 @@ export const GetListThuongHieu = async () => {
   return res.data
 }
 
+export const GetListXuatXu = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SAN_PHAM_ADMIN}/list-xuat-xu`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
+export const GetListChatLieu= async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SAN_PHAM_ADMIN}/list-chat-lieu`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
+
+export const GetListLoaiDe = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SAN_PHAM_ADMIN}/list-loai-de`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
+export const GetListDanhMuc = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SAN_PHAM_ADMIN}/list-danh-muc`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
 export const getSanPham = async (id: string) => {
   const res = (await request({
     url: `${PREFIX_API_SAN_PHAM_ADMIN}/${id}`,

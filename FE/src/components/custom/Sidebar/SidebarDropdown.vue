@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, computed } from "vue";
 import { useRoute } from "vue-router";
 
 const props = defineProps({
@@ -41,9 +41,9 @@ function handleItemClick(index) {
   emit("item-click", index);
 }
 
-function isActive(item) {
+const isActive = (item) => {
   return route.name === item.routeName;
-}
+};
 </script>
 
 <style scoped>
@@ -66,8 +66,8 @@ function isActive(item) {
   border-radius: 12px;
   padding: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  max-height: 300px; /* Chiều cao tối đa cho dropdown */
-  overflow-y: auto; /* Thêm cuộn dọc nếu nội dung vượt quá chiều cao tối đa */
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .dropdown-item {
@@ -137,7 +137,6 @@ function isActive(item) {
   line-height: 1.4;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .dropdown-menu {
     margin-left: 16px;

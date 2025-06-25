@@ -8,11 +8,11 @@
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="tên loại giày" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="tên danh mục" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"
-          placeholder="Nhập loại giày"
+          placeholder="Nhập danh mục"
           style="border-radius: 4px;"
         />
       </a-form-item>
@@ -32,7 +32,7 @@ const product = ref<SizeResponse>({ ten: '', mau: '#000000', ma: '', id: '' });
 const productForm = ref();
 
 const rules = {
-  ten: [{ required: true, message: 'Kích thước không được để trống!', trigger: 'blur' }],
+  ten: [{ required: true, message: 'danh mục không được để trống!', trigger: 'blur' }],
 };
 
 const generateCode = () => {
