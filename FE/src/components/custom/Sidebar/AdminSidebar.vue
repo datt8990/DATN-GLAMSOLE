@@ -104,14 +104,6 @@ const menuGroups = ref([
         routeName: ROUTES_CONSTANTS.ADMIN.children.NHAN_VIEN.name,
       },
       {
-        label: "Quản lý đợt giảm giá",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <circle cx="12" cy="7" r="4" />
-          <path d="M16 21v-2a4 4 0 00-8 0v2" />
-        </svg>`,
-        routeName: ROUTES_CONSTANTS.ADMIN.children.DOT_GIAM_GIA.name,
-      },
-      {
         label: "Quản lý phiếu giảm giá",
         icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
           <path d="M12 8v8m4.5-4h-9" />
@@ -134,7 +126,11 @@ const menuGroups = ref([
     <div class="header">
       <div class="logo-container">
         <router-link to="/">
-          <img src="/images/logo.jpg" alt="Tên thương hiệu logo, biểu tượng màu sắc chủ đạo trắng đen tinh tế" class="logo" />
+          <img
+            src="/images/logo.jpg"
+            alt="Tên thương hiệu logo, biểu tượng màu sắc chủ đạo trắng đen tinh tế"
+            class="logo"
+          />
         </router-link>
       </div>
     </div>
@@ -168,9 +164,9 @@ const menuGroups = ref([
   flex-direction: column;
   transition: transform 0.3s ease-in-out;
   color: black;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   user-select: none;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   position: relative;
   z-index: 100;
 }
@@ -229,7 +225,7 @@ const menuGroups = ref([
 .nav-link:focus {
   background-color: #f3f4f6;
   outline: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   color: #111827;
   text-decoration: none;
 }
