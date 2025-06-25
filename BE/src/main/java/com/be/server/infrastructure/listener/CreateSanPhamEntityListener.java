@@ -1,6 +1,5 @@
 package com.be.server.infrastructure.listener;
 
-import com.be.server.entity.NhanVien;
 import com.be.server.entity.SanPham;
 import com.be.server.utils.Helper;
 import jakarta.persistence.PrePersist;

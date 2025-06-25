@@ -104,14 +104,6 @@ const menuGroups = ref([
         routeName: ROUTES_CONSTANTS.ADMIN.children.NHAN_VIEN.name,
       },
       {
-        label: "Quản lý đợt giảm giá",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <circle cx="12" cy="7" r="4" />
-          <path d="M16 21v-2a4 4 0 00-8 0v2" />
-        </svg>`,
-        routeName: ROUTES_CONSTANTS.ADMIN.children.DOT_GIAM_GIA.name,
-      },
-      {
         label: "Quản lý phiếu giảm giá",
         icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
           <path d="M12 8v8m4.5-4h-9" />
