@@ -58,16 +58,15 @@ const isActive = (item) => {
 }
 
 .dropdown-menu {
-  margin: 0.5rem 0;
   list-style: none;
   padding: 0;
   display: v-bind('isOpen ? "block" : "none"');
   background-color: #f8fafc;
   border-radius: 12px;
-  padding: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  max-height: 300px;
-  overflow-y: auto;
+  max-height: 350px;
+  width: 220px;
+  /* overflow-y: auto; */
 }
 
 .dropdown-item {
@@ -104,14 +103,14 @@ const isActive = (item) => {
 }
 
 .dropdown-link[aria-current="page"] {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #58bddb 0%, #58bddb 100%);
   color: white;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px #58bddb;
 }
 
 .dropdown-link[aria-current="page"]:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #58bddb 0%, #58bddb 100%);
   transform: translateX(2px);
 }
 

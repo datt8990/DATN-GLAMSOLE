@@ -1,7 +1,7 @@
 <template>
   <DivCustom label="Bộ lọc">
     <div class="d-flex align-items-center gap-2">
-      <a-input v-model:value="localSearchQuery" placeholder="Nhập tên khách hàng, sdt, tên nhân viên để tìm kiếm..."  style="width: 800px;"/>
+      <a-input v-model:value="localSearchQuery" placeholder="Nhập tên khách hàng, sdt, tên nhân viên để tìm kiếm..."  style="width: 800px;font-family: 'Roboto', sans-serif;"/>
       <a-tooltip title="Làm mới bộ lọc">
         <a-button @click="resetFilters" class="d-flex align-items-center">
           <ReloadOutlined />

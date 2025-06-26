@@ -153,7 +153,7 @@ const menuGroups = ref([
 <style scoped>
 .sidebar {
   background-color: white;
-  width: 260px;
+  width: 260px; /* Giữ nguyên chiều rộng gốc */
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -168,14 +168,13 @@ const menuGroups = ref([
 
 .header {
   background-color: white;
-  padding: 1rem;
   display: flex;
   justify-content: center;
   border-bottom: 1px solid #ddd;
 }
 
 .logo {
-  width: 200px;
+  width: 200px; /* Giữ nguyên kích thước logo */
   max-width: 80%;
   object-fit: contain;
   filter: none;
@@ -183,18 +182,18 @@ const menuGroups = ref([
 
 .menu {
   flex-grow: 1;
-  padding: 1rem;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .menu-title {
   color: #222222;
-  font-weight: 700;
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
+  font-weight: 600; /* Giảm font weight */
+  font-size: 0.75rem; /* Giảm kích thước font */
+  margin-bottom: 0.5rem; /* Giảm margin */
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  padding: 0 1rem; /* Thêm padding để căn lề */
 }
 
 .list-unstyled {
@@ -206,30 +205,35 @@ const menuGroups = ref([
 .nav-link {
   display: flex;
   align-items: center;
-  padding: 0.625rem 1rem;
-  margin-bottom: 0.25rem;
+  padding: 0.4rem 1rem; /* Giảm padding dọc */
+  margin-bottom: 0.125rem; /* Giảm khoảng cách giữa các item */
   color: black;
   text-decoration: none;
-  font-weight: 600;
-  border-radius: 10px;
+  font-weight: 500; /* Giảm font weight */
+  font-size: 0.8rem; /* Giảm kích thước font */
+  border-radius: 6px; /* Giảm border radius */
   transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  gap: 0.5rem; /* Giảm khoảng cách giữa icon và text */
+  line-height: 1.2; /* Giảm line height */
+  width: 100%; /* bắt buộc chiếm đủ */
+  display: block;
 }
 
 .nav-link:hover,
 .nav-link:focus {
   background-color: #f3f4f6;
   outline: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Giảm shadow */
   color: #111827;
   text-decoration: none;
 }
 
 .nav-link[aria-current="page"] {
-  background-color: #2563eb;
+  background-color: #58bddb;
   color: #ffffff;
-  font-weight: 700;
-  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.4);
+  font-weight: 600; /* Giảm font weight */
+  box-shadow: 0 1px 6px rgba(88, 189, 219, 0.3); /* Giảm shadow */
 }
 
 .translate-x-0 {

@@ -46,7 +46,7 @@
                   type="primary"
                   @click="handleViewClick(record.maHoaDon)"
                   class="p-2 d-flex justify-content-center align-items-center"
-                  style="background-color: #096dd9; border-color: #096dd9; color: white;"
+                  style="background-color: #54bddb; border-color: #54bddb; color: white;"
                 >
                   <EyeOutlined style="font-size: 18px;" />
                 </a-button>
@@ -76,7 +76,7 @@ const router = useRouter()
 const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
-  { title: 'STT', key: 'stt', dataIndex: 'stt', width: 70, align: 'center' },
+  { title: 'STT', key: 'stt', dataIndex: 'stt', width: 70, align: 'center'},
   { title: 'Mã HĐ', key: 'maHoaDon', dataIndex: 'maHoaDon', width: 100, align: 'center' },
   { title: 'Tên KH', key: 'tenKhachHang', dataIndex: 'tenKhachHang', width: 150, align: 'center' },
   { title: 'SDT KH', key: 'sdtKhachHang', dataIndex: 'sdtKhachHang', width: 150, align: 'center' },

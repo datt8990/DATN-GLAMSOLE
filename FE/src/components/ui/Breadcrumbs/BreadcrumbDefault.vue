@@ -13,5 +13,6 @@ const props = defineProps(['pageTitle']);
 <style scoped>
 .text-title-sm {
   font-size: 1.5rem;
+  font-family: 'Roboto', sans-serif;
 }
 </style>
