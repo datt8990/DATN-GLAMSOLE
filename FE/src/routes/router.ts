@@ -79,6 +79,56 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: ROUTES_CONSTANTS.ADMIN.path,
+    redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.DOT_GIAM_GIA.path}`,
+    component: () => import('@/layout/Admin.vue'),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.ADMIN.children.DOT_GIAM_GIA.path,
+        name: ROUTES_CONSTANTS.ADMIN.children.DOT_GIAM_GIA.name,
+        component: () => import('@/pages/admin/dotgiamgia/DotGiamGia.vue'),
+        // meta: {
+        //   requiresRole: ROLES.ADMIN,
+        //   requiresAuth: true
+        // }
+      }
+    ]
+  },
+
+  {
+    path: ROUTES_CONSTANTS.ADMIN.path,
+    redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.ADD_DOT_GIAM_GIA.path}`,
+    component: () => import('@/layout/Admin.vue'),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.ADMIN.children.ADD_DOT_GIAM_GIA.path,
+        name: ROUTES_CONSTANTS.ADMIN.children.ADD_DOT_GIAM_GIA.name,
+        component: () => import('@/pages/admin/dotgiamgia/DotGiamGiaModal.vue'),
+        // meta: {
+        //   requiresRole: ROLES.ADMIN,
+        //   requiresAuth: true
+        // }
+      }
+    ]
+  },
+
+  {
+    path: ROUTES_CONSTANTS.ADMIN.path,
+    redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.UPDATE_DOT_GIAM_GIA.path}`,
+    component: () => import('@/layout/Admin.vue'),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.ADMIN.children.UPDATE_DOT_GIAM_GIA.path,
+        name: ROUTES_CONSTANTS.ADMIN.children.UPDATE_DOT_GIAM_GIA.name,
+        component: () => import('@/pages/admin/dotgiamgia/DotGiamGiaUpdate.vue'),
+        // meta: {
+        //   requiresRole: ROLES.ADMIN,
+        //   requiresAuth: true
+        // }
+      }
+    ]
+  },
+  {
+    path: ROUTES_CONSTANTS.ADMIN.path,
     redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.SIZE.path}`,
     component: () => import('@/layout/Admin.vue'),
     children: [
