@@ -110,7 +110,6 @@ import { getSize, type SizeResponse, modifySize } from '@/services/api/admin/vou
 import { toast } from 'vue3-toastify';
 import dayjs from 'dayjs';
 import DivCustom from '@/components/custom/Div/DivCustom.vue';
-import { GetKhachHangs, type KhachHangResponse, type ParamsGetKhachHang } from '@/services/api/admin/khachhang.api';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ReloadOutlined } from '@ant-design/icons-vue';
@@ -186,15 +185,10 @@ const resetFilters = () => {
   state.searchQuery = ''
 
 }
-const fetchProducts = async () => {
+const fetchProducts = async (id: string) => {
   try {
-    const params: ParamsGetKhachHang = {
-      page: state.paginationParams.page,
-      size: state.paginationParams.size,
-      q: state.searchQuery,
-      status: state.searchStatus
-    }
-    const response = await GetKhachHangs(params)
+    
+    const response = await getSize(id)
     // const pagedData = response.data.data 
 
     state.products = response.data?.data
@@ -300,7 +294,7 @@ onMounted(() => {
   } else {
     label.value = 'Thêm phiếu giảm giá';
   }
-  fetchProducts()
+  fetchProductDetails(idSanPham.value)
 })
 const router = useRouter()
 const closeModal = () => {

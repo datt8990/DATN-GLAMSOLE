@@ -92,8 +92,20 @@ export const ROUTES_CONSTANTS = {
         name: 'hoa-don-admin'
       },
       HOA_DON_DETAIL: {
-        path: 'hoa-don-detail/:id',
+        path: 'hoa-don-detail/:maHoaDon/:id',
         name: 'hoa-don-detail-admin'
+      },
+      DOT_GIAM_GIA: {
+        path: 'dot-giam-gia',
+        name: 'dot-giam-gia-admin'
+      },
+      ADD_DOT_GIAM_GIA: {
+        path: 'add-dot-giam-gia',
+        name: 'add-dot-giam-gia-admin'
+      },
+      UPDATE_DOT_GIAM_GIA: {
+        path: 'update-dot-giam-gia/:id',
+        name: 'update-dot-giam-gia-admin'
       },
     }
   },
