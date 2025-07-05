@@ -132,7 +132,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
- 
+
 const idSanPham = ref('');
 
 const props = defineProps<{ open: boolean; productId: string | null; title: string }>();

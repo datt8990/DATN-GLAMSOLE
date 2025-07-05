@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(MappingConstants.API_ADMIN_VOUCHER)
@@ -39,6 +42,12 @@ public class ADVoucherController {
     public ResponseEntity<?> getProductById(@PathVariable String id) {
 
         return Helper.createResponseEntity(advoucherService.getVoucherById(id));
+    }
+
+    @GetMapping("/listkh/{id}")
+    public List<String> getListKHId(@PathVariable String id) {
+
+        return advoucherService.getListKH(id);
     }
 
     @PostMapping

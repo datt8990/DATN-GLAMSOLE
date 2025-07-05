@@ -25,7 +25,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "phieu_giam_gia_chi_tiet_san_pham")
+@Table(name = "phieu_giam_gia_chi_tiet_khach_hang")
+
 @DynamicUpdate
 @EntityListeners(CreateChiTietPhieuGiamGiaEntityListener.class)
 public class PhieuGiamGiaChiTiet extends PrimaryEntity implements Serializable {

@@ -172,7 +172,8 @@ public class ADNhanVienServiceImpl implements ADNhanVienService {
                 "Mật khẩu đăng nhập của bạn là: 123\n" +
                 "Trân trọng cảm ơn";
 
-        EmailService.sendEmail(email, subject, content);
+        CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
+
 
         return new ResponseObject<>(nhanVien, HttpStatus.CREATED, "Tạo nhân viên thành công");
     }

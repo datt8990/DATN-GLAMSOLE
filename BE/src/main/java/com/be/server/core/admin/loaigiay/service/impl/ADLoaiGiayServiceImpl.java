@@ -51,6 +51,13 @@ public class ADLoaiGiayServiceImpl implements ADLoaiGiayService {
 
     @Override
     public ResponseObject<?> modify(ADLoaiGiayRequest request) {
+
+
+
+        if(adLoaiGiayRepository.findByTenContaining(request.getTen()).size() > 0) {
+            return new ResponseObject<>(null, HttpStatus.OK, "danh mục này đã tồn tại");
+        }
+
         if (request.getId() != null && StringUtils.hasLength(request.getId())) {
             Optional<DanhMuc> exsitingMemberOpt = adLoaiGiayRepository.findById(request.getId());
 

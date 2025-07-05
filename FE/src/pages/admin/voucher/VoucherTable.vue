@@ -2,7 +2,7 @@
     <DivCustom label="Danh sách phiếu giảm giá" customClasses="mt-5">
         <template #extra>
             <a-tooltip title="Thêm phiếu giảm giá">
-                <a-button type="primary" @click="handleAddClick"
+                <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
                     class="d-flex justify-content-center align-items-center px-4">
                     <PlusCircleOutlined />
                 </a-button>
@@ -29,8 +29,9 @@
 
                     <template v-if="column.key === 'phanTramGiam'">
 
-                        {{ record.kieuGiam == true ? record.phanTramGiam + '%' : formatCurrencyVND(record.phanTramGiam)
-                        }}
+                        
+                        {{ record.kieuGiam == true ? record.phanTramGiam + '%' : formatCurrencyVND(record.phanTramGiam) }}
+
 
                     </template>
 
@@ -44,14 +45,14 @@
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
                             <a-tooltip title="Chỉnh sửa sản phẩm">
-                                <a-button type="primary" @click="handleViewClick(record.id)"
+                                <a-button style="background-color: #54bddb;" type="primary" @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button type="primary" class="p-2 d-flex justify-content-center align-items-center">
+                                <a-button style="background-color: #54bddb;" type="primary" class="p-2 d-flex justify-content-center align-items-center">
                                     <RedoOutlined />
                                 </a-button>
                             </a-popconfirm>
@@ -145,7 +146,9 @@ const handleChangeStatusClick = async (id: string) => {
 }
 
 const handleViewClick = (id: string) => {
-    router.push({
+
+        router.push({
+
         name: 'them-phieu-giam-gia-admin',
         query: { id: id }
     });

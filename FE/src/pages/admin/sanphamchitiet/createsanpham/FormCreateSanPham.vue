@@ -554,37 +554,107 @@ onBeforeUnmount(() => {
 
 const handleSubmit = async () => {
   try {
+    // Validate tên sản phẩm
+    if (!props.products && (!product.value.ten || product.value.ten.trim() === '')) {
+      toast.warning("Vui lòng nhập tên sản phẩm.");
+      return;
+    }
+
+    // Validate mô tả
+    if (!props.products && (!product.value.moTa || product.value.moTa.trim() === '')) {
+      toast.warning("Vui lòng nhập mô tả sản phẩm.");
+      return;
+    }
+
+    // Validate chọn danh mục
+    if (!props.products && (!product.value.idDanhMuc || product.value.idDanhMuc.trim() === '')) {
+      toast.warning("Vui lòng chọn danh mục.");
+      return;
+    }
+
+    // Validate chọn loại đế
+    if (!props.products && (!product.value.idLoaiDe || product.value.idLoaiDe.trim() === '')) {
+      toast.warning("Vui lòng chọn loại đế.");
+      return;
+    }
+
+    // Validate chọn thương hiệu
+    if (!props.products && (!product.value.idThuongHieu || product.value.idThuongHieu.trim() === '')) {
+      toast.warning("Vui lòng chọn thương hiệu.");
+      return;
+    }
+
+    // Validate chọn chất liệu
+    if (!props.products && (!product.value.idChatLieu || product.value.idChatLieu.trim() === '')) {
+      toast.warning("Vui lòng chọn chất liệu.");
+      return;
+    }
+
+    // Validate màu sắc
+    if (selectedColors.value.length === 0) {
+      toast.warning("Vui lòng chọn ít nhất một màu sắc.");
+      return;
+    }
+
+    // Validate kích cỡ
+    if (selectedSizes.value.length === 0) {
+      toast.warning("Vui lòng chọn ít nhất một kích cỡ.");
+      return;
+    }
+
+    // Validate có biến thể sản phẩm
+    if (productVariants.value.length === 0) {
+      toast.warning("Vui lòng chọn ít nhất một biến thể sản phẩm.");
+      return;
+    }
+
+    // Validate ảnh
+    const missingImageVariants = productVariants.value.filter(item => !item.imageFile);
+    if (missingImageVariants.length > 0) {
+      toast.warning("Vui lòng tải ảnh cho tất cả biến thể sản phẩm.");
+      return;
+    }
+
+    // Validate giá bán & số lượng
+    for (const item of productVariants.value) {
+      if (!item.giaBan || isNaN(item.giaBan) || Number(item.giaBan) <= 0) {
+        toast.warning(`Giá bán không hợp lệ cho biến thể ${item.ten}`);
+        return;
+      }
+      if (!item.soLuong || isNaN(item.soLuong) || Number(item.soLuong) <= 0) {
+        toast.warning(`Số lượng không hợp lệ cho biến thể ${item.ten}`);
+        return;
+      }
+    }
+
+    // Submit
     for (const item of productVariants.value) {
       const formData = new FormData();
+
       if (props.products != null) {
         formData.append('idSP', props.products.id);
-        formData.append('soLuong', item.soLuong);
-        formData.append('giaBan', item.giaBan);
-        formData.append('idMau', item.idColor);
-        formData.append('idSize', item.idSize);
-        formData.append('check', check.value.toString());
-        if (item.imageFile) {
-          formData.append('anh', item.imageFile);
-        }
       } else {
-        formData.append('ten', product.value.ten?.trim() || '');
-        formData.append('moTa', product.value.moTa?.trim() || '');
-        formData.append('idThuongHieu', product.value.idThuongHieu?.trim() || '');
-        formData.append('idChatLieu', product.value.idChatLieu?.trim() || '');
-        formData.append('idLoaiDe', product.value.idLoaiDe?.trim() || '');
+        formData.append('ten', product.value.ten.trim());
+        formData.append('moTa', product.value.moTa.trim());
+        formData.append('idThuongHieu', product.value.idThuongHieu.trim());
+        formData.append('idChatLieu', product.value.idChatLieu.trim());
+        formData.append('idLoaiDe', product.value.idLoaiDe.trim());
         formData.append('idXuatXu', product.value.idXuatXu?.trim() || '');
-        formData.append('idDanhMuc', product.value.idDanhMuc?.trim() || '');
-        formData.append('soLuong', item.soLuong);
-        formData.append('giaBan', item.giaBan);
-        formData.append('idMau', item.idColor);
-        formData.append('idSize', item.idSize);
-        formData.append('check', check.value.toString());
-        if (item.imageFile) {
-          formData.append('anh', item.imageFile);
-        }
+        formData.append('idDanhMuc', product.value.idDanhMuc.trim());
       }
+
+      formData.append('soLuong', item.soLuong);
+      formData.append('giaBan', item.giaBan);
+      formData.append('idMau', item.idColor);
+      formData.append('idSize', item.idSize);
+      formData.append('check', check.value.toString());
+      if (item.imageFile) {
+        formData.append('anh', item.imageFile);
+      }
+
       await modifySanPham(formData);
-      check.value = check.value + 1;
+      check.value += 1;
+
     }
 
     if (props.products != null) {
@@ -595,18 +665,16 @@ const handleSubmit = async () => {
       });
     } else {
       toast.success("Thêm sản phẩm thành công");
-      router.push({
-        name: 'san-pham-admin',
-      });
+
+
+      router.push({ name: 'san-pham-admin' });
+
+
     }
 
   } catch (error: any) {
     console.error(error);
-    if (error?.response?.data?.message) {
-      toast.error(error?.response?.data?.message);
-    } else {
-      toast.error("Đã xảy ra lỗi khi thêm/cập nhật sản phẩm.");
-    }
+    toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi thêm/cập nhật sản phẩm.");
   }
 };
 

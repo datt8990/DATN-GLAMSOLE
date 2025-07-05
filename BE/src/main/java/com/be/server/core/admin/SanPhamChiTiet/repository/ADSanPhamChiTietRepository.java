@@ -29,10 +29,12 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
         cl.ten AS tenChatLieu,
         dm.ten AS tenDanhMuc,
         spct.giaBan as giaBan,
-        s.ten as kichThuoc,
+        kc.ten as kichThuoc,
         ms.mau as mau,
         spct.anh as anh,
-        spct.status as status
+        spct.status as status,
+        (SELECT MAX(spct2.giaBan) FROM SanPhamChiTiet spct2) AS giaMax
+
     FROM 
         SanPhamChiTiet spct
         LEFT JOIN SanPham AS sp ON spct.sanPham.id = sp.id
@@ -43,19 +45,38 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
             LEFT JOIN DanhMuc AS dm ON dm.id = sp.danhMuc.id
             LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  
         LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id
-        LEFT JOIN KichCo AS s ON s.id = spct.kichCo.id
     WHERE 
         ( :#{#rep.idSP} IS NULL OR spct.sanPham.id = :#{#rep.idSP} ) 
-        AND ( :#{#rep.q} IS NULL OR sp.ten LIKE CONCAT('%', :#{#rep.q}, '%') OR spct.ma LIKE CONCAT('%', :#{#rep.q}, '%') )
+        AND ( :#{#rep.q} IS NULL OR sp.ten LIKE CONCAT('%', :#{#rep.q}, '%') 
+        AND spct.ma LIKE CONCAT('%', :#{#rep.q}, '%') )
+        AND (:#{#rep.entityStatus} IS NULL OR spct.status = :#{#rep.entityStatus})
+        AND (:#{#rep.priceMin} IS NULL OR spct.giaBan >= :#{#rep.priceMin})
+        AND (:#{#rep.priceMax} IS NULL OR spct.giaBan <= :#{#rep.priceMax}) 
+        AND (:#{#rep.idKT} IS NULL OR kc.id = :#{#rep.idKT})    
+        AND (:#{#rep.idMS} IS NULL OR ms.id = :#{#rep.idMS})       
     ORDER BY spct.createdDate DESC
     """, countQuery = """
     SELECT 
-        COUNT(d.id)
+        COUNT(spct.id)
     FROM 
-        SanPhamChiTiet d
+          SanPhamChiTiet spct
+        LEFT JOIN SanPham AS sp ON spct.sanPham.id = sp.id
+            LEFT JOIN ThuongHieu AS th ON th.id = sp.thuongHieu.id
+            LEFT JOIN XuatSu AS xx ON xx.id = sp.xuatSu.id
+            LEFT JOIN KichCo AS kc ON kc.id = spct.kichCo.id
+            LEFT JOIN LoaiDe AS ld ON ld.id = sp.loaiDe.id
+            LEFT JOIN DanhMuc AS dm ON dm.id = sp.danhMuc.id
+            LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  
+        LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id
     WHERE 
-        ( :#{#rep.q} IS NULL OR d.ma LIKE CONCAT('%', :#{#rep.q}, '%') )
-        AND ( :#{#rep.idSP} IS NULL OR d.sanPham.id = :#{#rep.idSP} )
+        ( :#{#rep.q} IS NULL OR spct.ma LIKE CONCAT('%', :#{#rep.q}, '%') )
+        AND ( :#{#rep.idSP} IS NULL OR spct.sanPham.id = :#{#rep.idSP} )
+               AND (:#{#rep.entityStatus} IS NULL OR spct.status = :#{#rep.entityStatus})
+        AND (:#{#rep.priceMin} IS NULL OR spct.giaBan >= :#{#rep.priceMin})
+        AND (:#{#rep.priceMax} IS NULL OR spct.giaBan <= :#{#rep.priceMax}) 
+        AND (:#{#rep.idKT} IS NULL OR kc.id <= :#{#rep.idKT})    
+        AND (:#{#rep.idMS} IS NULL OR ms.id <= :#{#rep.idMS})       
+    ORDER BY spct.createdDate DESC
     """)
     Page<ADSanPhamChiTietResponse> getAllSanPhamChiTietByFilter(Pageable pageable, @Param("rep") ADSPCTSearchRequest req);
 
@@ -116,8 +137,9 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
              LEFT JOIN SanPham AS sp ON sp.id = spct.sanPham.id       
             LEFT JOIN ThuongHieu AS th ON th.id = sp.thuongHieu.id
             LEFT JOIN XuatSu AS xx ON xx.id = sp.xuatSu.id
-                        LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id      
-                                      LEFT JOIN KichCo AS kc ON kc.id = spct.kichCo.id
+            LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id      
+             LEFT JOIN KichCo AS kc ON kc.id = spct.kichCo.id
+
             LEFT JOIN LoaiDe AS ld ON ld.id = sp.loaiDe.id
             LEFT JOIN DanhMuc AS dm ON dm.id = sp.danhMuc.id
             LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  

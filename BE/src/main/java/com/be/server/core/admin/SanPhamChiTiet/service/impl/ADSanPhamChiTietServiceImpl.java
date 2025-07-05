@@ -70,6 +70,16 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
     public ResponseObject<?> getAll(ADSPCTSearchRequest id) {
         Pageable pageable = Helper.createPageable(id, "created_date");
 
+        System.out.println(id.getStatus());
+        if (id.getStatus() != null && !id.getStatus().isEmpty()) {
+            if (id.getStatus().equals("0")){
+                id.setEntityStatus(EntityStatus.INACTIVE);
+            }
+            else {
+                id.setEntityStatus(EntityStatus.ACTIVE);
+            }
+        }
+
         Page<ADSanPhamChiTietResponse> page = adSanPhamChiTietRepository.getAllSanPhamChiTietByFilter(pageable, id);
 
         return new ResponseObject<>(
@@ -141,6 +151,7 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
             MauSac mauSac1 = mauSac.get();
             sanPhamChiTiet.setMauSac(mauSac1);
 
+            sanPhamChiTiet.setStatus(EntityStatus.ACTIVE);
 
 
         if (requestItem.getIdSP() != null) {

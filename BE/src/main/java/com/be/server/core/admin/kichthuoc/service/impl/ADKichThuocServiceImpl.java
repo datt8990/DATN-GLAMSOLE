@@ -72,6 +72,11 @@ public class ADKichThuocServiceImpl implements ADKichThuocService {
         }
 
 
+        if(sizeRepository.findByTenContaining(request.getTen()).size() > 0) {
+            return new ResponseObject<>(null, HttpStatus.OK, "kích thước này đã tồn tại");
+        }
+
+
         KichCo size = new KichCo();
 
         size.setMa(request.getCode());

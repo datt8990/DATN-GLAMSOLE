@@ -37,7 +37,7 @@ public class EmailService {
 
             // Gửi email
             Transport.send(message);
-            System.out.println("Email đã được gửi thành công!");
+
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }

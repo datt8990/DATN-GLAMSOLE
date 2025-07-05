@@ -2,9 +2,9 @@
   <a-modal :open="open" title="Thêm Xuất xứ" width="400px">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
-        <a-button type="primary">Xác nhận</a-button>
+        <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
       </a-popconfirm>
-      <a-button @click="closeModal">Huỷ</a-button>
+      <a-button style="background-color: #54bddb;" @click="closeModal">Huỷ</a-button>
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">

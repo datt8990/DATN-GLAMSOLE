@@ -1,20 +1,16 @@
 <template>
   <a-modal :open="open" :title="props.title" width="400px">
     <template #footer>
-      <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
-        <a-button type="primary">Xác nhận</a-button>
+      <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý"
+        cancel-text="Huỷ">
+        <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
       </a-popconfirm>
-      <a-button @click="closeModal">Huỷ</a-button>
+      <a-button style="background-color: #54bddb;" @click="closeModal">Huỷ</a-button>
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
       <a-form-item label="Kích thước" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
-        <a-input
-          v-if="product"
-          v-model:value="product.ten"
-          placeholder="Nhập kích thước"
-          style="border-radius: 4px;"
-        />
+        <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập kích thước" style="border-radius: 4px;" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -86,7 +82,12 @@ const handleSubmit = async () => {
     const res = await modifySize(formData);
     closeModal();
     emit('success');
-    toast.success(res.message);
+    if (res.message == 'kích thước này đã tồn tại') {
+      toast.error(res.message);
+    } else {
+      toast.success(res.message);
+    }
+
   } catch (error) {
     if (error?.response?.data?.message) {
       toast.error(error?.response?.data?.message);

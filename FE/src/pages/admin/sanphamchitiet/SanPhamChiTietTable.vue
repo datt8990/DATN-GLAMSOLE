@@ -3,7 +3,10 @@
         <template #extra>
             <div class="d-flex justify-content-between w-100">
                 <a-tooltip title="Thêm sản phẩm chi tiết">
-                    <a-button type="primary" @click="handleAddClick(idSP)"
+
+
+                    <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick(idSP)"
+
                         class="d-flex justify-content-center align-items-center px-4">
                         <PlusCircleOutlined />
                     </a-button>
@@ -54,12 +57,12 @@
                         <div class="d-flex gap-1 justify-center">
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button type="primary" class="p-2 d-flex justify-content-center align-items-center">
+                                <a-button style="background-color: #54bddb;" type="primary" class="p-2 d-flex justify-content-center align-items-center">
                                     <RedoOutlined />
                                 </a-button>
                             </a-popconfirm>
                             <a-tooltip title="xem chi tiết sản phẩm">
-                                <a-button type="primary" @click="handleClick(record.id)"
+                                <a-button style="background-color: #54bddb;" type="primary" @click="handleClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EyeOutlined />
                                 </a-button>

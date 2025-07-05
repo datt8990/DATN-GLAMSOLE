@@ -6,9 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ADThuongHieuRepository extends ThuongHieuRepository {
 
     Page<ThuongHieu> findByMaContainingOrTenContaining(String ma, String ten, Pageable pageable);
+
+    List<ThuongHieu> findByTenContaining(String ten);
 
 }

@@ -50,6 +50,12 @@ public class ADLoaiDeServiceImpl implements ADLoaiDeService {
 
     @Override
     public ResponseObject<?> modify(ADLoaiDeRequest request) {
+
+
+        if(adLoaiDeRepository.findByTenContaining(request.getTen()).size() > 0) {
+            return new ResponseObject<>(null, HttpStatus.OK, "loại để này đã tồn tại");
+        }
+
         if (request.getId() != null && StringUtils.hasLength(request.getId())) {
             Optional<LoaiDe> exsitingMemberOpt = adLoaiDeRepository.findById(request.getId());
 
