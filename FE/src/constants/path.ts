@@ -14,7 +14,24 @@ export const ROUTES_CONSTANTS = {
   //   path: '/menu',
   //   name: 'menu'
   // },
-
+  USERS: {
+    path: '',
+    name: 'users',
+    children:{
+        TRANGCHU: {
+        path: 'trang-chu',
+        name: 'trang-chu'
+      },
+      SANPHAM: {
+        path: 'san-pham',
+        name: 'san-pham'
+      },
+       SANPHAMCHITIET: {
+        path: 'san-pham-chi-tiet/:id',
+        name: 'san-pham-chi-tiet'
+      },
+    }
+  },
   ADMIN: {
     path: '/admin',
     name: 'admin',
@@ -133,8 +150,13 @@ export const ROUTES_CONSTANTS = {
     path: '/login',
     name: 'Login'
   },
+  REGISTER: {
+    path: '/register',
+    name: 'register'
+  },
   NOT_FOUND: {
     path: '/:pathMatch(.*)*',
     name: 'NotFound'
   },
+
 }

@@ -4,6 +4,39 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
 export const routes: RouteRecordRaw[] = [
+  {
+    path: ROUTES_CONSTANTS.USERS.path,
+    redirect: `${ROUTES_CONSTANTS.USERS.path}/${ROUTES_CONSTANTS.USERS.children.TRANGCHU.path}`,
+    component: () => import('@/layout/Users.vue'),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.USERS.children.TRANGCHU.path,
+        name: ROUTES_CONSTANTS.USERS.children.TRANGCHU.name,
+        component: () => import('@/pages/users/home/HomeView.vue')
+      },
+      {
+        path: ROUTES_CONSTANTS.USERS.children.SANPHAM.path,
+        name: ROUTES_CONSTANTS.USERS.children.SANPHAM.name,
+        component: () => import('@/pages/users/products/ProductsView.vue')
+      },
+      {
+        path: ROUTES_CONSTANTS.LOGIN.path,
+        name: ROUTES_CONSTANTS.LOGIN.name,
+        component: () => import('@/pages/auth/LoginPage.vue')
+      },
+      {
+        path: ROUTES_CONSTANTS.REGISTER.path,
+        name: ROUTES_CONSTANTS.REGISTER.name,
+        component: () => import('@/pages/auth/RegisterPage.vue')
+      },
+     {
+        path: ROUTES_CONSTANTS.USERS.children.SANPHAMCHITIET.path,
+        name: ROUTES_CONSTANTS.USERS.children.SANPHAMCHITIET.name,
+        component: () => import('@/pages/users/products/ProductDetail.vue')
+      },
+
+    ]
+  },
   // Not Found route
   {
     path: ROUTES_CONSTANTS.NOT_FOUND.path,
@@ -22,12 +55,6 @@ export const routes: RouteRecordRaw[] = [
     name: ROUTES_CONSTANTS.UNAUTHORIZED.name,
     component: () => import('@/pages/401/Unauthorized.vue')
   },
-  {
-    path: ROUTES_CONSTANTS.LOGIN.path,
-    name: ROUTES_CONSTANTS.LOGIN.name,
-    component: () => import('@/components/ui/login/Login.vue')
-  },
-
 
   {
     path: ROUTES_CONSTANTS.ADMIN.path,
