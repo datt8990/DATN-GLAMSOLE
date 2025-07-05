@@ -1,36 +1,20 @@
 <template>
   <DivCustom>
-  <BreadcrumbDefault 
-    pageTitle="Sản phẩm chi tiết" 
-  />
-  <ProductFilter 
-    :searchQuery="state.searchQuery" 
-    :searchStatus="state.searchStatus"
-    @update:searchQuery="updateSearchQuery" 
-    @update:searchStatus="updateSearchStatus" 
-  />
+    <BreadcrumbDefault pageTitle="Sản phẩm chi tiết" />
+    +
+    <ProductFilter :searchQuery="state.searchQuery" :searchStatus="state.searchStatus" :priceRange="state.priceRange"
+      :searchColor="state.searchColor" :searchSize="state.searchSize" @update:searchQuery="updateSearchQuery"
+      @update:searchStatus="updateSearchStatus" @update:priceRange="updatePriceRange"
+      @update:searchColor="updateSearchColor" @update:searchSize="updateSearchSize" />
 
-  <ProductTable 
-    :products="state.products" 
-    :paginationParams="state.paginationParams" 
-    :totalItems="state.totalItems"
-    :idSP="idSanPham"
-    @add="openAddModal" 
-    @view="openViewModal" 
-    @page-change="handlePageChange" 
-    @change-status="handleChangeStatus" 
-  />
-  
-  <ProductModal
-    :open="state.isModalOpen" 
-    :openChangeStatus="state.isModalChangeStatus"
-    :productId="state.selectedProductId" 
-    :title="modalTitle" 
-    @closeChangeStatus="closeModalChangeStatus"
-    @close="closeModal"
-    @success="fetchProducts"
-  />
-</DivCustom>
+    <ProductTable :products="state.products" :paginationParams="state.paginationParams" :totalItems="state.totalItems"
+      :idSP="idSanPham" @add="openAddModal" @view="openViewModal" @page-change="handlePageChange"
+      @change-status="handleChangeStatus" />
+
+    <ProductModal :open="state.isModalOpen" :openChangeStatus="state.isModalChangeStatus"
+      :productId="state.selectedProductId" :title="modalTitle" @closeChangeStatus="closeModalChangeStatus"
+      @close="closeModal" @success="fetchProducts" />
+  </DivCustom>
 </template>
 
 <script setup lang="ts">
@@ -49,16 +33,19 @@ const state = reactive({
   idSP: '',
   searchStatus: null as number | null,
   isModalOpen: false,
+  priceRange: [0, 10000000] as [number, number],
   isModalChangeStatus: false,
   selectedProductId: null as string | null,
   products: [] as SanPhamResponse[],
   paginationParams: { page: 1, size: 10 },
-  totalItems: 0
+  totalItems: 0,
+  searchColor: null as string | null,    // ← thêm đây
+  searchSize: null as string | null,
 })
 
 const idSanPham = route.query.id || 'default-id';
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật khách hàng' : 'Thêm khách hàng'
+  return state.selectedProductId ? 'Cập nhật sản phẩm chi tiết  ' : 'Thêm khách hàng'
 })
 
 const updateSearchQuery = (newQuery: string) => {
@@ -72,6 +59,17 @@ const updateSearchStatus = (newStatus: number | null) => {
 const openAddModal = () => {
   state.selectedProductId = null
   state.isModalOpen = true
+}
+
+const updatePriceRange = (newRange: [number, number]) => {
+  state.priceRange = newRange
+}
+
+const updateSearchColor = (newColor: string | null) => {
+  state.searchColor = newColor
+}
+const updateSearchSize = (newSize: string | null) => {
+  state.searchSize = newSize
 }
 
 const openViewModal = (id: string) => {
@@ -94,6 +92,8 @@ const closeModalChangeStatus = () => {
 }
 
 const fetchProducts = async () => {
+
+  console.log(state.searchStatus)
   try {
 
     const params: ParamsGetSanPham = {
@@ -101,11 +101,16 @@ const fetchProducts = async () => {
       size: state.paginationParams.size,
       q: state.searchQuery,
       idSP: idSanPham,
-      status: state.searchStatus
+      idMS: state.searchColor,    
+      idKT: state.searchSize,
+      status: state.searchStatus,
+      priceMin: state.priceRange[0],
+      priceMax: state.priceRange[1]
     }
-    console.log('params', route.query.id)
+
+
     const response = await GetSanPhams(params)
-    // const pagedData = response.data.data 
+
 
     state.products = response.data?.data
     state.totalItems = response.data?.totalElements
@@ -123,12 +128,13 @@ onMounted(() => {
 })
 
 watch(
-  () => [state.searchQuery, state.searchStatus],
+  () => [state.searchQuery, state.searchStatus, state.priceRange, state.searchColor, state.searchSize],
   () => {
     state.paginationParams.page = 1
     debouncedFetchProducts()
   }
 )
+
 
 const handlePageChange = ({ page, pageSize }: { page: number; pageSize?: number }) => {
   state.paginationParams.page = page

@@ -62,16 +62,28 @@ export const ROUTES_CONSTANTS = {
       SAN_PHAM_CHI_TIET: {
         path: 'san-pham-chi-tiet',
         name: 'san-pham-chi-tiet-admin'
-      } ,
+      },
       THEM_SAN_PHAM_CHI_TIET: {
         path: 'them-san-pham-chi-tiet',
         name: 'them-san-pham-chi-tiet-admin'
+      },
+      THEM_NHAN_VIEN: {
+        path: 'them-nhan-vien',
+        name: 'them-nhan-vien-admin'
+      },
+      THEM_KHACH_HANG: {
+        path: 'them-khach-hang',
+        name: 'them-khach-hang-admin'
+      },
+      THEM_PHIEU_GIAM_GIA: {
+        path: 'them-phieu-giam-gia',
+        name: 'them-phieu-giam-gia-admin'
       },
       BAN_HANG: {
         path: 'ban-hang',
         name: 'ban-hang-admin'
       },
-        VOUCHER: {
+      VOUCHER: {
         path: 'voucher',
         name: 'voucher-admin'
       },
@@ -80,8 +92,20 @@ export const ROUTES_CONSTANTS = {
         name: 'hoa-don-admin'
       },
       HOA_DON_DETAIL: {
-        path: 'hoa-don-detail/:id',
+        path: 'hoa-don-detail/:maHoaDon/:id',
         name: 'hoa-don-detail-admin'
+      },
+      DOT_GIAM_GIA: {
+        path: 'dot-giam-gia',
+        name: 'dot-giam-gia-admin'
+      },
+      ADD_DOT_GIAM_GIA: {
+        path: 'add-dot-giam-gia',
+        name: 'add-dot-giam-gia-admin'
+      },
+      UPDATE_DOT_GIAM_GIA: {
+        path: 'update-dot-giam-gia/:id',
+        name: 'update-dot-giam-gia-admin'
       },
     }
   },

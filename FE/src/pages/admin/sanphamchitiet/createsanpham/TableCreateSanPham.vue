@@ -4,7 +4,7 @@
       
       <!-- Nút "Hoàn Tất" ở trên -->
       <div class="finish-button-container">
-        <a-button type="primary" class="finish-button">
+        <a-button style="background-color: #54bddb;" type="primary" class="finish-button">
           Hoàn Tất
         </a-button>
       </div>

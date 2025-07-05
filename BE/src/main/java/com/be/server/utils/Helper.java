@@ -220,10 +220,26 @@ public class Helper {
         return code;
     }
 
+    public static String generateCodeDotGiamGiaCT() {
+        Random random = new Random();
+        int number = random.nextInt(10000);
+        String code = String.format("DGGCT%04d", number);
+
+        return code;
+    }
+
     public static String generateCodeLoaiGiay() {
         Random random = new Random();
         int number = random.nextInt(10000);
         String code = String.format("DM%04d", number);
+
+        return code;
+    }
+
+    public static String generateCodeKhachHang() {
+        Random random = new Random();
+        int number = random.nextInt(10000);
+        String code = String.format("KH%04d", number);
 
         return code;
     }

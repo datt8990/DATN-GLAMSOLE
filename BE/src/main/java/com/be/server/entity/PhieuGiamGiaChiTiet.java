@@ -1,7 +1,9 @@
 package com.be.server.entity;
 
 import com.be.server.entity.base.PrimaryEntity;
+import com.be.server.infrastructure.listener.CreateChiTietPhieuGiamGiaEntityListener;
 import com.be.server.infrastructure.listener.CreateDotGiamGIaEntityListener;
+import com.be.server.infrastructure.listener.CreateVoucherEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -23,9 +25,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "dot_giam_gia_chi_tiet_san_pham")
+@Table(name = "phieu_giam_gia_chi_tiet_khach_hang")
 @DynamicUpdate
-@EntityListeners(CreateDotGiamGIaEntityListener.class)
+@EntityListeners(CreateChiTietPhieuGiamGiaEntityListener.class)
 public class PhieuGiamGiaChiTiet extends PrimaryEntity implements Serializable {
 
     @Column(name = "ma_phieu_giam_gia_chi_tiet")
@@ -36,7 +38,7 @@ public class PhieuGiamGiaChiTiet extends PrimaryEntity implements Serializable {
     private KhachHang khachHang;
 
     @ManyToOne
-    @JoinColumn(name = "id_dot_giam_gia", referencedColumnName = "id")
+    @JoinColumn(name = "id_phieu_giam_gia", referencedColumnName = "id")
     private PhieuGiamGia phieuGiamGia;
 
 }

@@ -2,7 +2,7 @@
     <DivCustom label="Danh sách kích thước" customClasses="mt-5">
         <template #extra>
             <a-tooltip title="Thêm kích thước">
-                <a-button type="primary" @click="handleAddClick"
+                <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
                     class="d-flex justify-content-center align-items-center px-4">
                     <PlusCircleOutlined />
                 </a-button>

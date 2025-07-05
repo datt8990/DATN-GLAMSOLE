@@ -46,6 +46,15 @@ export const getSize = async (id: string) => {
   return res.data
 }
 
+export const getListKH = async (id: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_VOUCHER_ADMIN}/listkh/${id}`,
+    method: 'GET'
+  })) as AxiosResponse<DefaultResponse<SizeResponse>>
+
+  return res.data
+}
+
 export const modifySize = async (data: ADSizeRequest) => {
   const res = (await request({
     url: `${PREFIX_API_VOUCHER_ADMIN}`,

@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center gap-2">
       <a-input v-model:value="localSearchQuery" placeholder="Nhập mã / tên để tìm kiếm..."  style="width: 800px;"/>
       <a-tooltip title="Làm mới bộ lọc">
-        <a-button @click="resetFilters" class="d-flex align-items-center">
+        <a-button  @click="resetFilters" class="d-flex align-items-center">
           <ReloadOutlined />
         </a-button>
       </a-tooltip>

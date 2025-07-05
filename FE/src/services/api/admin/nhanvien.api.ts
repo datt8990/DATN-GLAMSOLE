@@ -70,3 +70,31 @@ export const modifyStatusMember = async (id: string) => {
 
   return res.data;
 }
+
+
+export const getTinh = async () => {
+  const res = (await request({
+    url: `https://provinces.open-api.vn/api/p`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<NhanVienResponse>>>
+
+  return res.data;
+}
+
+export const getHuyen = async (provinceCode: string) => {
+  const res = (await request({
+    url: `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<NhanVienResponse>>>
+
+  return res.data;
+}
+
+export const getXa = async (districtCode: string) => {
+  const res = (await request({
+    url: `https://provinces.open-api.vn/api/d/${districtCode}?depth=2`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<NhanVienResponse>>>
+
+  return res.data;
+}

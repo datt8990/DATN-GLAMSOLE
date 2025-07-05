@@ -1,15 +1,11 @@
 package com.be.server.entity;
 
 import com.be.server.entity.base.PrimaryEntity;
+import com.be.server.infrastructure.constant.EntityLoaiHoaDon;
 import com.be.server.infrastructure.constant.EntityPhuongThucThanhToan;
 import com.be.server.infrastructure.constant.EntityTrangThaiHoaDon;
 import com.be.server.infrastructure.listener.CreateHoaDonEntityListener;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +14,8 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,8 +34,6 @@ public class HoaDon extends PrimaryEntity implements Serializable {
     @Column(name = "ten_hoa_don")
     private String ten;
 
-
-
     @Column(name = "so_dien_thoai_khach_hang")
     private String sdt;
 
@@ -47,7 +43,7 @@ public class HoaDon extends PrimaryEntity implements Serializable {
     @Column(name = "phi_van_chuyen")
     private Double phiVanChuyen;
 
-    @Column(name = "dia_chi_gia_hang")
+    @Column(name = "dia_chi_giao_hang")
     private Double diaChi;
 
     @Column(name = "tong_tien_sau_giam")
@@ -58,6 +54,9 @@ public class HoaDon extends PrimaryEntity implements Serializable {
 
     @Column(name = "ghi_chu")
     private String ghiChu;
+
+    @Column(name = "loai_hoa_don")
+    private EntityLoaiHoaDon loaiHoaDon;
 
     @ManyToOne
     @JoinColumn(name = "id_khach_hang",referencedColumnName = "id")
@@ -71,12 +70,10 @@ public class HoaDon extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_nhan_vien",referencedColumnName = "id")
     private NhanVien nhanVien;
 
-
-
     @Column(name = "trang_thai_hoa_don")
     private EntityTrangThaiHoaDon trangThaiHoaDon;
 
-
-
+    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<LichSuTrangThaiHoaDon> statusHistory = new ArrayList<>();
 
 }

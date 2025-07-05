@@ -6,27 +6,39 @@
 
       <div class="form-row-single">
         <a-form-item label="Tên Sản Phẩm" name="ten" :label-col="{ span: 24 }">
-          <a-input placeholder="Nhập tên sản phẩm" v-model:value="products.ten" :disabled="true" />
+          <a-input placeholder="Nhập tên sản phẩm" v-model:value="products.ten" v-if="products != null"
+            :disabled="true" />
+          <a-input placeholder="Nhập tên sản phẩm" v-model:value="product.ten" v-if="products == null"
+            :disabled="false" />
         </a-form-item>
 
         <a-form-item label="Mô tả" name="mota" :label-col="{ span: 24 }">
-          <a-textarea :rows="6" placeholder="Nhập mô tả" v-model:value="products.moTa" :disabled="true" />
+          <a-textarea :rows="6" placeholder="Nhập mô tả" v-model:value="products.moTa" v-if="products != null"
+            :disabled="true" />
+          <a-textarea :rows="6" placeholder="Nhập mô tả" v-model:value="product.moTa" v-if="products == null"
+            :disabled="false" />
         </a-form-item>
       </div>
 
 
       <div class="form-row">
-        <a-form-item label="Loại giày" name="facilityId" :label-col="{ span: 24 }">
-          <div class="input-with-button">
-            <a-select placeholder="Chọn loại giày" v-model:value="products.idLG" :options="LoaiGiayOptions" />
+        <a-form-item label="Danh mục" name="facilityId" :label-col="{ span: 24 }">
+          <div class="input-with-button" v-if="products != null">
+            <a-input placeholder="Nhập tên sản phẩm" v-model:value="products.tenDanhMuc" :disabled="true" />
+          </div>
+          <div class="input-with-button" v-if="products == null">
+            <a-select v-model:value="product.idDanhMuc" :options="danhMucOptions" placeholder="Chọn danh mục" />
             <a-button class="input-button" @click="handleAddLoaiGiayClick">+</a-button>
           </div>
         </a-form-item>
 
 
         <a-form-item label="Loại đế" name="facilityId" :label-col="{ span: 24 }">
-          <div class="input-with-button">
-            <a-select placeholder="Chọn loại đế" v-model:value="products.idLD" :options="LoaiDeOptions" />
+          <div class="input-with-button" v-if="products != null">
+            <a-input placeholder="Nhập tên sản phẩm" v-model:value="products.tenLoaiDe" :disabled="true" />
+          </div>
+          <div class="input-with-button" v-if="products == null">
+            <a-select v-model:value="product.idLoaiDe" :options="loaiDeOptions" placeholder="Chọn Loại đế" />
             <a-button class="input-button" @click="handleAddLoaiDeClick">+</a-button>
           </div>
         </a-form-item>
@@ -34,16 +46,23 @@
 
 
       <div class="form-row">
-        <a-form-item label="Xuất xứ" name="facilityId" :label-col="{ span: 24 }">
-          <div class="input-with-button">
-            <a-select placeholder="Chọn xuất xứ" v-model:value="products.idXX" :options="XuatXuOptions" />
+        <a-form-item label="Thương hiệu" name="facilityId" :label-col="{ span: 24 }">
+          <div class="input-with-button" v-if="products != null">
+            <a-input placeholder="Nhập tên sản phẩm" v-model:value="products.tenThuongHieu" :disabled="true" />
+          </div>
+          <div class="input-with-button" v-if="products == null">
+            <a-select v-model:value="product.idThuongHieu" :options="thuongHieuOptions"
+              placeholder="Chọn thuong hiệu" />
             <a-button class="input-button" @click="handleAddXuatXuClick">+</a-button>
           </div>
         </a-form-item>
 
         <a-form-item label="Chất liệu" name="facilityId" :label-col="{ span: 24 }">
-          <div class="input-with-button">
-            <a-select placeholder="Chọn chất liệu" v-model:value="products.idCL" :options="ChatLieuOptions" />
+          <div class="input-with-button" v-if="products != null">
+            <a-input placeholder="Nhập tên sản phẩm" v-model:value="products.tenChatLieu" :disabled="true" />
+          </div>
+          <div class="input-with-button " v-if="products == null">
+            <a-select v-model:value="product.idChatLieu" :options="chatLieuOptions" placeholder="Chọn chất liệu" />
             <a-button class="input-button" @click="handleAddChatLieuClick">+</a-button>
           </div>
         </a-form-item>
@@ -68,44 +87,58 @@
             </div>
             <a-button @click="isColorModalVisible = true" class="add-btn">+</a-button>
           </div>
-
-
-
         </div>
       </div>
 
-      <div>
+      <div v-if="selectedColors.length > 0 && selectedSizes.length > 0">
         <h4>Chi tiết sản phẩm</h4>
         <a-button type="primary" @click="handleSubmit" style="margin-top: 16px; width: 150px; float: right;" class="ht">
           Hoàn Tất
         </a-button>
 
-        <a-table :dataSource="productVariants" :columns="columns" bordered rowKey="key">
-          <template #bodyCell="{ column, record, index }">
-            <template v-if="column.key === 'operation'">
-              <a-button danger @click="productVariants.splice(index, 1)">xóa</a-button>
-            </template>
-            <template v-else-if="column.key === 'upload'">
-              <a-upload :before-upload="handleImageUpload" accept="image/*" list-type="picture-card"
-                :show-upload-list="false">
-                <div v-if="!imageUrl">
-                  <plus-outlined />
-                  <div style="margin-top: 8px">Upload</div>
-                </div>
-                <a-image v-else :src="imageUrl" width="100px" height="100px" />
-              </a-upload>
-            </template>
-            <template v-else-if="column.key === 'giaBan'">
-              <a-input v-model:value="record.giaBan" placeholder="Nhập giá"
-                @blur="handleUpdatePrice(index, record.giaBan)" />
-            </template>
-            <template v-else-if="column.key === 'soLuong'">
-              <a-input v-model:value="record.soLuong" placeholder="Nhập số lượng"
-                @blur="handleUpdateQuantity(index, record.soLuong)" />
-            </template>
-          </template>
-        </a-table>
+        <div v-if="selectedRowKeys.length > 0" class="batch-action-container">
+          <h4>Thao tác hàng loạt cho {{ selectedRowKeys.length }} sản phẩm đã chọn</h4>
+          <div class="common-inputs">
+            <a-form-item label="Giá chung" :label-col="{ span: 24 }">
+              <a-input v-model:value="batchCommonPrice" type="number" placeholder="Nhập giá chung" />
+            </a-form-item>
+            <a-form-item label="Số lượng chung" :label-col="{ span: 24 }">
+              <a-input v-model:value="batchCommonQuantity" type="number" placeholder="Nhập số lượng chung" />
+            </a-form-item>
+            <a-button type="primary" @click="applyBatchValues" class="apply-batch-btn">Áp dụng</a-button>
+          </div>
+        </div>
+        <a-tabs v-model:activeKey="activeColorTab">
+          <a-tab-pane v-for="color in selectedColors" :key="color.value" :tab="'Sản phẩm màu ' + color.label">
 
+            <a-table :dataSource="productVariantsByColor(color.value)" :columns="columns" bordered rowKey="key"
+              :row-selection="rowSelection">
+              <template #bodyCell="{ column, record, index }">
+                <template v-if="column.key === 'operation'">
+                  <a-button danger @click="removeProductVariant(record.key)">xóa</a-button>
+                </template>
+                <template v-else-if="column.key === 'upload'">
+                  <a-upload :before-upload="(file) => handleImageUpload(file, record)" accept="image/*"
+                    list-type="picture-card" :show-upload-list="false">
+                    <div v-if="!record.imagePreviewUrl">
+                      <plus-outlined />
+                      <div style="margin-top: 8px">Upload</div>
+                    </div>
+                    <a-image v-else :src="record.imagePreviewUrl" width="100px" height="100px" />
+                  </a-upload>
+                </template>
+                <template v-else-if="column.key === 'giaBan'">
+                  <a-input v-model:value="record.giaBan" placeholder="Nhập giá"
+                    @blur="handleUpdatePrice(record.key, record.giaBan)" />
+                </template>
+                <template v-else-if="column.key === 'soLuong'">
+                  <a-input v-model:value="record.soLuong" placeholder="Nhập số lượng"
+                    @blur="handleUpdateQuantity(record.key, record.soLuong)" />
+                </template>
+              </template>
+            </a-table>
+          </a-tab-pane>
+        </a-tabs>
       </div>
 
     </a-form>
@@ -125,13 +158,10 @@
     </template>
   </a-modal>
 
-
-
   <a-modal v-model:open="isSizeModalVisible" title="Chọn kích cỡ" width="400px" @cancel="handleCloseSizeModal">
     <a-button class="input-button-model" @click="handleAddSizeClick">+ Thêm Kích thước</a-button>
     <div class="size-picker">
-      <a-button v-for="(size, index) in SizeOptions" :key="index" class="size-color-btn"
-        @click="handleSelectSize(size)">
+      <a-button v-for="(size, index) in SizeOptions" :key="index" class="size-color-btn" @click="handleSelectSize(size)">
         {{ size.label }}
       </a-button>
     </div>
@@ -140,15 +170,17 @@
       <a-button type="primary" @click="handleConfirmSizeSelection">Xác nhận</a-button>
     </template>
   </a-modal>
-
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits, onMounted, onBeforeUnmount, reactive } from 'vue';
-import { getSanPham, type SanPhamResponse, modifySanPham, GetListChatLieu, GetListLoaiGiay, GetListLoaiDe, GetListXuatXu, GetListColor, GetListSize,  } from '@/services/api/admin/sanphamchitiet.api';
+import { ref, watch, defineProps, defineEmits, onMounted, onBeforeUnmount, computed } from 'vue';
+import { getSanPham, type SanPhamResponse, modifySanPham, GetListColor, GetListSize, } from '@/services/api/admin/sanphamchitiet.api';
 import { toast } from 'vue3-toastify';
 import type { TableColumnsType } from 'ant-design-vue';
 import { router } from '@/routes/router';
+import { GetListChatLieu, GetListDanhMuc, GetListLoaiDe, GetListThuongHieu, GetListXuatXu } from '@/services/api/admin/sanpham.api';
+import { PlusOutlined } from '@ant-design/icons-vue';
+
 const XuatXuOptions = ref<{ label: string; value: string }[]>([])
 const ChatLieuOptions = ref<{ label: string; value: string }[]>([])
 const LoaiGiayOptions = ref<{ label: string; value: string }[]>([])
@@ -156,48 +188,133 @@ const LoaiDeOptions = ref<{ label: string; value: string }[]>([])
 const SizeOptions = ref<{ label: string; value: string }[]>([])
 const ColorOptions = ref<{ label: string; value: string; color: string }[]>([])
 let interval: number | null = null;
-const productVariants = ref<any[]>([]);
+const productVariants = ref<any[]>([]); // This will hold all product variants (color-size combinations)
 const selectedColors = ref<any[]>([]);
 const selectedSizes = ref<any[]>([]);
-const imageUrl = ref<string | null>(null);
-const imageFile = ref<File | null>(null);
-const imageError = ref(false);
 
+const thuongHieuOptions = ref<{ label: string; value: string }[]>([])
+const xuatXuOptions = ref<{ label: string; value: string }[]>([])
+const loaiDeOptions = ref<{ label: string; value: string }[]>([])
+const danhMucOptions = ref<{ label: string; value: string }[]>([])
+const chatLieuOptions = ref<{ label: string; value: string }[]>([])
 const isColorModalVisible = ref(false);
 const isSizeModalVisible = ref(false);
+const check = ref(0);
 
-const handleUpdatePrice = (index: number, newPrice: string) => {
-  // Cập nhật lại giá bán của sản phẩm
-  productVariants.value[index].giaBan = newPrice;
+const activeColorTab = ref<string>(''); // To control the active tab for colors
+
+// --- New state for row selection and batch actions ---
+const selectedRowKeys = ref<string[]>([]); // Keys of selected product variants
+const batchCommonPrice = ref<number | null>(null);
+const batchCommonQuantity = ref<number | null>(null);
+
+const onSelectChange = (keys: string[]) => {
+  selectedRowKeys.value = keys;
 };
 
-const handleUpdateQuantity = (index: number, newQuantity: string) => {
-  // Cập nhật lại số lượng của sản phẩm
-  productVariants.value[index].soLuong = newQuantity;
+const rowSelection = computed(() => {
+  return {
+    selectedRowKeys: selectedRowKeys.value,
+    onChange: onSelectChange,
+  };
+});
+
+const product = ref<SanPhamResponse>({
+  id: '',
+  ten: '',
+  code: '',
+  moTa: '',
+  idThuongHieu: '',
+  idLoaiDe: '',
+  idXuatXu: '',
+  idDanhMuc: '',
+  idChatLieu: '',
+});
+
+// These handlers are now simpler as individual inputs are always editable
+const handleUpdatePrice = (key: string, newPrice: string) => {
+  const variant = productVariants.value.find(v => v.key === key);
+  if (variant) {
+    variant.giaBan = newPrice;
+  }
+};
+
+const handleUpdateQuantity = (key: string, newQuantity: string) => {
+  const variant = productVariants.value.find(v => v.key === key);
+  if (variant) {
+    variant.soLuong = newQuantity;
+  }
+};
+
+// Function to apply common values to selected variants
+const applyBatchValues = () => {
+  if (selectedRowKeys.value.length === 0) {
+    toast.warning("Vui lòng chọn ít nhất một sản phẩm để áp dụng.");
+    return;
+  }
+
+  if (batchCommonPrice.value === null && batchCommonQuantity.value === null) {
+    toast.warning("Vui lòng nhập giá chung hoặc số lượng chung.");
+    return;
+  }
+
+  productVariants.value.forEach(variant => {
+    if (selectedRowKeys.value.includes(variant.key)) {
+      if (batchCommonPrice.value !== null) {
+        variant.giaBan = batchCommonPrice.value;
+      }
+      if (batchCommonQuantity.value !== null) {
+        variant.soLuong = batchCommonQuantity.value;
+      }
+    }
+  });
+  toast.success(`Đã áp dụng giá và số lượng cho ${selectedRowKeys.value.length} sản phẩm đã chọn.`);
+  // Optionally, clear selection and batch inputs after applying
+  selectedRowKeys.value = [];
+  batchCommonPrice.value = null;
+  batchCommonQuantity.value = null;
 };
 
 
 const generateProductVariants = () => {
-  productVariants.value = []; // reset bảng
-
+  const newVariants: any[] = [];
   selectedColors.value.forEach(color => {
     selectedSizes.value.forEach(size => {
       const variantKey = `${color.value}-${size.value}`;
+      const existingVariant = productVariants.value.find(v => v.key === variantKey);
 
-      if (!productVariants.value.find(v => v.key === variantKey)) {
-        productVariants.value.push({
+      if (existingVariant) {
+        // If variant already exists, keep its data (including image, price, quantity)
+        newVariants.push(existingVariant);
+      } else {
+        // Otherwise, create a new variant with default values
+        newVariants.push({
           idColor: color.value,
           idSize: size.value,
           key: variantKey,
-          ten: `${props.products.ten} [${color.label}-${size.label}]`,
+          ten: `${props.products ? props.products.ten : product.value.ten} [${color.label}-${size.label}]`,
           soLuong: 1,
-          giaBan: 10000000,
-          image: null,
+          giaBan: 10000,
+          imageFile: null, // To store the actual file for upload
+          imagePreviewUrl: null, // To store the URL for display
         });
       }
     });
   });
+  productVariants.value = newVariants;
+
+  // Set active tab to the first color if not already set or if active tab is removed
+  if (selectedColors.value.length > 0 && (!activeColorTab.value || !selectedColors.value.some(c => c.value === activeColorTab.value))) {
+    activeColorTab.value = selectedColors.value[0].value;
+  } else if (selectedColors.value.length === 0) {
+    activeColorTab.value = '';
+  }
 };
+
+// Computed property to filter product variants by the active color tab
+const productVariantsByColor = computed(() => (colorId: string) => {
+  return productVariants.value.filter(variant => variant.idColor === colorId);
+});
 
 
 const props = defineProps<{
@@ -209,16 +326,23 @@ const props = defineProps<{
 }>();
 
 
-
-const handleImageUpload = (file: File) => {
+const handleImageUpload = (file: File, record: any) => {
   const reader = new FileReader();
   reader.onload = (e) => {
-    imageUrl.value = e.target?.result as string;
-    imageError.value = false; // Reset lỗi khi người dùng chọn ảnh
+    const newImagePreviewUrl = e.target?.result as string;
+    const colorIdToUpdate = record.idColor; // Get the color ID of the current variant
+
+    // Update all variants of the same color - This behavior is retained as per original code.
+    // If you wish for individual image per variant, this logic needs to be changed.
+    productVariants.value.forEach(variant => {
+      if (variant.idColor === colorIdToUpdate) {
+        variant.imagePreviewUrl = newImagePreviewUrl;
+        variant.imageFile = file; // Assign the same file to all variants of this color
+      }
+    });
   };
   reader.readAsDataURL(file);
-  imageFile.value = file;
-  return false;
+  return false; // Prevent Ant Design from uploading
 };
 
 const handleConfirmColorSelection = () => {
@@ -234,18 +358,22 @@ const handleConfirmSizeSelection = () => {
 
 const handleSelectColor = (color: any) => {
   if (!selectedColors.value.some(item => item.value === color.value)) {
-    selectedColors.value.push(color); // Thêm màu vào danh sách
+    selectedColors.value.push(color);
   }
 };
 
 const handleSelectSize = (size: any) => {
   if (!selectedSizes.value.some(item => item.value === size.value)) {
-    selectedSizes.value.push(size); // Thêm kích cỡ vào danh sách
+    selectedSizes.value.push(size);
   }
 };
 
 const removeColor = (index: number) => {
+  const removedColor = selectedColors.value[index];
   selectedColors.value.splice(index, 1);
+  // Remove variants associated with the removed color
+  productVariants.value = productVariants.value.filter(v => v.idColor !== removedColor.value);
+  generateProductVariants(); // Re-generate variants to ensure consistency
 };
 
 const handleCloseColorModal = () => {
@@ -254,23 +382,33 @@ const handleCloseColorModal = () => {
 
 
 const removeSize = (index: number) => {
+  const removedSize = selectedSizes.value[index];
   selectedSizes.value.splice(index, 1);
+  // Remove variants associated with the removed size
+  productVariants.value = productVariants.value.filter(v => v.idSize !== removedSize.value);
+  generateProductVariants(); // Re-generate variants to ensure consistency
 };
 
 const handleCloseSizeModal = () => {
   isSizeModalVisible.value = false;
 };
 
+const removeProductVariant = (keyToRemove: string) => {
+  productVariants.value = productVariants.value.filter(variant => variant.key !== keyToRemove);
+};
 
 
 const columns: TableColumnsType = [
+  // Checkbox column is now handled by `rowSelection` prop
   { title: 'STT', key: 'stt', dataIndex: 'stt', width: 60, customRender: ({ index }) => index + 1 },
   { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten' },
+  { title: 'Kích thước', key: 'size', customRender: ({ record }) => selectedSizes.value.find(s => s.value === record.idSize)?.label }, // Display size label
   { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong' },
   { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan' },
   { title: 'Hành động', key: 'operation' },
   { title: 'Upload ảnh', key: 'upload' },
 ];
+
 
 const emit = defineEmits(['addCL', 'addXX', 'addLD', 'addLG', 'addColor', 'addSize'])
 
@@ -302,10 +440,10 @@ const handleAddColorClick = () => {
 }
 
 
-const fetchChatLieu = async () => {
+const fetchThuongHieu = async () => {
   try {
-    const response = await GetListChatLieu()
-    ChatLieuOptions.value = response.data.map(thuongHieu => ({
+    const response = await GetListThuongHieu()
+    thuongHieuOptions.value = response.data.map(thuongHieu => ({
       label: thuongHieu.ten,
       value: thuongHieu.id,
     }))
@@ -314,10 +452,23 @@ const fetchChatLieu = async () => {
   }
 }
 
-const fetchLoaiGiay = async () => {
+const fetchChatLieu = async () => {
   try {
-    const response = await GetListLoaiGiay()
-    LoaiGiayOptions.value = response.data.map(thuongHieu => ({
+    const response = await GetListChatLieu()
+    chatLieuOptions.value = response.data.map(thuongHieu => ({
+      label: thuongHieu.ten,
+      value: thuongHieu.id,
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+  }
+}
+
+
+const fetchDanhMuc = async () => {
+  try {
+    const response = await GetListDanhMuc()
+    danhMucOptions.value = response.data.map(thuongHieu => ({
       label: thuongHieu.ten,
       value: thuongHieu.id,
     }))
@@ -329,7 +480,7 @@ const fetchLoaiGiay = async () => {
 const fetchLoaiDe = async () => {
   try {
     const response = await GetListLoaiDe()
-    LoaiDeOptions.value = response.data.map(thuongHieu => ({
+    loaiDeOptions.value = response.data.map(thuongHieu => ({
       label: thuongHieu.ten,
       value: thuongHieu.id,
     }))
@@ -337,6 +488,8 @@ const fetchLoaiDe = async () => {
     console.error('Lỗi khi lấy danh sách cơ sở:', error)
   }
 }
+
+
 
 const fetchXuatXu = async () => {
   try {
@@ -353,41 +506,44 @@ const fetchXuatXu = async () => {
 const fetchColor = async () => {
   try {
     const response = await GetListColor()
-    ColorOptions.value = response.data.map(thuongHieu => ({
-      label: thuongHieu.ten,
-      value: thuongHieu.id,
-      color: thuongHieu.mau,
+    ColorOptions.value = response.data.map(color => ({
+      label: color.ten,
+      value: color.id,
+      color: color.mau,
     }))
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+    console.error('Lỗi khi lấy danh sách màu:', error)
   }
 }
 
 const fetchSize = async () => {
   try {
     const response = await GetListSize()
-    SizeOptions.value = response.data.map(thuongHieu => ({
-      label: thuongHieu.ten,
-      value: thuongHieu.id,
+    SizeOptions.value = response.data.map(size => ({
+      label: size.ten,
+      value: size.id,
     }))
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+    console.error('Lỗi khi lấy danh sách kích cỡ:', error)
   }
 }
 
 onMounted(() => {
-  fetchChatLieu(),
-    fetchLoaiGiay(),
-    fetchLoaiDe(),
-    fetchXuatXu(),
-    fetchColor(),
-    fetchSize()
-  interval = setInterval(fetchColor, 1000);
-  interval = setInterval(fetchSize, 1000);
-  interval = setInterval(fetchChatLieu, 1000);
-  interval = setInterval(fetchLoaiGiay, 1000);
-  interval = setInterval(fetchLoaiDe, 1000);
-  interval = setInterval(fetchXuatXu, 1000);
+  fetchDanhMuc();
+  fetchThuongHieu();
+  fetchLoaiDe();
+  fetchChatLieu();
+  fetchColor();
+  fetchSize();
+
+  interval = setInterval(() => {
+    fetchDanhMuc();
+    fetchThuongHieu();
+    fetchChatLieu();
+    fetchLoaiDe();
+    fetchColor();
+    fetchSize();
+  }, 1000);
 })
 
 onBeforeUnmount(() => {
@@ -396,45 +552,135 @@ onBeforeUnmount(() => {
   }
 });
 
-const formDataList: FormData[] = [];
-
 const handleSubmit = async () => {
   try {
+    // Validate tên sản phẩm
+    if (!props.products && (!product.value.ten || product.value.ten.trim() === '')) {
+      toast.warning("Vui lòng nhập tên sản phẩm.");
+      return;
+    }
+
+    // Validate mô tả
+    if (!props.products && (!product.value.moTa || product.value.moTa.trim() === '')) {
+      toast.warning("Vui lòng nhập mô tả sản phẩm.");
+      return;
+    }
+
+    // Validate chọn danh mục
+    if (!props.products && (!product.value.idDanhMuc || product.value.idDanhMuc.trim() === '')) {
+      toast.warning("Vui lòng chọn danh mục.");
+      return;
+    }
+
+    // Validate chọn loại đế
+    if (!props.products && (!product.value.idLoaiDe || product.value.idLoaiDe.trim() === '')) {
+      toast.warning("Vui lòng chọn loại đế.");
+      return;
+    }
+
+    // Validate chọn thương hiệu
+    if (!props.products && (!product.value.idThuongHieu || product.value.idThuongHieu.trim() === '')) {
+      toast.warning("Vui lòng chọn thương hiệu.");
+      return;
+    }
+
+    // Validate chọn chất liệu
+    if (!props.products && (!product.value.idChatLieu || product.value.idChatLieu.trim() === '')) {
+      toast.warning("Vui lòng chọn chất liệu.");
+      return;
+    }
+
+    // Validate màu sắc
+    if (selectedColors.value.length === 0) {
+      toast.warning("Vui lòng chọn ít nhất một màu sắc.");
+      return;
+    }
+
+    // Validate kích cỡ
+    if (selectedSizes.value.length === 0) {
+      toast.warning("Vui lòng chọn ít nhất một kích cỡ.");
+      return;
+    }
+
+    // Validate có biến thể sản phẩm
+    if (productVariants.value.length === 0) {
+      toast.warning("Vui lòng chọn ít nhất một biến thể sản phẩm.");
+      return;
+    }
+
+    // Validate ảnh
+    const missingImageVariants = productVariants.value.filter(item => !item.imageFile);
+    if (missingImageVariants.length > 0) {
+      toast.warning("Vui lòng tải ảnh cho tất cả biến thể sản phẩm.");
+      return;
+    }
+
+    // Validate giá bán & số lượng
+    for (const item of productVariants.value) {
+      if (!item.giaBan || isNaN(item.giaBan) || Number(item.giaBan) <= 0) {
+        toast.warning(`Giá bán không hợp lệ cho biến thể ${item.ten}`);
+        return;
+      }
+      if (!item.soLuong || isNaN(item.soLuong) || Number(item.soLuong) <= 0) {
+        toast.warning(`Số lượng không hợp lệ cho biến thể ${item.ten}`);
+        return;
+      }
+    }
+
+    // Submit
     for (const item of productVariants.value) {
       const formData = new FormData();
 
-      formData.append('idSP', props.products.id);
-      formData.append('soLuong', item.soLuong);
-      formData.append('giaBan', item.giaBan);
-      formData.append('idCL', props.products.idCL);
-      formData.append('idLG', props.products.idLG);
-      formData.append('idLD', props.products.idLD);
-      formData.append('idXX', props.products.idXX);
-      formData.append('idMau', item.idColor);
-      formData.append('idSize', item.idSize);
-      if (imageFile.value) {
-        formData.append('anh', imageFile.value);
+
+      if (props.products != null) {
+        formData.append('idSP', props.products.id);
+      } else {
+        formData.append('ten', product.value.ten.trim());
+        formData.append('moTa', product.value.moTa.trim());
+        formData.append('idThuongHieu', product.value.idThuongHieu.trim());
+        formData.append('idChatLieu', product.value.idChatLieu.trim());
+        formData.append('idLoaiDe', product.value.idLoaiDe.trim());
+        formData.append('idXuatXu', product.value.idXuatXu?.trim() || '');
+        formData.append('idDanhMuc', product.value.idDanhMuc.trim());
       }
 
-      const res = await modifySanPham(formData);
+      formData.append('soLuong', item.soLuong);
+      formData.append('giaBan', item.giaBan);
+      formData.append('idMau', item.idColor);
+      formData.append('idSize', item.idSize);
+      formData.append('check', check.value.toString());
+      if (item.imageFile) {
+        formData.append('anh', item.imageFile);
+      }
+
+      await modifySanPham(formData);
+      check.value += 1;
 
     }
 
-    router.push({
-      name: 'san-pham-chi-tiet-admin',
-      query: { id: props.products.id },
-    });
+    if (props.products != null) {
+      toast.success("Cập nhật sản phẩm thành công");
+      router.push({
+        name: 'san-pham-chi-tiet-admin',
+        query: { id: props.products.id },
+      });
+    } else {
+      toast.success("Thêm sản phẩm thành công");
 
-    toast.success("thêm sản phẩm thành công");
+      router.push({ name: 'san-pham-admin' });
 
-    formDataList.splice(0, formDataList.length); // Xóa dữ liệu sau khi gửi
-
-  } catch (error) {
-    if (error?.response?.data?.message) {
-      toast.error(error?.response?.data?.message);
     }
+
+  } catch (error: any) {
+    console.error(error);
+    toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi thêm/cập nhật sản phẩm.");
   }
 };
+
+
+watch([selectedColors, selectedSizes], () => {
+  generateProductVariants();
+}, { deep: true });
 
 </script>
 
@@ -713,5 +959,39 @@ h2 {
 .ht {
   background-color: #40a9ff;
   margin-bottom: 20px;
+}
+
+.batch-action-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+
+  h4 {
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .common-inputs {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end; // Align button with inputs
+
+    .ant-form-item {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .apply-batch-btn {
+      background-color: #1890ff;
+      color: white;
+      border-radius: 5px;
+      height: 32px; // Match input height
+    }
+  }
 }
 </style>

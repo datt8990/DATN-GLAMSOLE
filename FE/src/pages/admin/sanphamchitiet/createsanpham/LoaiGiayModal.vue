@@ -1,18 +1,18 @@
 <template>
-  <a-modal :open="open" title="Thêm loại giày" width="400px">
+  <a-modal :open="open" :title="props.title" width="400px">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
-        <a-button type="primary">Xác nhận</a-button>
+        <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
       </a-popconfirm>
-      <a-button @click="closeModal">Huỷ</a-button>
+      <a-button style="background-color: #54bddb; color: white;" @click="closeModal">Huỷ</a-button>
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="tên loại giày" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="tên danh mục" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"
-          placeholder="Nhập loại giày"
+          placeholder="Nhập danh mục"
           style="border-radius: 4px;"
         />
       </a-form-item>
@@ -25,14 +25,14 @@ import { ref, watch, defineProps, defineEmits } from 'vue';
 import { getSize, type SizeResponse, modifySize } from '@/services/api/admin/loaigiay.api';
 import { toast } from 'vue3-toastify';
 
-const props = defineProps<{ open: boolean; productId: string | null}>();
+const props = defineProps<{ open: boolean; productId: string | null; title: string }>();
 const emit = defineEmits(['close', 'success']);
 
 const product = ref<SizeResponse>({ ten: '', mau: '#000000', ma: '', id: '' });
 const productForm = ref();
 
 const rules = {
-  ten: [{ required: true, message: 'Kích thước không được để trống!', trigger: 'blur' }],
+  ten: [{ required: true, message: 'danh mục không được để trống!', trigger: 'blur' }],
 };
 
 const generateCode = () => {
@@ -86,7 +86,11 @@ const handleSubmit = async () => {
     const res = await modifySize(formData);
     closeModal();
     emit('success');
-    toast.success(res.message);
+     if (res.message == 'loại giày này đã tồn tại') {
+      toast.error(res.message);
+    } else {
+      toast.success(res.message);
+    }
   } catch (error) {
     if (error?.response?.data?.message) {
       toast.error(error?.response?.data?.message);

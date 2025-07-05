@@ -11,6 +11,13 @@ import type {
 export interface ParamsGetHoaDon extends PaginationParams {
   q?: string | ''
   status?: number | null
+  startDate?: number | null
+  endDate?: number | null
+}
+
+export interface ParamsChangeStatus {
+  maHoaDon?: string | ''
+  status?: number | null
 }
 
 export type HoaDonResponse = ResponseList & {
@@ -23,6 +30,25 @@ export const GetHoaDons = async (params: ParamsGetHoaDon) => {
   const res = (await request({
     url: `${PREFIX_API_HOA_DON_ADMIN}`,
     method: 'GET',
+    params: params
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<HoaDonResponse>>>>
+
+  return res.data
+}
+
+export const GetLSTTHD = async (id: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_HOA_DON_ADMIN}/${id}`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<HoaDonResponse>>>>
+
+  return res.data
+}
+
+export const updateOrderStatusInDatabase = async (params: ParamsChangeStatus) => {
+  const res = (await request({
+    url: `${PREFIX_API_HOA_DON_ADMIN}/change-status`,
+    method: 'PUT',
     params: params
   })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<HoaDonResponse>>>>
 
