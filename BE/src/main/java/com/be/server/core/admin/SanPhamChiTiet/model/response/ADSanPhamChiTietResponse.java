@@ -28,6 +28,7 @@ public interface ADSanPhamChiTietResponse {
 
     String getStatus();
 
+
     String getGiaMax();
 
 }

@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -36,6 +37,7 @@ public class ADVoucherServiceImpl implements ADVoucherService {
     private final ADVoucherRepository advoucherRepository;
     private final ADKhachHangRepository adKhachHangRepository;
     private final PhieuGiamGiaChiTietRepository phieuGiamGiaChiTietRepository;
+
     @Override
     public ResponseObject<?> getAllVoucher(ADVoucherSearchRequest request) {
         Pageable pageable = Helper.createPageable(request, "created_date");
@@ -46,24 +48,20 @@ public class ADVoucherServiceImpl implements ADVoucherService {
             page = advoucherRepository.findByMaContainingOrTenContaining(request.getQ(), request.getQ(), pageable);
         }
 
-        return new ResponseObject<>(
-                PageableObject.of(page),
-                HttpStatus.OK,
-                "Lấy danh sách thương hiệu thành công"
-        );
+        return new ResponseObject<>(PageableObject.of(page), HttpStatus.OK, "Lấy danh sách thương hiệu thành công");
     }
 
     @Override
     public ResponseObject<?> getVoucherById(String id) {
 
-        return advoucherRepository.getNhanVienID(id)
-                .map(technology -> new ResponseObject<>(technology, HttpStatus.OK, "Lấy phiếu giảm giá thành công"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy phiếu giảm giá"));
+
+        return advoucherRepository.getNhanVienID(id).map(technology -> new ResponseObject<>(technology, HttpStatus.OK, "Lấy phiếu giảm giá thành công")).orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy phiếu giảm giá"));
     }
 
     @Override
     public List<String> getListKH(String id) {
         return advoucherRepository.getDanhSachKhachHang(id);
+
 
     }
 
@@ -92,18 +90,16 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
                 voucher.setSoLuongPhieu(request.getSoLuongPhieu());
 
-                if(request.getLoaiGiam() == true){
+                if (request.getLoaiGiam() == true) {
                     voucher.setPhanTramGiam(request.getPhanTramGiam());
-                }else{
+                } else {
                     voucher.setPhanTramGiam(request.getGiaGiamToiDa());
                 }
 
                 advoucherRepository.save(voucher);
 
-                if(request.getKhachHangIds() != null && request.getKhachHangIds().size() > 0){
-                    for (int i = 0; i < request.getKhachHangIds().size(); i++ ) {
-
-
+                if (request.getKhachHangIds() != null && request.getKhachHangIds().size() > 0) {
+                    for (int i = 0; i < request.getKhachHangIds().size(); i++) {
 
 
                         KhachHang khachHang = adKhachHangRepository.findById(request.getKhachHangIds().get(i)).get();
@@ -118,10 +114,7 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
                         String email = khachHang.getEmail();
                         String subject = "Khuyến mại của cửa hàng";
-                        String content = "Chào " + khachHang.getTen() + ",\n\n" +
-                                "Cửa hàng chúng tôi chúc mừng bạn đã được 1 phiếu giảm giá từ cửa hàng chúng tôi\n" +
-                                "Mã phiếu giảm giá là: "+ voucher.getMa() +"\n" +
-                                "Cảm ơn đã tin tưởng cửa hàng của chúng tôi";
+                        String content = "Chào " + khachHang.getTen() + ",\n\n" + "Cửa hàng chúng tôi chúc mừng bạn đã được 1 phiếu giảm giá từ cửa hàng chúng tôi\n" + "Mã phiếu giảm giá là: " + voucher.getMa() + "\n" + "Cảm ơn đã tin tưởng cửa hàng của chúng tôi";
 
                         EmailService.sendEmail(email, subject, content);
 
@@ -153,10 +146,9 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
         voucher.setKieuGiam(request.getKieuGiam());
 
-
-        if(request.getLoaiGiam() == true){
+        if (request.getLoaiGiam() == true) {
             voucher.setPhanTramGiam(request.getPhanTramGiam());
-        }else{
+        } else {
             voucher.setPhanTramGiam(request.getGiaGiamToiDa());
         }
 
@@ -165,15 +157,16 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
         advoucherRepository.save(voucher);
 
-       for (int i = 0 ; i < request.getKhachHangIds().size() ; i++) {
+        for (int i = 0; i < request.getKhachHangIds().size(); i++) {
             System.out.println(request.getKhachHangIds().get(i));
         }
 
-        if(request.getKhachHangIds() != null && request.getKhachHangIds().size() > 0){
-            for (int i = 0; i < request.getKhachHangIds().size(); i++ ) {
+        if (request.getKhachHangIds() != null && request.getKhachHangIds().size() > 0) {
+            for (int i = 0; i < request.getKhachHangIds().size(); i++) {
                 System.out.println(request.getKhachHangIds().get(i));
 
                 KhachHang khachHang = adKhachHangRepository.findById(request.getKhachHangIds().get(i)).get();
+
 
                 PhieuGiamGiaChiTiet phieuGiamGiaChiTiet = new PhieuGiamGiaChiTiet();
 
@@ -184,13 +177,9 @@ public class ADVoucherServiceImpl implements ADVoucherService {
                 phieuGiamGiaChiTietRepository.save(phieuGiamGiaChiTiet);
 
 
-
                 String email = khachHang.getEmail();
                 String subject = "Khuyến mại của cửa hàng";
-                String content = "Chào " + khachHang.getTen() + ",\n\n" +
-                        "Cửa hàng chúng tôi chúc mừng bạn đã được 1 phiếu giảm giá từ cửa hàng chúng tôi\n" +
-                        "Mã phiếu giảm giá là: "+ voucher.getMa() +"\n" +
-                        "Cảm ơn đã tin tưởng cửa hàng của chúng tôi";
+                String content = "Chào " + khachHang.getTen() + ",\n\n" + "Cửa hàng chúng tôi chúc mừng bạn đã được 1 phiếu giảm giá từ cửa hàng chúng tôi\n" + "Mã phiếu giảm giá là: " + voucher.getMa() + "\n" + "Cảm ơn đã tin tưởng cửa hàng của chúng tôi";
 
                 CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
 
@@ -212,8 +201,6 @@ public class ADVoucherServiceImpl implements ADVoucherService {
             return new ResponseObject(advoucherRepository.save(voucher), HttpStatus.OK, "Thay đổi trạng thái thành công");
         });
 
-        return nemberOptional
-                .map(product -> ResponseObject.successForward(HttpStatus.OK, "Đổi trạng thái thành công"))
-                .orElseGet(() -> ResponseObject.successForward(HttpStatus.NOT_FOUND, "Không tìm voucher"));
+        return nemberOptional.map(product -> ResponseObject.successForward(HttpStatus.OK, "Đổi trạng thái thành công")).orElseGet(() -> ResponseObject.successForward(HttpStatus.NOT_FOUND, "Không tìm voucher"));
     }
 }

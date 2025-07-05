@@ -3,9 +3,11 @@
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
 
+
         <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
       </a-popconfirm>
       <a-button style="background-color: #54bddb; color: white;" @click="closeModal">Huỷ</a-button>
+
 
     </template>
 
@@ -16,9 +18,7 @@
           v-model:value="product.ten"
           placeholder="Nhập thương hiệu"
           style="border-radius: 4px;"
-
         />
-
       </a-form-item>
     </a-form>
   </a-modal>
@@ -90,7 +90,6 @@ const handleSubmit = async () => {
     const res = await modifyThuongHieu(formData);
     closeModal();
     emit('success');
-
         if (res.message == 'thương hiệu này đã tồn tại') {
       toast.error(res.message);
     } else {

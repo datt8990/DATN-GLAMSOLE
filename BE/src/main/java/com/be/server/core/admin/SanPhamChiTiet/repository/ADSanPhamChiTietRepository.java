@@ -29,7 +29,6 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
         cl.ten AS tenChatLieu,
         dm.ten AS tenDanhMuc,
         spct.giaBan as giaBan,
-
         kc.ten as kichThuoc,
         ms.mau as mau,
         spct.anh as anh,
@@ -140,6 +139,7 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
             LEFT JOIN XuatSu AS xx ON xx.id = sp.xuatSu.id
             LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id      
              LEFT JOIN KichCo AS kc ON kc.id = spct.kichCo.id
+
             LEFT JOIN LoaiDe AS ld ON ld.id = sp.loaiDe.id
             LEFT JOIN DanhMuc AS dm ON dm.id = sp.danhMuc.id
             LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  

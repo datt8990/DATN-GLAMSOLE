@@ -6,7 +6,6 @@
 
         <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
           <a-form-item label="Tên phiếu giảm giá" name="ten" :label-col="{ span: 24 }" :rules="rules.name">
-
             <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập tên phiếu giảm giá"
 
               style="border-radius: 4px;" />
@@ -80,6 +79,7 @@
 
             <template #bodyCell="{ column, record }">
               <div v-if="column.key === 'select'">
+
 <
                 {{ console.log('Record ID from table:', record.id, ' | Selected IDs:', state.selectedRows, ' | Match:', state.selectedRows.includes(record.id)) }}
                 <a-checkbox :checked="state.selectedRows.includes(record.id)"
@@ -110,6 +110,7 @@
 <script setup lang="ts">
 import { ref, watch, defineProps, defineEmits, reactive, onMounted, h } from 'vue';
 
+
 // Đảm bảo đường dẫn import cho các API là chính xác
 import { getSize, type SizeResponse, modifySize, getListKH } from '@/services/api/admin/voucher.api';
 import { toast } from 'vue3-toastify';
@@ -132,7 +133,6 @@ const product = ref<SizeResponse>({
   email: '',
   ma: '',
   gioiTinh: true,
-
   kieuGiam: false, // Mặc định là 'Tiền'
   loaiGiam: false, // Mặc định là 'Công khai'
   phanTramGiam: 0,
@@ -224,7 +224,6 @@ const fetchProductDetails = async (id: string) => {
   }
 };
 
-
 const fetchListKHDetails = async (id: string) => {
   try {
     // Đặt tên biến là 'apiResult' để rõ ràng đây là kết quả trực tiếp từ API call
@@ -268,7 +267,6 @@ const fetchListKHDetails = async (id: string) => {
   }
 };
 
-
 const columns: TableColumnsType = [
   {
     title: 'Chọn', key: 'select', dataIndex: 'select', width: 100, align: 'center',
@@ -290,13 +288,13 @@ const state = reactive({
   isModalChangeStatus: false,
   selectedProductId: null as string | null,
   products: [] as KhachHangResponse[], // Dữ liệu cho bảng khách hàng
-
   paginationParams: { page: 1, size: 10 },
   totalItems: 0
 })
 
 const resetFilters = () => {
   state.searchQuery = ''
+
   // Có thể thêm fetchProducts() ở đây nếu muốn làm mới bảng sau khi reset
 }
 
@@ -347,7 +345,6 @@ watch(
 
         // Add new mode
         label.value = 'Thêm phiếu giảm giá';
-
         product.value = {
           id: '',
           ten: '',
@@ -366,6 +363,7 @@ watch(
           ngayKetThuc: undefined,
         };
 
+
         state.selectedRows = []; // Xóa các hàng đã chọn khi thêm mới
 
       }
@@ -375,6 +373,7 @@ watch(
   },
   { immediate: true }
 );
+
 
 
 // Hàm xử lý thay đổi ô kiểm
@@ -411,6 +410,7 @@ const handleSubmit = async () => {
     
     formData.append('soLuongPhieu', product?.value?.soLuongPhieu != null ? product.value.soLuongPhieu.toString() : '');
     formData.append('dieuKien', product?.value?.dieuKien != null ? product.value.dieuKien.toString() : '');
+
     formData.append('giaGiamToiDa', product?.value?.giaGiam != null ? product.value.giaGiam.toString() : ''); 
     formData.append('ngayKetThuc', product.value?.ngayKetThuc ? dayjs(product.value?.ngayKetThuc).format('YYYY-MM-DD') : ''); 
     formData.append('ngayBatDau', product.value?.ngayBatDau ? dayjs(product.value?.ngayBatDau).format('YYYY-MM-DD') : ''); 

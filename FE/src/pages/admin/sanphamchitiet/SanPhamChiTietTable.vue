@@ -4,6 +4,7 @@
             <div class="d-flex justify-content-between w-100">
                 <a-tooltip title="Thêm sản phẩm chi tiết">
 
+
                     <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick(idSP)"
 
                         class="d-flex justify-content-center align-items-center px-4">
@@ -118,7 +119,6 @@ const columns: TableColumnsType = [
     { title: 'Loại đế', key: 'tenLoaiDe', dataIndex: 'tenLoaiDe', width: 150, align: 'center' },
     { title: 'Danh mục', key: 'tenDanhMuc', dataIndex: 'tenDanhMuc', width: 150, align: 'center' },
     { title: 'Chất liệu', key: 'tenChatLieu', dataIndex: 'tenChatLieu', width: 150, align: 'center' },
-
     { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 150, align: 'center' },
     { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 150, align: 'center' },
     { title: 'ảnh', key: 'anh', dataIndex: 'anh', width: 150, align: 'center' },

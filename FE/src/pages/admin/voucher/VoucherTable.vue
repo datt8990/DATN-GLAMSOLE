@@ -32,6 +32,7 @@
                         
                         {{ record.kieuGiam == true ? record.phanTramGiam + '%' : formatCurrencyVND(record.phanTramGiam) }}
 
+
                     </template>
 
                     <template v-if="column.key === 'ngayKetThuc'">
@@ -147,6 +148,7 @@ const handleChangeStatusClick = async (id: string) => {
 const handleViewClick = (id: string) => {
 
         router.push({
+
         name: 'them-phieu-giam-gia-admin',
         query: { id: id }
     });

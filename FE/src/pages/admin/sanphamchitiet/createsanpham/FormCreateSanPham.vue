@@ -631,7 +631,6 @@ const handleSubmit = async () => {
     for (const item of productVariants.value) {
       const formData = new FormData();
 
-
       if (props.products != null) {
         formData.append('idSP', props.products.id);
       } else {
@@ -667,7 +666,9 @@ const handleSubmit = async () => {
     } else {
       toast.success("Thêm sản phẩm thành công");
 
+
       router.push({ name: 'san-pham-admin' });
+
 
     }
 
@@ -676,7 +677,6 @@ const handleSubmit = async () => {
     toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi thêm/cập nhật sản phẩm.");
   }
 };
-
 
 watch([selectedColors, selectedSizes], () => {
   generateProductVariants();

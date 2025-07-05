@@ -10,7 +10,6 @@
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
       <a-form-item label="tên danh mục" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
-
         <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập danh mục" style="border-radius: 4px;" />
       </a-form-item>
     </a-form>

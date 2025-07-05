@@ -8,12 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 @Repository
 public interface ADLoaiGiayRepository extends DanhMucRepository {
 
     Page<DanhMuc> findByMaContainingOrTenContaining(String ma, String ten, Pageable pageable);
 
+
     List<DanhMuc> findByTenContaining(String ten);
+
 
 }

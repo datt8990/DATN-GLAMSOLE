@@ -2,8 +2,8 @@ package com.be.server.core.admin.SanPhamChiTiet.model.request;
 
 import com.be.server.core.common.base.PageableRequest;
 
-import com.be.server.infrastructure.constant.EntityStatus;
 
+import com.be.server.infrastructure.constant.EntityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +23,7 @@ public class ADSPCTSearchRequest extends PageableRequest {
    private String idSP;
 
 
+
    private String status;
 
    private String priceMin;
@@ -35,5 +36,6 @@ public class ADSPCTSearchRequest extends PageableRequest {
 
    private EntityStatus entityStatus;
 }
+
 
 

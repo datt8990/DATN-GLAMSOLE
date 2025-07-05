@@ -80,7 +80,6 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
             }
         }
 
-
         Page<ADSanPhamChiTietResponse> page = adSanPhamChiTietRepository.getAllSanPhamChiTietByFilter(pageable, id);
 
         return new ResponseObject<>(
@@ -152,8 +151,8 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
             MauSac mauSac1 = mauSac.get();
             sanPhamChiTiet.setMauSac(mauSac1);
 
-
             sanPhamChiTiet.setStatus(EntityStatus.ACTIVE);
+
 
         if (requestItem.getIdSP() != null) {
 

@@ -53,6 +53,7 @@ public class ADThuongHieuServiceImpl implements ADThuongHieuService {
     @Override
     public ResponseObject<?> modifyThuongHieu(ADThuongHieuRequest request) {
 
+
         if(adThuongHieuRepository.findByTenContaining(request.getTen()).size() > 0) {
             return new ResponseObject<>(null, HttpStatus.OK, "thương hiệu này đã tồn tại");
         }

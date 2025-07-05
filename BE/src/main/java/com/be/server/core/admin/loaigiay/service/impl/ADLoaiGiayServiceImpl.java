@@ -53,6 +53,7 @@ public class ADLoaiGiayServiceImpl implements ADLoaiGiayService {
     public ResponseObject<?> modify(ADLoaiGiayRequest request) {
 
 
+
         if(adLoaiGiayRepository.findByTenContaining(request.getTen()).size() > 0) {
             return new ResponseObject<>(null, HttpStatus.OK, "danh mục này đã tồn tại");
         }
