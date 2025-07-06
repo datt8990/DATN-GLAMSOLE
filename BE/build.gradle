@@ -40,6 +40,23 @@ dependencies {
 //    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation("org.springframework.data:spring-data-rest-core:4.1.1")
+
+    // --- Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+// --- JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+// --- OAuth2 (login Google/Facebook...)
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+// --- Optional: security test
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
 }
 
 tasks.named('test') {

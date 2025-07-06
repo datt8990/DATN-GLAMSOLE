@@ -135,10 +135,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { message } from 'ant-design-vue'
-import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
 
 const breadcrumbRoutes = [
   { name: 'Trang chủ', path: '/' },
@@ -248,6 +247,7 @@ const handleApplyDiscount = () => {
   }
 }
 import { useRouter } from 'vue-router'
+import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
 
 const router = useRouter()
 const handleCheckout = async () => {

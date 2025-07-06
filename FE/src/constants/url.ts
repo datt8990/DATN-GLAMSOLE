@@ -1,3 +1,5 @@
+import { ROLES } from "./roles"
+
 export const { VITE_BASE_URL_SERVER } = import.meta.env || {}
 
 export const { VITE_BASE_URL_CLIENT } = import.meta.env || {}
@@ -11,19 +13,32 @@ export const URL_FRONTEND = `${DOMAIN_FRONTEND}/redirect`
 // API URL
 export const API_URL = `${VITE_BASE_URL_SERVER}/api/v1` as string
 
-//SUB_REDIRECT
-export const SCREEN_ROLE_ADMIN = `&screen=ADMIN`
-// export const SCREEN_ROLE_CLIENT = `&screen=CUSTOMER`
+export const SCREEN_ROLE_ADMIN = `&screen=${ROLES.ADMIN}`
+export const SCREEN_ROLE_USERS = `&screen=${ROLES.USERS}`
+export const REGISTER = `&register=true`
+export const NOT_REGISTER = `&register=false`
 
-export const URL_OAUTH2_GOOGLE_ADMIN =
-  `${DOMAIN_BACKEND}/oauth2/authorize/google?redirect_uri=${URL_FRONTEND}${SCREEN_ROLE_ADMIN}` as string
+// đăng nhập với google 
+export const URL_OAUTH2_GOOGLE_ADMIN = () =>
+  `${DOMAIN_BACKEND}/oauth2/authorize/google?redirect_uri=${URL_FRONTEND}${SCREEN_ROLE_ADMIN}${NOT_REGISTER}` as string
+export const URL_OAUTH2_GOOGLE_USERS = () =>
+  `${DOMAIN_BACKEND}/oauth2/authorize/google?redirect_uri=${URL_FRONTEND}${SCREEN_ROLE_USERS}${NOT_REGISTER}` as string
 
-4
+// đăng nhập với github 
+export const URL_OAUTH2_GITHUB_ADMIN = () =>
+  `${DOMAIN_BACKEND}/oauth2/authorize/github?redirect_uri=${URL_FRONTEND}${SCREEN_ROLE_ADMIN}${NOT_REGISTER}` as string
+export const URL_OAUTH2_GITHUB_USERS = () =>
+  `${DOMAIN_BACKEND}/oauth2/authorize/github?redirect_uri=${URL_FRONTEND}${SCREEN_ROLE_USERS}${NOT_REGISTER}` as string
+
+
+
 export const PREFIX_API_AUTH = `${API_URL}/auth` as string
 
 export const PREFIX_API_REFRESH = (PREFIX_API_AUTH + `/refresh`) as string;
 
 export const PREFIX_API_LOGIN = (PREFIX_API_AUTH + `/login`) as string;
+
+export const PREFIX_API_LOGIN_ADMIN = (PREFIX_API_AUTH + `/login-admin`) as string;
 
 // API PREFIX ADMIN
 export const PREFIX_API_ADMIN = `${API_URL}/admin` as string;

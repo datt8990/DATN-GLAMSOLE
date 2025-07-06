@@ -17,8 +17,8 @@ export const ROUTES_CONSTANTS = {
   USERS: {
     path: '',
     name: 'users',
-    children:{
-        TRANGCHU: {
+    children: {
+      TRANGCHU: {
         path: 'trang-chu',
         name: 'trang-chu'
       },
@@ -26,36 +26,45 @@ export const ROUTES_CONSTANTS = {
         path: 'san-pham',
         name: 'san-pham'
       },
-       SANPHAMCHITIET: {
+      SANPHAMCHITIET: {
         path: 'san-pham-chi-tiet/:id',
         name: 'san-pham-chi-tiet'
       },
-       GIOHANG: {
+      GIOHANG: {
         path: 'gio-hang',
         name: 'gio-hang'
       },
-       THANHTOAN: {
+      THONGTINCANHAN: {
+        path: 'thong-tin-ca-nhan',
+        name: 'thong-tin-ca-nhan'
+      },
+      THANHTOAN: {
         path: 'thanh-toan',
         name: 'thanh-toan'
       },
-       THANHTOANTHANHCONG: {
+      THANHTOANTHANHCONG: {
         path: 'thanh-toan-thanh-cong',
         name: 'thanh-toan-thanh-cong'
       },
-       LOGIN: {
-    path: 'login',
-    name: 'Login'
-  },
-  REGISTER: {
-    path: 'register',
-    name: 'register'
-  },
+      LOGIN: {
+        path: 'login',
+        name: 'Login'
+      },
+      REGISTER: {
+        path: 'register',
+        name: 'register'
+      },
     }
   },
+
   ADMIN: {
     path: '/admin',
     name: 'admin',
     children: {
+      LOGIN: {
+        path: 'login',
+        name: 'login-admin'
+      },
       MAUSAC: {
         path: 'mau-sac',
         name: 'mau-sac-admin'
