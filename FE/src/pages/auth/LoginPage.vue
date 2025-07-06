@@ -1,5 +1,11 @@
 <template>
-  <div class="container mt-5">
+    <div class="container py-3">
+    <div class="row align-items-center">
+      <BreadCrumbUser :routes="breadcrumbRoutes" title="Đăng nhập tại đây" />
+    </div>
+  </div>
+  <div class="container ">
+    
     <!-- Login Box -->
     <div class="d-flex justify-content-center">
       <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
@@ -36,10 +42,33 @@
             </button>
           </div>
 
+          <!-- Đăng nhập mạng xã hội -->
+          <div class="text-center text-muted small mb-2">Hoặc đăng nhập bằng</div>
+
+
+          <div class="d-grid gap-2 mb-3">
+            <!-- Nút đăng nhập Google -->
+            <button type="button" class="btn d-flex align-items-center justify-content-center gap-2 border rounded py-2"
+              style="background-color: #fff; color: #444;" @click="loginWithGoogle">
+              <GoogleOutlined style="font-size: 18px; color: #DB4437;" />
+              <span style="font-size: 0.9rem;">Đăng nhập với Google</span>
+            </button>
+
+            <!-- Nút đăng nhập GitHub -->
+            <button type="button" class="btn d-flex align-items-center justify-content-center gap-2 border rounded py-2"
+              style="background-color: #fff; color: #000;" @click="loginWithGithub">
+              <GithubOutlined style="font-size: 18px; color: #000;" />
+              <span style="font-size: 0.9rem;">Đăng nhập với GitHub</span>
+            </button>
+          </div>
+
+
+
           <!-- Quên mật khẩu -->
           <div class="text-center">
             <a href="#" class="small text-muted text-decoration-none">Quên mật khẩu?</a>
           </div>
+
         </form>
       </div>
     </div>
@@ -85,6 +114,23 @@ const onLogin = () => {
     alert('Đăng nhập thành công')
   }
 }
+import { GoogleOutlined, GithubOutlined } from '@ant-design/icons-vue'
+import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
+
+const breadcrumbRoutes = [
+  { name: 'Trang chủ', path: '/' },
+  { name: 'Đăng nhập' } 
+]
+
+
+const loginWithGoogle = () => {
+  console.log('Login với Google')
+}
+
+const loginWithGithub = () => {
+  console.log('Login với GitHub')
+}
+
 </script>
 
 <style scoped>

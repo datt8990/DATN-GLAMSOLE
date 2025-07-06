@@ -30,6 +30,26 @@ export const ROUTES_CONSTANTS = {
         path: 'san-pham-chi-tiet/:id',
         name: 'san-pham-chi-tiet'
       },
+       GIOHANG: {
+        path: 'gio-hang',
+        name: 'gio-hang'
+      },
+       THANHTOAN: {
+        path: 'thanh-toan',
+        name: 'thanh-toan'
+      },
+       THANHTOANTHANHCONG: {
+        path: 'thanh-toan-thanh-cong',
+        name: 'thanh-toan-thanh-cong'
+      },
+       LOGIN: {
+    path: 'login',
+    name: 'Login'
+  },
+  REGISTER: {
+    path: 'register',
+    name: 'register'
+  },
     }
   },
   ADMIN: {
@@ -145,14 +165,6 @@ export const ROUTES_CONSTANTS = {
   UNAUTHORIZED: {
     path: '/error/401',
     name: 'Unauthorized'
-  },
-  LOGIN: {
-    path: '/login',
-    name: 'Login'
-  },
-  REGISTER: {
-    path: '/register',
-    name: 'register'
   },
   NOT_FOUND: {
     path: '/:pathMatch(.*)*',

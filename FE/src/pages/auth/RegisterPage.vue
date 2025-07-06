@@ -1,5 +1,12 @@
 <template>
-    <div class="container mt-5">
+    
+      <div class="container py-3">
+    <div class="row align-items-center">
+      <BreadCrumbUser :routes="breadcrumbRoutes" title="Đăng ký tại đây" />
+    </div>
+  </div>
+
+    <div class="container ">
         <div class="d-flex justify-content-center">
             <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
                 <h4 class="text-center mb-2 fw-semibold text-dark">ĐĂNG KÝ</h4>
@@ -53,7 +60,13 @@
     </div>
 </template>
 <script setup lang="ts">
+import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
 import { reactive } from 'vue'
+
+const breadcrumbRoutes = [
+  { name: 'Trang chủ', path: '/' },
+  { name: 'Đăng ký' } 
+]
 
 const form = reactive({
     hoTen: '',
