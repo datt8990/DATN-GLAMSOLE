@@ -72,10 +72,9 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
 
         System.out.println(id.getStatus());
         if (id.getStatus() != null && !id.getStatus().isEmpty()) {
-            if (id.getStatus().equals("0")){
+            if (id.getStatus().equals("0")) {
                 id.setEntityStatus(EntityStatus.INACTIVE);
-            }
-            else {
+            } else {
                 id.setEntityStatus(EntityStatus.ACTIVE);
             }
         }
@@ -131,6 +130,19 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
     @Override
     public ResponseObject<?> modifySanPham(ADSPCTRequest requestItem) {
 
+        if(adSanPhamChiTietRepository.checkThemSanPham(requestItem.getIdMau(),requestItem.getIdSize(),requestItem.getGiaBan(), requestItem.getIdSP()) != null){
+
+            String id = adSanPhamChiTietRepository.checkThemSanPham(requestItem.getIdMau(),requestItem.getIdSize(),requestItem.getGiaBan(), requestItem.getIdSP());
+
+            SanPhamChiTiet sanPhamChiTiet = adSanPhamChiTietRepository.findById(id).get();
+
+            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() + requestItem.getSoLuong());
+
+            adSanPhamChiTietRepository.save(sanPhamChiTiet);
+
+            return new ResponseObject<>(null, HttpStatus.CREATED, "Tạo sản phẩm thành công");
+        }
+
         SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
 
         sanPhamChiTiet.setGiaBan(requestItem.getGiaBan());
@@ -138,23 +150,24 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
         sanPhamChiTiet.setSoLuong(requestItem.getSoLuong());
 
 
-            Optional<KichCo> size = adKichThuocRepository.findById(requestItem.getIdSize());
+        Optional<KichCo> size = adKichThuocRepository.findById(requestItem.getIdSize());
 
-            KichCo kichCo = size.get();
-            sanPhamChiTiet.setKichCo(kichCo);
-
-
+        KichCo kichCo = size.get();
+        sanPhamChiTiet.setKichCo(kichCo);
 
 
-            Optional<MauSac> mauSac = adMauSacRepository.findById(requestItem.getIdMau());
+        Optional<MauSac> mauSac = adMauSacRepository.findById(requestItem.getIdMau());
 
-            MauSac mauSac1 = mauSac.get();
-            sanPhamChiTiet.setMauSac(mauSac1);
+        MauSac mauSac1 = mauSac.get();
+        sanPhamChiTiet.setMauSac(mauSac1);
 
-            sanPhamChiTiet.setStatus(EntityStatus.ACTIVE);
+        sanPhamChiTiet.setStatus(EntityStatus.ACTIVE);
+
 
 
         if (requestItem.getIdSP() != null) {
+
+
 
             Optional<SanPham> thuongHieuOptional = adSanPhamRepository.findById(requestItem.getIdSP());
 
@@ -220,13 +233,10 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
                 newSanPhamChiTiet = newSanPham;
             } else {
 
-
                 sanPhamChiTiet.setSanPham(newSanPhamChiTiet);
             }
 
         }
-
-
 
 
         try {

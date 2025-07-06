@@ -1,3 +1,46 @@
+<template>
+  <li class="sidebar-item">
+    <router-link
+      v-if="!item.children"
+      :to="{ name: item.routeName }"
+      class="nav-link"
+      :class="{ active: isActive }"
+      tabindex="0"
+    >
+      <span class="icon" v-html="item.icon"></span>
+      <span class="label">{{ item.label }}</span>
+    </router-link>
+
+    <div v-else class="dropdown-container">
+      <button
+        @click="toggleDropdown"
+        type="button"
+        tabindex="0"
+        @keydown.enter.prevent="toggleDropdown"
+        @keydown.space.prevent="toggleDropdown"
+        :aria-expanded="isOpen"
+        class="nav-link nav-dropdown"
+        :class="{ active: isActive, open: isOpen }"
+      >
+        <span class="icon" v-html="item.icon"></span>
+        <span class="label">{{ item.label }}</span>
+        <span class="dropdown-arrow" :class="{ rotate: isOpen }" aria-hidden="true">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
+      </button>
+      
+      <SidebarDropdown 
+        :key="`dropdown-${item.label}`"
+        :items="item.children" 
+        :isOpen="isOpen" 
+        @item-click="handleChildClick" 
+      />
+    </div>
+  </li>
+</template>
+
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
@@ -23,6 +66,7 @@ const isActive = computed(() => {
   return false;
 });
 
+// Auto open dropdown if has active child item
 watch(isActive, (active) => {
   if (active && props.item.children && props.item.children.length) {
     isOpen.value = true;
@@ -32,80 +76,63 @@ watch(isActive, (active) => {
 function toggleDropdown() {
   isOpen.value = !isOpen.value;
 }
+
+function handleChildClick(index) {
+  console.log('Child clicked:', index);
+}
 </script>
 
-<template>
-  <div>
-    <router-link
-      v-if="!item.children"
-      :to="{ name: item.routeName }"
-      class="nav-link w-full"
-      :aria-current="isActive ? 'page' : null"
-      tabindex="0"
-    >
-      <span class="icon" v-html="item.icon"></span>
-      <span class="label">{{ item.label }}</span>
-    </router-link>
-
-    <div v-else>
-      <div
-        @click="toggleDropdown"
-        role="button"
-        tabindex="0"
-        @keydown.enter.prevent="toggleDropdown"
-        @keydown.space.prevent="toggleDropdown"
-        :aria-expanded="isOpen.toString()"
-        class="nav-link nav-dropdown"
-        :class="{ active: isActive || isOpen }"
-      >
-        <span class="icon" v-html="item.icon"></span>
-        <span class="label">{{ item.label }}</span>
-        <span class="dropdown-arrow" :class="{ open: isOpen }" aria-hidden="true">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </span>
-      </div>
-      <SidebarDropdown :items="item.children" :isOpen="isOpen" @item-click="toggleDropdown" />
-    </div>
-  </div>
-</template>
-
 <style scoped>
+.sidebar-item {
+  margin-bottom: 2px;
+}
+
 .nav-link {
   display: flex;
   align-items: center;
-  padding: 0.625rem 1rem;
-  margin-bottom: 0.25rem;
-  color: black;
+  padding: 0.75rem 1rem;
+  color: #6b7280;
   text-decoration: none;
-  font-weight: 600;
-  border-radius: 10px;
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 500;
+  font-size: 15px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
   cursor: pointer;
   user-select: none;
-  outline-offset: 2px;
+  position: relative;
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
 }
 
-.nav-link:hover,
-.nav-link:focus {
-  background-color: #f3f4f6;
-  color: #111827;
-  box-shadow: 0 2px 8px #58bddb;
-  outline: none;
-}
-
-.nav-link[aria-current="page"] {
-  background-color: #58bddb;
+.sidebar-item > .nav-link:hover {
+  background-color: #59bddb;
   color: white;
-  font-weight: 700;
-  box-shadow: 0 2px 12px #58bddb;
+}
+
+.nav-link.active {
+  background-color: #59bddb;
+  color: white;
+  font-weight: 500;
+}
+
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background-color: #59bddb;
+  border-radius: 0 2px 2px 0;
 }
 
 .icon {
   width: 20px;
   height: 20px;
-  margin-right: 12px;
+  margin-right: 0.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -113,31 +140,50 @@ function toggleDropdown() {
   color: inherit;
 }
 
+.icon :deep(svg) {
+  width: 100%;
+  height: 100%;
+}
+
 .label {
   flex-grow: 1;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .nav-dropdown {
-  user-select: none;
   justify-content: space-between;
+  background: none;
+  border: none;
+  outline: none;
 }
 
-.nav-dropdown.active {
-  background-color: #e0e7ff;
-  color: #58bddb;
-  box-shadow: 0 2px 8px #58bddb;
-  font-weight: 700;
+.nav-dropdown:focus {
+  outline: 2px solid #59bddb;
+  outline-offset: 2px;
+}
+
+.nav-dropdown.open {
+  background-color: #f3f4f6;
+  color: #374151;
 }
 
 .dropdown-arrow {
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease-in-out;
   display: flex;
   align-items: center;
   color: inherit;
+  margin-left: 0.5rem;
 }
 
-.dropdown-arrow.open {
+.dropdown-arrow.rotate {
   transform: rotate(180deg);
+}
+
+.dropdown-container {
+  width: 100%;
+  position: relative;
 }
 </style>

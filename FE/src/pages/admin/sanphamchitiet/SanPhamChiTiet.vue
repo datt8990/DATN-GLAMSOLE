@@ -1,12 +1,22 @@
 <template>
-  <DivCustom>
-    <BreadcrumbDefault pageTitle="Sản phẩm chi tiết" />
-    +
+  <div class="page-container">
+    <div class="breadcrumb-section">
+      <BreadcrumbDefault :pageTitle="'Quản Lý sản phẩm chi tiết'" :routes="[
+        { path: '/admin/san-pham', name: 'Quản lý sản phẩm ' },
+        { path: '/admin/san-pham-chi-tiet?id=' + idSanPham, name: 'Quản lý sản phẩm chi tiết' }
+      ]" />
+    </div>
+    <p class="section-title">
+      <FilterOutlined /> Bộ lọc tìm kiếm
+    </p>
+
     <ProductFilter :searchQuery="state.searchQuery" :searchStatus="state.searchStatus" :priceRange="state.priceRange"
       :searchColor="state.searchColor" :searchSize="state.searchSize" @update:searchQuery="updateSearchQuery"
       @update:searchStatus="updateSearchStatus" @update:priceRange="updatePriceRange"
       @update:searchColor="updateSearchColor" @update:searchSize="updateSearchSize" />
-
+    <p class="section-title">
+      <UnorderedListOutlined /> Danh sách sản phẩm chi tiết
+    </p>
     <ProductTable :products="state.products" :paginationParams="state.paginationParams" :totalItems="state.totalItems"
       :idSP="idSanPham" @add="openAddModal" @view="openViewModal" @page-change="handlePageChange"
       @change-status="handleChangeStatus" />
@@ -14,7 +24,8 @@
     <ProductModal :open="state.isModalOpen" :openChangeStatus="state.isModalChangeStatus"
       :productId="state.selectedProductId" :title="modalTitle" @closeChangeStatus="closeModalChangeStatus"
       @close="closeModal" @success="fetchProducts" />
-  </DivCustom>
+
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -101,7 +112,7 @@ const fetchProducts = async () => {
       size: state.paginationParams.size,
       q: state.searchQuery,
       idSP: idSanPham,
-      idMS: state.searchColor,    
+      idMS: state.searchColor,
       idKT: state.searchSize,
       status: state.searchStatus,
       priceMin: state.priceRange[0],
@@ -149,3 +160,47 @@ const handleChangeStatus = async () => {
   fetchProducts();
 }
 </script>
+<style scoped>
+.page-container {
+  padding: 20px;
+  /* Overall padding for the page content */
+}
+
+.breadcrumb-section {
+  margin-bottom: 25px;
+  /* Space below the breadcrumb and above the first section */
+  background-color: #fff;
+  /* White background for the breadcrumb box */
+  padding: 15px 20px;
+  /* Padding inside the breadcrumb box */
+  border-radius: 8px;
+  /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  /* Subtle shadow */
+}
+
+.section-title {
+  margin-top: 30px;
+  /* Space above each main section title */
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  /* Space below the title */
+  margin-left: 0px;
+  /* Remove left margin if section-title is directly under padding */
+  color: #333;
+  /* Darker color for titles */
+  display: flex;
+  /* To align icon and text */
+  align-items: center;
+  /* Vertically center icon and text */
+  gap: 8px;
+  /* Space between icon and text */
+}
+
+/* Remove or adjust body styles if they are global.
+   Scoped styles prevent them from affecting the entire app. */
+body {
+  font-family: 'Roboto', sans-serif;
+}
+</style>

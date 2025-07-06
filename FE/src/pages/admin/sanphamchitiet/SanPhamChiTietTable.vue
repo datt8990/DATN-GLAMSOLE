@@ -1,18 +1,19 @@
 <template>
     <DivCustom label="Danh sách sản phẩm chi tiết" customClasses="mt-5">
-        <template #extra>
-            <div class="d-flex justify-content-between w-100">
-                <a-tooltip title="Thêm sản phẩm chi tiết">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="font-size: 13px; margin-left: 15px;">
+                {{ products.length }} sản phẩm chi tiết
+            </div>
 
-
+            <div>
+                <a-tooltip title="Thêm sản phảm chi tiết">
                     <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick(idSP)"
-
                         class="d-flex justify-content-center align-items-center px-4">
-                        <PlusCircleOutlined />
+                        <PlusCircleOutlined /> Thêm mới sản phảm chi tiết
                     </a-button>
                 </a-tooltip>
             </div>
-        </template>
+        </div>
 
         <div class="min-h-[360px] ">
             <a-table :columns="columns" :data-source="products" :pagination="{
@@ -46,10 +47,15 @@
 
 
                     <template v-if="column.key === 'mau'">
-                        <div class="center-cell">
-                            <div class="color"
-                                :style="{ width: '30px', height: '30px', backgroundColor: record.mau, border: '1px solid #000' }">
-                            </div>
+                        <div class="center-cell" style="display: flex; align-items: center;">
+                            <!-- <div class="color" :style="{
+                                width: '30px',
+                                height: '30px',
+                                marginLeft: '1px',
+                                backgroundColor: record.mau,
+                                border: '1px solid #000'    
+                            }"></div> -->
+                            <span> {{ record.tenMau }}</span>
                         </div>
                     </template>
 
@@ -57,12 +63,14 @@
                         <div class="d-flex gap-1 justify-center">
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #54bddb;" type="primary" class="p-2 d-flex justify-content-center align-items-center">
+                                <a-button style="background-color: #54bddb;" type="primary"
+                                    class="p-2 d-flex justify-content-center align-items-center">
                                     <RedoOutlined />
                                 </a-button>
                             </a-popconfirm>
                             <a-tooltip title="xem chi tiết sản phẩm">
-                                <a-button style="background-color: #54bddb;" type="primary" @click="handleClick(record.id)"
+                                <a-button style="background-color: #54bddb;" type="primary"
+                                    @click="handleClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EyeOutlined />
                                 </a-button>

@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits } from 'vue';
+import { ref, watch, defineProps, defineEmits } from 'vue'; 
 import { getSize, type SizeResponse, modifySize } from '@/services/api/admin/size.api';
 import { toast } from 'vue3-toastify';
 
@@ -97,3 +97,9 @@ const handleSubmit = async () => {
 
 const closeModal = () => emit('close');
 </script>
+<style>
+
+body{
+      font-family: 'Roboto', sans-serif;
+}
+  </style>
