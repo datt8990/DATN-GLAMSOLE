@@ -16,29 +16,29 @@
       </div>
       <div class="filter-item search-input-group">
         <label for="search-query" class="filter-label">Danh mục:</label>
-        <a-select allow-clear :options="danhMucOptions" placeholder="Chọn màu sắc" style="width: 300px" size="small" />
+        <a-select allow-clear :options="danhMucOptions" placeholder="Chọn màu sắc" style="width: 200px" size="small" />
       </div>
 
       <div class="filter-item search-input-group">
         <label for="search-query" class="filter-label">Chất liệu:</label>
-        <a-select allow-clear :options="chatLieuOptions" placeholder="Chọn màu sắc" style="width: 300px" size="small" />
+        <a-select allow-clear :options="chatLieuOptions" placeholder="Chọn màu sắc" style="width: 200px" size="small" />
       </div>
 
       <div class="filter-item search-input-group">
         <label for="search-query" class="filter-label">Thương hiệu:</label>
-        <a-select allow-clear :options="thuongHieuOptions" placeholder="Chọn màu sắc" style="width: 300px"
+        <a-select allow-clear :options="thuongHieuOptions" placeholder="Chọn màu sắc" style="width: 200px"
           size="small" />
       </div>
 
       <div class="filter-item search-input-group">
         <label for="search-query" class="filter-label">Loại đế:</label>
-        <a-select allow-clear :options="loaiDeOptions" placeholder="Chọn màu sắc" style="width: 300px" size="small" />
+        <a-select allow-clear :options="loaiDeOptions" placeholder="Chọn màu sắc" style="width: 200px" size="small" />
       </div>
 
 
       <div class="filter-item reset-button-group">
         <a-tooltip title="Làm mới bộ lọc">
-          <a-button style="background-color: dimgrey; margin-left: 200px; color: white;" @click="resetFilters"
+          <a-button style="background-color: dimgrey; margin-left: 900px; color: white;" @click="resetFilters"
             class="reset-button">
             Đặt lại bộ lọc
             <ReloadOutlined />
