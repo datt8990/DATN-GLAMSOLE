@@ -10,7 +10,7 @@
         </div>
         <div class="filter-item search-input-group">
           <label for="search-query" class="filter-label">Tìm kiếm sản phẩm </label>
-          <a-slider range v-model:value="localPriceRange" :min="minPrice" :max="maxPrice" style="width: 550px"
+          <a-slider range v-model:value="localPriceRange" :min="minPrice" :max="maxPrice" style="width: 350px"
             :tooltip-visible="false" />
           <div style="font-size: 13px; width: 160px">
             {{ localPriceRange[0].toLocaleString() }}₫ - {{ localPriceRange[1].toLocaleString() }}₫
@@ -48,7 +48,7 @@
         </div>
         <div class="filter-item reset-button-group">
           <a-tooltip title="Làm mới bộ lọc">
-            <a-button style="background-color: dimgrey; margin-left: 200px; color: white;" @click="resetFilters"
+            <a-button style="background-color: dimgrey; margin-left: 900px; color: white;" @click="resetFilters"
               class="reset-button">
               Đặt lại bộ lọc
               <ReloadOutlined />
