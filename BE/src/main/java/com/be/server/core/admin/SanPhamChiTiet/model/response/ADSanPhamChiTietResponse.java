@@ -8,6 +8,8 @@ public interface ADSanPhamChiTietResponse {
 
     String getTen();
 
+    String getTenMau();
+
     String getMau();
 
     String getTenChatLieu();

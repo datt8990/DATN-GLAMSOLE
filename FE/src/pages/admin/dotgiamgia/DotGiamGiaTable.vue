@@ -1,35 +1,35 @@
 <template>
   <DivCustom label="Danh sách đợt giảm giá" customClasses="mt-5">
-    <template #extra>
-            <a-tooltip title="Thêm đợt giảm giá">
-                <a-button type="primary" @click="handleAddClick()"
-                    class="d-flex justify-content-center align-items-center px-4"
-                    style="background-color: #54bddb; border-color: #54bddb; color: white;">
-                    <PlusCircleOutlined />
-                </a-button>
-            </a-tooltip>
-      </template>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div style="font-size: 13px; margin-left: 15px;">
+        {{ products.length }} đợt giảm giá
+      </div>
+
+      <div>
+        <a-tooltip title="Thêm đợt giảm giá">
+          <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
+            class="d-flex justify-content-center align-items-center px-4">
+            <PlusCircleOutlined /> Thêm mới đợt giảm giá
+          </a-button>
+        </a-tooltip>
+      </div>
+    </div>
     <div class="min-h-[360px]">
-      <a-table
-        :columns="columns"
-        :data-source="products"
-        :pagination="{
-          current: paginationParams.page,
-          pageSize: paginationParams.size,
-          total: totalItems,
-          showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '30', '40', '50']
-        }"
-        :scroll="{ y: 240 }"
-        @change="handlePageChange"
-      >
+      <a-table :columns="columns" :data-source="products" :pagination="{
+        current: paginationParams.page,
+        pageSize: paginationParams.size,
+        total: totalItems,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '30', '40', '50']
+      }" :scroll="{ y: 240 }" @change="handlePageChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'trangThai'">
-            <a-tag :color="record.trangThai === 'CHUA_KICH_HOAT' ? 'green' : (record.trangThai === 'DANG_KICH_HOAT' ? 'blue' : 'red')">
-            {{
-              record.trangThai === 'CHUA_KICH_HOAT' ? 'Chưa kích hoạt' :
-              (record.trangThai === 'DANG_KICH_HOAT' ? 'Đang kích hoạt' : 'Hết hạn kích hoạt')
-            }}
+            <a-tag
+              :color="record.trangThai === 'CHUA_KICH_HOAT' ? 'green' : (record.trangThai === 'DANG_KICH_HOAT' ? 'blue' : 'red')">
+              {{
+                record.trangThai === 'CHUA_KICH_HOAT' ? 'Chưa kích hoạt' :
+                  (record.trangThai === 'DANG_KICH_HOAT' ? 'Đang kích hoạt' : 'Hết hạn kích hoạt')
+              }}
             </a-tag>
           </template>
 
@@ -52,12 +52,9 @@
           <template v-if="column.key === 'operation'">
             <div class="d-flex gap-1 justify-center w-100">
               <a-tooltip title="Cập nhật đợt giảm giá">
-                <a-button
-                  type="primary"
-                  @click="handleViewClick(record.id)"
+                <a-button type="primary" @click="handleViewClick(record.id)"
                   class="p-2 d-flex justify-content-center align-items-center"
-                  style="background-color: #54bddb; border-color: #096dd9; color: white;"
-                >
+                  style="background-color: #54bddb; border-color: #096dd9; color: white;">
                   <EditOutlined style="font-size: 18px;" />
                 </a-button>
               </a-tooltip>

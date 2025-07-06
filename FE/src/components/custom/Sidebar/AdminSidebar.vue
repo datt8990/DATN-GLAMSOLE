@@ -9,107 +9,88 @@ const sidebarStore = useSidebarStore();
 const menuGroups = ref([
   {
     menuItems: [
+      // {
+      //   label: "Trang chủ",
+      //   icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+      //     <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      //   </svg>`,
+      //   routeName: ROUTES_CONSTANTS.ADMIN.children.BAN_HANG.name,
+      // },
       {
-        label: "Quản lý bán hàng",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h18v18H3V3z" />
+        label: "Bán Hàng",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.BAN_HANG.name,
       },
       {
-        label: "Quản lý sản phẩm",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
+        label: "Quản lý Hóa đơn",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>`,
-        routeName: ROUTES_CONSTANTS.ADMIN.children.SAN_PHAM.name,
+        routeName: ROUTES_CONSTANTS.ADMIN.children.HOA_DON.name,
       },
       {
-        label: "Thuộc tính",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        label: "Quản lý sản phẩm",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
         </svg>`,
         children: [
           {
-            label: "Quản lý màu sắc",
-            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <circle cx="12" cy="12" r="3" />
-            </svg>`,
+            label: "Sản phẩm",
+            routeName: ROUTES_CONSTANTS.ADMIN.children.SAN_PHAM.name,
+          },
+          {
+            label: "Màu sắc",
             routeName: ROUTES_CONSTANTS.ADMIN.children.MAUSAC.name,
           },
           {
-            label: "Quản lý chất liệu",
-            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
-            </svg>`,
+            label: "Chất liệu",
             routeName: ROUTES_CONSTANTS.ADMIN.children.CHAT_LIEU.name,
           },
           {
-            label: "Quản lý loại đế",
-            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <path d="M3 7h18M3 12h18M3 17h18" />
-            </svg>`,
+            label: "Loại đế",
             routeName: ROUTES_CONSTANTS.ADMIN.children.LOAI_DE.name,
           },
           {
-            label: "Quản lý loại giày",
-            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <path d="M6 18L18 6M6 6l12 12" />
-            </svg>`,
-            label: "Quản lý danh mục", 
-            icon: `<svg>...</svg>`,
+            label: "Danh mục",
             routeName: ROUTES_CONSTANTS.ADMIN.children.LOAI_GIAY.name,
           },
           {
-            label: "Quản lý kích thước",
-            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <circle cx="12" cy="12" r="10" />
-            </svg>`,
+            label: "Kích thước",
             routeName: ROUTES_CONSTANTS.ADMIN.children.SIZE.name,
           },
           {
-            label: "Quản lý thương hiệu",
-            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>`,
+            label: "Thương hiệu",
             routeName: ROUTES_CONSTANTS.ADMIN.children.THUONG_HIEU.name,
           },
         ],
       },
       {
-        label: "Quản lý hoá đơn",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path d="M4 6h16M4 12h8m-8 6h16" />
-        </svg>`,
-        routeName: ROUTES_CONSTANTS.ADMIN.children.HOA_DON.name,
-      },
-      {
         label: "Quản lý khách hàng",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <circle cx="12" cy="7" r="4" />
-          <path d="M5 21v-2a4 4 0 018 0v2" />
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.KHACH_HANG.name,
       },
       {
         label: "Quản lý nhân viên",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <circle cx="12" cy="7" r="4" />
-          <path d="M16 21v-2a4 4 0 00-8 0v2" />
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.NHAN_VIEN.name,
       },
       {
         label: "Quản lý đợt giảm giá",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <circle cx="12" cy="7" r="4" />
-          <path d="M16 21v-2a4 4 0 00-8 0v2" />
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
         </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.DOT_GIAM_GIA.name,
       },
       {
         label: "Quản lý phiếu giảm giá",
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path d="M12 8v8m4.5-4h-9" />
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
         </svg>`,
         routeName: ROUTES_CONSTANTS.ADMIN.children.VOUCHER.name,
       },
@@ -141,7 +122,6 @@ const menuGroups = ref([
     <nav class="menu" aria-label="Menu điều hướng chính">
       <template v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
         <div>
-          <h3 class="menu-title">{{ menuGroup.name }}</h3>
           <ul class="list-unstyled" role="menu">
             <SidebarItem
               v-for="(menuItem, index) in menuGroup.menuItems"
@@ -160,88 +140,72 @@ const menuGroups = ref([
 
 <style scoped>
 .sidebar {
-  background-color: white;
-  width: 260px; /* Giữ nguyên chiều rộng gốc */
+  background-color: #ffffff;
+  width: 250px;
   height: 100vh;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease-in-out;
-  color: black;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #374151;
+  border-right: 1px solid #e5e7eb;
   user-select: none;
-  font-family: "Inter", sans-serif;
+  font-family:Roboto, sans-serif;
   position: relative;
   z-index: 100;
 }
 
 .header {
-  background-color: white;
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
-  border-bottom: 1px solid #ddd;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 80px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo {
-  width: 200px; /* Giữ nguyên kích thước logo */
+  width: 160px;
   max-width: 80%;
+  height: auto;
   object-fit: contain;
-  filter: none;
 }
 
 .menu {
   flex-grow: 1;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  padding: 0.5rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
 }
 
-.menu-title {
-  color: #222222;
-  font-weight: 600; /* Giảm font weight */
-  font-size: 0.75rem; /* Giảm kích thước font */
-  margin-bottom: 0.5rem; /* Giảm margin */
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0 1rem; /* Thêm padding để căn lề */
+.menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 2px;
+}
+
+.menu::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
 }
 
 .list-unstyled {
   margin: 0;
-  padding: 0;
+  padding: 0 0.1rem;
   list-style: none;
-}
-
-.nav-link {
-  display: flex;
-  align-items: center;
-  padding: 0.4rem 1rem; /* Giảm padding dọc */
-  margin-bottom: 0.125rem; /* Giảm khoảng cách giữa các item */
-  color: black;
-  text-decoration: none;
-  font-weight: 500; /* Giảm font weight */
-  font-size: 0.8rem; /* Giảm kích thước font */
-  border-radius: 6px; /* Giảm border radius */
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-  gap: 0.5rem; /* Giảm khoảng cách giữa icon và text */
-  line-height: 1.2; /* Giảm line height */
-  width: 100%; /* bắt buộc chiếm đủ */
-  display: block;
-}
-
-.nav-link:hover,
-.nav-link:focus {
-  background-color: #f3f4f6;
-  outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Giảm shadow */
-  color: #111827;
-  text-decoration: none;
-}
-
-.nav-link[aria-current="page"] {
-  background-color: #58bddb;
-  color: #ffffff;
-  font-weight: 600; /* Giảm font weight */
-  box-shadow: 0 1px 6px rgba(88, 189, 219, 0.3); /* Giảm shadow */
 }
 
 .translate-x-0 {
@@ -250,5 +214,19 @@ const menuGroups = ref([
 
 .-translate-x-full {
   transform: translateX(-100%);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 260px;
+  }
+  
+  .menu {
+    padding: 0.25rem 0;
+  }
+  
+  .list-unstyled {
+    padding: 0 0.75rem;
+  }
 }
 </style>

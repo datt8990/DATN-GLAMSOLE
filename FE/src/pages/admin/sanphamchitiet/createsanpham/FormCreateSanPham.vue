@@ -1,4 +1,20 @@
 <template>
+  <div v-if="products == null" class="breadcrumb-section">
+    <BreadcrumbDefault :pageTitle="'Quản Lý thêm sản phẩm chi tiết'" :routes="[
+      { path: '/admin/san-pham/', name: 'Quản lý sản phẩm ' },
+
+      { path: '/admin/san-pham-chi-tiet', name: 'Quản lý thêm sản phẩm chi tiết' }
+    ]" />
+  </div>
+
+  <div v-if="products != null" class="breadcrumb-section">
+    <BreadcrumbDefault :pageTitle="'Quản Lý thêm sản phẩm chi tiết'" :routes="[
+      { path: '/admin/san-pham', name: 'Quản lý sản phẩm ' },
+      { path: '/admin/san-pham-chi-tiet?id=' +products.id, name: 'Quản lý sản phẩm chi tiết' },
+      { path: '/admin/them-san-pham-chi-tiet', name: 'Quản lý thêm sản phẩm chi tiết' }
+    ]" />
+  </div>
+
   <div class="form-container">
     <h2>THÊM SẢN PHẨM</h2>
 
@@ -161,7 +177,8 @@
   <a-modal v-model:open="isSizeModalVisible" title="Chọn kích cỡ" width="400px" @cancel="handleCloseSizeModal">
     <a-button class="input-button-model" @click="handleAddSizeClick">+ Thêm Kích thước</a-button>
     <div class="size-picker">
-      <a-button v-for="(size, index) in SizeOptions" :key="index" class="size-color-btn" @click="handleSelectSize(size)">
+      <a-button v-for="(size, index) in SizeOptions" :key="index" class="size-color-btn"
+        @click="handleSelectSize(size)">
         {{ size.label }}
       </a-button>
     </div>
@@ -180,6 +197,7 @@ import type { TableColumnsType } from 'ant-design-vue';
 import { router } from '@/routes/router';
 import { GetListChatLieu, GetListDanhMuc, GetListLoaiDe, GetListThuongHieu, GetListXuatXu } from '@/services/api/admin/sanpham.api';
 import { PlusOutlined } from '@ant-design/icons-vue';
+import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
 
 const XuatXuOptions = ref<{ label: string; value: string }[]>([])
 const ChatLieuOptions = ref<{ label: string; value: string }[]>([])
@@ -993,5 +1011,50 @@ h2 {
       height: 32px; // Match input height
     }
   }
+}
+</style>
+
+<style scoped>
+.page-container {
+  padding: 20px;
+  /* Overall padding for the page content */
+}
+
+.breadcrumb-section {
+  margin-bottom: 25px;
+  /* Space below the breadcrumb and above the first section */
+  background-color: #fff;
+  /* White background for the breadcrumb box */
+  padding: 15px 20px;
+  /* Padding inside the breadcrumb box */
+  border-radius: 8px;
+  /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  /* Subtle shadow */
+}
+
+.section-title {
+  margin-top: 30px;
+  /* Space above each main section title */
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  /* Space below the title */
+  margin-left: 0px;
+  /* Remove left margin if section-title is directly under padding */
+  color: #333;
+  /* Darker color for titles */
+  display: flex;
+  /* To align icon and text */
+  align-items: center;
+  /* Vertically center icon and text */
+  gap: 8px;
+  /* Space between icon and text */
+}
+
+/* Remove or adjust body styles if they are global.
+   Scoped styles prevent them from affecting the entire app. */
+body {
+  font-family: 'Roboto', sans-serif;
 }
 </style>

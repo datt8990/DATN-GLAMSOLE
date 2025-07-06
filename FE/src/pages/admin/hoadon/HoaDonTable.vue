@@ -1,6 +1,6 @@
 <template>
   <DivCustom label="Danh sách hóa đơn" customClasses="mt-5">
-    <div class="min-h-[360px]">
+    <div class="min-h-[300px]">
       <a-tabs
         v-model:activeKey="trangThaiTab"
         @change="handleTabChange"
@@ -29,7 +29,7 @@
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '30', '40', '50'],
         }"
-        :scroll="{ y: 240 }"
+        :scroll="{ y: 300 }"
         @change="handlePageChange"
       >
         <template #bodyCell="{ column, record }">

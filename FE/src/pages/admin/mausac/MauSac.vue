@@ -1,35 +1,25 @@
 <template>
-  <DivCustom>
-  <BreadcrumbDefault 
-    pageTitle="Quản lý màu sắc" 
-  />
-  <ProductFilter 
-    :searchQuery="state.searchQuery" 
-    :searchStatus="state.searchStatus"
-    @update:searchQuery="updateSearchQuery" 
-    @update:searchStatus="updateSearchStatus" 
-  />
+  <div class="page-container">
+    <div class="breadcrumb-section">
+      <BreadcrumbDefault :pageTitle="'Quản Lý máu sắc'" :routes="[
+        { path: '/admin/mau-sac', name: 'Quản lý máu sắc' }
+      ]" />
+    </div>
+    <p class="section-title">
+      <FilterOutlined /> Bộ lọc tìm kiếm
+    </p>
+    <ProductFilter :searchQuery="state.searchQuery" :searchStatus="state.searchStatus"
+      @update:searchQuery="updateSearchQuery" @update:searchStatus="updateSearchStatus" />
+    <p class="section-title">
+      <UnorderedListOutlined /> Danh sách máu sắc
+    </p>
+    <ProductTable :products="state.products" :paginationParams="state.paginationParams" :totalItems="state.totalItems"
+      @add="openAddModal" @view="openViewModal" @page-change="handlePageChange" @change-status="handleChangeStatus" />
 
-  <ProductTable 
-    :products="state.products" 
-    :paginationParams="state.paginationParams" 
-    :totalItems="state.totalItems"
-    @add="openAddModal" 
-    @view="openViewModal" 
-    @page-change="handlePageChange" 
-    @change-status="handleChangeStatus" 
-  />
-  
-  <ProductModal
-    :open="state.isModalOpen" 
-    :openChangeStatus="state.isModalChangeStatus"
-    :productId="state.selectedProductId" 
-    :title="modalTitle" 
-    @closeChangeStatus="closeModalChangeStatus"
-    @close="closeModal"
-    @success="fetchProducts"
-  />
-</DivCustom>
+    <ProductModal :open="state.isModalOpen" :openChangeStatus="state.isModalChangeStatus"
+      :productId="state.selectedProductId" :title="modalTitle" @closeChangeStatus="closeModalChangeStatus"
+      @close="closeModal" @success="fetchProducts" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -41,6 +31,7 @@ import { computed, onMounted, reactive, watch } from 'vue';
 import { getMembers, type MauSacResponse, type ParamsGetMember } from '@/services/api/admin/mausac.api';
 import { debounce } from 'lodash';
 import DivCustom from '@/components/custom/Div/DivCustomAll.vue'
+import { FilterOutlined, UnorderedListOutlined } from '@ant-design/icons-vue';
 
 
 const state = reactive({
@@ -138,3 +129,34 @@ const handleChangeStatus = async () => {
   fetchProducts();
 }
 </script>
+<style scoped>
+.page-container {
+  padding: 20px; /* Overall padding for the page content */
+}
+
+.breadcrumb-section {
+  margin-bottom: 25px; /* Space below the breadcrumb and above the first section */
+  background-color: #fff; /* White background for the breadcrumb box */
+  padding: 15px 20px; /* Padding inside the breadcrumb box */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
+}
+
+.section-title {
+  margin-top: 30px; /* Space above each main section title */
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px; /* Space below the title */
+  margin-left: 0px; /* Remove left margin if section-title is directly under padding */
+  color: #333; /* Darker color for titles */
+  display: flex; /* To align icon and text */
+  align-items: center; /* Vertically center icon and text */
+  gap: 8px; /* Space between icon and text */
+}
+ 
+/* Remove or adjust body styles if they are global.
+   Scoped styles prevent them from affecting the entire app. */
+body {
+  font-family: 'Roboto', sans-serif;
+}
+</style>

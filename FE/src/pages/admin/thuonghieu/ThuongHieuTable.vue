@@ -1,13 +1,20 @@
 <template>
     <DivCustom label="Danh sách thương hiệu" customClasses="mt-5">
-        <template #extra>
-            <a-tooltip title="Thêm kích thước">
-                <a-button type="primary" @click="handleAddClick"
-                    class="d-flex justify-content-center align-items-center px-4">
-                    <PlusCircleOutlined />
-                </a-button>
-            </a-tooltip>
-        </template>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="font-size: 13px; margin-left: 15px;">
+                {{ products.length }} kích thước
+            </div>
+
+            <div>
+                <a-tooltip title="Thêm thương hiệu">
+                    <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
+                        class="d-flex justify-content-center align-items-center px-4">
+                        <PlusCircleOutlined /> Thêm mới thương hiệu
+                    </a-button>
+                </a-tooltip>
+            </div>
+        </div>
+
         <div class="min-h-[360px] ">
             <a-table :columns="columns" :data-source="products" :pagination="{
                 current: paginationParams.page,
@@ -18,9 +25,9 @@
             }" :scroll="{ y: 240 }" @change="handlePageChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'status'">
-                            <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
-                                {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
-                            </a-tag>    
+                        <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
+                            {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
+                        </a-tag>
                     </template>
                     <div v-if="column.key === 'stt'">
                         {{ products.indexOf(record) + 1 }}
@@ -28,14 +35,14 @@
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
                             <a-tooltip title="Chỉnh sửa thương hiệu">
-                                <a-button type="primary" @click="handleViewClick(record.id)"
+                                <a-button style="background-color: #54bddb;" type="primary" @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button type="primary" class="p-2 d-flex justify-content-center align-items-center">
+                                <a-button style="background-color: #54bddb;" type="primary" class="p-2 d-flex justify-content-center align-items-center">
                                     <RedoOutlined />
                                 </a-button>
                             </a-popconfirm>
@@ -118,6 +125,11 @@ const handleViewClick = (id: string) => {
 </script>
 
 <style scoped lang="scss">
+
+body{
+      font-family: 'Roboto', sans-serif;
+}
+
 .color {
     border-radius: 50%;
 }
@@ -127,4 +139,12 @@ const handleViewClick = (id: string) => {
     justify-content: center;
     align-items: center;
 }
+
+// Custom class for centering buttons in the table if `justify-center` from Tailwind isn't available
+.center-flex-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Ensures vertical alignment as well */
+}    
 </style>

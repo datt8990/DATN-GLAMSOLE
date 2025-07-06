@@ -38,8 +38,8 @@ public class HoaDonChiTiet extends PrimaryEntity implements Serializable {
     @Column(name = "so_luong")
     private Integer soLuong;
 
-    @Column(name = "tong_tien")
-    private Double tongTien;
+    @Column(name = "gia_ban")
+    private Double gia;
 
     @ManyToOne
     @JoinColumn(name = "id_spct")

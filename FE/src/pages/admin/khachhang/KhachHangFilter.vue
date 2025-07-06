@@ -1,13 +1,21 @@
 <template>
-  <DivCustom label="Bộ lọc">
-    <div class="d-flex align-items-center gap-2">
-      <a-input v-model:value="localSearchQuery" placeholder="Nhập mã/tên/sdt/địa chỉ để tìm kiếm..."  style="width: 800px;"/>
-      <a-tooltip title="Làm mới bộ lọc">
-        <a-button @click="resetFilters" class="d-flex align-items-center">
-          <ReloadOutlined />
-        </a-button>
-      </a-tooltip>
-    </div>
+  <DivCustom>
+    <div class="filter-container">
+      <div class="filter-item search-input-group">
+        <label for="search-query" class="filter-label">Tìm kiếm khách hàng</label>
+        <a-input id="search-query" v-model:value="localSearchQuery" placeholder="Nhập mã / tên để tìm kiếm..."
+          class="search-input" />
+      </div>
+
+      <div class="filter-item reset-button-group">
+        <a-tooltip title="Làm mới bộ lọc">
+          <a-button style="background-color: dimgrey; color: white;" @click="resetFilters" class="reset-button">
+            Đặt lại bộ lọc
+            <ReloadOutlined />
+          </a-button>
+        </a-tooltip>
+      </div>
+    </div> 
   </DivCustom>
 </template>
 
@@ -39,3 +47,81 @@ const resetFilters = () => {
   emit('update:searchStatus', null)
 }
 </script>
+
+<style scoped lang="scss">
+/* Use scoped style for better component encapsulation */
+
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  /* Allow items to wrap to the next line on smaller screens */
+  gap: 20px;
+  /* Space between filter items */
+  align-items: flex-end;
+  /* Align items to the bottom of the container */
+  padding: 15px;
+  /* Add some padding around the filter section */
+
+  border-radius: 8px;
+  /* Slightly rounded corners */
+}
+
+.filter-item {
+  display: flex;    
+  flex-direction: column;
+  /* Stack label above input/button */
+  justify-content: flex-end;
+  /* Push content to the bottom if container has extra space */
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: bold; /* This will now be effective */
+  margin-bottom: 5px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.search-input {
+  width: 700px;
+  /* Adjust width as needed for better responsiveness */
+  min-width: 200px;
+  /* Minimum width for search input */
+}
+
+.reset-button {
+  display: flex;
+  /* Ensure icon and text are side-by-side */
+  align-items: center;
+  /* Vertically center icon and text */
+  gap: 5px;
+  /* Space between text and icon */
+  height: 32px;
+  /* Standard Ant Design button height */
+  padding: 0 15px;
+  /* Adjust padding for better look */
+  margin-top: 25px;
+  /* Align button baseline with input text. Adjust as needed based on actual font sizes/line heights */
+}
+
+/* Optional: If you want to match the Ant Design input height precisely for the button */
+.ant-input {
+  height: 32px;
+  /* Default Ant Design input height */
+}
+
+// Basic Ant Design button styles often handle 'd-flex', 'justify-content-center', 'align-items-center', 'px-4'
+// These are likely utility classes from another framework (like Bootstrap or Tailwind).
+// If they are not working, you'd need to define them, e.g.:
+/*
+.d-flex { display: flex; }
+.align-items-center { align-items: center; }
+.justify-content-center { justify-content: center; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+*/
+
+/* Global body font is okay, but usually specified in a global stylesheet */
+body {
+  font-family: 'Roboto', sans-serif;
+}
+</style>
