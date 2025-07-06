@@ -14,7 +14,44 @@ export const ROUTES_CONSTANTS = {
   //   path: '/menu',
   //   name: 'menu'
   // },
-
+  USERS: {
+    path: '',
+    name: 'users',
+    children:{
+        TRANGCHU: {
+        path: 'trang-chu',
+        name: 'trang-chu'
+      },
+      SANPHAM: {
+        path: 'san-pham',
+        name: 'san-pham'
+      },
+       SANPHAMCHITIET: {
+        path: 'san-pham-chi-tiet/:id',
+        name: 'san-pham-chi-tiet'
+      },
+       GIOHANG: {
+        path: 'gio-hang',
+        name: 'gio-hang'
+      },
+       THANHTOAN: {
+        path: 'thanh-toan',
+        name: 'thanh-toan'
+      },
+       THANHTOANTHANHCONG: {
+        path: 'thanh-toan-thanh-cong',
+        name: 'thanh-toan-thanh-cong'
+      },
+       LOGIN: {
+    path: 'login',
+    name: 'Login'
+  },
+  REGISTER: {
+    path: 'register',
+    name: 'register'
+  },
+    }
+  },
   ADMIN: {
     path: '/admin',
     name: 'admin',
@@ -129,12 +166,9 @@ export const ROUTES_CONSTANTS = {
     path: '/error/401',
     name: 'Unauthorized'
   },
-  LOGIN: {
-    path: '/login',
-    name: 'Login'
-  },
   NOT_FOUND: {
     path: '/:pathMatch(.*)*',
     name: 'NotFound'
   },
+
 }
