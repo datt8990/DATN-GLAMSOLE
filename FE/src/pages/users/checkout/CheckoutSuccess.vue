@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-content-center align-items-center w-100 min-vh-100 bg-light">
+  <div class="d-flex justify-content-center align-items-center w-100 bg-light">
     <div class="position-relative border rounded shadow p-4 bg-white" style="max-width: 500px; width: 100%;">
       <!-- Icon Thành công -->
       <div class="position-absolute top-0 start-50 translate-middle" style="transform: translate(-50%, -50%);">

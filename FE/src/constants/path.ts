@@ -34,6 +34,10 @@ export const ROUTES_CONSTANTS = {
         path: 'gio-hang',
         name: 'gio-hang'
       },
+        THONGTINCANHAN: {
+        path: 'thong-tin-ca-nhan',
+        name: 'thong-tin-ca-nhan'
+      },
        THANHTOAN: {
         path: 'thanh-toan',
         name: 'thanh-toan'
@@ -56,6 +60,10 @@ export const ROUTES_CONSTANTS = {
     path: '/admin',
     name: 'admin',
     children: {
+        LOGIN: {
+        path: 'login',
+        name: 'login-admin'
+      },
       MAUSAC: {
         path: 'mau-sac',
         name: 'mau-sac-admin'

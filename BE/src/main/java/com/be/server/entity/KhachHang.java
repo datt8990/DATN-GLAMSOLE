@@ -64,4 +64,7 @@ public class KhachHang extends PrimaryEntity implements Serializable {
     @Column(name = "gioi_timh")
     private Boolean gioiTimh;
 
+    @Column(name = "mat_khau")
+    private String mat_khau;
+
 }

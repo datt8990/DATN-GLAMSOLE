@@ -19,13 +19,11 @@
         <span class="fw-bold fs-5 text-dark d-none d-md-inline">GLAMSOLE</span>
       </a>
 
-      <!-- Search Form -->
+      <!-- Search -->
       <form class="d-none d-md-block mx-3" style="max-width: 500px; width: 100%;" @submit.prevent="onSearch">
         <div class="input-group input-group-sm">
-          <input type="text" class="form-control" placeholder="Search..." v-model="keyword"
-            style="box-shadow: none; outline: none;" />
-          <button class="btn" type="submit"
-            style="background-color: #4fc3f7; border: none; color: white; box-shadow: none; outline: none;">
+          <input type="text" class="form-control" placeholder="Search..." v-model="keyword" />
+          <button class="btn btn-cyan" type="submit">
             <SearchOutlined style="font-size: 1rem" />
           </button>
         </div>
@@ -33,48 +31,59 @@
 
       <!-- Action buttons -->
       <div class="d-flex align-items-center gap-3 position-relative" style="margin-right: 1.5rem;">
-        <!-- Dropdown tài khoản -->
+        <!-- Tài khoản -->
         <div class="account-container" ref="accountRef">
           <a href="#" class="d-flex align-items-center text-black text-decoration-none" @click.prevent="toggleDropdown">
-            <div style="font-size: 1.5rem; display: flex; align-items: center;">
+            <div v-if="userLogin?.pictureUrl" class="rounded-circle overflow-hidden border"
+              style="width: 32px; height: 32px;">
+              <img :src="userLogin.pictureUrl" alt="avatar" class="w-100 h-100" style="object-fit: cover;" />
+            </div>
+            <div v-else style="font-size: 1.5rem; display: flex; align-items: center;">
               <LoginOutlined />
             </div>
+
             <div class="ms-2 lh-sm">
-              <div style="font-size: 0.75rem; font-weight: 500;">Tài khoản</div>
-              <div style="font-size: 0.68rem;">Đăng nhập / Đăng ký</div>
+              <div style="font-size: 0.75rem; font-weight: 500;">
+                {{ userLogin?.fullName ? 'Xin chào' : 'Tài khoản' }}
+              </div>
+              <div style="font-size: 0.68rem;">
+                {{ userLogin?.fullName ?? 'Đăng nhập / Đăng ký' }}
+              </div>
             </div>
           </a>
 
-          <!-- Tam giác đỏ -->
           <div v-if="showDropdown" class="triangle-up"></div>
 
-          <!-- Menu xổ xuống -->
           <div v-if="showDropdown" class="account-dropdown-menu shadow-sm">
-      <RouterLink
-  :to="{ name: ROUTES_CONSTANTS.USERS.children.LOGIN.name }"
-  class="dropdown-entry"
-  @click="closeDropdown"
->
-  <UserOutlined class="me-2 icon-thin" />
-  <span class="text">Đăng nhập</span>
-</RouterLink>
+            <template v-if="userLogin">
+              <RouterLink :to="{ name: ROUTES_CONSTANTS.USERS.children.THONGTINCANHAN.name }" class="dropdown-entry"
+                @click="closeDropdown">
+                <UserOutlined class="me-2 icon-thin" />
+                <span class="text">Trang cá nhân</span>
+              </RouterLink>
+              <a href="#" class="dropdown-entry border-top" @click.prevent="logout">
+                <LoginOutlined class="me-2 icon-thin" />
+                <span class="text">Đăng xuất</span>
+              </a>
+            </template>
 
-<RouterLink
-  :to="{ name: ROUTES_CONSTANTS.USERS.children.REGISTER.name }"
-  class="dropdown-entry border-top"
-  @click="closeDropdown"
->
-  <UserAddOutlined class="me-2 icon-thin" />
-  <span class="text">Đăng ký</span>
-</RouterLink>
+            <template v-else>
+              <RouterLink :to="{ name: ROUTES_CONSTANTS.USERS.children.LOGIN.name }" class="dropdown-entry"
+                @click="closeDropdown">
+                <UserOutlined class="me-2 icon-thin" />
+                <span class="text">Đăng nhập</span>
+              </RouterLink>
 
+              <RouterLink :to="{ name: ROUTES_CONSTANTS.USERS.children.REGISTER.name }"
+                class="dropdown-entry border-top" @click="closeDropdown">
+                <UserAddOutlined class="me-2 icon-thin" />
+                <span class="text">Đăng ký</span>
+              </RouterLink>
+            </template>
           </div>
-
-
         </div>
 
-        <!-- Nút giỏ hàng -->
-        <!-- Nút giỏ hàng gọn đẹp như mẫu -->
+        <!-- Giỏ hàng -->
         <div class="cart-icon-wrapper position-relative" @click="goToCart" style="cursor: pointer;">
           <ShoppingCartOutlined class="text-black" style="font-size: 1.6rem;" />
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -82,11 +91,11 @@
             {{ cartItemCount }}
           </span>
         </div>
-
       </div>
     </nav>
   </header>
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
@@ -98,16 +107,29 @@ import {
   UserOutlined
 } from '@ant-design/icons-vue'
 import { ROUTES_CONSTANTS } from '@/constants/path'
+import { localStorageAction } from '@/utils/storage'
+import { USER_INFO_STORAGE_KEY } from '@/constants/storageKey'
 
 const keyword = ref('')
 const showDropdown = ref(false)
 const cartItemCount = ref(3)
 const accountRef = ref<HTMLElement | null>(null)
+
+const router = useRouter()
+import { useAuthStore } from '@/stores/auth'
+import { computed } from 'vue'
+
+const authStore = useAuthStore()
+const userLogin = computed(() => authStore.user)
+
+
 const closeDropdown = () => {
   showDropdown.value = false
 }
 
-const router = useRouter()
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value
+}
 
 const onSearch = () => {
   const trimmed = keyword.value.trim()
@@ -115,16 +137,16 @@ const onSearch = () => {
 }
 
 const goToCart = () => {
-  router.push({
-    name: ROUTES_CONSTANTS.USERS.children.GIOHANG.name
-  })
+  router.push({ name: ROUTES_CONSTANTS.USERS.children.GIOHANG.name })
 }
 
-const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value
+const logout = () => {
+  localStorageAction.remove(USER_INFO_STORAGE_KEY)
+  userLogin.value = null
+  closeDropdown()
+  window.location.reload()
 }
 
-// Tự đóng khi click ra ngoài
 const handleClickOutside = (event: MouseEvent) => {
   if (accountRef.value && !accountRef.value.contains(event.target as Node)) {
     showDropdown.value = false
@@ -139,6 +161,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
+
 <style scoped>
 .btn-cyan {
   background-color: #4fc3f7;
