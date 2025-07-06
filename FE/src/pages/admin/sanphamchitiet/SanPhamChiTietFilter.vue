@@ -3,18 +3,16 @@
     <div class="d-flex flex-column gap-3">
       <!-- Tìm kiếm theo từ khóa -->
       <div class="d-flex align-items-center gap-2">
-        <a-input v-model:value="localSearchQuery" placeholder="Nhập mã/ tên sản phẩm..." style="width: 600px; margin-left: 30px"
-          size="small" />
-        <a-tooltip title="Làm mới bộ lọc">
-          <a-button @click="resetFilters" size="small" class="d-flex align-items-center">
-            <ReloadOutlined />
-          </a-button>
-        </a-tooltip>
-        <div class="d-flex align-items-center gap-2" style="margin-left: 350px;">
-          <span style="font-size: 13px; min-width: 70px">Khoảng giá:</span>
-          <a-slider range v-model:value="localPriceRange" :min="minPrice" :max="maxPrice" style="width: 250px"
+        <div class="filter-item search-input-group">
+          <label for="search-query" class="filter-label">Tìm kiếm sản phẩm </label>
+          <a-input id="search-query" v-model:value="localSearchQuery" placeholder="Nhập mã / tên để tìm kiếm..."
+            class="search-input" />
+        </div>
+        <div class="filter-item search-input-group">
+          <label for="search-query" class="filter-label">Tìm kiếm sản phẩm </label>
+          <a-slider range v-model:value="localPriceRange" :min="minPrice" :max="maxPrice" style="width: 550px"
             :tooltip-visible="false" />
-          <div style="font-size: 13px; min-width: 160px">
+          <div style="font-size: 13px; width: 160px">
             {{ localPriceRange[0].toLocaleString() }}₫ - {{ localPriceRange[1].toLocaleString() }}₫
           </div>
         </div>
@@ -23,10 +21,10 @@
       <!-- Dòng chứa các bộ lọc: trạng thái, giá, màu, kích thước -->
       <div class="d-flex flex-wrap gap-4" style="margin-left: 30px">
         <!-- Trạng thái -->
-        <div class="d-flex align-items-center gap-2">
-          <span style="font-size: 13px; min-width: 70px">Trạng thái:</span>
-          <a-select v-model:value="localSearchStatus" @change="handleStatusChange" allow-clear style="width: 180px"
-            size="small" placeholder="Chọn trạng thái">
+        <div class="filter-item search-input-group">
+          <label for="search-query" class="filter-label">Trạng thái:</label>
+          <a-select class="select-input" v-model:value="localSearchStatus" allow-clear style="width: 300px" size="small"
+            placeholder="Chọn trạng thái">
             <a-select-option :value="1">Hoạt động</a-select-option>
             <a-select-option :value="0">Ngừng hoạt động</a-select-option>
           </a-select>
@@ -36,19 +34,29 @@
 
 
         <!-- Màu -->
-        <div class="d-flex align-items-center gap-2" style="margin-left: 100px">
-          <span style="font-size: 13px; min-width: 70px">Màu:</span>
+        <div class="filter-item search-input-group">
+          <label for="search-query" class="filter-label">Màu:</label>
           <a-select v-model:value="localColor" @change="handleColorChange" allow-clear :options="ColorOptions"
-            placeholder="Chọn màu sắc" style="width: 180px" size="small" />
+            placeholder="Chọn màu sắc" style="width: 300px" size="small" />
         </div>
 
         <!-- Kích thước -->
-        <div class="d-flex align-items-center gap-2" style="margin-left: 100px">
-          <span style="font-size: 13px; min-width: 70px">Kích thước:</span>
+        <div class="filter-item search-input-group">
+          <label for="search-query" class="filter-label">Kích thước:</label>
           <a-select v-model:value="localSize" @change="handleSizeChange" allow-clear :options="SizeOptions"
-            placeholder="Chọn kích thước" style="width: 180px" size="small" />
+            placeholder="Chọn kích thước" style="width: 300px" size="small" />
+        </div>
+        <div class="filter-item reset-button-group">
+          <a-tooltip title="Làm mới bộ lọc">
+            <a-button style="background-color: dimgrey; margin-left: 200px; color: white;" @click="resetFilters"
+              class="reset-button">
+              Đặt lại bộ lọc
+              <ReloadOutlined />
+            </a-button>
+          </a-tooltip>
         </div>
       </div>
+
     </div>
   </DivCustom>
 
@@ -139,3 +147,81 @@ const resetFilters = () => {
   emit('update:searchSize', null)
 }
 </script>
+<style scoped lang="scss">
+/* Use scoped style for better component encapsulation */
+
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  /* Allow items to wrap to the next line on smaller screens */
+  gap: 20px;
+  /* Space between filter items */
+  align-items: flex-end;
+  /* Align items to the bottom of the container */
+  padding: 15px;
+  /* Add some padding around the filter section */
+
+  border-radius: 8px;
+  /* Slightly rounded corners */
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  /* Stack label above input/button */
+  justify-content: flex-end;
+  /* Push content to the bottom if container has extra space */
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: bold;
+  /* This will now be effective */
+  margin-bottom: 5px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.search-input {
+  width: 700px;
+  /* Adjust width as needed for better responsiveness */
+  min-width: 200px;
+  /* Minimum width for search input */
+}
+
+.reset-button {
+  display: flex;
+  /* Ensure icon and text are side-by-side */
+  align-items: center;
+  /* Vertically center icon and text */
+  gap: 5px;
+  /* Space between text and icon */
+  height: 32px;
+  /* Standard Ant Design button height */
+  padding: 0 15px;
+  /* Adjust padding for better look */
+  margin-top: 25px;
+  /* Align button baseline with input text. Adjust as needed based on actual font sizes/line heights */
+}
+
+/* Optional: If you want to match the Ant Design input height precisely for the button */
+.ant-input {
+  height: 32px;
+  /* Default Ant Design input height */
+}
+
+// Basic Ant Design button styles often handle 'd-flex', 'justify-content-center', 'align-items-center', 'px-4'
+// These are likely utility classes from another framework (like Bootstrap or Tailwind).
+// If they are not working, you'd need to define them, e.g.:
+/*
+.d-flex { display: flex; }
+.align-items-center { align-items: center; }
+.justify-content-center { justify-content: center; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+*/
+
+/* Global body font is okay, but usually specified in a global stylesheet */
+body {
+  font-family: 'Roboto', sans-serif;
+}
+</style>

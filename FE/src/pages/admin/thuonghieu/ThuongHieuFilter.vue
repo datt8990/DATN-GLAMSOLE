@@ -6,7 +6,14 @@
         <a-input id="search-query" v-model:value="localSearchQuery" placeholder="Nhập mã / tên để tìm kiếm..."
           class="search-input" />
       </div>
-
+      <div class="filter-item search-input-group">
+        <label for="search-query" class="filter-label">Trạng thái:</label>
+        <a-select class="select-input" v-model:value="localSearchStatus" allow-clear style="width: 180px" size="small"
+          placeholder="Chọn trạng thái">
+          <a-select-option :value="1">Hoạt động</a-select-option>
+          <a-select-option :value="0">Ngừng hoạt động</a-select-option>
+        </a-select>
+      </div>
       <div class="filter-item reset-button-group">
         <a-tooltip title="Làm mới bộ lọc">
           <a-button style="background-color: dimgrey; color: white;" @click="resetFilters" class="reset-button">
