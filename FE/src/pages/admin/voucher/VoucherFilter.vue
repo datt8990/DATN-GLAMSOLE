@@ -1,21 +1,75 @@
 <template>
-  <DivCustom>
-    <div class="filter-container">
-      <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Tìm kiếm chất liệu</label>
-        <a-input id="search-query" v-model:value="localSearchQuery" placeholder="Nhập mã / tên để tìm kiếm..."
-          class="search-input" />
+  <DivCustom label="Bộ lọc">
+    <div class="row">
+      <!-- Row 1 -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label d-flex align-items-center">
+          <span class="ms-2">Mã/Tên Phiếu:</span>
+        </label>
+        <a-input 
+
+          placeholder="Tìm kiếm"
+          style="width: 100%;"
+        />
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Từ ngày:</label>
+        <a-date-picker 
+   
+          placeholder="Tìm kiếm"
+          style="width: 100%;"
+          format="DD/MM/YYYY"
+          :inputReadOnly="true"
+        />
       </div>
 
-      <div class="filter-item reset-button-group">
-        <a-tooltip title="Làm mới bộ lọc">
-          <a-button style="background-color: dimgrey; color: white;" @click="resetFilters" class="reset-button">
-            Đặt lại bộ lọc
-            <ReloadOutlined />
-          </a-button>
-        </a-tooltip>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Đến ngày:</label>
+        <a-date-picker 
+       
+          placeholder="Tìm kiếm"
+          style="width: 100%;"
+          format="DD/MM/YYYY"
+          :inputReadOnly="true"
+        />
       </div>
-    </div> 
+    </div>
+
+    <!-- Row 2 -->
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Giá trị giảm:</label>
+        <a-input 
+    
+          placeholder="Tìm kiếm"
+          style="width: 100%;"
+        />
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Trạng thái:</label>
+        <a-select 
+
+          placeholder="Tất cả"
+          style="width: 100%;"
+          :options="statusOptions"
+          allowClear
+        />
+      </div>
+      
+      <!-- Action buttons -->
+    <div class="d-flex justify-content-center gap-2 mt-3 col-md-4 mb-3 align-self-end">
+      <a-tooltip title="Làm mới bộ lọc">
+        <a-button @click="resetFilters" class="d-flex align-items-center"
+        style="background-color: #54bddb; border-color: #54bddb; color: white;">
+          Làm mới
+          <ReloadOutlined />
+        </a-button>
+      </a-tooltip>
+    </div>
+      
+    </div>
   </DivCustom>
 </template>
 
@@ -39,7 +93,10 @@ watch([localSearchQuery, localSearchStatus], ([newQuery, newStatus]) => {
   emit('update:searchQuery', newQuery)
   emit('update:searchStatus', newStatus)
 })
-
+const statusOptions = [
+  { label: 'Chưa kích hoạt', value: 'CHUA_KICH_HOAT' },
+  { label: 'Đang kích hoạt', value: 'DANG_KICH_HOAT' },
+]
 const resetFilters = () => {
   localSearchQuery.value = ''
   localSearchStatus.value = null

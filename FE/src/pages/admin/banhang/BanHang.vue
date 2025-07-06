@@ -1987,6 +1987,7 @@ textarea.input-full-width {
   height: 40px;
 }
 
+
 .page-container {
   padding: 20px;
   /* Overall padding for the page content */
