@@ -38,6 +38,8 @@ export const PREFIX_API_REFRESH = (PREFIX_API_AUTH + `/refresh`) as string;
 
 export const PREFIX_API_LOGIN = (PREFIX_API_AUTH + `/login`) as string;
 
+export const PREFIX_API_LOGIN_ADMIN = (PREFIX_API_AUTH + `/login-admin`) as string;
+
 // API PREFIX ADMIN
 export const PREFIX_API_ADMIN = `${API_URL}/admin` as string;
 

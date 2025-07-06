@@ -109,14 +109,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (userOptional.isPresent()) {
             KhachHang khachHang = userOptional.get();
 
-            String email = oAuth2UserInfo.getEmail();
-            khachHang.setEmail(email);
+            // Cập nhật thông tin mới từ OAuth2 provider
+            khachHang.setEmail(oAuth2UserInfo.getEmail());
             khachHang.setAvatar(oAuth2UserInfo.getImageUrl());
 
             khachHangAuthRepository.save(khachHang);
 
-            return UserPrincipal.create(khachHang, oAuth2UserInfo.getAttributes());
+            //  Gán role = USERS và tạo UserPrincipal có authority tương ứng
+            UserPrincipal principal = UserPrincipal.createFromKhachHang(khachHang);
+            principal.setAttributes(oAuth2UserInfo.getAttributes());
+            return principal;
+
         } else {
+            // Nếu chưa có tài khoản thì lưu cookie và throw lỗi
             CookieUtils.addCookie(httpServletResponse, CookieConstant.ACCOUNT_NOT_EXIST, CookieConstant.ACCOUNT_NOT_EXIST);
             throw new OAuth2AuthenticationProcessingException(CookieConstant.ACCOUNT_NOT_EXIST);
         }

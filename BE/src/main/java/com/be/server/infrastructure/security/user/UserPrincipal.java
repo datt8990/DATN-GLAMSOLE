@@ -1,97 +1,97 @@
 package com.be.server.infrastructure.security.user;
 
 import com.be.server.entity.KhachHang;
+import com.be.server.entity.NhanVien;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class UserPrincipal implements OAuth2User, UserDetails {
 
-    @Getter
-    private final String id;
-
-    @Getter
-    private final String email;
-
+    @Getter private final String id;
+    @Getter private final String email;
     private final String password;
+
+    private final Collection<? extends GrantedAuthority> authorities;
 
     @Setter
     private Map<String, Object> attributes;
 
-    public UserPrincipal(String id, String email, String password) {
+    // Constructor
+    public UserPrincipal(String id, String email, String password, String role) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
-    public static UserPrincipal create(KhachHang khachHang) {
+    // Tạo từ KhachHang
+    public static UserPrincipal createFromKhachHang(KhachHang khachHang) {
         return new UserPrincipal(
                 khachHang.getId(),
                 khachHang.getEmail(),
-                khachHang.getMat_khau()
+                khachHang.getMat_khau(),
+                "USERS"
         );
     }
 
-    public static UserPrincipal create(KhachHang khachHang, Map<String, Object> attributes) {
-        UserPrincipal userPrincipal = create(khachHang);
-        userPrincipal.setAttributes(attributes);
-        return userPrincipal;
+    // Tạo từ NhanVien
+    public static UserPrincipal createFromNhanVien(NhanVien nhanVien) {
+        return new UserPrincipal(
+                nhanVien.getId(),
+                nhanVien.getEmail(),
+                nhanVien.getMatKhau(),
+                "ADMIN"
+        );
     }
 
-    @Override
-    public String getPassword() {
-        log.info("Mật khẩu từ DB (đã băm): {}", password);
-        return this.password;
+    // Tạo OAuth2
+    public static UserPrincipal createFromKhachHangOAuth(KhachHang khachHang, Map<String, Object> attributes) {
+        UserPrincipal principal = createFromKhachHang(khachHang);
+        principal.setAttributes(attributes);
+        return principal;
     }
 
-    @Override
-    public String getUsername() {
-        return this.email;
+    @Override public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
+    @Override public String getPassword() {
+        return password;
+    }
+
+    @Override public String getUsername() {
+        return email;
+    }
+
+    @Override public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
+    @Override public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
+    @Override public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
-    public boolean isEnabled() {
+    @Override public boolean isEnabled() {
         return true;
     }
 
-    /**
-     * Không có phân quyền nên trả về danh sách trống.
-     */
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
+    @Override public Map<String, Object> getAttributes() {
         return attributes;
     }
 
-    @Override
-    public String getName() {
-        return String.valueOf(id);
+    @Override public String getName() {
+        return id;
     }
 }

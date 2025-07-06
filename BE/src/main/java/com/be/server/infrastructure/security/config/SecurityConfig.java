@@ -1,6 +1,7 @@
 package com.be.server.infrastructure.security.config;
 
 import com.be.server.infrastructure.constant.MappingConstants;
+import com.be.server.infrastructure.constant.Role;
 import com.be.server.infrastructure.exception.RestAuthenticationEntryPoint;
 import com.be.server.infrastructure.security.filter.TokenAuthenticationFilter;
 import com.be.server.infrastructure.security.oauth2.CustomOAuth2UserService;
@@ -118,12 +119,12 @@ public class SecurityConfig {
                         .permitAll()
         );
 
-//        http.authorizeHttpRequests(
-//                auth -> auth
-//                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_ADMIN_PREFIX)).hasAnyAuthority(Role.ADMIN.name())
-//                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_MANAGE_PREFIX)).hasAnyAuthority(Role.QUAN_LY.name())
-//                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_MEMBER_PREFIX)).hasAnyAuthority(Role.THANH_VIEN.name())
-//        );
+        http.authorizeHttpRequests(
+                auth -> auth
+                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_ADMIN_PREFIX)).hasAnyAuthority(Role.ADMIN.name())
+//                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_ADMIN_PREFIX)).hasAnyAuthority(Role.USERS.name())
+
+        );
 
         http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         http.oauth2Login(

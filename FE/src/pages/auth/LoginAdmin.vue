@@ -14,9 +14,6 @@
                     Hãy <span class="fw-semibold text-dark">hoàn tất đăng nhập</span> để tiếp tục trải nghiệm cùng
                     <span class="fw-bold" style="color: #4fc3f7;">GLAMSOLE</span>.
                 </p>
-                
-
-
 
                 <!-- Form -->
                 <form @submit.prevent="onLogin">
@@ -40,8 +37,10 @@
 
                     <!-- Nút Đăng nhập -->
                     <div class="d-grid mb-2">
-                        <button type="submit" class="btn text-white" style="background-color: #4fc3f7">
-                            Đăng nhập
+                        <button type="submit" class="btn text-white d-flex justify-content-center align-items-center"
+                            :disabled="loading" style="background-color: #4fc3f7; height: 38px;">
+                            <span v-if="!loading">Đăng nhập</span>
+                            <div v-else class="spinner-border spinner-border-sm text-light" role="status"></div>
                         </button>
                     </div>
 
@@ -75,7 +74,27 @@ const togglePassword = () => {
     showPassword.value = !showPassword.value
 }
 
-const onLogin = () => {
+
+import { GoogleOutlined, GithubOutlined } from '@ant-design/icons-vue'
+import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
+import { URL_OAUTH2_GITHUB_USERS, URL_OAUTH2_GOOGLE_USERS } from '@/constants/url'
+import { cookieStorageAction } from '@/utils/storage'
+import { ACCOUNT_EXIST, ACCOUNT_EXIST_MESSAGE, ACCOUNT_NOT_EXIST, ACCOUNT_NOT_EXIST_MESSAGE, Registered_Awaiting_Confirmation, Registered_Awaiting_Confirmation_MESSAGE, Unverified_Account, Unverified_Account_MESSAGE } from '@/constants/cookie.constant'
+import { toast } from 'vue3-toastify'
+import { loginAdmin } from '@/services/api/auth/authentication.api'
+import { getUserInformation } from '@/utils/token.helper'
+import { useAuthStore } from '@/stores/auth'
+import { router } from '@/routes/router'
+import { ROUTES_CONSTANTS } from '@/constants/path'
+
+const breadcrumbRoutes = [
+    { name: 'Trang chủ', path: '/admin' },
+    { name: 'Đăng nhập' }
+]
+const loading = ref(false)
+const authStore = useAuthStore()
+const onLogin = async () => {
+    loading.value = true
     // Reset errors
     errors.email = ''
     errors.password = ''
@@ -90,26 +109,38 @@ const onLogin = () => {
     }
 
     // Nếu không có lỗi thì in ra dữ liệu
+    // Nếu không có lỗi thì in ra dữ liệu
     if (!errors.email && !errors.password) {
-        
-        console.log('Đăng nhập với:', form)
-        alert('Đăng nhập thành công')
+        try {
+            const payload = {
+                email: form.email,
+                password: form.password
+            }
+
+            const res = await loginAdmin(payload)
+            // console.log(res.data)
+            const accessToken = res.data.accessToken;
+            const refreshToken = res.data.refreshToken;
+            const userInfo = getUserInformation(accessToken)
+
+            authStore.login({
+                user: userInfo,
+                accessToken,
+                refreshToken
+            })
+
+            router.push({ name: ROUTES_CONSTANTS.ADMIN.children.BAN_HANG.name })
+
+        } catch (err: any) {
+            // Nếu lỗi từ API có message
+            const errorMessage = err?.response?.data?.message ?? 'Đã xảy ra lỗi. Vui lòng thử lại.'
+            errors.password = errorMessage
+             loading.value = false
+        }
+
+
     }
 }
-import { GoogleOutlined, GithubOutlined } from '@ant-design/icons-vue'
-import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
-import { URL_OAUTH2_GITHUB_USERS, URL_OAUTH2_GOOGLE_USERS } from '@/constants/url'
-import { cookieStorageAction } from '@/utils/storage'
-import { ACCOUNT_EXIST, ACCOUNT_EXIST_MESSAGE, ACCOUNT_NOT_EXIST, ACCOUNT_NOT_EXIST_MESSAGE, Registered_Awaiting_Confirmation, Registered_Awaiting_Confirmation_MESSAGE, Unverified_Account, Unverified_Account_MESSAGE } from '@/constants/cookie.constant'
-import { toast } from 'vue3-toastify'
-
-const breadcrumbRoutes = [
-    { name: 'Trang chủ', path: '/admin' },
-    { name: 'Đăng nhập' }
-]
-
-
-
 
 </script>
 

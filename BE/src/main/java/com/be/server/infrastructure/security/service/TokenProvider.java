@@ -4,6 +4,7 @@ import com.be.server.entity.KhachHang;
 import com.be.server.entity.NhanVien;
 import com.be.server.infrastructure.constant.Role;
 import com.be.server.infrastructure.security.repository.KhachHangAuthRepository;
+import com.be.server.infrastructure.security.repository.NhanVienAuthRepository;
 import com.be.server.infrastructure.security.user.UserPrincipal;
 
 import io.jsonwebtoken.*;
@@ -34,6 +35,9 @@ public class TokenProvider {
 
     @Setter(onMethod_ = @Autowired)
     private KhachHangAuthRepository khachHangAuthRepository;
+
+    @Setter(onMethod_ = @Autowired)
+    private NhanVienAuthRepository nhanVienAuthRepository;
 
     @Setter(onMethod_ = @Autowired)
     private HttpServletRequest httpServletRequest;
@@ -71,32 +75,30 @@ public class TokenProvider {
 
     // ===== TOKEN CHO ADMIN =====
     public String createTokenForAdmin(Authentication authentication) {
-//        log.info("Tạo access token cho admin...");
-//        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-//        Optional<User> userOpt = userAuthRepository.findByEmail(userPrincipal.getEmail());
-//
-//        if (userOpt.isEmpty()) {
-//            log.warn("Không tìm thấy admin: {}", userPrincipal.getEmail());
-//            return null;
-//        }
-//
-//        return buildTokenAdmin(userOpt.get(), ACCESS_TOKEN_EXPIRATION, "ADMIN");
+        log.info("Tạo access token cho nhân viên...");
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        Optional<NhanVien> userOpt = nhanVienAuthRepository.findByEmail(userPrincipal.getEmail());
 
-        return null;
+        if (userOpt.isEmpty()) {
+            log.warn("Không tìm thấy khách hàng: {}", userPrincipal.getEmail());
+            return null;
+        }
+
+        return buildTokenAdmin(userOpt.get(), ACCESS_TOKEN_EXPIRATION, Role.ADMIN.name());
+
     }
 
     public String createRefreshTokenForAdmin(Authentication authentication) {
-        log.info("Tạo refresh token cho admin...");
+        log.info("Tạo refresh token cho nhân viên...");
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-//        Optional<NhanVien> userOpt = userAuthRepository.findByEmail(userPrincipal.getEmail());
+        Optional<NhanVien> userOpt = nhanVienAuthRepository.findByEmail(userPrincipal.getEmail());
 
-//        if (userOpt.isEmpty()) {
-//            log.warn("Không tìm thấy admin: {}", userPrincipal.getEmail());
-//            return null;
-//        }
+        if (userOpt.isEmpty()) {
+            log.warn("Không tìm thấy khách hàng: {}", userPrincipal.getEmail());
+            return null;
+        }
 
-//        return buildTokenAdmin(userOpt.get(), REFRESH_TOKEN_EXPIRATION, "ADMIN");
-        return null;
+        return buildTokenAdmin(userOpt.get(), REFRESH_TOKEN_EXPIRATION,  Role.ADMIN.name());
     }
 
     // ===== BUILD TOKEN =====

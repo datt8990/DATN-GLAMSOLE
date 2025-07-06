@@ -11,6 +11,7 @@ import com.be.server.infrastructure.security.service.TokenProvider;
 import com.be.server.infrastructure.security.user.UserPrincipal;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
@@ -24,6 +25,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
+    @Qualifier("customUserDetailsService")
     private final CustomUserDetailsService customUserDetailsService;
 
     private final AuthService authService;
@@ -42,7 +44,6 @@ public class AuthController {
             return Helper.createResponseEntity(
              new ResponseObject<>(new AuthTokens(accessToken, refreshToken), HttpStatus.OK, "Lấy token thành công")
 
-//            new ResponseObject<>(token, HttpStatus.OK, "Lấy token thành công")
             );
 
         } catch (BadCredentialsException ex) {
@@ -81,7 +82,6 @@ public class AuthController {
     public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest loginRequest) {
         try {
             System.out.println("chua implement chuc nang này");
-//            System.out.println("tài khoản"+loginRequest.getEmail()+"/"+loginRequest.getPassword());
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -91,8 +91,6 @@ public class AuthController {
             String refreshToken = tokenProvider.createTokenForAdmin(authentication);
             return Helper.createResponseEntity(
                     new ResponseObject<>(new AuthTokens(accessToken, refreshToken), HttpStatus.OK, "Lấy token thành công")
-
-//            new ResponseObject<>(token, HttpStatus.OK, "Lấy token thành công")
             );
 
         } catch (BadCredentialsException ex) {

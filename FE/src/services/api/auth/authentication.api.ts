@@ -1,4 +1,4 @@
-import {PREFIX_API_LOGIN} from "@/constants/url";
+import {PREFIX_API_LOGIN, PREFIX_API_LOGIN_ADMIN} from "@/constants/url";
 import request from "@/services/request";
 import type {DefaultResponse} from "@/utils/types/api.common";
 import type {AxiosResponse} from "axios";
@@ -30,3 +30,19 @@ export const loginUser = async (
     }
 };
 
+
+export const loginAdmin = async (
+    params: LoginForm
+) => {
+    try {
+        const res = (await request({
+            url: `${PREFIX_API_LOGIN_ADMIN}`,
+            method: "POST",
+            data: params,
+        })) as AxiosResponse<DefaultResponse<LoginResponseData>>;
+
+        return res.data;
+    } catch (error) {
+        return error as AxiosResponse<DefaultResponse<any>>;
+    }
+};

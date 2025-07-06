@@ -113,6 +113,7 @@ const togglePassword = () => {
 
 
 const authStore = useAuthStore()
+
 const onLogin = async () => {
   loading.value = true
   // Reset errors

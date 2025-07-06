@@ -10,6 +10,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,8 +28,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Setter(onMethod_ = @Autowired)
     private TokenProvider tokenProvider;
 
-    @Setter(onMethod_ = @Autowired)
-    private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    @Qualifier("customUserDetailsService")
+    private CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -37,28 +39,25 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         try {
-
             String jwt = getJwtFromRequest(request);
 
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                String userId = tokenProvider.getUserIdFromToken(jwt);
-                String userEmail = tokenProvider.getEmailFromToken(jwt);
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
+                String email = tokenProvider.getEmailFromToken(jwt);
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                if (userDetails != null) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         } catch (Exception ex) {
-            log.error("Could not set user authentication in security context", ex);
+            log.error("❌ Không thể thiết lập xác thực người dùng", ex);
         }
+
         filterChain.doFilter(request, response);
     }
 
@@ -69,6 +68,4 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
-
-
 }
