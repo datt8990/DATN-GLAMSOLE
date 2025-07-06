@@ -1,25 +1,45 @@
 <template>
   <div class="container mx-auto p-6 space-y-6">
-
     <div class="breadcrumb-section">
-      <BreadcrumbDefault :pageTitle="'Chi tiết hóa đơn'" :routes="[
-         { path: '/admin/hoa-don', name: 'Quản lý hóa đơn' },
-        { path: '/admin/hoa-don-detai', name: 'Chi tiết hóa đơn' }
-      ]" />
+      <BreadcrumbDefault
+        :pageTitle="'Chi tiết hóa đơn'"
+        :routes="[
+          { path: '/admin/hoa-don', name: 'Quản lý hóa đơn' },
+          { path: '/admin/hoa-don-detai', name: 'Chi tiết hóa đơn' },
+        ]"
+      />
     </div>
     <!-- Timeline Trạng thái đơn hàng - Ngang -->
     <a-card title="TRẠNG THÁI ĐƠN HÀNG" bordered class="order-info-card">
       <div class="order-timeline-horizontal">
         <div class="timeline-container-horizontal">
           <!-- Dynamic Timeline Steps -->
-          <div v-for="(step, index) in timelineSteps" :key="step.key" class="timeline-step-horizontal"
-            :class="getStepStatus(index)">
+          <div
+            v-for="(step, index) in timelineSteps"
+            :key="step.key"
+            class="timeline-step-horizontal"
+            :class="getStepStatus(index)"
+          >
             <div class="step-content-horizontal">
               <div class="step-icon-horizontal">
-                <div class="icon-circle-horizontal" :class="['icon-circle-horizontal', getIconClass(index)]">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path :d="step.icon" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round" />
+                <div
+                  class="icon-circle-horizontal"
+                  :class="['icon-circle-horizontal', getIconClass(index)]"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      :d="step.icon"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                   </svg>
                 </div>
               </div>
@@ -33,22 +53,41 @@
                 {{ getTimelineData(index).time }}
               </div>
             </div>
-            <div v-if="
-              index < timelineSteps.length - 1 && !isLastActiveStep(index)
-            " class="step-line-horizontal" :class="getLineClass(index)"></div>
+            <div
+              v-if="
+                index < timelineSteps.length - 1 && !isLastActiveStep(index)
+              "
+              class="step-line-horizontal"
+              :class="getLineClass(index)"
+            ></div>
           </div>
         </div>
       </div>
 
       <!-- Buttons for status update -->
       <div class="mt-4 flex gap-2 justify-center">
-        <a-button v-if="canConfirmOrder" type="primary" @click="openStatusModal(getNextStatus())">{{
-          getConfirmButtonText() }}
+        <a-button
+          style="background-color: #58bddb"
+          v-if="canConfirmOrder"
+          type="primary"
+          @click="openStatusModal(getNextStatus())"
+          >{{ getConfirmButtonText() }}
         </a-button>
-        <a-button v-if="canCompleteOrder" type="primary" @click="openStatusModal(getNextStatus())">
+        <a-button
+          style="background-color: #58bddb"
+          v-if="canCompleteOrder"
+          type="primary"
+          @click="openStatusModal(getNextStatus())"
+        >
           Hoàn thành đơn hàng
         </a-button>
-        <a-button v-if="canCancelOrder1" type="primary" danger @click="openStatusModal('DA_HUY')">
+        <a-button
+          style="background-color: #58bddb; margin-left: 5px"
+          v-if="canCancelOrder1"
+          type="primary"
+          danger
+          @click="openStatusModal('DA_HUY')"
+        >
           Hủy đơn hàng
         </a-button>
       </div>
@@ -63,9 +102,7 @@
           <div class="order-info-column">
             <div class="order-info-row">
               <span class="label">Trạng thái:</span>
-              <span class="value status">{{
-                getStatusText(hoaDon?.trangThaiHoaDon)
-              }}</span>
+              <span class="value status">{{ displayStatus }}</span>
             </div>
             <div class="order-info-row">
               <span class="label">Mã đơn hàng:</span>
@@ -78,10 +115,10 @@
                   hoaDon?.loaiHoaDon === "OFFLINE"
                     ? "Mua tại cửa hàng"
                     : hoaDon?.loaiHoaDon === "GIAO_HANG"
-                      ? "Giao hàng"
-                      : hoaDon?.loaiHoaDon === "ONLINE"
-                        ? "Mua online"
-                        : "Chưa rõ"
+                    ? "Giao hàng"
+                    : hoaDon?.loaiHoaDon === "ONLINE"
+                    ? "Mua online"
+                    : "Chưa rõ"
                 }}
               </span>
             </div>
@@ -115,9 +152,13 @@
         <template #title>
           <div class="card-title">
             <span>THÔNG TIN KHÁCH HÀNG</span>
-            <a-button v-if="canChangeCustomerInfo" type="primary" class="change-info-btn">
+            <!-- <a-button
+              v-if="canChangeCustomerInfo"
+              type="primary"
+              class="change-info-btn"
+            >
               Thay đổi thông tin
-            </a-button>
+            </a-button> -->
           </div>
         </template>
 
@@ -153,12 +194,23 @@
     <!-- Lịch sử thanh toán -->
     <a-card title="LỊCH SỬ THANH TOÁN" bordered class="order-info-card">
       <div class="flex justify-end mb-4">
-        <a-button v-if="canConfirmPayment" type="primary" class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500">
+        <a-button
+          style="background-color: #58bddb"
+          v-if="canConfirmPayment"
+          type="primary"
+          class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500"
+          @click="openPaymentModal"
+        >
           Xác nhận thanh toán
         </a-button>
       </div>
-      <a-table :dataSource="lichSuThanhToan" :columns="paymentColumns" :pagination="false" class="custom-table"
-        rowKey="id">
+      <a-table
+        :dataSource="lichSuThanhToan"
+        :columns="paymentColumns"
+        :pagination="false"
+        class="custom-table"
+        rowKey="id"
+      >
         <template #bodyCell="{ column, record, index }">
           <template v-if="column.key === 'stt'">
             {{ index + 1 }}
@@ -177,15 +229,23 @@
     <!-- Sản phẩm có trong hóa đơn -->
     <a-card title="DANH SÁCH SẢN PHẨM" bordered class="order-info-card">
       <template #extra>
-        <a-button v-if="canAddProduct" type="primary" :disabled="isAddProductDisabled"
+        <!-- <a-button
+          v-if="canAddProduct"
+          type="primary"
+          :disabled="isAddProductDisabled"
           class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500"
-          :class="{ 'opacity-50 cursor-not-allowed': isAddProductDisabled }">
+          :class="{ 'opacity-50 cursor-not-allowed': isAddProductDisabled }"
+        >
           Thêm sản phẩm
-        </a-button>
+        </a-button> -->
       </template>
 
       <div class="product-list-container">
-        <div v-for="(record, index) in chiTietList" :key="record.maHoaDonChiTiet" class="product-row">
+        <div
+          v-for="(record, index) in chiTietList"
+          :key="record.maHoaDonChiTiet"
+          class="product-row"
+        >
           <!-- STT -->
           <div class="product-stt">
             {{ index + 1 }}
@@ -193,7 +253,11 @@
 
           <!-- Product Image -->
           <div class="product-image">
-            <img :src="record.anhSanPham || 'placeholder-image.png'" alt="Ảnh sản phẩm" class="product-img" />
+            <img
+              :src="record.anhSanPham || 'placeholder-image.png'"
+              alt="Ảnh sản phẩm"
+              class="product-img"
+            />
           </div>
 
           <!-- Product Details -->
@@ -202,16 +266,25 @@
               {{ record.tenSanPham }} [{{ record.mauSac }} - {{ record.size }}]
             </h4>
             <p class="product-code">
-              {{ record.thuongHieu }} - {{ record.xuatSu }}
+              {{ record.thuongHieu }}
             </p>
             <div class="product-info">
-              <span class="product-price">Đơn giá: {{ formatCurrency(record.giaBan) }}</span>
+              <span class="product-price"
+                >Đơn giá: {{ formatCurrency(record.giaBan) }}</span
+              >
             </div>
           </div>
 
           <!-- Quantity Controls -->
           <div class="product-quantity">
-            <a-input-number v-model:value="record.soLuong" :min="1" :max="999" size="small" class="quantity-input" />
+            <a-input-number
+              v-model:value="record.soLuong"
+              :min="1"
+              :max="999"
+              size="small"
+              class="quantity-input"
+              :disabled="isAddProductDisabled"
+            />
           </div>
 
           <!-- Total Price -->
@@ -225,13 +298,27 @@
           <div class="pagination-info">3 / page</div>
           <div class="pagination-controls">
             <a-button size="small" class="pagination-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <path d="M15 18L9 12L15 6" />
               </svg>
             </a-button>
             <a-button size="small" class="pagination-current">1</a-button>
             <a-button size="small" class="pagination-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <path d="M9 18L15 12L9 6" />
               </svg>
             </a-button>
@@ -240,27 +327,42 @@
       </div>
     </a-card>
   </div>
-  <a-modal v-model:open="showStatusModal" title="Nhập ghi chú" :footer="null" :width="400" :maskClosable="false"
-    @cancel="closeStatusModal">
+  <a-modal
+    v-model:open="showStatusModal"
+    title="Nhập ghi chú"
+    :footer="null"
+    :width="400"
+    :maskClosable="false"
+    @cancel="closeStatusModal"
+  >
     <div class="status-modal-content">
       <div class="status-selection">
         <p class="selection-label">*Chọn mẫu tin nhắn:</p>
 
-        <a-radio-group v-model:value="selectedStatusTemplate" class="status-radio-group">
+        <a-radio-group
+          v-model:value="selectedStatusTemplate"
+          class="status-radio-group"
+        >
           <div class="radio-option">
             <a-radio value="confirmed">Đã xác nhận đơn hàng</a-radio>
           </div>
           <div class="radio-option">
-            <a-radio value="sap_shipped">Đơn hàng của bạn đã sẵn sàng để vận chuyển</a-radio>
+            <a-radio value="sap_shipped"
+              >Đơn hàng của bạn đã sẵn sàng để vận chuyển</a-radio
+            >
           </div>
           <div class="radio-option">
             <a-radio value="shipped">Đã bàn giao cho đơn vị vận chuyển</a-radio>
           </div>
           <div class="radio-option">
-            <a-radio value="payment_confirmed">Đã xác nhận thông tin thanh toán đơn hàng</a-radio>
+            <a-radio value="payment_confirmed"
+              >Đã xác nhận thông tin thanh toán đơn hàng</a-radio
+            >
           </div>
           <div class="radio-option">
-            <a-radio value="delivered">Đơn hàng đã được giao thành công</a-radio>
+            <a-radio value="delivered"
+              >Đơn hàng đã được giao thành công</a-radio
+            >
           </div>
           <div class="radio-option">
             <a-radio value="cancelled">Đơn hàng đã bị hủy</a-radio>
@@ -272,14 +374,134 @@
       </div>
 
       <div class="note-section">
-        <a-textarea v-model:value="statusNote" :rows="4" placeholder="Đơn hàng đã được giao thành công"
-          class="status-textarea" />
+        <a-textarea
+          v-model:value="statusNote"
+          :rows="4"
+          placeholder="Đơn hàng đã được giao thành công"
+          class="status-textarea"
+        />
       </div>
 
       <div class="modal-actions">
         <a-button @click="closeStatusModal" class="cancel-btn"> Hủy </a-button>
-        <a-button type="primary" @click="confirmStatusChange" :loading="statusUpdateLoading" class="confirm-btn">
+        <a-button
+          type="primary"
+          @click="confirmStatusChange"
+          :loading="statusUpdateLoading"
+          class="confirm-btn"
+        >
           Xác nhận
+        </a-button>
+      </div>
+    </div>
+  </a-modal>
+
+  <a-modal
+    v-model:open="showPaymentModal"
+    title="Xác nhận thanh toán"
+    :footer="null"
+    :width="500"
+    :maskClosable="false"
+    @cancel="closePaymentModal"
+  >
+    <div class="payment-modal-content">
+      <!-- Tiền khách đưa -->
+      <div class="payment-field">
+        <label class="payment-label">
+          <span class="required">*</span> Tiền khách đưa
+        </label>
+        <div class="payment-input-container">
+          <a-input-number
+            v-model:value="customerPayment"
+            :min="0"
+            :max="99999999"
+            :formatter="
+              (value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            "
+            :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
+            placeholder="0"
+            size="large"
+            class="payment-input"
+          />
+          <span class="currency-label">VND</span>
+        </div>
+      </div>
+
+      <!-- Ghi chú -->
+      <div class="payment-field">
+        <label class="payment-label">
+          <span class="required">*</span> Ghi chú
+        </label>
+        <a-textarea
+          v-model:value="paymentNote"
+          :rows="4"
+          placeholder="Nhập ghi chú..."
+          class="payment-textarea"
+        />
+      </div>
+
+      <!-- Phương thức thanh toán -->
+      <div class="payment-methods">
+        <div
+          class="payment-method"
+          :class="{ active: selectedPaymentMethod === 'cash' }"
+          @click="selectedPaymentMethod = 'cash'"
+        >
+          <div class="method-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 2C13.1 2 14 2.9 14 4V6H18C19.1 6 20 6.9 20 8V18C20 19.1 19.1 20 18 20H6C4.9 20 4 19.1 4 18V8C4 6.9 4.9 6 6 6H10V4C10 2.9 10.9 2 12 2Z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+          <span>Tiền mặt</span>
+        </div>
+
+        <div
+          class="payment-method"
+          :class="{ active: selectedPaymentMethod === 'transfer' }"
+          @click="selectedPaymentMethod = 'transfer'"
+        >
+          <div class="method-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+          <span>Chuyển khoản</span>
+        </div>
+      </div>
+
+      <!-- Thông tin thanh toán -->
+      <div class="payment-summary">
+        <div class="summary-row">
+          <span>Số tiền cần thanh toán:</span>
+          <span class="amount-required">{{
+            formatCurrency(finalTotalAmount)
+          }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Tiền thừa trả khách:</span>
+          <span class="amount-change" :class="{ negative: changeAmount < 0 }">
+            {{ formatCurrency(changeAmount) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="payment-actions">
+        <a-button @click="closePaymentModal" class="cancel-btn"> Hủy </a-button>
+        <a-button
+          type="primary"
+          @click="confirmPayment"
+          :loading="paymentLoading"
+          :disabled="!canConfirmPayment"
+          class="confirm-payment-btn"
+        >
+          Thanh toán
         </a-button>
       </div>
     </div>
@@ -287,7 +509,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import {
   getHoaDonChiTiets,
@@ -296,6 +518,7 @@ import {
 } from "@/services/api/admin/hoadon.api";
 import { message } from "ant-design-vue";
 import BreadcrumbDefault from "@/components/ui/Breadcrumbs/BreadcrumbDefault.vue";
+import './HoaDon.css';
 
 const route = useRoute();
 const hoaDon = ref<any>(null);
@@ -306,6 +529,13 @@ const selectedStatusTemplate = ref("delivered");
 const statusNote = ref("Đơn hàng đã được giao thành công");
 const statusUpdateLoading = ref(false);
 const pendingStatusChange = ref("");
+
+// Payment modal state
+const showPaymentModal = ref(false);
+const customerPayment = ref(0);
+const paymentNote = ref("");
+const selectedPaymentMethod = ref("cash");
+const paymentLoading = ref(false);
 
 const closeStatusModal = () => {
   showStatusModal.value = false;
@@ -394,32 +624,44 @@ const setDefaultTemplate = (status: string) => {
 };
 
 const confirmStatusChange = async () => {
-  if (!pendingStatusChange.value) return; // Ensure there's a pending status
+  if (!pendingStatusChange.value) return;
 
-  statusUpdateLoading.value = true; // Show loading state
+  statusUpdateLoading.value = true;
 
   try {
     const response = await updateOrderStatusInDatabase({
       maHoaDon: hoaDon.value.maHoaDon,
       status: pendingStatusChange.value,
-      note: statusNote.value, // Pass the note
+      note: statusNote.value,
     });
 
     if (response.success || response.data) {
-      currentStatus.value = statusMapping[pendingStatusChange.value];
-      hoaDon.value.trangThaiHoaDon = pendingStatusChange.value;
+      // Cập nhật trạng thái ngay lập tức
+      const newStatusValue = statusMapping[pendingStatusChange.value];
+
+      // Cập nhật currentStatus trước
+      currentStatus.value = newStatusValue;
+
+      // Cập nhật hoaDon object với cách force reactivity
+      hoaDon.value = {
+        ...hoaDon.value,
+        trangThaiHoaDon: pendingStatusChange.value,
+      };
+
       message.success("Cập nhật trạng thái thành công");
 
-      // Call the API to get the updated invoice data
+      // Refresh timeline data
       const idHoaDon = route.params.id as string;
-      const maHoaDon = route.params.maHoaDon as string;
-      const statusResponse = await GetLSTTHD(idHoaDon);
-      await getHoaDonChiTiets(maHoaDon);
-      if (statusResponse && statusResponse.success && statusResponse.data) {
-        timelineStatusData.value = statusResponse.data;
+      try {
+        const statusResponse = await GetLSTTHD(idHoaDon);
+        if (statusResponse && statusResponse.success && statusResponse.data) {
+          timelineStatusData.value = [...statusResponse.data]; // Force reactivity
+        }
+      } catch (refreshError) {
+        console.warn("Lỗi khi refresh dữ liệu timeline:", refreshError);
       }
 
-      closeStatusModal(); // Close the modal
+      closeStatusModal();
     } else {
       message.error("Cập nhật trạng thái thất bại");
     }
@@ -428,7 +670,7 @@ const confirmStatusChange = async () => {
       "Có lỗi xảy ra khi cập nhật trạng thái: " + (error as Error).message
     );
   } finally {
-    statusUpdateLoading.value = false; // Hide loading state
+    statusUpdateLoading.value = false;
   }
 };
 
@@ -439,11 +681,101 @@ const canCancelOrder1 = computed(() => {
   );
 });
 
-const canChangeCustomerInfo = computed(() => {
-  return (
-    currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN ||
-    currentStatus.value === EntityTrangThaiHoaDon.CHO_GIAO
-  );
+// Computed properties for payment
+const changeAmount = computed(() => {
+  return (customerPayment.value || 0) - finalTotalAmount.value;
+});
+
+const canConfirmPaymentButton = computed(() => {
+  return customerPayment.value > 0 && paymentNote.value.trim() !== "";
+});
+
+// Payment modal methods
+const openPaymentModal = () => {
+  // Set default values
+  customerPayment.value = finalTotalAmount.value;
+  paymentNote.value = "Khách hàng thanh toán đơn hàng";
+  selectedPaymentMethod.value = "cash";
+  showPaymentModal.value = true;
+};
+
+const closePaymentModal = () => {
+  showPaymentModal.value = false;
+  customerPayment.value = 0;
+  paymentNote.value = "";
+  selectedPaymentMethod.value = "cash";
+};
+
+const confirmPayment = async () => {
+  if (!canConfirmPaymentButton.value) {
+    message.warning("Vui lòng nhập đầy đủ thông tin thanh toán");
+    return;
+  }
+
+  if (changeAmount.value < 0) {
+    message.warning("Số tiền khách đưa không đủ");
+    return;
+  }
+
+  paymentLoading.value = true;
+
+  try {
+    // Gọi API xác nhận thanh toán
+    const paymentData = {
+      maHoaDon: hoaDon.value.maHoaDon,
+      soTienKhachDua: customerPayment.value,
+      soTienTraLai: Math.max(0, changeAmount.value),
+      ghiChu: paymentNote.value,
+      phuongThucThanhToan: selectedPaymentMethod.value,
+      trangThai: "XAC_NHAN_THANH_TOAN",
+    };
+
+    // Thay thế bằng API thực tế
+    const response = await confirmPaymentAPI(paymentData);
+
+    if (response.success) {
+      message.success("Xác nhận thanh toán thành công");
+
+      // Cập nhật trạng thái đơn hàng
+      currentStatus.value = EntityTrangThaiHoaDon.XAC_NHAN_THANH_TOAN;
+      hoaDon.value.trangThaiHoaDon = "XAC_NHAN_THANH_TOAN";
+
+      // Refresh timeline data
+      const idHoaDon = route.params.id as string;
+      try {
+        const statusResponse = await GetLSTTHD(idHoaDon);
+        if (statusResponse && statusResponse.success && statusResponse.data) {
+          timelineStatusData.value = [...statusResponse.data];
+        }
+      } catch (refreshError) {
+        console.warn("Lỗi khi refresh dữ liệu timeline:", refreshError);
+      }
+
+      closePaymentModal();
+    } else {
+      message.error("Xác nhận thanh toán thất bại");
+    }
+  } catch (error) {
+    console.error("Lỗi xác nhận thanh toán:", error);
+    message.error("Có lỗi xảy ra khi xác nhận thanh toán");
+  } finally {
+    paymentLoading.value = false;
+  }
+};
+
+// Mock API function - thay thế bằng API thực tế
+const confirmPaymentAPI = async (paymentData: any) => {
+  // Simulate API call
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ success: true, data: paymentData });
+    }, 1000);
+  });
+};
+
+// Update the existing canConfirmPayment computed to use the new name
+const canConfirmPayment1 = computed(() => {
+  return canConfirmPaymentButton.value;
 });
 
 const canAddProduct = computed(() => {
@@ -528,7 +860,8 @@ const deliveryTimelineSteps = [
 ];
 
 const timelineSteps = computed(() => {
-  if (hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE) {
+  const orderType = hoaDon.value?.loaiHoaDon;
+  if (orderType === EntityLoaiHoaDon.OFFLINE) {
     return offlineTimelineSteps;
   }
   return deliveryTimelineSteps;
@@ -553,20 +886,35 @@ const lichSuThanhToan = ref([
   // Dữ liệu mẫu - sẽ được thay thế bằng dữ liệu thực từ API
 ]);
 
-const getCurrentStepIndex = () => {
-  if (currentStatus.value === EntityTrangThaiHoaDon.DA_HUY) {
-    return timelineSteps.value.findIndex((step) => step.key === "DA_HUY");
+const getCurrentStepIndex = computed(() => {
+  const current = currentStatus.value;
+  console.log("Computing step index for status:", current);
+
+  if (current === EntityTrangThaiHoaDon.DA_HUY) {
+    const cancelIndex = timelineSteps.value.findIndex(
+      (step) => step.key === "DA_HUY"
+    );
+    console.log("Cancel step index:", cancelIndex);
+    return cancelIndex;
   }
 
-  return timelineSteps.value.findIndex(
-    (step) => step.status === currentStatus.value
+  const stepIndex = timelineSteps.value.findIndex(
+    (step) => step.status === current
   );
+  console.log("Step index for status", current, ":", stepIndex);
+  return stepIndex;
+});
+
+const forceUpdateUI = () => {
+  hoaDon.value = { ...hoaDon.value };
+  timelineStatusData.value = [...timelineStatusData.value];
 };
 
 const getStepStatus = (stepIndex: number) => {
-  const currentStepIndex = getCurrentStepIndex();
+  const currentStepIndex = getCurrentStepIndex.value;
+  const currentStatusValue = currentStatus.value;
 
-  if (currentStatus.value === EntityTrangThaiHoaDon.DA_HUY) {
+  if (currentStatusValue === EntityTrangThaiHoaDon.DA_HUY) {
     if (timelineSteps.value[stepIndex].key === "DA_HUY") return "current";
     return "pending";
   }
@@ -581,7 +929,7 @@ const getIconClass = (stepIndex: number) => {
 };
 
 const getLineClass = (stepIndex: number) => {
-  const currentStepIndex = getCurrentStepIndex();
+  const currentStepIndex = getCurrentStepIndex.value;
 
   if (currentStatus.value === EntityTrangThaiHoaDon.DA_HUY) {
     return "pending";
@@ -728,56 +1076,9 @@ watch([subtotalAmount, finalTotalAmount], ([newSubtotal, newFinalTotal]) => {
   }
 });
 
-// const updateOrderStatus = async (newStatus: string) => {
-//   try {
-//     console.log("Updating order status to:", newStatus);
-
-//     pendingStatusChange.value = newStatus;
-
-//     setDefaultTemplate(newStatus);
-
-//     showStatusModal.value = true;
-
-//     const response = await updateOrderStatusInDatabase({
-//       maHoaDon: hoaDon.value.maHoaDon,
-//       status: newStatus,
-//     });
-
-//     console.log("Update status response:", response);
-
-//     if (response.success || response.data) {
-//       currentStatus.value = statusMapping[newStatus];
-//       hoaDon.value.trangThaiHoaDon = newStatus;
-
-//       // Refresh timeline data sau khi cập nhật
-//       const idHoaDon = route.params.id as string;
-//       console.log("Refreshing timeline data for idHoaDon:", idHoaDon);
-
-//       try {
-//         const statusResponse = await GetLSTTHD(idHoaDon);
-//         console.log("Refreshed timeline data:", statusResponse);
-
-//         // Sử dụng cùng logic xử lý như trong onMounted
-//         if (statusResponse && statusResponse.success && statusResponse.data) {
-//           timelineStatusData.value = statusResponse.data;
-//           console.log("Timeline data refreshed successfully");
-//         }
-//       } catch (timelineError) {
-//         console.error("Error refreshing timeline data:", timelineError);
-//       }
-
-//       message.success("Cập nhật trạng thái thành công");
-//     } else {
-//       console.error("Update failed:", response);
-//       message.error("Cập nhật trạng thái thất bại");
-//     }
-//   } catch (error) {
-//     console.error("Có lỗi xảy ra khi cập nhật trạng thái:", error);
-//     message.error(
-//       "Có lỗi xảy ra khi cập nhật trạng thái: " + (error as Error).message
-//     );
-//   }
-// };
+const displayStatus = computed(() => {
+  return getStatusText(currentStatus.value);
+});
 
 const debugTimelineData = () => {
   console.log("=== DEBUG TIMELINE DATA ===");
@@ -819,13 +1120,11 @@ onMounted(async () => {
       return;
     }
 
-    // Gọi API GetLSTTHD - đã hoạt động OK
+    // Gọi API GetLSTTHD
     console.log("Calling GetLSTTHD with idHoaDon:", idHoaDon);
-
     const statusResponse = await GetLSTTHD(idHoaDon);
     console.log("GetLSTTHD response:", statusResponse);
 
-    // Sửa lại cách xử lý response - response có structure khác
     if (statusResponse && statusResponse.success && statusResponse.data) {
       timelineStatusData.value = statusResponse.data;
       console.log("Timeline status data loaded:", timelineStatusData.value);
@@ -859,8 +1158,8 @@ onMounted(async () => {
           hoaDonData.loaiHoaDon == "0"
             ? EntityLoaiHoaDon.OFFLINE
             : hoaDonData.loaiHoaDon == "1"
-              ? EntityLoaiHoaDon.GIAO_HANG
-              : EntityLoaiHoaDon.ONLINE,
+            ? EntityLoaiHoaDon.GIAO_HANG
+            : EntityLoaiHoaDon.ONLINE,
         trangThaiHoaDon: hoaDonData.trangThaiHoaDon,
         ngayTao: hoaDonData.ngayTao,
         phiVanChuyen: hoaDonData.phiVanChuyen,
@@ -868,8 +1167,12 @@ onMounted(async () => {
         tongTienSauGiam: hoaDonData.tongTienSauGiam,
       };
 
-      currentStatus.value = parseInt(hoaDonData.trangThaiHoaDon) || 0;
+      // Đảm bảo currentStatus được set đúng và trigger reactivity
+      const statusValue = parseInt(hoaDonData.trangThaiHoaDon);
+      currentStatus.value = statusValue;
+
       console.log("Current status set to:", currentStatus.value);
+      console.log("Display status:", getStatusText(currentStatus.value));
 
       chiTietList.value = res.data;
       tongTien.value = chiTietList.value.reduce(
@@ -878,6 +1181,10 @@ onMounted(async () => {
       );
 
       console.log("Data loaded successfully");
+
+      // Force một lần update để đảm bảo UI sync
+      await nextTick();
+      forceUpdateUI();
     } else {
       console.error("getHoaDonChiTiets returned empty or invalid data:", res);
       message.error("Không thể tải dữ liệu hóa đơn");
@@ -888,673 +1195,3 @@ onMounted(async () => {
   }
 });
 </script>
-<style scoped>
-.custom-table :deep(.ant-table-thead > tr > th) {
-  background-color: #f8fafc;
-  font-weight: 600;
-  color: #374151;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.custom-table :deep(.ant-table-tbody > tr:hover > td) {
-  background-color: #f9fafb;
-}
-
-.custom-table :deep(.ant-table-tbody > tr > td) {
-  padding: 12px 8px;
-  vertical-align: middle;
-}
-
-.custom-table :deep(.ant-table) {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-/* Đảm bảo ảnh có kích thước cố định */
-.custom-table :deep(img) {
-  max-width: 80px !important;
-  max-height: 80px !important;
-  width: 80px !important;
-  height: 80px !important;
-  object-fit: cover !important;
-}
-
-/* Timeline Horizontal Styles */
-.order-timeline-horizontal {
-  padding: 20px 0;
-  overflow-x: auto;
-}
-
-.timeline-container-horizontal {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  min-width: 800px;
-  padding: 20px 0;
-  position: relative;
-}
-
-.timeline-step-horizontal {
-  flex: 1;
-  text-align: center;
-  position: relative;
-}
-
-.timeline-step-horizontal:first-child {
-  margin-left: 0;
-}
-
-.timeline-step-horizontal:last-child {
-  margin-right: 0;
-}
-
-.step-content-horizontal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  z-index: 2;
-}
-
-.step-icon-horizontal {
-  margin: 0 auto 8px;
-}
-
-.timeline-step-horizontal {
-  flex: 1;
-  text-align: center;
-  position: relative;
-}
-
-.icon-circle-horizontal {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.icon-circle-horizontal.completed {
-  background-color: #52c41a;
-  color: white;
-}
-
-.icon-circle-horizontal.current {
-  background-color: #1890ff;
-  color: white;
-  animation: pulse 2s infinite;
-}
-
-.icon-circle-horizontal.pending {
-  background-color: #d9d9d9;
-  color: #666;
-}
-
-.step-title-horizontal {
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.step-note-horizontal {
-  font-size: 12px;
-  color: #666;
-  padding: 0 8px;
-  max-width: 140px;
-  margin: 0 auto 4px;
-  word-break: break-word;
-}
-
-.step-time-horizontal {
-  font-size: 12px;
-  color: #999;
-  white-space: nowrap;
-}
-
-.step-line-horizontal {
-  position: absolute;
-  top: 25px;
-  left: calc(50% + 25px);
-  right: calc(-50% + 25px);
-  height: 2px;
-  z-index: 1;
-}
-
-.timeline-step-horizontal:last-child .step-line-horizontal {
-  display: none;
-}
-
-.step-line-horizontal.completed {
-  background-color: #52c41a;
-}
-
-.step-line-horizontal.pending {
-  background-color: #d9d9d9;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
-  }
-
-  70% {
-    box-shadow: 0 0 0 10px rgba(24, 144, 255, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .order-timeline-horizontal {
-    padding: 15px 0;
-  }
-
-  .timeline-container-horizontal {
-    min-width: 600px;
-  }
-
-  .icon-circle-horizontal {
-    width: 40px;
-    height: 40px;
-  }
-
-  .step-line-horizontal {
-    top: 20px;
-    left: calc(50% + 20px);
-    right: calc(-50% + 20px);
-  }
-
-  .step-title-horizontal {
-    font-size: 13px;
-  }
-
-  .step-time-horizontal {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 480px) {
-  .timeline-container-horizontal {
-    min-width: 500px;
-  }
-
-  .timeline-step-horizontal {
-    margin: 0 5px;
-  }
-
-  .icon-circle-horizontal {
-    width: 35px;
-    height: 35px;
-  }
-
-  .step-line-horizontal {
-    top: 17px;
-    left: calc(50% + 17px);
-    right: calc(-50% + 17px);
-  }
-
-  .step-title-horizontal {
-    font-size: 12px;
-  }
-
-  .step-time-horizontal {
-    font-size: 10px;
-  }
-}
-
-.order-info-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.card-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.order-info-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-}
-
-.order-info-column {
-  width: 48%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.order-info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.label {
-  color: #4b5563;
-  /* text-gray-600 */
-  font-size: 14px;
-}
-
-.value {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.value.status,
-.value.code {
-  color: #ef4444;
-  /* red-500 */
-}
-
-.value.price {
-  color: #ef4444;
-  /* red-500 */
-}
-
-.value.total {
-  color: #dc2626;
-  /* red-600 */
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.value.email,
-.value.address {
-  color: #ef4444;
-  /* red-500 */
-}
-
-.change-info-btn {
-  background-color: #f59e0b;
-  /* yellow-500 */
-  border-color: #f59e0b;
-  color: #fff;
-}
-
-.change-info-btn:hover {
-  background-color: #d97706;
-  /* yellow-600 */
-  border-color: #d97706;
-}
-
-.product-list-container {
-  background: #fff;
-}
-
-.product-row {
-  display: grid;
-  grid-template-columns: 60px 120px 1fr 120px 150px;
-  gap: 20px;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.product-row:last-child {
-  border-bottom: none;
-}
-
-.product-stt {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-}
-
-.product-image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.product-img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-}
-
-.product-details {
-  flex: 1;
-}
-
-.product-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 4px 0;
-  line-height: 1.3;
-}
-
-.product-code {
-  font-size: 12px;
-  color: #999;
-  margin: 0 0 8px 0;
-}
-
-.product-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.product-price {
-  font-size: 14px;
-  color: #e74c3c;
-  font-weight: 500;
-}
-
-.product-quantity {
-  display: flex;
-  justify-content: center;
-}
-
-.quantity-input {
-  width: 80px;
-}
-
-.quantity-input :deep(.ant-input-number-input) {
-  text-align: center;
-}
-
-.product-total {
-  font-size: 16px;
-  font-weight: 700;
-  color: #e74c3c;
-  text-align: right;
-}
-
-.product-pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 0 10px 0;
-  margin-top: 10px;
-}
-
-.pagination-info {
-  font-size: 14px;
-  color: #666;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pagination-btn {
-  border: 1px solid #d9d9d9;
-  background: #fff;
-  color: #666;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.pagination-btn:hover {
-  border-color: #1890ff;
-  color: #1890ff;
-}
-
-.pagination-current {
-  border: 1px solid #1890ff;
-  background: #1890ff;
-  color: #fff;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .product-row {
-    grid-template-columns: 40px 80px 1fr 80px 120px;
-    gap: 10px;
-    padding: 12px 0;
-  }
-
-  .product-img {
-    width: 60px;
-    height: 60px;
-  }
-
-  .product-name {
-    font-size: 14px;
-  }
-
-  .quantity-input {
-    width: 60px;
-  }
-
-  .product-total {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .product-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 16px;
-    border: 1px solid #f0f0f0;
-    border-radius: 8px;
-    margin-bottom: 12px;
-  }
-
-  .product-row:last-child {
-    margin-bottom: 0;
-  }
-
-  .product-stt {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    background: #f0f0f0;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-  }
-
-  .product-image {
-    justify-content: flex-start;
-    margin-left: 40px;
-  }
-
-  .product-details {
-    margin-left: 40px;
-  }
-
-  .product-quantity,
-  .product-total {
-    margin-left: 40px;
-    justify-content: flex-start;
-    text-align: left;
-  }
-}
-
-.status-modal-content {
-  padding: 8px 0;
-}
-
-.status-selection {
-  margin-bottom: 20px;
-}
-
-.selection-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 12px;
-}
-
-.status-radio-group {
-  width: 100%;
-}
-
-.radio-option {
-  margin-bottom: 8px;
-  padding: 4px 0;
-}
-
-.radio-option :deep(.ant-radio-wrapper) {
-  font-size: 14px;
-  color: #666;
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.radio-option :deep(.ant-radio-wrapper:hover) {
-  color: #1890ff;
-}
-
-.radio-option :deep(.ant-radio-checked .ant-radio-inner) {
-  border-color: #1890ff;
-  background-color: #1890ff;
-}
-
-.note-section {
-  margin-bottom: 24px;
-}
-
-.status-textarea {
-  resize: none;
-}
-
-.status-textarea :deep(.ant-input) {
-  border-radius: 6px;
-  border: 1px solid #d9d9d9;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.status-textarea :deep(.ant-input:focus) {
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.cancel-btn {
-  min-width: 80px;
-  height: 36px;
-  border-radius: 6px;
-  border: 1px solid #d9d9d9;
-  background: #fff;
-  color: #666;
-}
-
-.cancel-btn:hover {
-  border-color: #1890ff;
-  color: #1890ff;
-}
-
-.confirm-btn {
-  min-width: 80px;
-  height: 36px;
-  border-radius: 6px;
-  background-color: #1890ff;
-  border-color: #1890ff;
-}
-
-.confirm-btn:hover {
-  background-color: #40a9ff;
-  border-color: #40a9ff;
-}
-
-/* Modal customization */
-:deep(.ant-modal-header) {
-  border-bottom: 1px solid #f0f0f0;
-  padding: 16px 24px;
-}
-
-:deep(.ant-modal-title) {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
-:deep(.ant-modal-body) {
-  padding: 20px 24px;
-}
-
-:deep(.ant-modal-close-x) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 46px;
-  height: 46px;
-}
-
-.page-container {
-  padding: 20px;
-  /* Overall padding for the page content */
-}
-
-.breadcrumb-section {
-  margin-bottom: 25px;
-  /* Space below the breadcrumb and above the first section */
-  background-color: #fff;
-  /* White background for the breadcrumb box */
-  padding: 15px 20px;
-  /* Padding inside the breadcrumb box */
-  border-radius: 8px;
-  /* Rounded corners */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
-  /* Subtle shadow */
-}
-
-.section-title {
-  margin-top: 30px;
-  /* Space above each main section title */
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  /* Space below the title */
-  margin-left: 0px;
-  /* Remove left margin if section-title is directly under padding */
-  color: #333;
-  /* Darker color for titles */
-  display: flex;
-  /* To align icon and text */
-  align-items: center;
-  /* Vertically center icon and text */
-  gap: 8px;
-  /* Space between icon and text */
-}
-
-/* Remove or adjust body styles if they are global.
-   Scoped styles prevent them from affecting the entire app. */
-body {
-  font-family: 'Roboto', sans-serif;
-}
-</style>

@@ -19,7 +19,6 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                                                                         sp.ten_san_pham AS tenSanPham,
                                                                         spct.anh_san_pham AS anhSanPham,
                                                                         thuong_hieu.ten_thuong_hieu AS thuongHieu,
-                                                                        xuat_su.ten_xuat_su AS xuatSu,
                                                                         mau_sac.ten_mau_sac AS mauSac,
                                                                         kich_co.ten_kich_co AS size,
                                                                         hdct.so_luong AS soLuong,
@@ -42,7 +41,6 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                                                                     JOIN db_datn.san_pham_chi_tiet spct ON hdct.id_spct = spct.id
                                                                     JOIN db_datn.san_pham sp ON spct.id_san_pham = sp.id
                                                                     JOIN db_datn.thuong_hieu ON sp.id_thuong_hieu = thuong_hieu.id
-                                                                    JOIN db_datn.xuat_su ON sp.id_xuat_su = xuat_su.id
                                                                     JOIN db_datn.kich_co ON spct.id_kich_co = kich_co.id
                                                                     JOIN db_datn.mau_sac ON spct.id_mau_sac = mau_sac.id
                                                                     WHERE db_datn.hd.ma_hoa_don = :maHoaDon

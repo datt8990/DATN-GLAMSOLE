@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="breadcrumb-section">
-      <BreadcrumbDefault :pageTitle="'Quản Lý hóa đơn'" :routes="[
+      <BreadcrumbDefault :pageTitle="'Quản lý hóa đơn'" :routes="[
         { path: '/admin//hoa-don', name: 'Quản lý hóa đơn' }
       ]" />
     </div>

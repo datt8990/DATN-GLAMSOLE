@@ -5,7 +5,7 @@
       <div class="d-flex flex-column">
         <span class="text-sm text-gray-600 mb-1">Tìm kiếm</span>
         <a-input v-model:value="localSearchQuery"  placeholder="Nhập tên khách hàng, sdt, tên nhân viên..."
-          style="width: 800px;" />
+          style="width: 500px;" />
       </div>
 
       <!-- Label: Khoảng thời gian -->

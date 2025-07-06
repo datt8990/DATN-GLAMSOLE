@@ -1,15 +1,13 @@
 <template>
   <div class="add-discount-page p-6">
     <!-- Header -->
-
-    
     <div class="breadcrumb-section">
       <BreadcrumbDefault :pageTitle="'Thêm đợt giảm giá'" :routes="[
         { path: '/admin/dot-giam-gia', name: 'Quản lý đợt giảm giá' },
         { path: '/admin/add-dot-giam-gia', name: 'Thêm đợt giảm giá' }
       ]" />
     </div>
-    
+
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
       <!-- Left Column - Form (1/4 width) -->
       <div class="xl:col-span-1 bg-white rounded-lg shadow-sm border p-6">
@@ -122,7 +120,7 @@
               <div class="col-span-1 text-center">STT</div>
               <div class="col-span-4 text-center">Tên sản phẩm</div>
               <div class="col-span-2 text-center">Thương hiệu</div>
-              <div class="col-span-2 text-center">Xuất xứ</div>
+              <div class="col-span-2 text-center">Trạng thái</div>
             </div>
           </div>
 
@@ -161,7 +159,21 @@
               <div class="col-span-2 text-center">
                 {{ product.thuongHieu.ten }}
               </div>
-              <div class="col-span-2 text-center">{{ product.xuatSu.ten }}</div>
+              <div
+              style="color: green;"
+                class="col-span-2 text-center border rounded px-2 py-1"
+                :class="
+                  product.status === 'ACTIVE'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-red-500 text-red-600'
+                "
+              >
+                {{
+                  product.status === "ACTIVE"
+                    ? "Đang kinh doanh"
+                    : "Ngừng kinh doanh"
+                }}
+              </div>
             </div>
           </div>
         </div>
@@ -249,15 +261,15 @@
               </a-select>
             </div>
 
-            <div class="col-md-2 mb-3" style="margin-top: 32px;">
+            <div class="col-md-2 mb-3" style="margin-top: 32px">
               <a-button
-              @click="clearDetailFilters"
-              size="large"
-              type="default"
-              class="mr-2"
-            >
-              Reset
-            </a-button>
+                @click="clearDetailFilters"
+                size="large"
+                type="default"
+                class="mr-2"
+              >
+                Reset
+              </a-button>
             </div>
           </div>
 
@@ -307,7 +319,11 @@
               v-else-if="filteredProductDetails.length === 0"
               class="p-8 text-center text-gray-500"
             >
-              {{ selectedProductDetails.length === 0 ? 'Chưa có sản phẩm nào được chọn' : 'Không tìm thấy sản phẩm nào phù hợp với bộ lọc' }}
+              {{
+                selectedProductDetails.length === 0
+                  ? "Chưa có sản phẩm nào được chọn"
+                  : "Không tìm thấy sản phẩm nào phù hợp với bộ lọc"
+              }}
             </div>
 
             <div
@@ -431,17 +447,18 @@ const filteredProductDetails = computed(() => {
   return selectedProductDetails.value.filter((detail) => {
     // Product name search
     const productName = getProductName(detail).toLowerCase();
-    const searchMatch = productNameSearch.value === "" || 
+    const searchMatch =
+      productNameSearch.value === "" ||
       productName.includes(productNameSearch.value.toLowerCase());
-    
+
     // Size filter
-    const sizeMatch = selectedSize.value === null || 
-      detail.kichCo?.id === selectedSize.value;
-    
+    const sizeMatch =
+      selectedSize.value === null || detail.kichCo?.id === selectedSize.value;
+
     // Color filter
-    const colorMatch = selectedColor.value === null || 
-      detail.mauSac?.id === selectedColor.value;
-    
+    const colorMatch =
+      selectedColor.value === null || detail.mauSac?.id === selectedColor.value;
+
     return searchMatch && sizeMatch && colorMatch;
   });
 });
@@ -526,7 +543,7 @@ const handleDetailSearch = () => {
   console.log("Detail search filters changed:", {
     productNameSearch: productNameSearch.value,
     selectedColor: selectedColor.value,
-    selectedSize: selectedSize.value
+    selectedSize: selectedSize.value,
   });
 };
 
@@ -791,6 +808,10 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
 .form-label {
   margin-bottom: 0.5rem;
   color: #333;
@@ -1167,11 +1188,6 @@ onMounted(() => {
   object-fit: cover;
 }
 
-.page-container {
-  padding: 20px;
-  /* Overall padding for the page content */
-}
-
 .breadcrumb-section {
   margin-bottom: 25px;
   /* Space below the breadcrumb and above the first section */
@@ -1183,30 +1199,5 @@ onMounted(() => {
   /* Rounded corners */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
   /* Subtle shadow */
-}
-
-.section-title {
-  margin-top: 30px;
-  /* Space above each main section title */
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  /* Space below the title */
-  margin-left: 0px;
-  /* Remove left margin if section-title is directly under padding */
-  color: #333;
-  /* Darker color for titles */
-  display: flex;
-  /* To align icon and text */
-  align-items: center;
-  /* Vertically center icon and text */
-  gap: 8px;
-  /* Space between icon and text */
-}
-
-/* Remove or adjust body styles if they are global.
-   Scoped styles prevent them from affecting the entire app. */
-body {
-  font-family: 'Roboto', sans-serif;
 }
 </style>
