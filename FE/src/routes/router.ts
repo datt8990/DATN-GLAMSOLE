@@ -205,22 +205,6 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: ROUTES_CONSTANTS.ADMIN.path,
-    redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.XUAT_XU.path}`,
-    component: () => import('@/layout/Admin.vue'),
-    children: [
-      {
-        path: ROUTES_CONSTANTS.ADMIN.children.XUAT_XU.path,
-        name: ROUTES_CONSTANTS.ADMIN.children.XUAT_XU.name,
-        component: () => import('@/pages/admin/xuatxu/XuatXu.vue'),
-        // meta: {
-        //   requiresRole: ROLES.ADMIN,
-        //   requiresAuth: true
-        // }
-      }
-    ]
-  },
-  {
-    path: ROUTES_CONSTANTS.ADMIN.path,
     redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.KHACH_HANG.path}`,
     component: () => import('@/layout/Admin.vue'),
     children: [
