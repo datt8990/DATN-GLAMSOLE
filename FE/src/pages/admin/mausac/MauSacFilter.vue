@@ -88,7 +88,6 @@ const resetFilters = () => {
   white-space: nowrap;
 }
 
-
 .search-input {
   width: 700px;
   /* Adjust width as needed for better responsiveness */
