@@ -1,5 +1,12 @@
 <template>
+  <div class="breadcrumb-section">
+    <BreadcrumbDefault :pageTitle="pathName" :routes="[
+      { path: '/admin/voucher', name: 'Quản lý phiếu giảm giá' },
+      { path: '/admin/them-phieu-giam-gia', name: pathName }
+    ]" />
+  </div>
   <DivCustom label="Thêm Phiếu giảm giá" customClasses="mt-5">
+
     <a-row gutter={16}>
 
       <a-col :span="8">
@@ -7,7 +14,6 @@
         <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
           <a-form-item label="Tên phiếu giảm giá" name="ten" :label-col="{ span: 24 }" :rules="rules.name">
             <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập tên phiếu giảm giá"
-
               style="border-radius: 4px;" />
           </a-form-item>
 
@@ -80,9 +86,9 @@
             <template #bodyCell="{ column, record }">
               <div v-if="column.key === 'select'">
 
-<
-                {{ console.log('Record ID from table:', record.id, ' | Selected IDs:', state.selectedRows, ' | Match:', state.selectedRows.includes(record.id)) }}
-                <a-checkbox :checked="state.selectedRows.includes(record.id)"
+                 {{ console.log('Record ID from table:', record.id, ' | Selected IDs:',
+                  state.selectedRows, ' | Match:', state.selectedRows.includes(record.id)) }} <a-checkbox
+                  :checked="state.selectedRows.includes(record.id)"
                   @change="onCheckboxChange(record.id, $event.target.checked)" />
 
               </div>
@@ -142,10 +148,11 @@ const product = ref<SizeResponse>({
   ngayBatDau: undefined,
   ngayKetThuc: undefined,
 });
-
+const pathName = ref('');
 const productForm = ref();
 const label = ref('');
 import dayjs from 'dayjs';
+import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
 
 const rules = {
   name: [{ required: true, message: 'Trường này không được để trống!', trigger: 'blur' }],
@@ -227,7 +234,7 @@ const fetchProductDetails = async (id: string) => {
 const fetchListKHDetails = async (id: string) => {
   try {
     // Đặt tên biến là 'apiResult' để rõ ràng đây là kết quả trực tiếp từ API call
-    const apiResult = await getListKH(id); 
+    const apiResult = await getListKH(id);
 
     console.log("Raw result from getListKH (for debugging):", apiResult); // LOG API response to see its structure
 
@@ -236,18 +243,18 @@ const fetchListKHDetails = async (id: string) => {
     // Case 1: API returns a direct array of IDs (most common with getListKH)
     if (Array.isArray(apiResult)) {
       processedIds = apiResult as string[];
-    } 
+    }
     // Case 2: API returns an object where keys are numeric indices (like a JS array-like object)
     else if (apiResult && typeof apiResult === 'object' && Object.keys(apiResult).every(key => !isNaN(Number(key)))) {
-        processedIds = Object.values(apiResult) as string[];
+      processedIds = Object.values(apiResult) as string[];
     }
     // Case 3: API returns an object with a 'data' property that is an array of IDs
     else if (apiResult && (apiResult as any).data && Array.isArray((apiResult as any).data)) {
-        processedIds = (apiResult as any).data as string[];
+      processedIds = (apiResult as any).data as string[];
     }
     // Case 4: API returns an object with a 'data' property that is an array of customer objects (need to extract 'id')
     else if (apiResult && (apiResult as any).data && Array.isArray((apiResult as any).data) && (apiResult as any).data.length > 0 && typeof (apiResult as any).data[0] === 'object' && 'id' in (apiResult as any).data[0]) {
-        processedIds = (apiResult as any).data.map((item: any) => item.id) as string[];
+      processedIds = (apiResult as any).data.map((item: any) => item.id) as string[];
     }
     // Fallback: If none of the above, assume no IDs or unexpected format
     else {
@@ -328,7 +335,7 @@ watch(
         productForm.value.resetFields();
       }
       // Luôn đảm bảo reset selectedRows khi mở form (đặc biệt khi thêm mới)
-      state.selectedRows = []; 
+      state.selectedRows = [];
 
       if (newId) {
         // Edit mode
@@ -338,9 +345,9 @@ watch(
         // Đảm bảo fetchListKHDetails được gọi sau khi product.loaiGiam đã được cập nhật
         // Nếu loaiGiam là 'Cá nhân' thì mới cần fetch danh sách KH
         if (product.value.loaiGiam === true) {
-             await fetchListKHDetails(newId);
+          await fetchListKHDetails(newId);
         }
-       
+
       } else {
 
         // Add new mode
@@ -398,24 +405,24 @@ const handleSubmit = async () => {
     formData.append('id', product?.value?.id?.trim() || '');
     formData.append('ma', product?.value?.ma?.trim() || '');
     formData.append('ten', product?.value.ten?.trim() || ''); // Đảm bảo không gửi undefined
-    
+
     // Logic cho phanTramGiam và giaGiam
     if (product.value?.kieuGiam === true) { // Nếu kiểu giảm là phần trăm
       const phanTramGiamValue = product?.value?.phanTramGiam != null ? product?.value?.phanTramGiam.toString() : '0';
       formData.append('phanTramGiam', phanTramGiamValue);
-    } else { 
+    } else {
       const giaGiamValue = product?.value?.giaGiam != null ? product?.value?.giaGiam.toString() : '0';
-      formData.append('phanTramGiam', giaGiamValue); 
+      formData.append('phanTramGiam', giaGiamValue);
     }
-    
+
     formData.append('soLuongPhieu', product?.value?.soLuongPhieu != null ? product.value.soLuongPhieu.toString() : '');
     formData.append('dieuKien', product?.value?.dieuKien != null ? product.value.dieuKien.toString() : '');
 
-    formData.append('giaGiamToiDa', product?.value?.giaGiam != null ? product.value.giaGiam.toString() : ''); 
-    formData.append('ngayKetThuc', product.value?.ngayKetThuc ? dayjs(product.value?.ngayKetThuc).format('YYYY-MM-DD') : ''); 
-    formData.append('ngayBatDau', product.value?.ngayBatDau ? dayjs(product.value?.ngayBatDau).format('YYYY-MM-DD') : ''); 
-    formData.append('loaiGiam', product.value?.loaiGiam?.toString() || 'false'); 
-    formData.append('kieuGiam', product.value?.kieuGiam?.toString() || 'false'); 
+    formData.append('giaGiamToiDa', product?.value?.giaGiam != null ? product.value.giaGiam.toString() : '');
+    formData.append('ngayKetThuc', product.value?.ngayKetThuc ? dayjs(product.value?.ngayKetThuc).format('YYYY-MM-DD') : '');
+    formData.append('ngayBatDau', product.value?.ngayBatDau ? dayjs(product.value?.ngayBatDau).format('YYYY-MM-DD') : '');
+    formData.append('loaiGiam', product.value?.loaiGiam?.toString() || 'false');
+    formData.append('kieuGiam', product.value?.kieuGiam?.toString() || 'false');
 
     if (product.value.loaiGiam === true) {
       if (state.selectedRows.length === 0) {
@@ -457,7 +464,9 @@ onMounted(() => {
     label.value = 'Sửa phiếu giảm giá';
     fetchProductDetails(idSanPham.value)
     fetchListKHDetails(idSanPham.value)
+    pathName.value = 'Sửa phiếu giảm giá';
   } else {
+    pathName.value = 'Thêm phiếu giảm giá';
     label.value = 'Thêm phiếu giảm giá';
   }
 
@@ -465,3 +474,49 @@ onMounted(() => {
 });
 
 </script>
+
+
+<style scoped>
+.page-container {
+  padding: 20px;
+  /* Overall padding for the page content */
+}
+
+.breadcrumb-section {
+  margin-bottom: 25px;
+  /* Space below the breadcrumb and above the first section */
+  background-color: #fff;
+  /* White background for the breadcrumb box */
+  padding: 15px 20px;
+  /* Padding inside the breadcrumb box */
+  border-radius: 8px;
+  /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  /* Subtle shadow */
+}
+
+.section-title {
+  margin-top: 30px;
+  /* Space above each main section title */
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  /* Space below the title */
+  margin-left: 0px;
+  /* Remove left margin if section-title is directly under padding */
+  color: #333;
+  /* Darker color for titles */
+  display: flex;
+  /* To align icon and text */
+  align-items: center;
+  /* Vertically center icon and text */
+  gap: 8px;
+  /* Space between icon and text */
+}
+
+/* Remove or adjust body styles if they are global.
+   Scoped styles prevent them from affecting the entire app. */
+body {
+  font-family: 'Roboto', sans-serif;
+}
+</style>

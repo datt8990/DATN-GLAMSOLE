@@ -1,6 +1,7 @@
 package com.be.server.core.admin.SanPhamChiTiet.repository;
 
 import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
+import com.be.server.core.admin.SanPhamChiTiet.model.request.CheckThem;
 import com.be.server.core.admin.SanPhamChiTiet.model.response.ADListThuocTinh;
 import com.be.server.core.admin.SanPhamChiTiet.model.response.ADSanPhamChiTietDetail;
 import com.be.server.core.admin.SanPhamChiTiet.model.response.ADSanPhamChiTietResponse;
@@ -31,6 +32,7 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
         spct.giaBan as giaBan,
         kc.ten as kichThuoc,
         ms.mau as mau,
+         ms.ten AS tenMau,
         spct.anh as anh,
         spct.status as status,
         (SELECT MAX(spct2.giaBan) FROM SanPhamChiTiet spct2) AS giaMax
@@ -44,7 +46,7 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
             LEFT JOIN LoaiDe AS ld ON ld.id = sp.loaiDe.id
             LEFT JOIN DanhMuc AS dm ON dm.id = sp.danhMuc.id
             LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  
-        LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id
+            LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id
     WHERE 
         ( :#{#rep.idSP} IS NULL OR spct.sanPham.id = :#{#rep.idSP} ) 
         AND ( :#{#rep.q} IS NULL OR sp.ten LIKE CONCAT('%', :#{#rep.q}, '%') 
@@ -172,5 +174,21 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
                     """
     )
     List<ADListThuocTinh> getListColor();
+
+    @Query("""
+    select distinct spct.id
+    from SanPhamChiTiet spct
+    where spct.giaBan = :gia
+      and spct.mauSac.id = :idMau
+      and spct.kichCo.id = :idKichCo
+      and spct.sanPham.id = :idSanPham
+""")
+    String checkThemSanPham(
+            @Param("idMau") String idMau,
+            @Param("idKichCo") String idKichCo,
+            @Param("gia") Double gia,
+            @Param("idSanPham") String idSanPham
+    );
+
 
 }

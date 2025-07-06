@@ -121,7 +121,7 @@ const closeModalSize = () => {
 const fetchProducts = async () => {
   try {
     if (state.idSP != "default-id") {
-      console.log('Fetching products for ID:', state.idSP);
+      console.log('Fetching products for ID:', idSanPham);
       const response = await getSanPham(state.idSP)
       state.products = response.data;
     }else {

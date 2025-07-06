@@ -1,122 +1,131 @@
 <template>
-  <DivCustom label="Thêm nhân viên" customClasses="mt-5">
-    <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-button style=" margin-left: 900px; background-color: aqua; width: 150px;" @click="openQrModal">Quét
-        QR</a-button>
-      <a-row gutter={16}>
+  <div class="page-container">
+    <div class="breadcrumb-section">
+      <BreadcrumbDefault :pageTitle="pathName" :routes="[
+        { path: '/admin/nhan-vien', name: 'Quản lý khách hàng' },
+        { path: '/admin/them-nhan-vien', name: pathName }
+      ]" />
+    </div>
+    <DivCustom label="Thêm nhân viên" customClasses="mt-5">
+      <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
+        <a-button style=" margin-left: 900px; color: white; background-color: #54bddb; width: 150px;" @click="openQrModal">Quét
+          QR</a-button>
+        <a-row gutter={16}>
 
-        <a-col :span="8">
-               <a-form-item label="Ảnh đại diện" name="avatar" :label-col="{ span: 24 }">
-            <a-upload :before-upload="handleImageUpload" accept="image/*" :show-upload-list="false">
-              <div v-if="!imageUrl" class="image-upload-container">
-                Chọn ảnh đại diện
-              </div>
-              <a-image v-else :src="imageUrl" class="image-upload-container"
-                style="width: 250px;   margin-left: 80px; height: 250px; border-radius: 10px; border-radius: 50%;" />
-            </a-upload>
+          <a-col :span="8">
+            <a-form-item label="Ảnh đại diện" name="avatar" :label-col="{ span: 24 }">
+              <a-upload :before-upload="handleImageUpload" accept="image/*" :show-upload-list="false">
+                <div v-if="!imageUrl" class="image-upload-container">
+                  Chọn ảnh đại diện
+                </div>
+                <a-image v-else :src="imageUrl" class="image-upload-container"
+                  style="width: 250px;   margin-left: 80px; height: 250px; border-radius: 10px; border-radius: 50%;" />
+              </a-upload>
 
-          </a-form-item>
+            </a-form-item>
 
-          <a-form-item label="Tên Nhân viên" name="ten" :label-col="{ span: 24 }" :rules="rules.name">
-            <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập tên nhân viên"
-              style="border-radius: 4px;" />
-          </a-form-item>
-        </a-col>
+            <a-form-item label="Tên Nhân viên" name="ten" :label-col="{ span: 24 }" :rules="rules.name">
+              <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập tên nhân viên"
+                style="border-radius: 4px;" />
+            </a-form-item>
+          </a-col>
 
-        <a-col :span="16" style="margin-top: 25px;">
-          <a-row gutter={16}>
-            <a-col :span="12">
-              <a-form-item label="Mã định danh (Số CMND/CCCD)" name="cccd" :label-col="{ span: 24 }"
-                style="margin-left: 15px;" :rules="rules.cccd">
-                <a-input v-if="product" v-model:value="product.cccd" placeholder="Mã định danh"
-                  style="border-radius: 4px;" />
-              </a-form-item>
+          <a-col :span="16" style="margin-top: 25px;">
+            <a-row gutter={16}>
+              <a-col :span="12">
+                <a-form-item label="Mã định danh (Số CMND/CCCD)" name="cccd" :label-col="{ span: 24 }"
+                  style="margin-left: 15px;" :rules="rules.cccd">
+                  <a-input v-if="product" v-model:value="product.cccd" placeholder="Mã định danh"
+                    style="border-radius: 4px;" />
+                </a-form-item>
 
-              <a-form-item label="Ngày sinh" name="ngaySinh" :label-col="{ span: 24 }" style="margin-left: 15px;"
-                :rules="rules.ngaySinh">
-                <a-date-picker v-model:value="product.ngaySinh" style="width: 100%" />
-              </a-form-item>
+                <a-form-item label="Ngày sinh" name="ngaySinh" :label-col="{ span: 24 }" style="margin-left: 15px;"
+                  :rules="rules.ngaySinh">
+                  <a-date-picker v-model:value="product.ngaySinh" style="width: 100%" />
+                </a-form-item>
 
-              <a-form-item label="Số điện thoại" name="sdt" :label-col="{ span: 24 }" style="margin-left: 15px;"
-                :rules="rules.sdt">
-                <a-input v-if="product" v-model:value="product.sdt" placeholder="Số điện thoại"
-                  style="border-radius: 4px;" />
-              </a-form-item>
-            </a-col>
+                <a-form-item label="Số điện thoại" name="sdt" :label-col="{ span: 24 }" style="margin-left: 15px;"
+                  :rules="rules.sdt">
+                  <a-input v-if="product" v-model:value="product.sdt" placeholder="Số điện thoại"
+                    style="border-radius: 4px;" />
+                </a-form-item>
+              </a-col>
 
-            <a-col :span="12">
-              <a-form-item label="Giới tính" name="gioiTinh" :label-col="{ span: 24 }" style="margin-left: 15px;">
-                <a-radio-group v-model:value="product.gioiTinh">
-                  <a-radio :value="true">Nam</a-radio>
-                  <a-radio :value="false">Nữ</a-radio>
-                </a-radio-group>
-              </a-form-item>
+              <a-col :span="12">
+                <a-form-item label="Giới tính" name="gioiTinh" :label-col="{ span: 24 }" style="margin-left: 15px;">
+                  <a-radio-group v-model:value="product.gioiTinh">
+                    <a-radio :value="true">Nam</a-radio>
+                    <a-radio :value="false">Nữ</a-radio>
+                  </a-radio-group>
+                </a-form-item>
 
-              <a-form-item label="Email" name="email" :label-col="{ span: 24 }" :rules="rules.email"
-                style="margin-left: 15px;">
-                <a-input v-if="product" v-model:value="product.email" placeholder="Email" style="border-radius: 4px;" />
-              </a-form-item>
+                <a-form-item label="Email" name="email" :label-col="{ span: 24 }" :rules="rules.email"
+                  style="margin-left: 15px;">
+                  <a-input v-if="product" v-model:value="product.email" placeholder="Email"
+                    style="border-radius: 4px;" />
+                </a-form-item>
 
-              <a-form-item label="Địa chỉ" name="diaChi" :label-col="{ span: 24 }" :rules="rules.diaChi"
-                style="margin-left: 15px;">
-                <a-input v-if="product" v-model:value="product.diaChi" placeholder="Địa chỉ"
-                  style="border-radius: 4px;" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row gutter={16}>
+                <a-form-item label="Địa chỉ" name="diaChi" :label-col="{ span: 24 }" :rules="rules.diaChi"
+                  style="margin-left: 15px;">
+                  <a-input v-if="product" v-model:value="product.diaChi" placeholder="Địa chỉ"
+                    style="border-radius: 4px;" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row gutter={16}>
 
-            <a-col :span="8">
-              <a-form-item style="width: 250px; margin-left: 15px;" label="Tỉnh/thành phố" name="tinhThanhPho"
-                :label-col="{ span: 24 }">
-                <a-select v-model:value="product.tinh" placeholder="Chọn tỉnh/thành phố">
-                  <a-select-option v-for="province in tinhThanh" :key="province.code" :value="province.name">
-                    {{ province.name }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-
-
-            <a-col :span="8">
-              <a-form-item style="width: 250px; margin-left: 15px;" label="Quận/huyện" name="quanHuyen"
-                :label-col="{ span: 24 }">
-                <a-select v-model:value="product.huyen" placeholder="Chọn quận/huyện">
-                  <a-select-option v-for="district in quanHuyen" :key="district.code" :value="district.name">
-                    {{ district.name }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
+              <a-col :span="8">
+                <a-form-item style="width: 250px; margin-left: 15px;" label="Tỉnh/thành phố" name="tinhThanhPho"
+                  :label-col="{ span: 24 }">
+                  <a-select v-model:value="product.tinh" placeholder="Chọn tỉnh/thành phố">
+                    <a-select-option v-for="province in tinhThanh" :key="province.code" :value="province.name">
+                      {{ province.name }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
 
 
-            <a-col :span="8">
-              <a-form-item style="width: 250px ; margin-left: 15px;" label="Xã/phường/Thị trấn" name="xaPhuong"
-                :label-col="{ span: 24 }">
-                <a-select v-model:value="product.xa" placeholder="Chọn xã/phường/thi trấn">
-                  <a-select-option v-for="commune in phuongXa" :key="commune.code" :value="commune.name">
-                    {{ commune.name }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </a-col>
-      </a-row>
+              <a-col :span="8">
+                <a-form-item style="width: 250px; margin-left: 15px;" label="Quận/huyện" name="quanHuyen"
+                  :label-col="{ span: 24 }">
+                  <a-select v-model:value="product.huyen" placeholder="Chọn quận/huyện">
+                    <a-select-option v-for="district in quanHuyen" :key="district.code" :value="district.name">
+                      {{ district.name }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
 
-      <a-form-item
-        style="text-align: right; display: flex; justify-content: flex-end; margin-top: 30px; margin-right: 120px;">
-        <a-button style="background-color: aqua; width: 150px; margin-right: 600px;" @click="closeModal">Quay
-          lại</a-button>
-        <a-button style="background-color: aqua; margin-right: 30px; width: 150px;" html-type="submit"
-          @click="handleSubmit">{{ label }}</a-button>
 
-      </a-form-item>
-    </a-form>
-    <a-modal v-model:visible="isQrModalVisible" title="Quét QR" @cancel="closeQrModal">
-      <div id="reader" style="width: 100%; height: 300px;"></div>
-    </a-modal>
-  </DivCustom>
+              <a-col :span="8">
+                <a-form-item style="width: 250px ; margin-left: 15px;" label="Xã/phường/Thị trấn" name="xaPhuong"
+                  :label-col="{ span: 24 }">
+                  <a-select v-model:value="product.xa" placeholder="Chọn xã/phường/thi trấn">
+                    <a-select-option v-for="commune in phuongXa" :key="commune.code" :value="commune.name">
+                      {{ commune.name }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+
+        <a-form-item
+          style="text-align: right; display: flex; justify-content: flex-end; margin-top: 30px; margin-right: 120px;">
+          <a-button style="color: white; background-color: #54bddb; width: 150px; margin-right: 600px;" @click="closeModal">Quay
+            lại</a-button>
+          <a-button style="color: white; background-color: #54bddb; margin-right: 30px; width: 150px;" html-type="submit"
+            @click="handleSubmit">{{ label }}</a-button>
+
+        </a-form-item>
+      </a-form>
+      <a-modal v-model:visible="isQrModalVisible" title="Quét QR" @cancel="closeQrModal">
+        <div id="reader" style="width: 100%; height: 300px;"></div>
+      </a-modal>
+    </DivCustom>
+  </div>
 </template>
 
 
@@ -129,10 +138,11 @@ import DivCustom from '@/components/custom/Div/DivCustom.vue';
 import axios from 'axios';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useRoute, useRouter } from 'vue-router';
+import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
 
 const route = useRoute();
 const router = useRouter();
-
+const pathName = ref('');
 const idSanPham = ref('');
 
 const props = defineProps<{ open: boolean; productId: string | null; title: string }>();
@@ -415,10 +425,12 @@ onMounted(() => {
   idSanPham.value = route.query.id as string;
   if (idSanPham.value) {
     label.value = 'Sửa nhân viên';
+     pathName.value = 'Sửa nhân viên';
   } else {
     label.value = 'Thêm nhân viên';
+    pathName.value = 'Thêm nhân viên';
   }
-    if (idSanPham.value) {
+  if (idSanPham.value) {
     fetchProductDetails(idSanPham.value);  // Gọi hàm lấy chi tiết
   }
   fetchTinhThanh(); // Fetch provinces on mount
@@ -585,6 +597,36 @@ a-image .avatar-upload {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.page-container {
+  padding: 20px; /* Overall padding for the page content */
+}
+
+.breadcrumb-section {
+  margin-bottom: 25px; /* Space below the breadcrumb and above the first section */
+  background-color: #fff; /* White background for the breadcrumb box */
+  padding: 15px 20px; /* Padding inside the breadcrumb box */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
+}
+
+.section-title {
+  margin-top: 30px; /* Space above each main section title */
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px; /* Space below the title */
+  margin-left: 0px; /* Remove left margin if section-title is directly under padding */
+  color: #333; /* Darker color for titles */
+  display: flex; /* To align icon and text */
+  align-items: center; /* Vertically center icon and text */
+  gap: 8px; /* Space between icon and text */
+}
+ 
+/* Remove or adjust body styles if they are global.
+   Scoped styles prevent them from affecting the entire app. */
+body {
+  font-family: 'Roboto', sans-serif;
 }
 
 .a-upload .ant-upload-list-picture-card {

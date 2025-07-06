@@ -1,13 +1,20 @@
 <template>
     <DivCustom label="Danh sách loại đế" customClasses="mt-5">
-        <template #extra>
-            <a-tooltip title="Thêm loại đế">
-                <a-button type="primary" @click="handleAddClick"
-                    class="d-flex justify-content-center align-items-center px-4">
-                    <PlusCircleOutlined />
-                </a-button>
-            </a-tooltip>
-        </template>
+                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="font-size: 13px; margin-left: 15px;">
+                    {{ products.length }} loại đế
+                </div>
+
+                <div>
+                    <a-tooltip title="Thêm kích thước">
+                        <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
+                            class="d-flex justify-content-center align-items-center px-4">
+                            <PlusCircleOutlined /> Thêm mới kích thước
+                        </a-button>
+                    </a-tooltip>
+                </div>
+            </div>
+
         <div class="min-h-[360px] ">
             <a-table :columns="columns" :data-source="products" :pagination="{
                 current: paginationParams.page,
@@ -28,14 +35,14 @@
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
                             <a-tooltip title="Chỉnh sửa kích thước">
-                                <a-button type="primary" @click="handleViewClick(record.id)"
+                                <a-button type="primary" style="background-color: #54bddb;" @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button type="primary" class="p-2 d-flex justify-content-center align-items-center">
+                                <a-button style="background-color: #54bddb;" type="primary" class="p-2 d-flex justify-content-center align-items-center">
                                     <RedoOutlined />
                                 </a-button>
                             </a-popconfirm>
@@ -116,8 +123,12 @@ const handleViewClick = (id: string) => {
     emit('view', id)
 }
 </script>
-
 <style scoped lang="scss">
+
+body{
+      font-family: 'Roboto', sans-serif;
+}
+
 .color {
     border-radius: 50%;
 }
@@ -127,4 +138,12 @@ const handleViewClick = (id: string) => {
     justify-content: center;
     align-items: center;
 }
+
+// Custom class for centering buttons in the table if `justify-center` from Tailwind isn't available
+.center-flex-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Ensures vertical alignment as well */
+}    
 </style>

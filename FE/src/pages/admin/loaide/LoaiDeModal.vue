@@ -2,13 +2,13 @@
   <a-modal :open="open" :title="props.title" width="400px">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
-        <a-button type="primary">Xác nhận</a-button>
+        <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
       </a-popconfirm>
       <a-button @click="closeModal">Huỷ</a-button>
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="tên loại đé" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="tên loại đế" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"

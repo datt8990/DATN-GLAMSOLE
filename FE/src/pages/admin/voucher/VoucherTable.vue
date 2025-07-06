@@ -1,21 +1,27 @@
 <template>
     <DivCustom label="Danh sách phiếu giảm giá" customClasses="mt-5">
-        <template #extra>
-            <a-tooltip title="Thêm phiếu giảm giá">
-                <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
-                    class="d-flex justify-content-center align-items-center px-4">
-                    <PlusCircleOutlined />
-                </a-button>
-            </a-tooltip>
-        </template>
-        <div class="min-h-[360px] ">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="font-size: 13px; margin-left: 15px;">
+                    {{ products.length }} phiếu giảm giá
+                </div>
+
+                <div>
+                    <a-tooltip title="Thêm chất liệu">
+                        <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
+                            class="d-flex justify-content-center align-items-center px-4">
+                            <PlusCircleOutlined /> Thêm mới chất liệu
+                        </a-button>
+                    </a-tooltip>
+                </div>
+            </div>
+        <div class="min-h-[300px] ">
             <a-table :columns="columns" :data-source="products" :pagination="{
                 current: paginationParams.page,
                 pageSize: paginationParams.size,
                 total: totalItems,
                 showSizeChanger: true,
                 pageSizeOptions: ['10', '20', '30', '40', '50']
-            }" :scroll="{ y: 240 }" @change="handlePageChange">
+            }" :scroll="{ y: 300 }" @change="handlePageChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'status'">
                         <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">

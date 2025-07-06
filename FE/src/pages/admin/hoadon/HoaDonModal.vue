@@ -1,37 +1,25 @@
 <template>
   <div class="container mx-auto p-6 space-y-6">
-    <a-page-header title="Chi tiết hóa đơn" @back="$router.back()" />
+
+    <div class="breadcrumb-section">
+      <BreadcrumbDefault :pageTitle="'Chi tiết hóa đơn'" :routes="[
+         { path: '/admin/hoa-don', name: 'Quản lý hóa đơn' },
+        { path: '/admin/hoa-don-detai', name: 'Chi tiết hóa đơn' }
+      ]" />
+    </div>
     <!-- Timeline Trạng thái đơn hàng - Ngang -->
     <a-card title="TRẠNG THÁI ĐƠN HÀNG" bordered class="order-info-card">
       <div class="order-timeline-horizontal">
         <div class="timeline-container-horizontal">
           <!-- Dynamic Timeline Steps -->
-          <div
-            v-for="(step, index) in timelineSteps"
-            :key="step.key"
-            class="timeline-step-horizontal"
-            :class="getStepStatus(index)"
-          >
+          <div v-for="(step, index) in timelineSteps" :key="step.key" class="timeline-step-horizontal"
+            :class="getStepStatus(index)">
             <div class="step-content-horizontal">
               <div class="step-icon-horizontal">
-                <div
-                  class="icon-circle-horizontal"
-                  :class="['icon-circle-horizontal', getIconClass(index)]"
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      :d="step.icon"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
+                <div class="icon-circle-horizontal" :class="['icon-circle-horizontal', getIconClass(index)]">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path :d="step.icon" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
                   </svg>
                 </div>
               </div>
@@ -45,38 +33,22 @@
                 {{ getTimelineData(index).time }}
               </div>
             </div>
-            <div
-              v-if="
-                index < timelineSteps.length - 1 && !isLastActiveStep(index)
-              "
-              class="step-line-horizontal"
-              :class="getLineClass(index)"
-            ></div>
+            <div v-if="
+              index < timelineSteps.length - 1 && !isLastActiveStep(index)
+            " class="step-line-horizontal" :class="getLineClass(index)"></div>
           </div>
         </div>
       </div>
 
       <!-- Buttons for status update -->
       <div class="mt-4 flex gap-2 justify-center">
-        <a-button
-          v-if="canConfirmOrder"
-          type="primary"
-          @click="openStatusModal(getNextStatus())"
-          >{{ getConfirmButtonText() }}
+        <a-button v-if="canConfirmOrder" type="primary" @click="openStatusModal(getNextStatus())">{{
+          getConfirmButtonText() }}
         </a-button>
-        <a-button
-          v-if="canCompleteOrder"
-          type="primary"
-          @click="openStatusModal(getNextStatus())"
-        >
+        <a-button v-if="canCompleteOrder" type="primary" @click="openStatusModal(getNextStatus())">
           Hoàn thành đơn hàng
         </a-button>
-        <a-button
-          v-if="canCancelOrder1"
-          type="primary"
-          danger
-          @click="openStatusModal('DA_HUY')"
-        >
+        <a-button v-if="canCancelOrder1" type="primary" danger @click="openStatusModal('DA_HUY')">
           Hủy đơn hàng
         </a-button>
       </div>
@@ -106,10 +78,10 @@
                   hoaDon?.loaiHoaDon === "OFFLINE"
                     ? "Mua tại cửa hàng"
                     : hoaDon?.loaiHoaDon === "GIAO_HANG"
-                    ? "Giao hàng"
-                    : hoaDon?.loaiHoaDon === "ONLINE"
-                    ? "Mua online"
-                    : "Chưa rõ"
+                      ? "Giao hàng"
+                      : hoaDon?.loaiHoaDon === "ONLINE"
+                        ? "Mua online"
+                        : "Chưa rõ"
                 }}
               </span>
             </div>
@@ -143,11 +115,7 @@
         <template #title>
           <div class="card-title">
             <span>THÔNG TIN KHÁCH HÀNG</span>
-            <a-button
-              v-if="canChangeCustomerInfo"
-              type="primary"
-              class="change-info-btn"
-            >
+            <a-button v-if="canChangeCustomerInfo" type="primary" class="change-info-btn">
               Thay đổi thông tin
             </a-button>
           </div>
@@ -185,21 +153,12 @@
     <!-- Lịch sử thanh toán -->
     <a-card title="LỊCH SỬ THANH TOÁN" bordered class="order-info-card">
       <div class="flex justify-end mb-4">
-        <a-button
-          v-if="canConfirmPayment"
-          type="primary"
-          class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500"
-        >
+        <a-button v-if="canConfirmPayment" type="primary" class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500">
           Xác nhận thanh toán
         </a-button>
       </div>
-      <a-table
-        :dataSource="lichSuThanhToan"
-        :columns="paymentColumns"
-        :pagination="false"
-        class="custom-table"
-        rowKey="id"
-      >
+      <a-table :dataSource="lichSuThanhToan" :columns="paymentColumns" :pagination="false" class="custom-table"
+        rowKey="id">
         <template #bodyCell="{ column, record, index }">
           <template v-if="column.key === 'stt'">
             {{ index + 1 }}
@@ -218,23 +177,15 @@
     <!-- Sản phẩm có trong hóa đơn -->
     <a-card title="DANH SÁCH SẢN PHẨM" bordered class="order-info-card">
       <template #extra>
-        <a-button
-          v-if="canAddProduct"
-          type="primary"
-          :disabled="isAddProductDisabled"
+        <a-button v-if="canAddProduct" type="primary" :disabled="isAddProductDisabled"
           class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500"
-          :class="{ 'opacity-50 cursor-not-allowed': isAddProductDisabled }"
-        >
+          :class="{ 'opacity-50 cursor-not-allowed': isAddProductDisabled }">
           Thêm sản phẩm
         </a-button>
       </template>
 
       <div class="product-list-container">
-        <div
-          v-for="(record, index) in chiTietList"
-          :key="record.maHoaDonChiTiet"
-          class="product-row"
-        >
+        <div v-for="(record, index) in chiTietList" :key="record.maHoaDonChiTiet" class="product-row">
           <!-- STT -->
           <div class="product-stt">
             {{ index + 1 }}
@@ -242,11 +193,7 @@
 
           <!-- Product Image -->
           <div class="product-image">
-            <img
-              :src="record.anhSanPham || 'placeholder-image.png'"
-              alt="Ảnh sản phẩm"
-              class="product-img"
-            />
+            <img :src="record.anhSanPham || 'placeholder-image.png'" alt="Ảnh sản phẩm" class="product-img" />
           </div>
 
           <!-- Product Details -->
@@ -258,21 +205,13 @@
               {{ record.thuongHieu }} - {{ record.xuatSu }}
             </p>
             <div class="product-info">
-              <span class="product-price"
-                >Đơn giá: {{ formatCurrency(record.giaBan) }}</span
-              >
+              <span class="product-price">Đơn giá: {{ formatCurrency(record.giaBan) }}</span>
             </div>
           </div>
 
           <!-- Quantity Controls -->
           <div class="product-quantity">
-            <a-input-number
-              v-model:value="record.soLuong"
-              :min="1"
-              :max="999"
-              size="small"
-              class="quantity-input"
-            />
+            <a-input-number v-model:value="record.soLuong" :min="1" :max="999" size="small" class="quantity-input" />
           </div>
 
           <!-- Total Price -->
@@ -286,27 +225,13 @@
           <div class="pagination-info">3 / page</div>
           <div class="pagination-controls">
             <a-button size="small" class="pagination-btn">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 18L9 12L15 6" />
               </svg>
             </a-button>
             <a-button size="small" class="pagination-current">1</a-button>
             <a-button size="small" class="pagination-btn">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 18L15 12L9 6" />
               </svg>
             </a-button>
@@ -315,42 +240,27 @@
       </div>
     </a-card>
   </div>
-  <a-modal
-    v-model:open="showStatusModal"
-    title="Nhập ghi chú"
-    :footer="null"
-    :width="400"
-    :maskClosable="false"
-    @cancel="closeStatusModal"
-  >
+  <a-modal v-model:open="showStatusModal" title="Nhập ghi chú" :footer="null" :width="400" :maskClosable="false"
+    @cancel="closeStatusModal">
     <div class="status-modal-content">
       <div class="status-selection">
         <p class="selection-label">*Chọn mẫu tin nhắn:</p>
 
-        <a-radio-group
-          v-model:value="selectedStatusTemplate"
-          class="status-radio-group"
-        >
+        <a-radio-group v-model:value="selectedStatusTemplate" class="status-radio-group">
           <div class="radio-option">
             <a-radio value="confirmed">Đã xác nhận đơn hàng</a-radio>
           </div>
           <div class="radio-option">
-            <a-radio value="sap_shipped"
-              >Đơn hàng của bạn đã sẵn sàng để vận chuyển</a-radio
-            >
+            <a-radio value="sap_shipped">Đơn hàng của bạn đã sẵn sàng để vận chuyển</a-radio>
           </div>
           <div class="radio-option">
             <a-radio value="shipped">Đã bàn giao cho đơn vị vận chuyển</a-radio>
           </div>
           <div class="radio-option">
-            <a-radio value="payment_confirmed"
-              >Đã xác nhận thông tin thanh toán đơn hàng</a-radio
-            >
+            <a-radio value="payment_confirmed">Đã xác nhận thông tin thanh toán đơn hàng</a-radio>
           </div>
           <div class="radio-option">
-            <a-radio value="delivered"
-              >Đơn hàng đã được giao thành công</a-radio
-            >
+            <a-radio value="delivered">Đơn hàng đã được giao thành công</a-radio>
           </div>
           <div class="radio-option">
             <a-radio value="cancelled">Đơn hàng đã bị hủy</a-radio>
@@ -362,22 +272,13 @@
       </div>
 
       <div class="note-section">
-        <a-textarea
-          v-model:value="statusNote"
-          :rows="4"
-          placeholder="Đơn hàng đã được giao thành công"
-          class="status-textarea"
-        />
+        <a-textarea v-model:value="statusNote" :rows="4" placeholder="Đơn hàng đã được giao thành công"
+          class="status-textarea" />
       </div>
 
       <div class="modal-actions">
         <a-button @click="closeStatusModal" class="cancel-btn"> Hủy </a-button>
-        <a-button
-          type="primary"
-          @click="confirmStatusChange"
-          :loading="statusUpdateLoading"
-          class="confirm-btn"
-        >
+        <a-button type="primary" @click="confirmStatusChange" :loading="statusUpdateLoading" class="confirm-btn">
           Xác nhận
         </a-button>
       </div>
@@ -394,6 +295,7 @@ import {
   GetLSTTHD,
 } from "@/services/api/admin/hoadon.api";
 import { message } from "ant-design-vue";
+import BreadcrumbDefault from "@/components/ui/Breadcrumbs/BreadcrumbDefault.vue";
 
 const route = useRoute();
 const hoaDon = ref<any>(null);
@@ -957,8 +859,8 @@ onMounted(async () => {
           hoaDonData.loaiHoaDon == "0"
             ? EntityLoaiHoaDon.OFFLINE
             : hoaDonData.loaiHoaDon == "1"
-            ? EntityLoaiHoaDon.GIAO_HANG
-            : EntityLoaiHoaDon.ONLINE,
+              ? EntityLoaiHoaDon.GIAO_HANG
+              : EntityLoaiHoaDon.ONLINE,
         trangThaiHoaDon: hoaDonData.trangThaiHoaDon,
         ngayTao: hoaDonData.ngayTao,
         phiVanChuyen: hoaDonData.phiVanChuyen,
@@ -1139,9 +1041,11 @@ onMounted(async () => {
   0% {
     box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(24, 144, 255, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
   }
@@ -1205,6 +1109,7 @@ onMounted(async () => {
     font-size: 10px;
   }
 }
+
 .order-info-card {
   background: #fff;
   border-radius: 8px;
@@ -1237,7 +1142,8 @@ onMounted(async () => {
 }
 
 .label {
-  color: #4b5563; /* text-gray-600 */
+  color: #4b5563;
+  /* text-gray-600 */
   font-size: 14px;
 }
 
@@ -1248,32 +1154,38 @@ onMounted(async () => {
 
 .value.status,
 .value.code {
-  color: #ef4444; /* red-500 */
+  color: #ef4444;
+  /* red-500 */
 }
 
 .value.price {
-  color: #ef4444; /* red-500 */
+  color: #ef4444;
+  /* red-500 */
 }
 
 .value.total {
-  color: #dc2626; /* red-600 */
+  color: #dc2626;
+  /* red-600 */
   font-size: 16px;
   font-weight: bold;
 }
 
 .value.email,
 .value.address {
-  color: #ef4444; /* red-500 */
+  color: #ef4444;
+  /* red-500 */
 }
 
 .change-info-btn {
-  background-color: #f59e0b; /* yellow-500 */
+  background-color: #f59e0b;
+  /* yellow-500 */
   border-color: #f59e0b;
   color: #fff;
 }
 
 .change-info-btn:hover {
-  background-color: #d97706; /* yellow-600 */
+  background-color: #d97706;
+  /* yellow-600 */
   border-color: #d97706;
 }
 
@@ -1483,6 +1395,7 @@ onMounted(async () => {
     text-align: left;
   }
 }
+
 .status-modal-content {
   padding: 8px 0;
 }
@@ -1600,5 +1513,48 @@ onMounted(async () => {
   justify-content: center;
   width: 46px;
   height: 46px;
+}
+
+.page-container {
+  padding: 20px;
+  /* Overall padding for the page content */
+}
+
+.breadcrumb-section {
+  margin-bottom: 25px;
+  /* Space below the breadcrumb and above the first section */
+  background-color: #fff;
+  /* White background for the breadcrumb box */
+  padding: 15px 20px;
+  /* Padding inside the breadcrumb box */
+  border-radius: 8px;
+  /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  /* Subtle shadow */
+}
+
+.section-title {
+  margin-top: 30px;
+  /* Space above each main section title */
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  /* Space below the title */
+  margin-left: 0px;
+  /* Remove left margin if section-title is directly under padding */
+  color: #333;
+  /* Darker color for titles */
+  display: flex;
+  /* To align icon and text */
+  align-items: center;
+  /* Vertically center icon and text */
+  gap: 8px;
+  /* Space between icon and text */
+}
+
+/* Remove or adjust body styles if they are global.
+   Scoped styles prevent them from affecting the entire app. */
+body {
+  font-family: 'Roboto', sans-serif;
 }
 </style>

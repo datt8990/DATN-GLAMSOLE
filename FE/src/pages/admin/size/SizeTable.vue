@@ -1,51 +1,55 @@
 <template>
-    <DivCustom label="Danh sách kích thước" customClasses="mt-5">
-        <template #extra>
-            <a-tooltip title="Thêm kích thước">
-                <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
-                    class="d-flex justify-content-center align-items-center px-4">
-                    <PlusCircleOutlined />
-                </a-button>
-            </a-tooltip>
-        </template>
-        <div class="min-h-[360px] ">
+    <DivCustom label="" customClasses="mt-5">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="font-size: 13px; margin-left: 15px;">
+                    {{ products.length }} kích thước
+                </div>
+
+                <div>
+                    <a-tooltip title="Thêm kích thước">
+                        <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
+                            class="d-flex justify-content-center align-items-center px-4">
+                            <PlusCircleOutlined /> Thêm mới kích thước
+                        </a-button>
+                    </a-tooltip>
+                </div>
+            </div>
+
+        <div class="min-h-[400px]">
             <a-table :columns="columns" :data-source="products" :pagination="{
                 current: paginationParams.page,
                 pageSize: paginationParams.size,
-                total: totalItems,
+                total: totalItems, 
                 showSizeChanger: true,
                 pageSizeOptions: ['10', '20', '30', '40', '50']
-            }" :scroll="{ y: 240 }" @change="handlePageChange">
+            }" :scroll="{ y: 300 }" @change="handlePageChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'status'">
-                            <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
-                                {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
-                            </a-tag>    
+                        <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
+                            {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
+                        </a-tag>
                     </template>
                     <div v-if="column.key === 'stt'">
-                        {{ products.indexOf(record) + 1 }}
+                        {{ products.indexOf(record) + 1 + (paginationParams.page - 1) * paginationParams.size }}
                     </div>
                     <template v-if="column.key === 'operation'">
-                        <div class="d-flex gap-1 justify-center">
+                        <div class="d-flex gap-1 justify-center center-flex-buttons">
                             <a-tooltip title="Chỉnh sửa kích thước">
-                                <a-button type="primary" @click="handleViewClick(record.id)"
+                                <a-button type="primary" style="background-color: #54bddb;"
+                                    @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button type="primary" class="p-2 d-flex justify-content-center align-items-center">
+                                <a-button type="primary" style="background-color: #54bddb;"
+                                    class="p-2 d-flex justify-content-center align-items-center">
                                     <RedoOutlined />
                                 </a-button>
                             </a-popconfirm>
                         </div>
                     </template>
-                    <!-- <template v-if="column.key === 'operation'">
-                        <div class="flex gap-1 justify-center">
-
-                        </div>
-                    </template> -->
                 </template>
             </a-table>
         </div>
@@ -53,13 +57,12 @@
 </template>
 
 <script setup lang="ts">
-//   import DivCustom from '@/components/custom/Div/DivCustom.vue'
 import DivCustom from '@/components/custom/Div/DivCustomTable.vue'
 import { EditOutlined, PlusCircleOutlined, RedoOutlined } from '@ant-design/icons-vue'
 import type { TableColumnsType } from 'ant-design-vue'
-import { defineEmits, defineProps, h } from 'vue'
+import { defineEmits, defineProps, h } from 'vue' // 'h' is not used here, can be removed if not used elsewhere
 import { modifyStatusSize } from '@/services/api/admin/size.api'
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router' // useRouter is not used here, can be removed if not used elsewhere
 import { toast } from 'vue3-toastify'
 
 defineProps<{
@@ -68,20 +71,20 @@ defineProps<{
     products: any[]
 }>()
 
-const router = useRouter()
+// const router = useRouter() // Removed if not used
 
 const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
-    { title: 'Mã size', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
+    { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
     { title: 'Tên size', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',
         key: 'operation',
         width: 50,
-        align: 'center'
+        align: 'center' // This centers the column header text
     }
 ]
 
@@ -93,23 +96,19 @@ const handleAddClick = () => {
     emit('add')
 }
 
-
-
 const handleChangeStatusClick = async (id: string) => {
     try {
         const res = await modifyStatusSize(id);
         emit('changeStatus');
-
         toast.success(res.message);
-
     } catch (error) {
-        console.log(error);
-
+        console.error(error); // Use console.error for errors
         if (error?.response?.data?.message) {
             toast.error(error?.response?.data?.message);
+        } else {
+            toast.error("An unexpected error occurred.");
         }
     }
-
 }
 
 const handleViewClick = (id: string) => {
@@ -118,6 +117,11 @@ const handleViewClick = (id: string) => {
 </script>
 
 <style scoped lang="scss">
+
+body{
+      font-family: 'Roboto', sans-serif;
+}
+
 .color {
     border-radius: 50%;
 }
@@ -127,4 +131,12 @@ const handleViewClick = (id: string) => {
     justify-content: center;
     align-items: center;
 }
+
+// Custom class for centering buttons in the table if `justify-center` from Tailwind isn't available
+.center-flex-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Ensures vertical alignment as well */
+}    
 </style>
