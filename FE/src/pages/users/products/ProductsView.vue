@@ -1,12 +1,14 @@
 <template>
     <div class="container-fluid d-flex flex-column align-items-center">
-        <div class="w-100 py-3">
-            <div class="fs-6">Home / Search / {{ keyword }}</div>
+        <!-- Breadcrumb + tiêu đề -->
+        <div class="container py-3">
+            <div class="row align-items-center">
+                <BreadCrumbUser :routes="breadcrumbRoutes" title="Danh sách sản phẩm" />
+            </div>
         </div>
-        <hr class="w-100 mb-4" />
-    
+
         <div class="container d-flex flex-column flex-lg-row gap-4">
-                <!-- Bộ lọc  -->
+            <!-- Bộ lọc  -->
             <div class="col-12 col-lg-3">
                 <FilterBox />
             </div>
@@ -49,7 +51,7 @@
                                         <strong>Kích cỡ:</strong>
                                         <div class="d-flex gap-2 flex-wrap mt-1">
                                             <span class="size-box" v-for="(size, i) in item.kichCoList" :key="i">{{ size
-                                                }}</span>
+                                            }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -73,6 +75,11 @@ import FilterBox from './FilterBox.vue'
 
 const keyword = ref<string>('Cold Weather')
 
+const breadcrumbRoutes = [
+    { name: 'Trang chủ', path: '/' },
+    { name: 'Sản phẩm', path: '/san-pham' }
+];
+
 const sanPhamList = ref([
     {
         id: 1,
@@ -86,6 +93,116 @@ const sanPhamList = ref([
         ],
         kichCoList: ['40', '41', '42']
     },
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+    {
+        id: 1,
+        tenSanPham: 'Sneaker Trắng Basic Nam',
+        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
+        thuongHieu: 'Nike',
+        giaBan: 1250000,
+        mauList: [
+            { tenMau: 'Trắng', maMau: '#ffffff' },
+            { tenMau: 'Đen', maMau: '#000000' }
+        ],
+        kichCoList: ['40', '41', '42']
+    },
+
     {
         id: 2,
         tenSanPham: 'Adidas Nữ Hồng Pastel',
@@ -112,15 +229,16 @@ const sanPhamList = ref([
 ])
 
 import { useRouter } from 'vue-router'
+import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
 
 const router = useRouter()
 
 const handleClick = (product: any) => {
-  console.log('Bạn đã click vào sản phẩm:', product)
-  router.push({
-    name: 'san-pham-chi-tiet',
-    params: { id: product.id }
-  })
+    console.log('Bạn đã click vào sản phẩm:', product)
+    router.push({
+        name: 'san-pham-chi-tiet',
+        params: { id: product.id }
+    })
 }
 
 </script>

@@ -1,15 +1,19 @@
 <template>
-  <div class="container py-5">
+
+  <div class="container py-3">
+    <div class="row align-items-center">
+      <BreadCrumbUser :routes="breadcrumbRoutes" title="Thông tin chi tiết" />
+    </div>
+  </div>
+
+  <div class="container ">
     <div class="row gx-5 align-items-start">
       <!-- Cột trái: ảnh + mô tả -->
       <div class="col-md-6 d-flex flex-column gap-4">
         <!-- Ảnh -->
         <div class="bg-white border rounded shadow-sm p-3">
-          <img
-            :src="typeSelected?.hinh_anh || 'https://via.placeholder.com/400'"
-            class="img-fluid rounded w-100"
-            alt="Ảnh sản phẩm"
-          />
+          <img :src="typeSelected?.hinh_anh || 'https://via.placeholder.com/400'" class="img-fluid rounded w-100"
+            alt="Ảnh sản phẩm" />
         </div>
 
         <!-- Mô tả -->
@@ -18,11 +22,8 @@
           <p class="text-muted" style="white-space: pre-line;">
             {{ displayedDescription }}
           </p>
-          <button
-            v-if="hasMoreDescription"
-            class="btn btn-sm btn-outline-secondary"
-            @click="showFullDescription = !showFullDescription"
-          >
+          <button v-if="hasMoreDescription" class="btn btn-sm btn-outline-secondary"
+            @click="showFullDescription = !showFullDescription">
             {{ showFullDescription ? 'Thu gọn' : 'Xem thêm' }}
             <i :class="'ri-arrow-' + (showFullDescription ? 'up' : 'down') + '-s-line ms-1'"></i>
           </button>
@@ -30,114 +31,104 @@
       </div>
 
       <!-- Cột phải: thông tin + hành động -->
-    <div class="col-md-6">
-  <div class="bg-white border rounded shadow-sm p-3 d-flex flex-column gap-2">
-    <!-- Tên sản phẩm -->
-    <h5 class="fw-bold mb-1">{{ product.ten_san_pham }}</h5>
-    <div class="text-muted small">
-      Thương hiệu: <strong>{{ product.thuong_hieu?.ten_thuong_hieu }}</strong> |
-      Xuất xứ: <strong>{{ product.xuat_xu?.ten_xuat_xu }}</strong>
-    </div>
+      <div class="col-md-6">
+        <div class="bg-white border rounded shadow-sm p-3 d-flex flex-column gap-2">
+          <!-- Tên sản phẩm -->
+          <h5 class="fw-bold mb-1">{{ product.ten_san_pham }}</h5>
+          <div class="text-muted small">
+            Thương hiệu: <strong>{{ product.thuong_hieu?.ten_thuong_hieu }}</strong> |
+            Xuất xứ: <strong>{{ product.xuat_xu?.ten_xuat_xu }}</strong>
+          </div>
 
-    <!-- Giá -->
-    <div class="text-danger fw-bold fs-6 mb-2">
-      {{ typeSelected?.gia_ban?.toLocaleString('vi-VN') }} ₫
-    </div>
+          <!-- Giá -->
+          <div class="text-danger fw-bold fs-6 mb-2">
+            {{ typeSelected?.gia_ban?.toLocaleString('vi-VN') }} ₫
+          </div>
 
-    <!-- Màu sắc -->
-    <div>
-      <label class="form-label small fw-semibold mb-1">Màu sắc</label>
-      <div class="d-flex flex-wrap gap-2">
-        <div
-          v-for="color in uniqueColors"
-          :key="color.id"
-          class="d-flex flex-column align-items-center"
-          style="cursor: pointer; width: 50px;"
-          @click="chooseColor(color)"
-        >
-          <div
-            class="shadow-sm"
-            :style="{
-              backgroundColor: color.ma_mau,
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              border: colorSelected?.id === color.id ? '2px solid #0d6efd' : '1px solid #ccc',
-              transition: 'border 0.2s ease'
-            }"
-          ></div>
-          <small class="mt-1 text-muted text-center" style="font-size: 0.7rem;">
-            {{ color.ten_mau_sac }}
-          </small>
+          <!-- Màu sắc -->
+          <div>
+            <label class="form-label small fw-semibold mb-1">Màu sắc</label>
+            <div class="d-flex flex-wrap gap-2">
+              <div v-for="color in uniqueColors" :key="color.id" class="d-flex flex-column align-items-center"
+                style="cursor: pointer; width: 50px;" @click="chooseColor(color)">
+                <div class="shadow-sm" :style="{
+                  backgroundColor: color.ma_mau,
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  border: colorSelected?.id === color.id ? '2px solid #0d6efd' : '1px solid #ccc',
+                  transition: 'border 0.2s ease'
+                }"></div>
+                <small class="mt-1 text-muted text-center" style="font-size: 0.7rem;">
+                  {{ color.ten_mau_sac }}
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kích thước -->
+          <div>
+            <label class="form-label small fw-semibold mb-1">Kích thước</label>
+            <div class="d-flex flex-wrap gap-2">
+              <span v-for="size in filteredSizes" :key="size.id" class="px-2 py-1 border rounded text-center"
+                :class="sizeSelected?.id === size.id ? 'bg-dark text-white' : 'bg-light text-dark'"
+                style="min-width: 40px; font-size: 0.85rem; cursor: pointer;" @click="chooseSize(size)">
+                {{ size.ten_kich_co }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Số lượng -->
+          <div class="d-flex justify-content-between align-items-center">
+            <label class="form-label mb-0 small fw-semibold">Số lượng</label>
+            <input type="number" class="form-control form-control-sm w-25 text-end" v-model="cart.quantity"
+              :max="typeSelected?.so_luong" min="1" />
+          </div>
+
+          <!-- Tạm tính -->
+          <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+            <span class="fw-semibold small">Tạm tính:</span>
+            <span class="fw-bold text-primary small">
+              {{ (typeSelected?.gia_ban * cart.quantity).toLocaleString('vi-VN') }} ₫
+            </span>
+          </div>
+
+          <!-- Cảnh báo -->
+          <div v-if="errValidate.cart" class="text-danger small">
+            {{ errValidate.cart }}
+          </div>
+
+          <!-- Nút hành động -->
+          <div class="d-grid gap-1 mt-2">
+            <button class="btn btn-outline-primary btn-sm fw-semibold" @click="addToCart">
+              <i class="ri-shopping-cart-line me-1"></i> Giỏ hàng
+            </button>
+            <button class="btn btn-primary btn-sm fw-semibold" @click="buyNow">
+              Mua ngay
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Kích thước -->
-    <div>
-      <label class="form-label small fw-semibold mb-1">Kích thước</label>
-      <div class="d-flex flex-wrap gap-2">
-        <span
-          v-for="size in filteredSizes"
-          :key="size.id"
-          class="px-2 py-1 border rounded text-center"
-          :class="sizeSelected?.id === size.id ? 'bg-dark text-white' : 'bg-light text-dark'"
-          style="min-width: 40px; font-size: 0.85rem; cursor: pointer;"
-          @click="chooseSize(size)"
-        >
-          {{ size.ten_kich_co }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Số lượng -->
-    <div class="d-flex justify-content-between align-items-center">
-      <label class="form-label mb-0 small fw-semibold">Số lượng</label>
-      <input
-        type="number"
-        class="form-control form-control-sm w-25 text-end"
-        v-model="cart.quantity"
-        :max="typeSelected?.so_luong"
-        min="1"
-      />
-    </div>
-
-    <!-- Tạm tính -->
-    <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
-      <span class="fw-semibold small">Tạm tính:</span>
-      <span class="fw-bold text-primary small">
-        {{ (typeSelected?.gia_ban * cart.quantity).toLocaleString('vi-VN') }} ₫
-      </span>
-    </div>
-
-    <!-- Cảnh báo -->
-    <div v-if="errValidate.cart" class="text-danger small">
-      {{ errValidate.cart }}
-    </div>
-
-    <!-- Nút hành động -->
-    <div class="d-grid gap-1 mt-2">
-      <button class="btn btn-outline-primary btn-sm fw-semibold" @click="addToCart">
-        <i class="ri-shopping-cart-line me-1"></i> Giỏ hàng
-      </button>
-      <button class="btn btn-primary btn-sm fw-semibold" @click="buyNow">
-        Mua ngay
-      </button>
-    </div>
-  </div>
-</div>
 
 
-      
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue';
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+const breadcrumbRoutes = [
+  { name: 'Trang chủ', path: '/' },
+  { name: 'Sản phẩm', path: '/san-pham' },
+  { name: 'Chi tiết sản phẩm', path: '/chi-tiet-san-pham' } 
+]
+
 
 const product = ref({
   ten_san_pham: 'Áo Thun Nam',

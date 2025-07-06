@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 class="fw-bold">
-<CheckCircleFilled class="text-success me-2" />
+        <CheckCircleFilled class="text-success me-2" />
 
         Thương hiệu
       </h4>
@@ -21,8 +21,8 @@
             <div class="card-body text-center p-2">
               <p class="fw-semibold mb-1">{{ item.name }}</p>
               <small class="text-muted">
-               <CheckCircleFilled style="color: #52c41a; margin-right: 0.5rem;" />
-Official store
+                <CheckCircleFilled style="color: #52c41a; margin-right: 0.5rem;" />
+                Official store
               </small>
             </div>
           </div>

@@ -15,25 +15,42 @@ export const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/users/home/HomeView.vue')
       },
       {
+        path: ROUTES_CONSTANTS.USERS.children.LOGIN.path,
+        name: ROUTES_CONSTANTS.USERS.children.LOGIN.name,
+        component: () => import('@/pages/auth/LoginPage.vue')
+      },
+      {
+        path:ROUTES_CONSTANTS.USERS.children.REGISTER.path,
+        name:ROUTES_CONSTANTS.USERS.children.REGISTER.name,
+        component: () => import('@/pages/auth/RegisterPage.vue')
+      },
+      {
         path: ROUTES_CONSTANTS.USERS.children.SANPHAM.path,
         name: ROUTES_CONSTANTS.USERS.children.SANPHAM.name,
         component: () => import('@/pages/users/products/ProductsView.vue')
       },
       {
-        path: ROUTES_CONSTANTS.LOGIN.path,
-        name: ROUTES_CONSTANTS.LOGIN.name,
-        component: () => import('@/pages/auth/LoginPage.vue')
-      },
-      {
-        path: ROUTES_CONSTANTS.REGISTER.path,
-        name: ROUTES_CONSTANTS.REGISTER.name,
-        component: () => import('@/pages/auth/RegisterPage.vue')
-      },
-     {
         path: ROUTES_CONSTANTS.USERS.children.SANPHAMCHITIET.path,
         name: ROUTES_CONSTANTS.USERS.children.SANPHAMCHITIET.name,
         component: () => import('@/pages/users/products/ProductDetail.vue')
       },
+      {
+        path: ROUTES_CONSTANTS.USERS.children.THANHTOAN.path,
+        name: ROUTES_CONSTANTS.USERS.children.THANHTOAN.name,
+        component: () => import('@/pages/users/checkout/CheckoutView.vue')
+      },
+      {
+        path: ROUTES_CONSTANTS.USERS.children.THANHTOANTHANHCONG.path,
+        name: ROUTES_CONSTANTS.USERS.children.THANHTOANTHANHCONG.name,
+        component: () => import('@/pages/users/checkout/CheckoutSuccess.vue')
+      },
+      {
+        path: ROUTES_CONSTANTS.USERS.children.GIOHANG.path,
+        name: ROUTES_CONSTANTS.USERS.children.GIOHANG.name,
+        component: () => import('@/pages/users/cart/CartView.vue')
+      },
+
+
 
     ]
   },
