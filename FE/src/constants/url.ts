@@ -40,6 +40,8 @@ export const PREFIX_API_LOGIN = (PREFIX_API_AUTH + `/login`) as string;
 
 export const PREFIX_API_LOGIN_ADMIN = (PREFIX_API_AUTH + `/login-admin`) as string;
 
+export const PREFIX_API_REGISTER = (PREFIX_API_AUTH + `/register`) as string;
+
 // API PREFIX ADMIN
 export const PREFIX_API_ADMIN = `${API_URL}/admin` as string;
 

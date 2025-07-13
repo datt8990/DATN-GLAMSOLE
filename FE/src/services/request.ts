@@ -24,57 +24,70 @@ request.interceptors.request.use((config) => {
   return config
 })
 
+// Danh sách tất cả path login bạn dùng trên FE
+const LOGIN_PATHS = [
+  ROUTES_CONSTANTS.USERS.children.LOGIN.path,
+  // Thêm các path login khác nếu có
+  ROUTES_CONSTANTS.ADMIN.children.LOGIN?.path,     // Nếu có
+  ROUTES_CONSTANTS.USERS.children.LOGIN?.path, // Nếu có
+  '/login',                               
+  '/admin/login',
+  '/dang-nhap'
+].filter(Boolean); // Loại undefined nếu không có
+
 request.interceptors.response.use(
   (response) => {
-    return response
+    return response;
   },
   async (error) => {
-    const originalRequest = error.config
+    const originalRequest = error.config;
+
+    // Hàm kiểm tra có phải trang login không
+    const isLoginPage = LOGIN_PATHS.includes(window.location.pathname);
 
     if (
       error.response &&
       error.response.status === 401 &&
       !originalRequest._retry &&
-      window.location.pathname !== ROUTES_CONSTANTS.USERS.children.LOGIN.path
-      //    &&
-      //   window.location.pathname !== ROUTES_CONSTANTS.LOGIN_CUSTOMER.path
+      !isLoginPage
     ) {
-      originalRequest._retry = true
+      originalRequest._retry = true;
 
-      const refreshToken = localStorageAction.get(REFRESH_TOKEN_STORAGE_KEY)
+      const refreshToken = localStorageAction.get(REFRESH_TOKEN_STORAGE_KEY);
       if (refreshToken) {
         try {
           const response = (await axios.post(`${PREFIX_API_AUTH}/refresh`, {
             refreshToken
-          })) as AxiosResponse<DefaultResponse<{ accessToken: string; refreshToken: string }>>
-          const newAccessToken = response.data.data.accessToken
-          const newRefreshToken = response.data.data.refreshToken
-          localStorageAction.set(ACCESS_TOKEN_STORAGE_KEY, newAccessToken)
-          localStorageAction.set(REFRESH_TOKEN_STORAGE_KEY, newRefreshToken)
-          localStorageAction.set(USER_INFO_STORAGE_KEY, getUserInformation(newAccessToken))
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
-          return request(originalRequest)
+          })) as AxiosResponse<DefaultResponse<{ accessToken: string; refreshToken: string }>>;
+          const newAccessToken = response.data.data.accessToken;
+          const newRefreshToken = response.data.data.refreshToken;
+          localStorageAction.set(ACCESS_TOKEN_STORAGE_KEY, newAccessToken);
+          localStorageAction.set(REFRESH_TOKEN_STORAGE_KEY, newRefreshToken);
+          localStorageAction.set(USER_INFO_STORAGE_KEY, getUserInformation(newAccessToken));
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return request(originalRequest);
         } catch (refreshError) {
-          console.log('🚀 ~ refreshError:', refreshError)
+          console.log('🚀 ~ refreshError:', refreshError);
         }
       }
 
-      localStorageAction.remove(ACCESS_TOKEN_STORAGE_KEY)
-      localStorageAction.remove(REFRESH_TOKEN_STORAGE_KEY)
-      localStorageAction.remove(USER_INFO_STORAGE_KEY)
-      window.location.href = ROUTES_CONSTANTS.UNAUTHORIZED.path
+      // Nếu không refresh được hoặc không có refreshToken, logout & redirect
+      localStorageAction.remove(ACCESS_TOKEN_STORAGE_KEY);
+      localStorageAction.remove(REFRESH_TOKEN_STORAGE_KEY);
+      localStorageAction.remove(USER_INFO_STORAGE_KEY);
+      window.location.href = ROUTES_CONSTANTS.UNAUTHORIZED.path;
     } else if (
       error.response &&
       error.response.status === 403 &&
-      window.location.pathname !== ROUTES_CONSTANTS.USERS.children.LOGIN.path
-      
+      !isLoginPage
     ) {
-      window.location.href = ROUTES_CONSTANTS.FORBIDDEN.path
-      console.log("lỗi ",error.response)
+      window.location.href = ROUTES_CONSTANTS.FORBIDDEN.path;
+      console.log("lỗi ", error.response);
     }
 
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
+
 
 export default request

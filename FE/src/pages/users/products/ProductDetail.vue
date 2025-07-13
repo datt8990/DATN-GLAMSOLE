@@ -1,27 +1,22 @@
 <template>
-
   <div class="container py-3">
     <div class="row align-items-center">
       <BreadCrumbUser :routes="breadcrumbRoutes" title="Thông tin chi tiết" />
     </div>
   </div>
 
-  <div class="container ">
+  <div class="container">
     <div class="row gx-5 align-items-start">
-      <!-- Cột trái: ảnh + mô tả -->
+      <!-- Cột trái -->
       <div class="col-md-6 d-flex flex-column gap-4">
-        <!-- Ảnh -->
         <div class="bg-white border rounded shadow-sm p-3">
           <img :src="typeSelected?.hinh_anh || 'https://via.placeholder.com/400'" class="img-fluid rounded w-100"
             alt="Ảnh sản phẩm" />
         </div>
 
-        <!-- Mô tả -->
         <div class="border-top pt-4">
           <h5 class="fw-bold mb-3">Mô tả sản phẩm</h5>
-          <p class="text-muted" style="white-space: pre-line;">
-            {{ displayedDescription }}
-          </p>
+          <p class="text-muted" style="white-space: pre-line;">{{ displayedDescription }}</p>
           <button v-if="hasMoreDescription" class="btn btn-sm btn-outline-secondary"
             @click="showFullDescription = !showFullDescription">
             {{ showFullDescription ? 'Thu gọn' : 'Xem thêm' }}
@@ -30,10 +25,9 @@
         </div>
       </div>
 
-      <!-- Cột phải: thông tin + hành động -->
+      <!-- Cột phải -->
       <div class="col-md-6">
         <div class="bg-white border rounded shadow-sm p-3 d-flex flex-column gap-2">
-          <!-- Tên sản phẩm -->
           <h5 class="fw-bold mb-1">{{ product.ten_san_pham }}</h5>
           <div class="text-muted small">
             Thương hiệu: <strong>{{ product.thuong_hieu?.ten_thuong_hieu }}</strong> |
@@ -42,7 +36,14 @@
 
           <!-- Giá -->
           <div class="text-danger fw-bold fs-6 mb-2">
-            {{ typeSelected?.gia_ban?.toLocaleString('vi-VN') }} ₫
+            <template v-if="coGiamGia">
+              <del class="text-muted me-2">{{ typeSelected?.dot_giam_gia?.giaTruoc.toLocaleString('vi-VN') }} ₫</del>
+              {{ giaHienTai.toLocaleString('vi-VN') }} ₫
+              <span class="badge bg-success ms-2">-{{ typeSelected?.dot_giam_gia?.phanTramGiam }}%</span>
+            </template>
+            <template v-else>
+              {{ giaHienTai?.toLocaleString('vi-VN') }} ₫
+            </template>
           </div>
 
           <!-- Màu sắc -->
@@ -89,16 +90,12 @@
           <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
             <span class="fw-semibold small">Tạm tính:</span>
             <span class="fw-bold text-primary small">
-              {{ (typeSelected?.gia_ban * cart.quantity).toLocaleString('vi-VN') }} ₫
+              {{ (giaHienTai * cart.quantity).toLocaleString('vi-VN') }} ₫
             </span>
           </div>
 
-          <!-- Cảnh báo -->
-          <div v-if="errValidate.cart" class="text-danger small">
-            {{ errValidate.cart }}
-          </div>
+          <div v-if="errValidate.cart" class="text-danger small">{{ errValidate.cart }}</div>
 
-          <!-- Nút hành động -->
           <div class="d-grid gap-1 mt-2">
             <button class="btn btn-outline-primary btn-sm fw-semibold" @click="addToCart">
               <i class="ri-shopping-cart-line me-1"></i> Giỏ hàng
@@ -109,26 +106,22 @@
           </div>
         </div>
       </div>
-
-
-
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue';
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
 
 const router = useRouter()
 
 const breadcrumbRoutes = [
   { name: 'Trang chủ', path: '/' },
   { name: 'Sản phẩm', path: '/san-pham' },
-  { name: 'Chi tiết sản phẩm', path: '/chi-tiet-san-pham' } 
+  { name: 'Chi tiết sản phẩm', path: '/chi-tiet-san-pham' }
 ]
-
 
 const product = ref({
   ten_san_pham: 'Áo Thun Nam',
@@ -138,46 +131,43 @@ const product = ref({
   chi_tiet: [
     {
       id: 1,
-      mau_sac: {
-        id: 1,
-        ten_mau_sac: 'Đỏ',
-        ma_mau: '#dc3545' 
-      },
+      mau_sac: { id: 1, ten_mau_sac: 'Đỏ', ma_mau: '#dc3545' },
       kich_co: { id: 1, ten_kich_co: 'M' },
       gia_ban: 199000,
       so_luong: 10,
-      hinh_anh: 'https://hthaostudio.com/wp-content/uploads/2019/08/Giay-nam-2.jpg'
+      hinh_anh: 'https://via.placeholder.com/400.png?text=Đỏ+M',
+      dot_giam_gia: {
+        tenDotGiamGia: 'Sale Hè Rực Rỡ',
+        phanTramGiam: 10,
+        giaTruoc: 199000,
+        giaSau: 179100,
+        ngayBatDau: '2025-06-01',
+        ngayKetThuc: '2025-06-30'
+      }
     },
     {
       id: 2,
-      mau_sac: {
-        id: 1,
-        ten_mau_sac: 'Đỏ',
-        ma_mau: '#dc3545' 
-      },
+      mau_sac: { id: 1, ten_mau_sac: 'Đỏ', ma_mau: '#dc3545' },
       kich_co: { id: 2, ten_kich_co: 'L' },
       gia_ban: 199000,
       so_luong: 5,
-      hinh_anh: 'https://via.placeholder.com/400x400.png?text=Đỏ+L'
+      hinh_anh: 'https://via.placeholder.com/400.png?text=Đỏ+L'
     },
     {
       id: 3,
-      mau_sac: {
-        id: 2,
-        ten_mau_sac: 'Xanh',
-        ma_mau: '#0d6efd' 
-      },
+      mau_sac: { id: 2, ten_mau_sac: 'Xanh', ma_mau: '#0d6efd' },
       kich_co: { id: 1, ten_kich_co: 'M' },
       gia_ban: 199000,
       so_luong: 8,
-      hinh_anh: 'https://via.placeholder.com/400x400.png?text=Xanh+M'
+      hinh_anh: 'https://via.placeholder.com/400.png?text=Xanh+M'
     }
   ]
 })
 
-
 const cart = ref({ quantity: 1 })
 const showFullDescription = ref(false)
+const colorSelected = ref(product.value.chi_tiet[0].mau_sac)
+const sizeSelected = ref(product.value.chi_tiet[0].kich_co)
 
 const uniqueColors = computed(() => {
   const seen = new Set()
@@ -196,9 +186,6 @@ const filteredSizes = computed(() => {
     .map(ct => ct.kich_co)
 })
 
-const colorSelected = ref(product.value.chi_tiet[0].mau_sac)
-const sizeSelected = ref(product.value.chi_tiet[0].kich_co)
-
 const typeSelected = computed(() => {
   return product.value.chi_tiet.find(
     ct =>
@@ -207,15 +194,17 @@ const typeSelected = computed(() => {
   )
 })
 
-const displayedDescription = computed(() => {
-  return showFullDescription.value
-    ? product.value.mo_ta
-    : product.value.mo_ta.split('\n').slice(0, 2).join('\n')
-})
+const coGiamGia = computed(() => !!typeSelected.value?.dot_giam_gia)
+const giaHienTai = computed(() => coGiamGia.value
+  ? typeSelected.value?.dot_giam_gia?.giaSau
+  : typeSelected.value?.gia_ban
+)
 
-const hasMoreDescription = computed(() => {
-  return product.value.mo_ta.split('\n').length > 2
-})
+const displayedDescription = computed(() => showFullDescription.value
+  ? product.value.mo_ta
+  : product.value.mo_ta.split('\n').slice(0, 2).join('\n'))
+
+const hasMoreDescription = computed(() => product.value.mo_ta.split('\n').length > 2)
 
 const errValidate = computed(() => {
   if (!typeSelected.value) return { cart: 'Vui lòng chọn đủ màu và kích thước' }
@@ -223,18 +212,10 @@ const errValidate = computed(() => {
   return { cart: '' }
 })
 
-const chooseColor = color => {
-  colorSelected.value = color
-}
+const chooseColor = color => (colorSelected.value = color)
+const chooseSize = size => (sizeSelected.value = size)
 
-const chooseSize = size => {
-  sizeSelected.value = size
-}
-
-const addToCart = () => {
-  alert('Đã thêm vào giỏ hàng')
-}
-
+const addToCart = () => alert('Đã thêm vào giỏ hàng')
 const buyNow = () => {
   router.push(`/checkout?ctspId=${typeSelected.value.id}&quantity=${cart.value.quantity}`)
 }
