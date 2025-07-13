@@ -13,8 +13,6 @@ export interface ParamsGetThuongHieu extends PaginationParams {
   status?: number | null
 }
 
-
-
 export type ThuongHieuResponse = ResponseList & {
   maSize: string,
   tenSize: string,

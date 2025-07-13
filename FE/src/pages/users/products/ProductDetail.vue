@@ -141,7 +141,7 @@ const product = ref({
       mau_sac: {
         id: 1,
         ten_mau_sac: 'Đỏ',
-        ma_mau: '#dc3545' // đỏ
+        ma_mau: '#dc3545' 
       },
       kich_co: { id: 1, ten_kich_co: 'M' },
       gia_ban: 199000,
@@ -153,7 +153,7 @@ const product = ref({
       mau_sac: {
         id: 1,
         ten_mau_sac: 'Đỏ',
-        ma_mau: '#dc3545' // đỏ
+        ma_mau: '#dc3545' 
       },
       kich_co: { id: 2, ten_kich_co: 'L' },
       gia_ban: 199000,
@@ -165,7 +165,7 @@ const product = ref({
       mau_sac: {
         id: 2,
         ten_mau_sac: 'Xanh',
-        ma_mau: '#0d6efd' // xanh dương
+        ma_mau: '#0d6efd' 
       },
       kich_co: { id: 1, ten_kich_co: 'M' },
       gia_ban: 199000,
