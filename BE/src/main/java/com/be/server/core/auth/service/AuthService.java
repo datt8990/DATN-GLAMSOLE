@@ -8,5 +8,4 @@ public interface AuthService {
 
     ResponseObject<?> register(@Valid RegisterRequest request);
 
-
 }

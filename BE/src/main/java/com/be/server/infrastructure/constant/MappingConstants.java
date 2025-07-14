@@ -15,6 +15,9 @@ public class MappingConstants {
     /* AUTHENTICATION */
     public static final String API_AUTH_PREFIX = API_VERSION_PREFIX + "/auth";
 
+    /* Common */
+    public static final String API_PERMITALL_PREFIX = API_VERSION_PREFIX + "/permitall";
+
     /* API FOR ROLE ADMIN */
     public static final String API_ADMIN_PREFIX = API_VERSION_PREFIX + ADMIN;
     public static final String API_ADMIN_MAU_SAC = API_ADMIN_PREFIX + "/mau-sac";
@@ -32,5 +35,10 @@ public class MappingConstants {
     public static final String API_ADMIN_BAN_HANG= API_ADMIN_PREFIX + "/ban-hang";
     public static final String API_ADMIN_HOA_DON= API_ADMIN_PREFIX + "/hoa-don";
     public static final String API_ADMIN_VOUCHER= API_ADMIN_PREFIX + "/voucher";
+
+    //    Permitall api
+    public static final String API_PERMITALL_SANPHAM= API_PERMITALL_PREFIX + "/san-pham";
+    public static final String API_PERMITALL_SANPHAM_CHITIET= API_PERMITALL_PREFIX + "/san-pham-chi-tiet";
+    public static final String API_PERMITALL_THUONGHIEU= API_PERMITALL_PREFIX + "/thuong-hieu";
 
 }

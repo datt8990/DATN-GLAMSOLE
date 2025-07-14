@@ -39,7 +39,7 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-            String accessToken = tokenProvider.createRefreshTokenForKhachHang(authentication);
+            String accessToken = tokenProvider.createTokenForKhachHang(authentication);
             String refreshToken = tokenProvider.createRefreshTokenForKhachHang(authentication);
             return Helper.createResponseEntity(
              new ResponseObject<>(new AuthTokens(accessToken, refreshToken), HttpStatus.OK, "Lấy token thành công")
@@ -88,7 +88,7 @@ public class AuthController {
 
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             String accessToken = tokenProvider.createTokenForAdmin(authentication);
-            String refreshToken = tokenProvider.createTokenForAdmin(authentication);
+            String refreshToken = tokenProvider.createRefreshTokenForAdmin(authentication);
             return Helper.createResponseEntity(
                     new ResponseObject<>(new AuthTokens(accessToken, refreshToken), HttpStatus.OK, "Lấy token thành công")
             );
@@ -124,7 +124,6 @@ public class AuthController {
             );
         }
     }
-
 
     @PutMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {

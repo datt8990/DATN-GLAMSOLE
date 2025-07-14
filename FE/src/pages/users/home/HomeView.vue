@@ -4,8 +4,9 @@
       <div class="w-100">
         <!-- Các thành phần chính -->
         <HomePage  />
-        <ShopList />
-        <OurProduct/>
+        <!-- <ShopList /> -->
+         <DiscountedProducts/>
+        <NewProduct/>
         <PromotionList />
       </div>
     </div>
@@ -13,8 +14,9 @@
 </template>
 
 <script setup lang="ts">
+import DiscountedProducts from './DiscountedProducts.vue'
 import HomePage from '@/pages/users/home/HomePage.vue'
 import ShopList from '@/pages/users/home/ShopList.vue'
-import OurProduct from '@/pages/users/home/OurProduct.vue'
+import NewProduct from '@/pages/users/home/NewProduct.vue'
 import PromotionList from '@/pages/users/home/PromotionList.vue'
 </script>

@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface AuthUserRepository extends KhachHangRepository {
     Optional<KhachHang> findByEmail(@Size(max = 255) String email);
+
+    Optional<KhachHang> findBySdt(String sdt);
 }
