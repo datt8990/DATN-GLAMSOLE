@@ -27,7 +27,7 @@ export const ROUTES_CONSTANTS = {
         name: 'san-pham'
       },
       SANPHAMCHITIET: {
-        path: 'san-pham-chi-tiet/:id',
+        path: 'san-pham-chi-tiet/:idsp',
         name: 'san-pham-chi-tiet'
       },
       GIOHANG: {

@@ -142,6 +142,7 @@ const fetchProducts = async (append = false) => {
       size: pageSize
     }
     const res = await GetSanPhamGiamGiaTrangChu(params)
+    console.log('Fetched products:', res.data.data)
     const fetchedCount = res.data.data.length
 
     if (append) {
@@ -176,7 +177,7 @@ const router = useRouter()
 const handleClick = (product: SanPhamMoiResponse) => {
   router.push({
     name: 'san-pham-chi-tiet',
-    params: { id: product.id }
+    params: { idsp: product.id }
   })
 }
 </script>

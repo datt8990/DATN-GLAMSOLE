@@ -175,7 +175,7 @@ const router = useRouter()
 const handleClick = (product: SanPhamMoiResponse) => {
   router.push({
     name: 'san-pham-chi-tiet',
-    params: { id: product.id }
+    params: { idsp: product.id }
   })
 }
 </script>
