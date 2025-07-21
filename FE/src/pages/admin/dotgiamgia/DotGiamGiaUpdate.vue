@@ -1,23 +1,21 @@
 <template>
   <div class="update-discount-page p-6">
-    <!-- Header -->
-   <div class="breadcrumb-section">
-      <BreadcrumbDefault :pageTitle="'Sửa đợt giảm giá'" :routes="[
-        { path: '/admin/dot-giam-gia', name: 'Quản lý đợt giảm giá' },
-            { path: '/admin/update-dot-giam-gia', name: 'Sửa đợt giảm giá' }
-      ]" />
+    <div class="breadcrumb-section">
+      <BreadcrumbDefault
+        :pageTitle="'Sửa đợt giảm giá'"
+        :routes="[
+          { path: '/admin/dot-giam-gia', name: 'Quản lý đợt giảm giá' },
+          { path: '/admin/update-dot-giam-gia', name: 'Sửa đợt giảm giá' },
+        ]"
+      />
     </div>
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
-      <!-- Left Column - Form (1/3 width) -->
       <div class="xl:col-span-1 bg-white rounded-lg shadow-sm border p-6">
         <h2 class="text-lg font-semibold mb-4">Thông tin đợt giảm giá</h2>
-        
+
         <div class="space-y-4">
-          <!-- Mã đợt giảm giá (readonly) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Mã đợt giảm giá
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Mã đợt giảm giá </label>
             <a-input
               v-model:value="formData.code"
               placeholder="Mã đợt giảm giá"
@@ -26,11 +24,8 @@
             />
           </div>
 
-          <!-- Tên khuyến mãi -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Tên khuyến mãi
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Tên khuyến mãi </label>
             <a-input
               v-model:value="formData.tenKhuyenMai"
               placeholder="Tên khuyến mãi"
@@ -38,11 +33,8 @@
             />
           </div>
 
-          <!-- Giá trị giảm -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Giá trị giảm
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Giá trị giảm </label>
             <a-input
               v-model:value="formData.giaTriGiam"
               placeholder="Giá trị giảm"
@@ -51,11 +43,8 @@
             />
           </div>
 
-          <!-- Ngày bắt đầu -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Ngày bắt đầu
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Ngày bắt đầu </label>
             <a-date-picker
               v-model:value="formData.ngayBatDau"
               placeholder="Ngày bắt đầu"
@@ -65,11 +54,8 @@
             />
           </div>
 
-          <!-- Ngày kết thúc -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Ngày kết thúc
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Ngày kết thúc </label>
             <a-date-picker
               v-model:value="formData.ngayKetThuc"
               placeholder="Ngày kết thúc"
@@ -79,7 +65,6 @@
             />
           </div>
 
-          <!-- Submit Button -->
           <div class="pt-4 flex gap-3">
             <a-button
               type="primary"
@@ -87,28 +72,20 @@
               @click="handleSubmit"
               class="flex-1"
               :loading="submitting"
-              style="background-color: #54bddb; border-color: #54bddb;"
+              style="background-color: #54bddb; border-color: #54bddb"
             >
               Cập nhật
             </a-button>
-            <a-button
-              size="large"
-              @click="handleCancel"
-              class="flex-1"
-            >
-              Hủy
-            </a-button>
+            <a-button size="large" @click="handleCancel" class="flex-1"> Hủy </a-button>
           </div>
         </div>
       </div>
 
-      <!-- Right Column - Products (2/3 width) -->
       <div class="xl:col-span-3 bg-white rounded-lg shadow-sm border p-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold">Sản phẩm</h2>
         </div>
 
-        <!-- Search -->
         <div class="mb-4">
           <a-input
             v-model:value="searchTerm"
@@ -123,7 +100,6 @@
           </a-input>
         </div>
 
-        <!-- Available Products Table -->
         <div class="mb-6">
           <div class="bg-gray-200 text-black px-4 py-2 rounded-t-lg">
             <div class="grid grid-cols-12 gap-2 text-sm font-medium">
@@ -137,26 +113,20 @@
               <div class="col-span-1 text-center">STT</div>
               <div class="col-span-4 text-center">Tên sản phẩm</div>
               <div class="col-span-2 text-center">Thương hiệu</div>
-              <div class="col-span-2 text-center">Xuất xứ</div>
+              <div class="col-span-4 text-center">Trạng thái</div>
             </div>
           </div>
-          
+
           <div class="border border-gray-200 rounded-b-lg max-h-64 overflow-y-auto">
-            <div
-              v-if="loading"
-              class="p-8 text-center text-gray-500"
-            >
+            <div v-if="loading" class="p-8 text-center text-gray-500">
               <a-spin />
               <div class="mt-2">Đang tải dữ liệu...</div>
             </div>
-            
-            <div
-              v-else-if="filteredProducts.length === 0"
-              class="p-8 text-center text-gray-500"
-            >
+
+            <div v-else-if="filteredProducts.length === 0" class="p-8 text-center text-gray-500">
               Không tìm thấy sản phẩm nào
             </div>
-            
+
             <div
               v-else
               v-for="(product, index) in filteredProducts"
@@ -175,13 +145,22 @@
               <div class="col-span-2 text-center">
                 {{ product.thuongHieu.ten }}
               </div>
-              <div class="col-span-2 text-center">{{ product.xuatSu.ten }}</div>
+              <div
+                style="color: green"
+                class="col-span-4 text-center"
+                :class="
+                  product.status === 'ACTIVE'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-red-500 text-red-600'
+                "
+              >
+                {{ product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh" }}
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Pagination -->
-        <div class="flex justify-center">
+        <div class="">
           <a-pagination
             :current="currentPage"
             :total="totalProducts"
@@ -190,19 +169,25 @@
             size="small"
             show-size-changer
             :page-size-options="['10', '20', '30', '50']"
-            @show-size-change="(current, size) => { pageSize = size; currentPage = 1; fetchProducts(); }"
+            @show-size-change="
+              (current, size) => {
+                pageSize = size;
+                currentPage = 1;
+                fetchProducts();
+              }
+            "
           />
         </div>
 
-        <!-- Selected Products Details -->
         <div class="mt-6">
           <h3 class="text-md font-semibold mb-4">
-            Chi tiết sản phẩm 
-            <span class="text-gray-500 font-normal">({{ selectedProductDetails.length }} sản phẩm)</span>
+            Chi tiết sản phẩm
+            <span class="text-gray-500 font-normal"
+              >({{ totalFilteredProductDetails }} sản phẩm)</span
+            >
           </h3>
 
           <div class="row">
-            <!-- Row 1 - Search Filters -->
             <div class="col-md-3 mb-3">
               <label class="form-label d-flex align-items-center">
                 <span class="ms-2">Tìm sản phẩm</span>
@@ -226,11 +211,7 @@
                 @change="handleDetailSearch"
                 :allowClear="true"
               >
-                <a-select-option
-                  v-for="size in sizes"
-                  :key="size.id"
-                  :value="size.id"
-                >
+                <a-select-option v-for="size in sizes" :key="size.id" :value="size.id">
                   {{ size.ten }}
                 </a-select-option>
               </a-select>
@@ -246,32 +227,23 @@
                 @change="handleDetailSearch"
                 :allowClear="true"
               >
-                <a-select-option
-                  v-for="color in colors"
-                  :key="color.id"
-                  :value="color.id"
-                >
+                <a-select-option v-for="color in colors" :key="color.id" :value="color.id">
                   {{ color.ten }}
                 </a-select-option>
               </a-select>
             </div>
 
-            <div class="col-md-2 mb-3" style="margin-top: 32px;">
-              <a-button
-              @click="clearDetailFilters"
-              size="large"
-              type="default"
-              class="mr-2"
-            >
-              Reset
-            </a-button>
+            <div class="col-md-2 mb-3" style="margin-top: 32px">
+              <a-button @click="clearDetailFilters" size="large" type="default" class="mr-2">
+                Reset
+              </a-button>
             </div>
           </div>
 
           <div class="bg-gray-200 text-black px-4 py-2 rounded-t-lg">
             <div class="grid grid-cols-12 gap-2 text-sm font-medium">
               <div class="col-span-1 text-center">
-                <a-checkbox 
+                <a-checkbox
                   :indeterminate="detailsIndeterminate"
                   :checked="detailsCheckAll"
                   @change="onCheckAllDetailsChange"
@@ -286,21 +258,18 @@
           </div>
 
           <div class="border border-gray-200 rounded-b-lg min-h-32">
-            <div
-              v-if="loadingAnyDetails"
-              class="p-8 text-center text-gray-500"
-            >
+            <div v-if="loadingAnyDetails" class="p-8 text-center text-gray-500">
               <a-spin />
               <div class="mt-2">Đang tải chi tiết sản phẩm...</div>
             </div>
-            
+
             <div
               v-else-if="selectedProductDetails.length === 0"
               class="p-8 text-center text-gray-500"
             >
               Chưa có sản phẩm nào được chọn
             </div>
-            
+
             <div
               v-else
               v-for="(detail, index) in filteredProductDetails"
@@ -308,17 +277,23 @@
               class="grid grid-cols-12 gap-2 p-3 border-b border-gray-100 text-sm hover:bg-gray-50"
             >
               <div class="col-span-1 text-center">
-                <a-checkbox 
+                <a-checkbox
                   :checked="detail.selected"
-                  @change="(e) => handleProductDetailSelect(detail.id, e.target.checked)"
+                  @change="
+                    (e) => {
+                      handleProductDetailSelect(detail.id, e.target.checked);
+                    }
+                  "
                 />
               </div>
-              <div class="col-span-1 text-center">{{ index + 1 }}</div>
+              <div class="col-span-1 text-center">
+                {{ (detailCurrentPage - 1) * detailPageSize + index + 1 }}
+              </div>
               <div class="col-span-2 text-center">
                 <div class="w-10 h-10 bg-gray-200 rounded mx-auto flex items-center justify-center">
-                  <img 
-                    v-if="detail.anh || detail.hinhAnh" 
-                    :src="detail.anh || detail.hinhAnh" 
+                  <img
+                    v-if="detail.anh || detail.hinhAnh"
+                    :src="detail.anh || detail.hinhAnh"
                     :alt="getProductName(detail)"
                     class="w-full h-full object-cover rounded"
                     @error="onImageError"
@@ -336,6 +311,23 @@
               </div>
             </div>
           </div>
+          <div class="mt-4">
+            <a-pagination
+              :current="detailCurrentPage"
+              :total="totalFilteredProductDetails"
+              :page-size="detailPageSize"
+              @change="handleDetailPaginationChange"
+              size="small"
+              show-size-changer
+              :page-size-options="detailPageSizeOptions"
+              @show-size-change="
+                (current, size) => {
+                  detailPageSize = size;
+                  detailCurrentPage = 1; // Reset về trang 1 khi thay đổi kích thước trang
+                }
+              "
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -343,51 +335,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick  } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { message } from 'ant-design-vue';  
-import { SearchOutlined } from '@ant-design/icons-vue';
-import { 
-  GetSanPham, 
+import { ref, computed, onMounted, nextTick } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { message } from "ant-design-vue";
+import { SearchOutlined } from "@ant-design/icons-vue";
+import {
+  GetSanPham,
   getSanPhamChiTiets,
   DetailDotGiamGia,
   getColorsFromAPI,
   getSizesFromAPI,
-  type DotGiamGiaResponse, 
-  type DotGiamGiaRequest 
-} from '@/services/api/admin/dotgiamgia.api';
-import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
-import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
+  updateDotGiamGia,
+  type DotGiamGiaResponse,
+  type DotGiamGiaRequest,
+} from "@/services/api/admin/dotgiamgia.api";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import BreadcrumbDefault from "@/components/ui/Breadcrumbs/BreadcrumbDefault.vue";
 
 const router = useRouter();
 const route = useRoute();
 const dotGiamGiaId = route.params.id as string;
 
 // Loading states
-const loadingDetail = ref(false)
-const submitting = ref(false)
+const loadingDetail = ref(false);
+const submitting = ref(false);
 
 // Form data
 const formData = ref({
-  code: '',
-  tenKhuyenMai: '',
-  giaTriGiam: '',
-  trangThai: 'CHUA_KICH_HOAT',
+  code: "",
+  tenKhuyenMai: "",
+  giaTriGiam: "",
+  trangThai: "CHUA_KICH_HOAT",
   ngayBatDau: null as Dayjs | null,
-  ngayKetThuc: null as Dayjs | null
+  ngayKetThuc: null as Dayjs | null,
 });
 
 // Product selection
 const selectedProductIds = ref<string[]>([]); // Store selected product IDs
 const selectedProductDetails = ref<any[]>([]);
-const selectedProductIdsDetails = ref<string[]>([]); // Store detailed product info
 const loadingDetails = ref<Set<string>>(new Set()); // Track loading state for each product
-const searchTerm = ref('');
-const currentPage = ref(1);
-const pageSize = ref(10);
+const searchTerm = ref("");
+const currentPage = ref(10); // Page for available products table
+const pageSize = ref(5); // Page size for available products table
 const loading = ref(false);
-const selectedProductDetailIds = ref<number[]>([]);
 
 // Detail search filters
 const productNameSearch = ref("");
@@ -396,20 +387,26 @@ const selectedSize = ref(null);
 const sizes = ref([]);
 const colors = ref([]);
 
+// --- BIẾN MỚI CHO PHÂN TRANG CHI TIẾT SẢN PHẨM ---
+const detailCurrentPage = ref(1);
+const detailPageSize = ref(5);
+const detailPageSizeOptions = ["5", "10", "20", "50"]; // Tùy chọn kích thước trang
+// --------------------------------------------------
+
 const fetchColors = async () => {
-  colors.value = await getColorsFromAPI(); // Implement the API call in your service
+  colors.value = await getColorsFromAPI();
 };
 
 const fetchSizes = async () => {
   const result = await getSizesFromAPI();
-  sizes.value = result; // Gán vào ref
+  sizes.value = result;
 };
 
 // API data
 const availableProducts = ref<any[]>([]);
-const totalProducts = ref(0);
+const totalProducts = ref(0); // Total for available products table
 
-// Computed properties
+// Computed properties for available products table
 const filteredProducts = computed(() => {
   return availableProducts.value.filter(
     (product) =>
@@ -418,32 +415,57 @@ const filteredProducts = computed(() => {
   );
 });
 
-// New computed property for filtering product details
+// New computed property for filtering and PAGINATING product details
 const filteredProductDetails = computed(() => {
-  return selectedProductDetails.value.filter((detail) => {
+  const allDetails = selectedProductDetails.value;
+
+  const filtered = allDetails.filter((detail) => {
     // Product name search
     const productName = getProductName(detail).toLowerCase();
-    const searchMatch = productNameSearch.value === "" || 
-      productName.includes(productNameSearch.value.toLowerCase());
-    
+    const searchMatch =
+      productNameSearch.value.trim() === "" ||
+      productName.includes(productNameSearch.value.trim().toLowerCase());
+
     // Size filter
-    const sizeMatch = selectedSize.value === null || 
-      detail.kichCo?.id === selectedSize.value;
-    
+    const sizeMatch = selectedSize.value === null || detail.kichCo?.id === selectedSize.value;
+
     // Color filter
-    const colorMatch = selectedColor.value === null || 
-      detail.mauSac?.id === selectedColor.value;
-    
+    const colorMatch = selectedColor.value === null || detail.mauSac?.id === selectedColor.value;
+
     return searchMatch && sizeMatch && colorMatch;
   });
+
+  // --- LOGIC PHÂN TRANG MỚI CHO CHI TIẾT SẢN PHẨM ---
+  const startIndex = (detailCurrentPage.value - 1) * detailPageSize.value;
+  const endIndex = startIndex + detailPageSize.value;
+  return filtered.slice(startIndex, endIndex);
+  // ----------------------------------------------------
 });
 
+// --- COMPUTED MỚI CHO TỔNG SỐ LƯỢNG CHI TIẾT SẢN PHẨM ĐÃ LỌC ---
+const totalFilteredProductDetails = computed(() => {
+  const allDetails = selectedProductDetails.value;
+
+  const filtered = allDetails.filter((detail) => {
+    const productName = getProductName(detail).toLowerCase();
+    const searchMatch =
+      productNameSearch.value.trim() === "" ||
+      productName.includes(productNameSearch.value.trim().toLowerCase());
+    const sizeMatch = selectedSize.value === null || detail.kichCo?.id === selectedSize.value;
+    const colorMatch = selectedColor.value === null || detail.mauSac?.id === selectedColor.value;
+    return searchMatch && sizeMatch && colorMatch;
+  });
+  return filtered.length;
+});
+// ----------------------------------------------------------------
+
 const handleDetailSearch = () => {
-  // This function is called when any filter changes
+  // Khi các bộ lọc chi tiết thay đổi, reset về trang 1
+  detailCurrentPage.value = 1;
   console.log("Detail search filters changed:", {
-    productNameSearch: productNameSearch.value,
+    productNameSearch: productNameSearch.value.trim(),
     selectedColor: selectedColor.value,
-    selectedSize: selectedSize.value
+    selectedSize: selectedSize.value,
   });
 };
 
@@ -451,40 +473,44 @@ const clearDetailFilters = () => {
   productNameSearch.value = "";
   selectedColor.value = null;
   selectedSize.value = null;
+  detailCurrentPage.value = 1; // Reset trang khi xóa bộ lọc
 };
 
 // Store original data for comparison
-const originalData = ref<DotGiamGiaResponse | null>(null)
-
-// Store detailed product IDs to select based on API "promotionProductDetail"
-const promotionProductDetailIds = ref<string[]>([])
+const originalData = ref<DotGiamGiaResponse | null>(null);
 
 const checkAll = computed(() => {
-  return filteredProducts.value.length > 0 && 
-         filteredProducts.value.every(product => selectedProductIds.value.includes(product.id))
-})
+  return (
+    filteredProducts.value.length > 0 &&
+    filteredProducts.value.every((product) => selectedProductIds.value.includes(product.id))
+  );
+});
 
 const indeterminate = computed(() => {
-  const selectedCount = filteredProducts.value.filter(product => 
+  const selectedCount = filteredProducts.value.filter((product) =>
     selectedProductIds.value.includes(product.id)
-  ).length
-  return selectedCount > 0 && selectedCount < filteredProducts.value.length
-})
+  ).length;
+  return selectedCount > 0 && selectedCount < filteredProducts.value.length;
+});
 
 // Computed properties for product details check all
 const detailsCheckAll = computed(() => {
-  return selectedProductDetails.value.length > 0 && 
-         selectedProductDetails.value.every(detail => detail.selected)
-})
+  // Chỉ kiểm tra trên các chi tiết đã lọc và phân trang hiện tại
+  return (
+    filteredProductDetails.value.length > 0 &&
+    filteredProductDetails.value.every((detail) => detail.selected)
+  );
+});
 
 const detailsIndeterminate = computed(() => {
-  const selectedCount = selectedProductDetails.value.filter(detail => detail.selected).length
-  return selectedCount > 0 && selectedCount < selectedProductDetails.value.length
-})
+  // Chỉ kiểm tra trên các chi tiết đã lọc và phân trang hiện tại
+  const selectedCount = filteredProductDetails.value.filter((detail) => detail.selected).length;
+  return selectedCount > 0 && selectedCount < filteredProductDetails.value.length;
+});
 
 const loadingAnyDetails = computed(() => {
-  return loadingDetails.value.size > 0
-})
+  return loadingDetails.value.size > 0;
+});
 
 const formatCurrencyVND = (amount: number): string => {
   return amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
@@ -492,136 +518,97 @@ const formatCurrencyVND = (amount: number): string => {
 
 // Helper methods for displaying product details
 const getProductName = (detail: any): string => {
-  return detail.sanPham?.ten || detail.ten || 'N/A'
-}
+  return detail.sanPham?.ten || detail.ten || "N/A";
+};
 
 const getBrandName = (detail: any): string => {
-  return detail.sanPham?.thuongHieu?.ten || detail.thuongHieu?.ten || 'N/A'
-}
+  return detail.sanPham?.thuongHieu?.ten || detail.thuongHieu?.ten || "N/A";
+};
 
 const getSizeName = (detail: any): string => {
-  return detail.kichCo?.ten || detail.size || 'N/A'
-}
+  return detail.kichCo?.ten || detail.size || "N/A";
+};
 
 const getColorCode = (detail: any): string => {
-  return detail.mauSac?.ten || detail.color || '#cccccc'
-}
-
-const getStatusText = (detail: any): string => {
-  const status = detail.status || detail.trangThai
-  return status === 'ACTIVE' || status === 'Đang kinh doanh' ? 'Đang kinh doanh' : 'Ngừng kinh doanh'
-}
-
-const getStatusClass = (detail: any): string => {
-  const status = detail.status || detail.trangThai
-  return status === 'ACTIVE' || status === 'Đang kinh doanh' 
-    ? 'bg-green-100 text-green-800' 
-    : 'bg-red-100 text-red-800'
-}
+  return detail.mauSac?.ten || detail.color || "#cccccc";
+};
 
 const onImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement
-  target.style.display = 'none'
-}
+  const target = event.target as HTMLImageElement;
+  target.style.display = "none";
+};
 
+// Hàm load chi tiết đợt giảm giá và tự động chọn sản phẩm/chi tiết
 const loadDotGiamGiaDetail = async () => {
   try {
     loadingDetail.value = true;
     const response = await DetailDotGiamGia(dotGiamGiaId);
-    
-    if (response && typeof response === 'object' && !Array.isArray(response)) {
+
+    if (response && typeof response === "object" && !Array.isArray(response)) {
       const data = response;
       originalData.value = data;
-      
-      formData.value = {
-        code: data.code || '',
-        tenKhuyenMai: data.name || '',
-        giaTriGiam: data.value?.toString() || '',
-        trangThai: data.status || 'CHUA_KICH_HOAT',
-        ngayBatDau: data.startDate ? dayjs(data.startDate) : null,
-        ngayKetThuc: data.endDate ? dayjs(data.endDate) : null
-      };
-      
-      const getIdsArray = (str: string | undefined) => {
-        if (!str) return [];
-        if (typeof str === 'string') {
-          return str.split(',').map(id => id.trim()).filter(Boolean);
-        }
-        if (Array.isArray(str)) {
-          return str.map(id => id.toString().trim()).filter(Boolean);
-        }
-        return [];
-      }
 
-      const selectedProductIdsArray = getIdsArray(data.product);
+      // Set form data
+      formData.value = {
+        code: data.code || "",
+        tenKhuyenMai: data.name || "",
+        giaTriGiam: data.value?.toString() || "",
+        trangThai: data.status || "CHUA_KICH_HOAT",
+        ngayBatDau: data.startDate ? dayjs(data.startDate) : null,
+        ngayKetThuc: data.endDate ? dayjs(data.endDate) : null,
+      };
+
+      // Improved parsing function to handle various API response formats for IDs
+      const parseIds = (value: any) => {
+        if (!value) return [];
+        if (typeof value === "string") {
+          return value
+            .split(",")
+            .map((id) => id.trim())
+            .filter(Boolean);
+        } else if (Array.isArray(value)) {
+          return value.map((id) => id.toString().trim()).filter(Boolean);
+        } else if (typeof value === "number") {
+          return [value.toString()];
+        }
+        return [value.toString()];
+      };
+
+      const selectedProductIdsArray = parseIds(data.product);
+      const productDetailIdsArray = parseIds(data.productDetail);
+
+      // Set selected products
       selectedProductIds.value = [...selectedProductIdsArray];
-      
-      // QUAN TRỌNG: Lưu promotionProductDetailIds trước khi load details
-      promotionProductDetailIds.value = getIdsArray(data.promotionProductDetail);
-      
-      console.log('Selected product IDs:', selectedProductIdsArray);
-      console.log('Promotion product detail IDs to auto-select:', promotionProductDetailIds.value);
 
       // Clear old details
       selectedProductDetails.value = [];
-      
-      // Load product details và auto-select
+      await nextTick();
+
+      // Load details with auto-select based on initial promotion data
       if (selectedProductIdsArray.length > 0) {
         for (const productId of selectedProductIdsArray) {
-          await fetchProductDetails(productId);
+          await loadProductDetailsWithAutoSelect(productId, productDetailIdsArray);
+          await new Promise((resolve) => setTimeout(resolve, 100)); // Delay to avoid overwhelming API
         }
-        
-        // THÊM: Sau khi load xong tất cả details, force update selected state
-        await nextTick(); // Đợi Vue update
-        updateSelectedDetailsFromPromotionIds();
       }
-      
-    } else {
-      message.error('Không thể tải thông tin đợt giảm giá');
     }
   } catch (error) {
-    console.error('Error loading detail:', error);
-    message.error('Lỗi khi tải thông tin đợt giảm giá');
+    console.error("Error loading detail:", error);
+    message.error("Lỗi khi tải thông tin đợt giảm giá");
   } finally {
     loadingDetail.value = false;
   }
 };
 
-const updateSelectedDetailsFromPromotionIds = () => {
-  const promotionIdsSet = new Set(
-    promotionProductDetailIds.value.map(id => id.toString().trim())
-  );
-  
-  console.log('Updating selected details with promotion IDs:', promotionIdsSet);
-  
-  selectedProductDetails.value.forEach(detail => {
-    const shouldBeSelected = promotionIdsSet.has(detail.id.toString().trim());
-    detail.selected = shouldBeSelected;
-    
-    console.log(`Detail ID: ${detail.id}, Selected: ${shouldBeSelected}`);
-  });
-  
-  // Force reactivity update
-  selectedProductDetails.value = [...selectedProductDetails.value];
-};
-
-
-// Adjust fetchProductDetails to mark select detailed product by matching promotionProductDetailIds
-const fetchProductDetails = async (productId: string) => {
+const loadProductDetailsWithAutoSelect = async (productId: string, productDetailIds: string[]) => {
   try {
     loadingDetails.value.add(productId);
     const response = await getSanPhamChiTiets(productId);
-    
+
     if (response && Array.isArray(response) && response.length > 0) {
-      // Tạo Set để so sánh nhanh
-      const promotionIdsSet = new Set(
-        promotionProductDetailIds.value.map(id => id.toString().trim())
-      );
-      
-      const details = response.map(item => {
+      const details = response.map((item) => {
         const itemIdStr = item.id.toString().trim();
-        const isSelected = promotionIdsSet.has(itemIdStr);
-        
+        const isAutoSelected = productDetailIds.includes(itemIdStr); // Check if this detail ID is in the initial list
         return {
           id: item.id,
           productId: productId,
@@ -643,26 +630,66 @@ const fetchProductDetails = async (productId: string) => {
           },
           kichCo: item.kichCo,
           mauSac: item.mauSac,
-          selected: isSelected // Set selected state ngay từ đầu
+          selected: isAutoSelected, // Set selected state based on initial data
         };
       });
 
-      const detail = await DetailDotGiamGia(productId);
-      
-      // Remove existing details for this product
+      // Remove existing details for this product to prevent duplicates
       selectedProductDetails.value = selectedProductDetails.value.filter(
-        d => d.productId !== productId
+        (d) => d.productId !== productId
       );
-      
       // Add new details
       selectedProductDetails.value.push(...details);
-      
-      console.log(`Loaded ${details.length} details for product ${productId}`);
-      console.log('Selected details:', details.filter(d => d.selected).map(d => d.id));
-      
+      selectedProductDetails.value = [...selectedProductDetails.value]; // Force reactivity
     }
   } catch (error) {
-    console.error('Error fetching product details:', error);
+    console.error(`Error loading details for product ${productId}:`, error);
+    message.error(`Lỗi khi tải chi tiết sản phẩm ${productId}`);
+  } finally {
+    loadingDetails.value.delete(productId);
+  }
+};
+
+// Adjust fetchProductDetails (for user selection, no auto-select)
+const fetchProductDetails = async (productId: string) => {
+  try {
+    loadingDetails.value.add(productId);
+    const response = await getSanPhamChiTiets(productId);
+
+    if (response && Array.isArray(response) && response.length > 0) {
+      const details = response.map((item) => ({
+        id: item.id,
+        productId: productId,
+        status: item.status,
+        ma: item.ma,
+        giaBan: item.giaBan,
+        anh: item.anh,
+        soLuong: item.soLuong,
+        sanPham: {
+          id: item.sanPham.id,
+          ma: item.sanPham.ma,
+          ten: item.sanPham.ten,
+          moTa: item.sanPham.moTa,
+          thuongHieu: item.sanPham.thuongHieu,
+          xuatSu: item.sanPham.xuatSu,
+          danhMuc: item.sanPham.danhMuc,
+          loaiDe: item.sanPham.loaiDe,
+          chatLieu: item.sanPham.chatLieu,
+        },
+        kichCo: item.kichCo,
+        mauSac: item.mauSac,
+        selected: false, // User action - explicitly NOT auto-selected
+      }));
+
+      // Remove existing details for this product before adding new ones
+      selectedProductDetails.value = selectedProductDetails.value.filter(
+        (d) => d.productId !== productId
+      );
+      selectedProductDetails.value.push(...details);
+      selectedProductDetails.value = [...selectedProductDetails.value]; // Force reactivity
+    }
+  } catch (error) {
+    console.error("Error fetching product details:", error);
     message.error(`Lỗi khi tải chi tiết sản phẩm ${productId}`);
   } finally {
     loadingDetails.value.delete(productId);
@@ -672,233 +699,253 @@ const fetchProductDetails = async (productId: string) => {
 const handleSubmit = async () => {
   try {
     submitting.value = true;
-    
+
     // Validate form
     if (!formData.value.tenKhuyenMai.trim()) {
-      message.error('Vui lòng nhập tên khuyến mãi')
-      return
+      message.error("Vui lòng nhập tên khuyến mãi");
+      return;
     }
-    
+
     if (!formData.value.giaTriGiam.trim()) {
-      message.error('Vui lòng nhập giá trị giảm')
-      return
+      message.error("Vui lòng nhập giá trị giảm");
+      return;
     }
-    
+
+    const giaTriGiam = parseFloat(formData.value.giaTriGiam);
+    if (isNaN(giaTriGiam) || giaTriGiam <= 0 || giaTriGiam > 80) {
+      message.error("Giá trị giảm phải lớn hơn 0 và không được vượt quá 80%");
+      return;
+    }
+
     if (!formData.value.ngayBatDau) {
-      message.error('Vui lòng chọn ngày bắt đầu')
-      return
+      message.error("Vui lòng chọn ngày bắt đầu");
+      return;
     }
-    
+
     if (!formData.value.ngayKetThuc) {
-      message.error('Vui lòng chọn ngày kết thúc')
-      return
+      message.error("Vui lòng chọn ngày kết thúc");
+      return;
     }
 
     // Gather form data
     const requestData: DotGiamGiaRequest = {
+      id: dotGiamGiaId,
       name: formData.value.tenKhuyenMai,
       value: parseFloat(formData.value.giaTriGiam),
       status: formData.value.trangThai,
       startDate: formData.value.ngayBatDau?.valueOf() || null,
       endDate: formData.value.ngayKetThuc?.valueOf() || null,
       idProductDetails: selectedProductDetails.value
-        .filter(detail => detail.selected)
-        .map(detail => ({ id: detail.id }))
+        .filter((detail) => detail.selected) // Only send selected details
+        .map((detail) => ({ id: detail.id })),
     };
 
-    console.log('Update request data:', requestData);
+    const response = await updateDotGiamGia(requestData);
+    console.log("Update response:", response);
 
-    // const response = await updateDotGiamGia(dotGiamGiaId, requestData)
-    // console.log('Update response:', response)
-    
     message.success({
-      content: 'Cập nhật đợt giảm giá thành công!',
+      content: "Cập nhật đợt giảm giá thành công!",
       duration: 1.5,
       style: {
-        marginTop: '20vh',
-        fontSize: '16px',
-        fontWeight: '600',
-      }
-    })
-    
+        marginTop: "20vh",
+        fontSize: "16px",
+        fontWeight: "600",
+      },
+    });
+
     setTimeout(() => {
-      router.push('/admin/dot-giam-gia')
-    }, 1600)
-    
+      router.push("/admin/dot-giam-gia");
+    }, 1600);
   } catch (error) {
-    console.error('Update error:', error)
+    console.error("Update error:", error);
     if (error.response && error.response.data) {
-      message.error(error.response.data.message)
+      message.error(error.response.data.message);
     } else {
-      message.error('Lỗi khi cập nhật đợt giảm giá. Vui lòng thử lại.')
+      message.error("Lỗi khi cập nhật đợt giảm giá. Vui lòng thử lại.");
     }
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
-}
+};
 
 const handleCancel = () => {
-  router.push('/admin/dot-giam-gia')
-}
+  router.push("/admin/dot-giam-gia");
+};
 
 // Product selection handling
 const handleProductSelect = async (productId: string, checked: boolean) => {
   if (checked) {
-    // Add productId if not already there
     if (!selectedProductIds.value.includes(productId)) {
       selectedProductIds.value.push(productId);
     }
-    // Fetch product details - selection state will be determined by promotionProductDetailIds
-    await fetchProductDetails(productId);
+    await fetchProductDetails(productId); // Fetch details for newly selected product
   } else {
-    // Remove productId
     const index = selectedProductIds.value.indexOf(productId);
     if (index > -1) {
       selectedProductIds.value.splice(index, 1);
     }
-
     // Remove details of unchecked product
     selectedProductDetails.value = selectedProductDetails.value.filter(
-      detail => detail.productId !== productId
+      (detail) => detail.productId !== productId
     );
+    selectedProductDetails.value = [...selectedProductDetails.value]; // Force reactivity
   }
 };
 
-// FIXED: Improved check all logic
 const onCheckAllChange = async (e: any) => {
   if (e.target.checked) {
     const newProductIds = filteredProducts.value
-      .map(product => product.id)
-      .filter(id => !selectedProductIds.value.includes(id));
+      .map((product) => product.id)
+      .filter((id) => !selectedProductIds.value.includes(id));
 
     selectedProductIds.value.push(...newProductIds);
 
-    // Chỉ fetch detail nhưng không auto-select detail
     for (const productId of newProductIds) {
-      await fetchProductDetails(productId); // chỉ load, không select
+      await fetchProductDetails(productId); // Load details, but don't auto-select them
     }
   } else {
-    const filteredProductIds = filteredProducts.value.map(product => product.id);
+    const filteredProductIds = filteredProducts.value.map((product) => product.id);
+    // Remove product IDs that are currently in the filtered view
     selectedProductIds.value = selectedProductIds.value.filter(
-      id => !filteredProductIds.includes(id)
+      (id) => !filteredProductIds.includes(id)
     );
-
-    // Bỏ tick chi tiết dựa trên productId của detail
-    selectedProductDetailIds.value = selectedProductDetailIds.value.filter(
-      detailId => {
-        const detail = selectedProductDetails.value.find(d => d.id === detailId);
-        return detail && !filteredProductIds.includes(detail.productId);
-      }
-    );
+    // Unselect and remove corresponding details
+    selectedProductDetails.value = selectedProductDetails.value.filter((detail) => {
+      return !filteredProductIds.includes(detail.productId);
+    });
+    selectedProductDetails.value = [...selectedProductDetails.value]; // Force reactivity
   }
 };
 
-const handleProductDetailSelect = (detailId: string, checked: boolean) => {
-  const detail = selectedProductDetails.value.find(item => item.id === detailId)
-  if (detail) {
-    detail.selected = checked
+const handleProductDetailSelect = (detailId: string | number, checked: boolean) => {
+  const detailIndex = selectedProductDetails.value.findIndex(
+    (item) => item.id.toString().trim() === detailId.toString().trim()
+  );
+
+  if (detailIndex !== -1) {
+    const newDetails = [...selectedProductDetails.value];
+    newDetails[detailIndex] = {
+      ...newDetails[detailIndex],
+      selected: checked,
+    };
+    selectedProductDetails.value = newDetails;
   }
-}
+};
 
 const onCheckAllDetailsChange = (e: any) => {
-  const checked = e.target.checked
-  selectedProductDetails.value.forEach(detail => {
-    detail.selected = checked
-  })
-}
+  const checked = e.target.checked;
+  // Apply changes to currently displayed (filtered and paginated) details
+  filteredProductDetails.value.forEach((detail) => {
+    // Find the original detail object in the main array and update its 'selected' state
+    const originalDetail = selectedProductDetails.value.find((d) => d.id === detail.id);
+    if (originalDetail) {
+      originalDetail.selected = checked;
+    }
+  });
+  // Force reactivity update for the entire selectedProductDetails array to reflect changes
+  selectedProductDetails.value = [...selectedProductDetails.value];
+};
 
 const handlePageChange = (page: number) => {
-  currentPage.value = page
-  fetchProducts()
-}
+  currentPage.value = page;
+  fetchProducts();
+};
 
 const handleSearch = () => {
-  currentPage.value = 1
-  fetchProducts()
-}
+  currentPage.value = 1;
+  fetchProducts();
+};
 
 const fetchProducts = async () => {
   try {
-    loading.value = true
+    loading.value = true;
     const params = {
       page: currentPage.value - 1,
       size: pageSize.value,
-      search: searchTerm.value
-    }
-    
-    const response = await GetSanPham(params)
-    
+      search: searchTerm.value,
+    };
+
+    const response = await GetSanPham(params);
+
     if (response) {
-      let products = []
-      
+      let products = [];
       if (Array.isArray(response)) {
-        products = response
+        products = response;
       } else if (response.data && Array.isArray(response.data)) {
-        products = response.data
+        products = response.data;
       } else if (response.data && response.data.content && Array.isArray(response.data.content)) {
-        products = response.data.content
-        totalProducts.value = response.data.totalElements || response.data.content.length
+        products = response.data.content;
+        totalProducts.value = response.data.totalElements || response.data.content.length;
       } else if (response.content && Array.isArray(response.content)) {
-        products = response.content
-        totalProducts.value = response.totalElements || response.content.length
+        products = response.content;
+        totalProducts.value = response.totalElements || response.content.length;
       } else {
-        products = []
+        products = [];
       }
-      
+
       availableProducts.value = products.map((product) => ({
         id: product.id,
         ma: product.ma,
         ten: product.ten,
         status: product.status,
-        trangThai: product.status === 'ACTIVE' ? 'Đang kinh doanh' : 'Ngừng kinh doanh',
+        trangThai: product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh",
         thuongHieu: product.thuongHieu,
         xuatSu: product.xuatSu,
         danhMuc: product.danhMuc,
         loaiDe: product.loaiDe,
         chatLieu: product.chatLieu,
-        moTa: product.moTa
-      }))
-      
+        moTa: product.moTa,
+      }));
+
       if (!totalProducts.value) {
-        totalProducts.value = availableProducts.value.length
+        totalProducts.value = availableProducts.value.length;
       }
-      
     } else {
-      availableProducts.value = []
-      totalProducts.value = 0
+      availableProducts.value = [];
+      totalProducts.value = 0;
     }
   } catch (error) {
-    availableProducts.value = []
-    totalProducts.value = 0
+    availableProducts.value = [];
+    totalProducts.value = 0;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
+
+// --- HÀM MỚI CHO PHÂN TRANG CHI TIẾT SẢN PHẨM ---
+const handleDetailPaginationChange = (page: number, newPageSize: number) => {
+  detailCurrentPage.value = page;
+  detailPageSize.value = newPageSize;
+  // No need to re-fetch as data is already in selectedProductDetails.value
+};
+// --------------------------------------------------
 
 onMounted(async () => {
   try {
-    // Load colors và sizes trước
-    await Promise.all([
-      fetchColors(),
-      fetchSizes()
-    ]);
-    
-    // Load products list
+    console.log("Starting page initialization...");
+
+    // Load colors and sizes first
+    await Promise.all([fetchColors(), fetchSizes()]);
+    console.log("Colors and sizes loaded");
+
+    // Load products list for the available products table
     await fetchProducts();
-    
-    // Cuối cùng load discount detail (này sẽ auto-select products và details)
+    console.log("Products list loaded");
+
+    // Load discount detail (this will also auto-load and auto-select product details)
     await loadDotGiamGiaDetail();
-    
-    console.log('All data loaded successfully');
+    console.log("Discount details loaded and auto-selected");
+
+    console.log("All data loaded successfully");
   } catch (error) {
-    console.error('Error in onMounted:', error);
-    message.error('Lỗi khi tải dữ liệu trang');
+    console.error("Error in onMounted:", error);
+    message.error("Lỗi khi tải dữ liệu trang");
   }
 });
 </script>
 
 <style scoped lang="scss">
-.text-red-500{
+.text-red-500 {
   color: red;
 }
 
@@ -1299,6 +1346,6 @@ onMounted(async () => {
 /* Remove or adjust body styles if they are global.
    Scoped styles prevent them from affecting the entire app. */
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 </style>

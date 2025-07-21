@@ -1,14 +1,13 @@
 package com.be.server.core.admin.dotgiamgia.model.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class UpdateDotGiamGiaRequest {
 
     private String id;
@@ -27,5 +27,5 @@ public class UpdateDotGiamGiaRequest {
     private Long startDate;
     @NotNull(message = "Nhập ngày kết thúc khuyến mại")
     private Long endDate;
-    private List<IdProductDetail> idProductDetails =new ArrayList<>();
+    private List<IdProductDetail> idProductDetails ;
 }

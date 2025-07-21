@@ -1,7 +1,7 @@
 <template>
   <DivCustom label="Danh sách đợt giảm giá" customClasses="mt-5">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <div style="font-size: 13px; margin-left: 15px;">
+      <div style="font-size: 13px; margin-left: 15px;color: #58bddb;">
         {{ products.length }} đợt giảm giá
       </div>
 

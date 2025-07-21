@@ -1,7 +1,7 @@
 <template>
     <DivCustom label="Danh sách màu sắc" customClasses="mt-5">
            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div style="font-size: 13px; margin-left: 15px;">
+                  <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
                     {{ products.length }} máu sắc
                 </div>
 
@@ -88,11 +88,11 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
-    { title: 'Mãc', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
+    { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
     { title: 'Tên', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Mã màu', key: 'mau', dataIndex: 'mau', width: 150, align: 'center' },
-    { title: 'Màu', key: 'mau-ht', dataIndex: 'mau', width: 150, align: 'center' },
-    { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
+    { title: 'Màu', key: 'mau-ht', dataIndex: 'mau', width: 100, align: 'center' },
+    { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 100, align: 'center' },
     {
         title: 'Hành động',
         key: 'operation',

@@ -1,6 +1,6 @@
 import type { AxiosResponse } from 'axios'
 import request from '@/services/request'
-import { PREFIX_API_SAN_PHAM_ADMIN} from '@/constants/url'
+import { PREFIX_API_SAN_PHAM_ADMIN, PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN} from '@/constants/url'
 import type {
   PaginationParams,
   DefaultResponse,
@@ -97,6 +97,16 @@ export const getSanPham = async (id: string) => {
 export const modifySanPham = async (data: ADSanPhamRequest) => {
   const res = (await request({
     url: `${PREFIX_API_SAN_PHAM_ADMIN}`,
+    method: 'POST',
+    data: data
+  })) as AxiosResponse<DefaultResponse<SanPhamResponse>>
+
+  return res.data
+}
+
+export const updateSanPham = async (data: ADSanPhamRequest) => {
+  const res = (await request({
+    url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/update`,
     method: 'POST',
     data: data
   })) as AxiosResponse<DefaultResponse<SanPhamResponse>>

@@ -93,6 +93,21 @@ const resetFilters = () => {
   /* Adjust width as needed for better responsiveness */
   min-width: 200px;
   /* Minimum width for search input */
+  height: 32px !important;
+  /* Đặt chiều cao cố định cho input */
+  transition: border-color 0.3s ease;
+  /* Smooth transition for hover effect */
+  
+  &:hover {
+    border-color: #58bddb !important;
+    /* Hover color */
+  }
+  
+  &:focus {
+    border-color: #58bddb !important;
+    box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+    /* Focus effect with same color */
+  }
 }
 
 .reset-button {
@@ -110,21 +125,99 @@ const resetFilters = () => {
   /* Align button baseline with input text. Adjust as needed based on actual font sizes/line heights */
 }
 
-/* Optional: If you want to match the Ant Design input height precisely for the button */
+/* Đồng nhất chiều cao cho tất cả input và select */
 .ant-input {
-  height: 32px;
-  /* Default Ant Design input height */
+  height: 32px !important;
+  /* Chiều cao cố định cho input */
+  transition: border-color 0.3s ease;
+  
+  &:hover {
+    border-color: #58bddb !important;
+  }
+  
+  &:focus {
+    border-color: #58bddb !important;
+    box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+  }
 }
 
-// Basic Ant Design button styles often handle 'd-flex', 'justify-content-center', 'align-items-center', 'px-4'
-// These are likely utility classes from another framework (like Bootstrap or Tailwind).
-// If they are not working, you'd need to define them, e.g.:
-/*
-.d-flex { display: flex; }
-.align-items-center { align-items: center; }
-.justify-content-center { justify-content: center; }
-.px-4 { padding-left: 1rem; padding-right: 1rem; }
-*/
+/* Điều chỉnh chiều cao cho a-select để đồng nhất với input */
+.select-input {
+  height: 32px;
+  transition: border-color 0.3s ease;
+  
+  &:hover {
+    :deep(.ant-select-selector) {
+      border-color: #58bddb !important;
+      /* Hover effect for select */
+    }
+  }
+  
+  &:focus-within {
+    :deep(.ant-select-selector) {
+      border-color: #58bddb !important;
+      box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+      /* Focus effect for select */
+    }
+  }
+  
+  :deep(.ant-select-selector) {
+    height: 32px !important;
+    /* Chiều cao của selector bằng với input */
+    display: flex;
+    align-items: center;
+    /* Căn giữa nội dung theo chiều dọc */
+    padding: 0 11px;
+    /* Padding giống input */
+    border-radius: 6px;
+    /* Bo góc giống input */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Smooth transition */
+  }
+
+  :deep(.ant-select-selection-item) {
+    line-height: 30px !important;
+    /* Căn giữa text trong selector */
+    padding: 0;
+    /* Bỏ padding mặc định */
+  }
+
+  :deep(.ant-select-selection-placeholder) {
+    line-height: 30px !important;
+    /* Căn giữa placeholder */
+    color: #bfbfbf;
+    /* Màu placeholder giống input */
+  }
+
+  :deep(.ant-select-arrow) {
+    right: 11px;
+    /* Vị trí mũi tên giống input */
+  }
+
+  :deep(.ant-select-clear) {
+    right: 32px;
+    /* Vị trí nút clear */
+  }
+  
+  /* Hover effect specifically for select dropdown */
+  :deep(.ant-select-selector:hover) {
+    border-color: #58bddb !important;
+  }
+  
+  /* Focus effect for select */
+  :deep(.ant-select-focused .ant-select-selector) {
+    border-color: #58bddb !important;
+    box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+  }
+}
+
+/* Đảm bảo tất cả các thành phần filter có chiều cao đồng nhất */
+.search-input-group {
+  .ant-input,
+  .ant-select {
+    height: 32px;
+  }
+}
 
 /* Global body font is okay, but usually specified in a global stylesheet */
 body {

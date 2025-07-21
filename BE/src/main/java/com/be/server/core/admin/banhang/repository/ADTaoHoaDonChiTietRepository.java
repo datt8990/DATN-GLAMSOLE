@@ -69,7 +69,7 @@ public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
 
 
     @Query(value= """
-    select kh.id as id , kh.ten as ten, kh.sdt as sdt from HoaDon hd 
+    select kh.id as id , kh.ten as ten, kh.sdt as sdt, kh.diaChi as diaChi from HoaDon hd 
     left Join KhachHang kh on kh.id = hd.khachHang.id
     where hd.id = :#{#rep}
 """)
@@ -89,4 +89,29 @@ public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
 """)
     List<ADPhuongThucThanhToanRespones> getPhuongThucThanhToan(@Param("rep") String req);
 
+
+    @Query(value = """
+    SELECT hdct.id 
+    FROM HoaDon hd 
+    LEFT JOIN HoaDonChiTiet hdct ON hd.id = hdct.hoaDon.id 
+    WHERE hd.id = :id
+    """)
+   List<String> getHoaDonChiTiet(@Param("id") String id);
+
+    @Query(value = """
+    SELECT lstt.id 
+    FROM HoaDon hd 
+    LEFT JOIN LichSuTrangThaiHoaDon lstt ON hd.id = lstt.hoaDon.id 
+    WHERE hd.id = :id
+    """)
+    String getHoaDonLichSuTrangThai(@Param("id") String id);
+
+
+    @Query(value = """
+    SELECT lstt.id 
+    FROM HoaDonChiTiet hd 
+    LEFT JOIN SanPhamChiTiet lstt ON lstt.id = hd.spct.id 
+    WHERE hd.id = :id
+    """)
+    String getSanPhamChiTiet(@Param("id") String id);
 }

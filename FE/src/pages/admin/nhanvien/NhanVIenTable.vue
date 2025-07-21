@@ -1,7 +1,7 @@
 <template>
     <DivCustom label="Danh sách nhân viên" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="font-size: 13px; margin-left: 15px;">
+          <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
                 {{ products.length }} nhân viên
             </div>
 
@@ -96,7 +96,7 @@ const router = useRouter()
 const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
-    { title: 'STT', key: 'stt', dataIndex: 'stt', width: 150, align: 'center' },
+    { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
     { title: 'Mã Nhân Viên', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
     { title: 'Tên Nhân viên', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Email', key: 'email', dataIndex: 'email', width: 150, align: 'center' },

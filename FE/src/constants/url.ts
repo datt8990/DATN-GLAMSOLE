@@ -32,7 +32,7 @@ export const PREFIX_API_ADMIN = `${API_URL}/admin` as string;
 // // API PREFIX CUSTOMER
 // export const PREFIX_API_CUSTOMER = `${API_URL}/customer` as string;
 
-
+export const PREFIX_API_THONG_KE_ADMIN = `${PREFIX_API_ADMIN}/thong-ke` as string;
 export const PREFIX_API_MAU_SAC_ADMIN = `${PREFIX_API_ADMIN}/mau-sac` as string;
 export const PREFIX_API_SIZE_ADMIN = `${PREFIX_API_ADMIN}/size` as string;
 export const PREFIX_API_THUONG_HIEU_ADMIN = `${PREFIX_API_ADMIN}/thuong-hieu` as string;

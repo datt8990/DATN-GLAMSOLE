@@ -4,6 +4,8 @@ public interface ListHoaDon {
 
     String getId();
 
+    String getLoaiHoaDon();
+
     String getMa();
 
     Integer getSoLuong();

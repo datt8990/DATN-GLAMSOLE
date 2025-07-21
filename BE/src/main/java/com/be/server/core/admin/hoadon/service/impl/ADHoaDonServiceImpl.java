@@ -2,18 +2,20 @@ package com.be.server.core.admin.hoadon.service.impl;
 
 import com.be.server.core.admin.hoadon.model.request.ADChangeStatusRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
-import com.be.server.core.admin.hoadon.model.response.ADHoaDonChiTietResponseDetail;
-import com.be.server.core.admin.hoadon.model.response.ADHoaDonResponse;
-import com.be.server.core.admin.hoadon.model.response.HoaDonPageResponse;
-import com.be.server.core.admin.hoadon.model.response.TrangThaiThoiGianResponse;
+import com.be.server.core.admin.hoadon.model.request.ThanhToanRequest;
+import com.be.server.core.admin.hoadon.model.response.*;
 import com.be.server.core.admin.hoadon.repository.ADHoaDonChiTietRepository;
 import com.be.server.core.admin.hoadon.repository.ADHoaDonRepository;
+import com.be.server.core.admin.hoadon.repository.ADLichSuThanhToanRepository;
 import com.be.server.core.admin.hoadon.repository.LichSuTrangThaiRepository;
 import com.be.server.core.admin.hoadon.service.ADHoaDonService;
 import com.be.server.core.common.base.PageableObject;
 import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.HoaDon;
+import com.be.server.entity.LichSuThanhToan;
 import com.be.server.entity.LichSuTrangThaiHoaDon;
+import com.be.server.entity.NhanVien;
+import com.be.server.repository.NhanVienRepository;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -34,6 +37,10 @@ public class ADHoaDonServiceImpl implements ADHoaDonService {
     public final ADHoaDonChiTietRepository adHoaDonChiTietRepository;
 
     public final LichSuTrangThaiRepository lichSuTrangThaiRepository;
+
+    public final ADLichSuThanhToanRepository adLichSuThanhToanRepository;
+
+    public final NhanVienRepository nhanVienRepository;
 
     @Override
     public ResponseObject<?> getAllHoaDon(ADHoaDonSearchRequest request) {
@@ -104,5 +111,46 @@ public class ADHoaDonServiceImpl implements ADHoaDonService {
         );
     }
 
+    @Override
+    public ResponseObject<?> getLSTT(String id) {
+        List<LichSuThanhToanResponse> lichSuThanhToans = adLichSuThanhToanRepository.getLichSuThanhToanByHoaDonId(id);
+        return new ResponseObject<>(
+                lichSuThanhToans,
+                HttpStatus.OK,
+                "Lấy danh sách lịch sử thanh toán hóa đơn thành công"
+        );
+    }
+
+    @Override
+    public ResponseObject<?>  thanhToanHoaDon(ThanhToanRequest request) {
+        HoaDon hoaDon = adHoaDonRepository.findById(request.getHoaDonId())
+                .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
+
+        NhanVien nhanVien = nhanVienRepository.findById(request.getNhanVienId())
+                .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại"));
+
+        LichSuThanhToan lichSu = new LichSuThanhToan();
+        lichSu.setHoaDon(hoaDon);
+        lichSu.setSoTien(request.getSoTienKhachDua());
+        lichSu.setThoiGian(LocalDateTime.now());
+        lichSu.setGhiChu(request.getGhiChu());
+        lichSu.setLoaiGiaoDich(request.getLoaiGiaoDich());
+        lichSu.setNhanVien(nhanVien);
+        lichSu.setMaGiaoDich(UUID.randomUUID().toString());
+
+        adLichSuThanhToanRepository.save(lichSu);
+
+        hoaDon.setTongTien(request.getSoTienKhachDua());
+        hoaDon.setTrangThaiHoaDon(request.getTrangThai());
+
+        adHoaDonRepository.save(hoaDon);
+
+        HoaDon hoaDon1 = new HoaDon();
+        return new ResponseObject<>(
+                hoaDon1,
+                HttpStatus.OK,
+                "Thanh toán thành công"
+        );
+    }
 
 }

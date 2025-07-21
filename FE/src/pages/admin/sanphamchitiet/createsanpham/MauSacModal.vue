@@ -1,5 +1,5 @@
 <template>  
-  <a-modal :open="open" title="Thêm màu sắc" width="400px">  
+  <a-modal :open="open" title="Thêm màu sắc" width="400px" @cancel="closeModal">  
     <template #footer>  
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý"  
         cancel-text="Huỷ">  

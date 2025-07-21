@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="open" :title="props.title" width="400px">
+  <a-modal :open="open" title="Thêm danh mục" width="400px" @cancel="closeModal">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
         <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
@@ -8,7 +8,7 @@
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="tên danh mục" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="Tên danh mục" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"
@@ -89,7 +89,7 @@ const handleSubmit = async () => {
      if (res.message == 'loại giày này đã tồn tại') {
       toast.error(res.message);
     } else {
-      toast.success(res.message);
+      toast.warning(res.message);
     }
   } catch (error) {
     if (error?.response?.data?.message) {

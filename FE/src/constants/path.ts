@@ -60,6 +60,10 @@ export const ROUTES_CONSTANTS = {
         path: 'mau-sac',
         name: 'mau-sac-admin'
       },
+      THONG_KE: {
+        path: 'thong-ke',
+        name: 'thong-ke-admin'
+      },
       NHAN_VIEN: {
         path: 'nhan-vien',
         name: 'nhan-vien-admin'

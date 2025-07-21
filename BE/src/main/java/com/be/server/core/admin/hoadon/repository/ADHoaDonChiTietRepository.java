@@ -19,12 +19,11 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                                                                         sp.ten_san_pham AS tenSanPham,
                                                                         spct.anh_san_pham AS anhSanPham,
                                                                         thuong_hieu.ten_thuong_hieu AS thuongHieu,
-                                                                        xuat_su.ten_xuat_su AS xuatSu,
                                                                         mau_sac.ten_mau_sac AS mauSac,
                                                                         kich_co.ten_kich_co AS size,
                                                                         hdct.so_luong AS soLuong,
                                                                         spct.gia_ban AS giaBan,
-                                                                        (hdct.so_luong * hdct.tong_tien) AS thanhTien,
+                                                                        (hdct.so_luong * hdct.gia_ban) AS thanhTien,
                                                                         kh.ten_khach_hang AS tenKhachHang,
                                                                         kh.so_dien_thoai AS sdtKH,
                                                                         kh.email AS email,
@@ -35,17 +34,16 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                                                                         hd.phi_van_chuyen AS phiVanChuyen,
                                                                         pgg.ma_phieu_giam_gia AS maVoucher,
                                                                         hd.tong_tien_sau_giam AS tongTienSauGiam
-                                                                    FROM db_datn.hoa_don_chi_tiet hdct
-                                                                    JOIN db_datn.hoa_don hd ON hdct.id_hoa_don = hd.id
-                                                                    JOIN db_datn.phieu_giam_gia pgg ON hd.id_voucher = pgg.id
-                                                                    JOIN db_datn.khach_hang kh ON hd.id_khach_hang = kh.id
-                                                                    JOIN db_datn.san_pham_chi_tiet spct ON hdct.id_spct = spct.id
-                                                                    JOIN db_datn.san_pham sp ON spct.id_san_pham = sp.id
-                                                                    JOIN db_datn.thuong_hieu ON sp.id_thuong_hieu = thuong_hieu.id
-                                                                    JOIN db_datn.xuat_su ON sp.id_xuat_su = xuat_su.id
-                                                                    JOIN db_datn.kich_co ON spct.id_kich_co = kich_co.id
-                                                                    JOIN db_datn.mau_sac ON spct.id_mau_sac = mau_sac.id
-                                                                    WHERE db_datn.hd.ma_hoa_don = :maHoaDon
+                                                                    FROM hoa_don_chi_tiet hdct
+                                                                    LEFT JOIN hoa_don hd ON hdct.id_hoa_don = hd.id
+                                                                    LEFT JOIN phieu_giam_gia pgg ON hd.id_voucher = pgg.id
+                                                                    LEFT JOIN khach_hang kh ON hd.id_khach_hang = kh.id
+                                                                    LEFT JOIN san_pham_chi_tiet spct ON hdct.id_spct = spct.id
+                                                                    LEFT JOIN san_pham sp ON spct.id_san_pham = sp.id
+                                                                    LEFT JOIN thuong_hieu ON sp.id_thuong_hieu = thuong_hieu.id
+                                                                    LEFT JOIN kich_co ON spct.id_kich_co = kich_co.id
+                                                                    LEFT JOIN mau_sac ON spct.id_mau_sac = mau_sac.id
+                                                                    WHERE hd.ma_hoa_don = :maHoaDon
             """, nativeQuery = true)
     List<ADHoaDonChiTietResponseDetail> getAllHoaDonChiTietResponse(@Param("maHoaDon") String maHoaDon);
 }

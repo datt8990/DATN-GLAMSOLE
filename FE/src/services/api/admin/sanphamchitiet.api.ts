@@ -161,3 +161,13 @@ export const GetListColor = async () => {
 
   return res.data
 }
+
+
+export const GetListSP = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SAN_PHAM_CHI_TIET_ADMIN}/list-sp`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}

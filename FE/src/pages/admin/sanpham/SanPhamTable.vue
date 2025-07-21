@@ -1,15 +1,15 @@
 <template>
     <DivCustom label="Danh sách sản phẩm" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="font-size: 13px; margin-left: 15px;">
+            <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
                 {{ products.length }} sản phẩm
             </div>
 
             <div>
-                <a-tooltip title="Thêm khách hàng">
+                <a-tooltip title="Thêm sản phẩm">
                     <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
                         class="d-flex justify-content-center align-items-center px-4">
-                        <PlusCircleOutlined /> Thêm mới khách hàng
+                        <PlusCircleOutlined /> Thêm mới sản phẩm
                     </a-button>
                 </a-tooltip>
             </div>
@@ -58,10 +58,12 @@
                             </a-tooltip>
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #54bddb;" type="primary"
-                                    class="p-2 d-flex justify-content-center align-items-center">
-                                    <RedoOutlined />
-                                </a-button>
+                                <a-tooltip title="thay đổi trạng thái sản phẩm">
+                                    <a-button style="background-color: #54bddb;" type="primary"
+                                        class="p-2 d-flex justify-content-center align-items-center">
+                                        <RedoOutlined />
+                                    </a-button>
+                                </a-tooltip>
                             </a-popconfirm>
                             <a-tooltip title="Chi tiết sản phẩm">
                                 <a-button style="background-color: #54bddb;" type="primary"
@@ -101,12 +103,15 @@ const router = useRouter()
 const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
-    { title: 'STT', key: 'stt', dataIndex: 'stt', width: 150, align: 'center' },
+    { title: 'STT', key: 'stt', dataIndex: 'stt', width: 60, align: 'center' },
     { title: 'Mã sản phẩm', key: 'ma', dataIndex: 'ma', width: 80, align: 'center' },
-    { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
-    { title: 'Số lượng', key: 'tongSP', dataIndex: 'tongSP', width: 150, align: 'center' },
-    { title: 'Mô tả', key: 'moTa', dataIndex: 'moTa', width: 150, align: 'center' },
-    { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
+    { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 80, align: 'center' },
+    { title: 'Thương hiệu', key: 'tenThuongHieu', dataIndex: 'tenThuongHieu', width: 90, align: 'center' },
+    { title: 'Loại đế', key: 'tenLoaiDe', dataIndex: 'tenLoaiDe', width: 100, align: 'center' },
+    { title: 'Danh mục', key: 'tenDanhMuc', dataIndex: 'tenDanhMuc', width: 100, align: 'center' },
+    { title: 'Chất liệu', key: 'tenChatLieu', dataIndex: 'tenChatLieu', width: 100, align: 'center' },
+    { title: 'Số lượng', key: 'tongSP', dataIndex: 'tongSP', width: 60, align: 'center' },
+    { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 100, align: 'center' },
     {
         title: 'Hành động',
         key: 'operation',

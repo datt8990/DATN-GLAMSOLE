@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="open" title="Thêm loại đế" width="400px">
+  <a-modal :open="open" title="Thêm loại đế" width="400px" @cancel="closeModal">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
         <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
@@ -8,7 +8,7 @@
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="tên loại đé" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="Tên loại đế" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"
@@ -32,7 +32,7 @@ const product = ref<SizeResponse>({ ten: '', mau: '#000000', ma: '', id: '' });
 const productForm = ref();
 
 const rules = {
-  ten: [{ required: true, message: 'Kích thước không được để trống!', trigger: 'blur' }],
+  ten: [{ required: true, message: 'Loại đế không được để trống!', trigger: 'blur' }],
 };
 
 const generateCode = () => {

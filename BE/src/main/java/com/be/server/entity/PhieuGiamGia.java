@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,9 @@ public class PhieuGiamGia extends PrimaryEntity implements Serializable {
 
     @Column(name = "phan_tram")
     private Double phanTramGiam;
+
+    @Transient // Không lưu vào database
+    private Double giaTriGiamThucTe;
 
     @Column(name = "so_luong_phieu")
     private Integer soLuongPhieu;

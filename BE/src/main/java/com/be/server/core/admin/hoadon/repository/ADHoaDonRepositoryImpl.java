@@ -33,6 +33,7 @@ public class ADHoaDonRepositoryImpl implements ADHoaDonRepositoryCustom {
                         hd.ma,
                         kh.ten,
                         kh.sdt,
+                        nv.ma,
                         nv.ten,
                         hd.tongTien,
                         hd.loaiHoaDon,

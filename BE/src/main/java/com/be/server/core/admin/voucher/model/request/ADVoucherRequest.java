@@ -23,7 +23,7 @@ public class ADVoucherRequest {
 
     private String ten;
 
-    private Double phanTramGiam;
+    private Double LoiPhanNay;
 
     private Integer soLuongPhieu;
 
@@ -33,7 +33,7 @@ public class ADVoucherRequest {
 
     private Double dieuKien;
 
-    private Double giaGiamToiDa;
+    private Double giaGiam;
 
     private Boolean loaiGiam;
 

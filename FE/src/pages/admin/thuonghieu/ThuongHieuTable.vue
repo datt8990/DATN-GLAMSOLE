@@ -1,7 +1,7 @@
 <template>
     <DivCustom label="Danh sách thương hiệu" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="font-size: 13px; margin-left: 15px;">
+           <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
                 {{ products.length }} kích thước
             </div>
 

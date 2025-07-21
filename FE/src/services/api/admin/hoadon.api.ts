@@ -20,6 +20,16 @@ export interface ParamsChangeStatus {
   status?: number | null
 }
 
+export interface ParamsThanhToan {
+  hoaDonId?: string | ''
+  soTienKhachDua?: number | null
+  soTienTraLai?: number | null
+  ghiChu?: string | ''
+  loaiGiaoDich?: string | ''
+  nhanVienId?: string | ''
+  status?: number | null
+}
+
 export type HoaDonResponse = ResponseList & {
   ma: string,
   ten: string,
@@ -45,6 +55,25 @@ export const GetLSTTHD = async (id: string) => {
   return res.data
 }
 
+export const GetLSTT = async (id: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_HOA_DON_ADMIN}/lich_su_thanh_toan/${id}`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<HoaDonResponse>>>>
+
+  return res.data
+}
+
+export const thanhToan = async (params: ParamsChangeStatus) => {
+  const res = (await request({
+    url: `${PREFIX_API_HOA_DON_ADMIN}/thanh_toan`,
+    method: 'POST',
+    params: params
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<HoaDonResponse>>>>
+
+  return res.data
+}
+
 export const updateOrderStatusInDatabase = async (params: ParamsChangeStatus) => {
   const res = (await request({
     url: `${PREFIX_API_HOA_DON_ADMIN}/change-status`,
@@ -63,3 +92,64 @@ export const getHoaDonChiTiets = async (maHoaDon: string) => {
 
   return res.data
 }
+
+// 5. Cập nhật API functions để trả về response đúng định dạng
+// Thay thế 2 function inPDFOFFLINE và inPDFONLINE trong file hoadon.api.ts:
+
+// 3. Cải tiến API functions với better error handling
+export const inPDFOFFLINE = async (maHoaDon: string): Promise<Blob> => {
+  try {
+    const response = await fetch(`${PREFIX_API_HOA_DON_ADMIN}/pdf/${maHoaDon}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/pdf',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Lỗi API: ${response.status} - ${errorText}`);
+    }
+    
+    const blob = await response.blob();
+    
+    // Kiểm tra content type
+    if (!blob.type.includes('pdf')) {
+      throw new Error('Response không phải là file PDF');
+    }
+    
+    return blob;
+  } catch (error) {
+    console.error('Lỗi inPDFOFFLINE:', error);
+    throw error;
+  }
+};
+
+export const inPDFONLINE = async (maHoaDon: string): Promise<Blob> => {
+  try {
+    const response = await fetch(`${PREFIX_API_HOA_DON_ADMIN}/delivery/${maHoaDon}/pdf`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/pdf',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Lỗi API: ${response.status} - ${errorText}`);
+    }
+    
+    const blob = await response.blob();
+    
+    // Kiểm tra content type
+    if (!blob.type.includes('pdf')) {
+      throw new Error('Response không phải là file PDF');
+    }
+    
+    return blob;
+  } catch (error) {
+    console.error('Lỗi inPDFONLINE:', error);
+    throw error;
+  }
+};
+

@@ -2,6 +2,7 @@ package com.be.server.core.admin.SanPhamChiTiet.service.impl;
 
 import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTRequest;
 import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
+import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.SanPhamChiTiet.model.response.ADSanPhamChiTietResponse;
 import com.be.server.core.admin.SanPhamChiTiet.repository.ADSanPhamChiTietRepository;
 import com.be.server.core.admin.SanPhamChiTiet.service.ADSanPhamChiTietService;
@@ -17,6 +18,7 @@ import com.be.server.core.common.base.PageableObject;
 import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.ChatLieu;
 import com.be.server.entity.DanhMuc;
+import com.be.server.entity.HoaDon;
 import com.be.server.entity.KichCo;
 import com.be.server.entity.LoaiDe;
 
@@ -25,7 +27,6 @@ import com.be.server.entity.SanPham;
 import com.be.server.entity.SanPhamChiTiet;
 
 import com.be.server.entity.ThuongHieu;
-import com.be.server.entity.XuatSu;
 import com.be.server.infrastructure.constant.EntityStatus;
 import com.be.server.repository.ChatLieuRepository;
 import com.be.server.repository.DanhMucRepository;
@@ -105,10 +106,10 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
     @Override
     public ResponseObject<?> changeSanPhamStatus(String id) {
         Optional<SanPhamChiTiet> nemberOptional = adSanPhamChiTietRepository.findById(id);
-
         nemberOptional.map(nember -> {
             nember.setStatus(nember.getStatus() == EntityStatus.ACTIVE ? EntityStatus.INACTIVE : EntityStatus.ACTIVE);
-            return new ResponseObject(adSanPhamChiTietRepository.save(nember), HttpStatus.OK, "Thay đổi trạng thái thành công");
+            adSanPhamChiTietRepository.save(nember);
+            return new ResponseObject(null, HttpStatus.OK, "Thay đổi trạng thái thành công");
         });
 
         return nemberOptional
@@ -123,6 +124,11 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
     }
 
     @Override
+    public ResponseObject<?> getListThemSanPham() {
+        return new ResponseObject(adSanPhamChiTietRepository.getListThemSP(), HttpStatus.OK, "lấy danh sách sản phẩm thành công");
+    }
+
+    @Override
     public ResponseObject<?> getListColor() {
         return new ResponseObject<>(adSanPhamChiTietRepository.getListColor(), HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
     }
@@ -130,17 +136,12 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
     @Override
     public ResponseObject<?> modifySanPham(ADSPCTRequest requestItem) {
 
+
+
+
+
         if(adSanPhamChiTietRepository.checkThemSanPham(requestItem.getIdMau(),requestItem.getIdSize(),requestItem.getGiaBan(), requestItem.getIdSP()) != null){
-
-            String id = adSanPhamChiTietRepository.checkThemSanPham(requestItem.getIdMau(),requestItem.getIdSize(),requestItem.getGiaBan(), requestItem.getIdSP());
-
-            SanPhamChiTiet sanPhamChiTiet = adSanPhamChiTietRepository.findById(id).get();
-
-            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() + requestItem.getSoLuong());
-
-            adSanPhamChiTietRepository.save(sanPhamChiTiet);
-
-            return new ResponseObject<>(null, HttpStatus.CREATED, "Tạo sản phẩm thành công");
+            return new ResponseObject<>(null, HttpStatus.OK, "Sản phẩm chi tiết với màu với kích thước này đã tồn tại");
         }
 
         SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
@@ -178,6 +179,10 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
         } else {
             if (requestItem.getCheck().equals("0")) {
                 SanPham newSanPham = new SanPham();
+
+                if(adSanPhamChiTietRepository.checkThemSP(requestItem.getTen()) != null){
+                    return new ResponseObject<>(null, HttpStatus.OK, "Sản phẩm này đã tồn tại");
+                }
 
                 newSanPham.setTen(requestItem.getTen());
 
@@ -256,4 +261,45 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
 
         return new ResponseObject<>(sanPhamChiTiet, HttpStatus.CREATED, "Tạo sản phẩm thành công");
     }
+
+    @Override
+    public ResponseObject<?> updateSanPham(ADSPCTRequest request) {
+        System.out.println(request.getId());
+
+        SanPhamChiTiet sanPhamChiTiet = adSanPhamChiTietRepository.findById(request.getId()).get();
+
+        sanPhamChiTiet.setSoLuong(request.getSoLuong());
+
+        sanPhamChiTiet.setGiaBan(request.getGiaBan());
+
+        Optional<KichCo> size = adKichThuocRepository.findById(request.getIdSize());
+
+        KichCo kichCo = size.get();
+        sanPhamChiTiet.setKichCo(kichCo);
+
+
+        Optional<MauSac> mauSac = adMauSacRepository.findById(request.getIdMau());
+
+        MauSac mauSac1 = mauSac.get();
+        sanPhamChiTiet.setMauSac(mauSac1);
+
+        if(request.getAnh() != null) {
+            try {
+                byte[] imageData = request.getAnh().getBytes();
+                CompletableFuture.runAsync(() -> {
+                    String imgPath = cloudinaryUtils.uploadImage(imageData, request.getId());
+                    sanPhamChiTiet.setAnh(imgPath);
+                    adSanPhamChiTietRepository.save(sanPhamChiTiet);
+                });
+            } catch (IOException e) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi đọc file ảnh: " + e.getMessage());
+            }
+        }
+
+        adSanPhamChiTietRepository.save(sanPhamChiTiet);
+
+
+        return new ResponseObject<>(sanPhamChiTiet, HttpStatus.CREATED, "cập nhật sản phẩm chi tiết thành công");
+    }
+
 }

@@ -2,6 +2,7 @@ package com.be.server.core.admin.SanPhamChiTiet.repository;
 
 import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
 import com.be.server.core.admin.SanPhamChiTiet.model.request.CheckThem;
+import com.be.server.core.admin.SanPhamChiTiet.model.response.ADListThemSP;
 import com.be.server.core.admin.SanPhamChiTiet.model.response.ADListThuocTinh;
 import com.be.server.core.admin.SanPhamChiTiet.model.response.ADSanPhamChiTietDetail;
 import com.be.server.core.admin.SanPhamChiTiet.model.response.ADSanPhamChiTietResponse;
@@ -133,7 +134,8 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
             kc.ten AS tenKichThuoc,
             kc.id AS idKichThuoc,
             spct.soLuong as soLuong,
-            spct.giaBan as giaBan                     
+            spct.giaBan as giaBan,
+            spct.anh as anh                             
         FROM 
             SanPhamChiTiet spct
              LEFT JOIN SanPham AS sp ON sp.id = spct.sanPham.id       
@@ -178,8 +180,7 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
     @Query("""
     select distinct spct.id
     from SanPhamChiTiet spct
-    where spct.giaBan = :gia
-      and spct.mauSac.id = :idMau
+    where spct.mauSac.id = :idMau
       and spct.kichCo.id = :idKichCo
       and spct.sanPham.id = :idSanPham
 """)
@@ -188,6 +189,35 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
             @Param("idKichCo") String idKichCo,
             @Param("gia") Double gia,
             @Param("idSanPham") String idSanPham
+    );
+
+    @Query("""
+    select distinct spct.id
+    from SanPham spct
+    where spct.ten = :tenSP
+""")
+    String checkThemSP(
+            @Param("tenSP") String tenSP
+    );
+
+    @Query("""
+                select spct.id
+                from SanPhamChiTiet spct
+                left join SanPham sp on spct.sanPham.id = sp.id
+                where sp.id = :id
+            """)
+    List<String> checkIdSanPhamCT(
+            @Param("id") String id
+    );
+
+    @Query("""
+                select sp.id as id,
+                       sp.ten as ten
+                from SanPham sp
+                where sp.status = 0
+            """)
+    List<ADListThemSP> getListThemSP(
+
     );
 
 

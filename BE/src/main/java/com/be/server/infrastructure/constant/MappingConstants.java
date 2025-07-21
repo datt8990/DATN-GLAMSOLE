@@ -32,5 +32,5 @@ public class MappingConstants {
     public static final String API_ADMIN_BAN_HANG= API_ADMIN_PREFIX + "/ban-hang";
     public static final String API_ADMIN_HOA_DON= API_ADMIN_PREFIX + "/hoa-don";
     public static final String API_ADMIN_VOUCHER= API_ADMIN_PREFIX + "/voucher";
-
+    public static final String API_ADMIN_THONG_KE= API_ADMIN_PREFIX + "/thong-ke";
 }

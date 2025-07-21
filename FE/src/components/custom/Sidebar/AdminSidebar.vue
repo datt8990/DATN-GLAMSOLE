@@ -9,13 +9,13 @@ const sidebarStore = useSidebarStore();
 const menuGroups = ref([
   {
     menuItems: [
-      // {
-      //   label: "Trang chủ",
-      //   icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-      //     <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      //   </svg>`,
-      //   routeName: ROUTES_CONSTANTS.ADMIN.children.BAN_HANG.name,
-      // },
+      {
+        label: "Thống Kê",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>`,
+        routeName: ROUTES_CONSTANTS.ADMIN.children.THONG_KE.name,
+      },
       {
         label: "Bán Hàng",
         icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -100,21 +100,15 @@ const menuGroups = ref([
 </script>
 
 <template>
-  <aside
-    class="sidebar"
-    :class="{
-      'translate-x-0': !sidebarStore.isSidebarOpen,
-      '-translate-x-full': sidebarStore.isSidebarOpen,
-    }"
-  >
+  <aside class="sidebar" :class="{
+    'translate-x-0': !sidebarStore.isSidebarOpen,
+    '-translate-x-full': sidebarStore.isSidebarOpen,
+  }">
     <div class="header">
       <div class="logo-container">
         <router-link to="/">
-          <img
-            src="/images/logo.jpg"
-            alt="Tên thương hiệu logo, biểu tượng màu sắc chủ đạo trắng đen tinh tế"
-            class="logo"
-          />
+          <img src="/images/logo.jpg" alt="Tên thương hiệu logo, biểu tượng màu sắc chủ đạo trắng đen tinh tế"
+            class="logo" />
         </router-link>
       </div>
     </div>
@@ -123,14 +117,8 @@ const menuGroups = ref([
       <template v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
         <div>
           <ul class="list-unstyled" role="menu">
-            <SidebarItem
-              v-for="(menuItem, index) in menuGroup.menuItems"
-              :item="menuItem"
-              :key="index"
-              :index="index"
-              class="nav-link"
-              role="menuitem"
-            />
+            <SidebarItem v-for="(menuItem, index) in menuGroup.menuItems" :item="menuItem" :key="index" :index="index"
+              class="nav-link" role="menuitem" />
           </ul>
         </div>
       </template>
@@ -141,7 +129,7 @@ const menuGroups = ref([
 <style scoped>
 .sidebar {
   background-color: #ffffff;
-  width: 250px;
+  width: 300px;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -149,7 +137,7 @@ const menuGroups = ref([
   color: #374151;
   border-right: 1px solid #e5e7eb;
   user-select: none;
-  font-family:Roboto, sans-serif;
+  font-family: Roboto, sans-serif;
   position: relative;
   z-index: 100;
 }
@@ -220,11 +208,11 @@ const menuGroups = ref([
   .sidebar {
     width: 260px;
   }
-  
+
   .menu {
     padding: 0.25rem 0;
   }
-  
+
   .list-unstyled {
     padding: 0 0.75rem;
   }

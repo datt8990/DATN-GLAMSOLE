@@ -1,51 +1,91 @@
 <template>
   <DivCustom>
     <div class="filter-container">
-      <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Tìm kiếm sản phẩm </label>
-        <a-input id="search-query" v-model:value="localSearchQuery" placeholder="Nhập mã / tên để tìm kiếm..."
-          class="search-input" />
+
+      <div class="filter-item">
+        <label for="search-query" class="filter-label">Tìm kiếm sản phẩm</label>
+        <a-input
+          id="search-query"
+          v-model:value="localSearchQuery"
+          placeholder="Nhập mã / tên để tìm kiếm..."
+          class="filter-control"
+        />
       </div>
-      <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Trạng thái:</label>
-        <a-select class="select-input" v-model:value="localSearchStatus" allow-clear style="width: 300px" size="small"
-          placeholder="Chọn trạng thái">
+
+      <div class="filter-item">
+        <label for="status-select" class="filter-label">Trạng thái:</label>
+        <a-select
+          id="status-select"
+          class="filter-control"
+          v-model:value="localSearchStatus"
+          allow-clear
+          placeholder="Chọn trạng thái"
+        >
           <a-select-option :value="1">Hoạt động</a-select-option>
           <a-select-option :value="0">Ngừng hoạt động</a-select-option>
         </a-select>
       </div>
-      <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Danh mục:</label>
-        <a-select allow-clear :options="danhMucOptions" placeholder="Chọn màu sắc" style="width: 200px" size="small" />
+
+      <div class="filter-item">
+        <label for="category-select" class="filter-label">Danh mục:</label>
+        <a-select
+          id="category-select"
+          class="filter-control"
+          allow-clear
+          :options="danhMucOptions"
+          placeholder="Chọn danh mục"
+          v-model:value="localSelectedCategory"
+        />
       </div>
 
-      <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Chất liệu:</label>
-        <a-select allow-clear :options="chatLieuOptions" placeholder="Chọn màu sắc" style="width: 200px" size="small" />
+      <div class="filter-item">
+        <label for="material-select" class="filter-label">Chất liệu:</label>
+        <a-select
+          id="material-select"
+          class="filter-control"
+          allow-clear
+          :options="chatLieuOptions"
+          placeholder="Chọn chất liệu"
+          v-model:value="localSelectedMaterial"
+        />
       </div>
 
-      <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Thương hiệu:</label>
-        <a-select allow-clear :options="thuongHieuOptions" placeholder="Chọn màu sắc" style="width: 200px"
-          size="small" />
+      <div class="filter-item">
+        <label for="brand-select" class="filter-label">Thương hiệu:</label>
+        <a-select
+          id="brand-select"
+          class="filter-control"
+          allow-clear
+          :options="thuongHieuOptions"
+          placeholder="Chọn thương hiệu"
+          v-model:value="localSelectedBrand"
+        />
       </div>
 
-      <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Loại đế:</label>
-        <a-select allow-clear :options="loaiDeOptions" placeholder="Chọn màu sắc" style="width: 200px" size="small" />
+      <div class="filter-item">
+        <label for="sole-type-select" class="filter-label">Loại đế:</label>
+        <a-select
+          id="sole-type-select"
+          class="filter-control"
+          allow-clear
+          :options="loaiDeOptions"
+          placeholder="Chọn loại đế"
+          v-model:value="localSelectedSoleType"
+        />
       </div>
-
 
       <div class="filter-item reset-button-group">
         <a-tooltip title="Làm mới bộ lọc">
-          <a-button style="background-color: dimgrey; margin-left: 900px; color: white;" @click="resetFilters"
-            class="reset-button">
+          <a-button
+            style="background-color: dimgrey; color: white"
+            @click="resetFilters"
+            class="reset-button filter-control-button"
+          >
             Đặt lại bộ lọc
             <ReloadOutlined />
           </a-button>
         </a-tooltip>
       </div>
-
     </div>
   </DivCustom>
 </template>
@@ -54,171 +94,227 @@
 import { ref, watch, defineProps, defineEmits, onMounted } from 'vue'
 import DivCustom from '@/components/custom/Div/DivCustom.vue'
 import { ReloadOutlined } from '@ant-design/icons-vue'
-import { GetListChatLieu, GetListDanhMuc, GetListLoaiDe, GetListThuongHieu } from '@/services/api/admin/sanpham.api';
+import {
+  GetListChatLieu,
+  GetListDanhMuc,
+  GetListLoaiDe,
+  GetListThuongHieu
+} from '@/services/api/admin/sanpham.api'
 
-const props = defineProps<{ searchQuery: string; searchStatus: number | null }>()
-const emit = defineEmits(['update:searchQuery', 'update:searchStatus'])
+// Define props for initial search values and emits for updates
+const props = defineProps<{
+  searchQuery: string
+  searchStatus: number | null
+  selectedCategory: string | null
+  selectedMaterial: string | null
+  selectedBrand: string | null
+  selectedSoleType: string | null
+}>()
+
+const emit = defineEmits([
+  'update:searchQuery',
+  'update:searchStatus',
+  'update:selectedCategory',
+  'update:selectedMaterial',
+  'update:selectedBrand',
+  'update:selectedSoleType'
+])
+
+// Local refs to hold the filter values, initialized from props
+const localSearchQuery = ref(props.searchQuery)
+const localSearchStatus = ref(props.searchStatus)
+const localSelectedCategory = ref(props.selectedCategory)
+const localSelectedMaterial = ref(props.selectedMaterial)
+const localSelectedBrand = ref(props.selectedBrand)
+const localSelectedSoleType = ref(props.selectedSoleType)
+
+// Refs for dropdown options
 const thuongHieuOptions = ref<{ label: string; value: string }[]>([])
-const xuatXuOptions = ref<{ label: string; value: string }[]>([])
 const loaiDeOptions = ref<{ label: string; value: string }[]>([])
 const danhMucOptions = ref<{ label: string; value: string }[]>([])
 const chatLieuOptions = ref<{ label: string; value: string }[]>([])
-const localSearchQuery = ref(props.searchQuery)
-const localSearchStatus = ref(props.searchStatus)
 
-const options = [
-  { label: 'Hoạt động', value: 0 },
-  { label: 'Ngừng hoạt động', value: 1 }
-]
+// Watchers to emit updates to parent component when local values change
+watch([localSearchQuery, localSearchStatus, localSelectedCategory, localSelectedMaterial, localSelectedBrand, localSelectedSoleType],
+  ([newQuery, newStatus, newCategory, newMaterial, newBrand, newSoleType]) => {
+    emit('update:searchQuery', newQuery)
+    emit('update:searchStatus', newStatus)
+    emit('update:selectedCategory', newCategory)
+    emit('update:selectedMaterial', newMaterial)
+    emit('update:selectedBrand', newBrand)
+    emit('update:selectedSoleType', newSoleType)
+  }
+)
 
-watch([localSearchQuery, localSearchStatus], ([newQuery, newStatus]) => {
-  emit('update:searchQuery', newQuery)
-  emit('update:searchStatus', newStatus)
-})
+// --- API Calls to fetch dropdown data ---
 
 const fetchThuongHieu = async () => {
   try {
     const response = await GetListThuongHieu()
-    thuongHieuOptions.value = response.data.map(thuongHieu => ({
-      label: thuongHieu.ten,
-      value: thuongHieu.id,
+    thuongHieuOptions.value = response.data.map((item: any) => ({
+      label: item.ten,
+      value: item.id
     }))
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+    console.error('Lỗi khi lấy danh sách thương hiệu:', error)
   }
 }
 
 const fetchChatLieu = async () => {
   try {
     const response = await GetListChatLieu()
-    chatLieuOptions.value = response.data.map(thuongHieu => ({
-      label: thuongHieu.ten,
-      value: thuongHieu.id,
+    chatLieuOptions.value = response.data.map((item: any) => ({
+      label: item.ten,
+      value: item.id
     }))
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+    console.error('Lỗi khi lấy danh sách chất liệu:', error)
   }
 }
-
 
 const fetchDanhMuc = async () => {
   try {
     const response = await GetListDanhMuc()
-    danhMucOptions.value = response.data.map(thuongHieu => ({
-      label: thuongHieu.ten,
-      value: thuongHieu.id,
+    danhMucOptions.value = response.data.map((item: any) => ({
+      label: item.ten,
+      value: item.id
     }))
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+    console.error('Lỗi khi lấy danh sách danh mục:', error)
   }
 }
 
 const fetchLoaiDe = async () => {
   try {
     const response = await GetListLoaiDe()
-    loaiDeOptions.value = response.data.map(thuongHieu => ({
-      label: thuongHieu.ten,
-      value: thuongHieu.id,
+    loaiDeOptions.value = response.data.map((item: any) => ({
+      label: item.ten,
+      value: item.id
     }))
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách cơ sở:', error)
+    console.error('Lỗi khi lấy danh sách loại đế:', error)
   }
 }
 
-
+// Function to reset all filters
 const resetFilters = () => {
   localSearchQuery.value = ''
   localSearchStatus.value = null
+  localSelectedCategory.value = null
+  localSelectedMaterial.value = null
+  localSelectedBrand.value = null
+  localSelectedSoleType.value = null
+
+  // Also emit updates for immediate effect in parent
   emit('update:searchQuery', '')
   emit('update:searchStatus', null)
+  emit('update:selectedCategory', null)
+  emit('update:selectedMaterial', null)
+  emit('update:selectedBrand', null)
+  emit('update:selectedSoleType', null)
 }
 
+// Fetch data when the component is mounted
 onMounted(() => {
-  fetchDanhMuc();
-  fetchThuongHieu();
-  fetchLoaiDe();
-  fetchChatLieu();
-
+  fetchDanhMuc()
+  fetchThuongHieu()
+  fetchLoaiDe()
+  fetchChatLieu()
 })
-
 </script>
 
-
 <style scoped lang="scss">
-/* Use scoped style for better component encapsulation */
-
 .filter-container {
   display: flex;
   flex-wrap: wrap;
-  /* Allow items to wrap to the next line on smaller screens */
   gap: 20px;
-  /* Space between filter items */
-  align-items: flex-end;
-  /* Align items to the bottom of the container */
+  align-items: flex-end; /* This is key to aligning the bottom of inputs/buttons */
   padding: 15px;
-  /* Add some padding around the filter section */
-
   border-radius: 8px;
-  /* Slightly rounded corners */
 }
 
 .filter-item {
   display: flex;
-  flex-direction: column;
-  /* Stack label above input/button */
-  justify-content: flex-end;
-  /* Push content to the bottom if container has extra space */
+  flex-direction: column; /* Stacks label above the control */
+  justify-content: flex-end; /* Ensures content aligns to the bottom within its flex container */
 }
 
 .filter-label {
   font-size: 14px;
-  font-weight: bold;
-  /* This will now be effective */
-  margin-bottom: 5px;
+  margin-bottom: 5px; /* Space between label and input/select */
   color: #555;
   white-space: nowrap;
 }
 
-.search-input {
-  width: 700px;
-  /* Adjust width as needed for better responsiveness */
-  min-width: 200px;
-  /* Minimum width for search input */
+/* Common styling for all filter controls (input and select) */
+.filter-control {
+  width: 350px; /* Consistent width for all inputs and selects */
+  height: 32px; /* Standard Ant Design default height for inputs/selects without 'small' size */
 }
 
+/* Specific style for the reset button */
 .reset-button {
   display: flex;
-  /* Ensure icon and text are side-by-side */
   align-items: center;
-  /* Vertically center icon and text */
   gap: 5px;
-  /* Space between text and icon */
-  height: 32px;
-  /* Standard Ant Design button height */
+  height: 32px; /* Ensure button height matches other controls */
   padding: 0 15px;
-  /* Adjust padding for better look */
-  margin-top: 25px;
-  /* Align button baseline with input text. Adjust as needed based on actual font sizes/line heights */
 }
 
-/* Optional: If you want to match the Ant Design input height precisely for the button */
-.ant-input {
-  height: 32px;
-  /* Default Ant Design input height */
+/* If you need to override Ant Design's default small size,
+   make sure you're not explicitly setting 'size="small"' in template
+   or apply override like this: */
+:deep(.ant-select-selector),
+:deep(.ant-input) {
+  height: 32px !important;
+  line-height: 32px !important; // Ensure text is vertically centered
+}
+:deep(.ant-select-selection-item) {
+    line-height: 30px !important; // Adjust for content inside select
 }
 
-// Basic Ant Design button styles often handle 'd-flex', 'justify-content-center', 'align-items-center', 'px-4'
-// These are likely utility classes from another framework (like Bootstrap or Tailwind).
-// If they are not working, you'd need to define them, e.g.:
-/*
-.d-flex { display: flex; }
-.align-items-center { align-items: center; }
-.justify-content-center { justify-content: center; }
-.px-4 { padding-left: 1rem; padding-right: 1rem; }
-*/
-
-/* Global body font is okay, but usually specified in a global stylesheet */
+/* Global body font (if this style is actually in this component, it should be moved to a global stylesheet) */
 body {
   font-family: 'Roboto', sans-serif;
+}
+
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #54bddb !important;
+  box-shadow: 0 0 0 2px rgba(95, 179, 179, 0.2) !important;
+}
+
+:deep(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+:deep(.ant-select-focused:not(.ant-select-disabled) .ant-select-selector) {
+  border-color: #54bddb !important;
+  box-shadow: 0 0 0 2px rgba(95, 179, 179, 0.2) !important;
+}
+
+:deep(.ant-textarea:focus),
+:deep(.ant-textarea-focused) {
+  border-color: #54bddb !important;
+  box-shadow: 0 0 0 2px rgba(95, 179, 179, 0.2) !important;
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio .ant-radio-inner),
+:deep(.ant-checkbox-wrapper:hover .ant-checkbox .ant-checkbox-inner),
+:deep(.ant-radio-input:focus + .ant-radio-inner),
+:deep(.ant-checkbox-input:focus + .ant-checkbox-inner) {
+  border-color: #54bddb !important;
+}
+
+:deep(.ant-radio-checked .ant-radio-inner::after) {
+  background-color: #54bddb !important;
+}
+
+:deep(.ant-checkbox-checked .ant-checkbox-inner) {
+  background-color: #54bddb !important;
+  border-color: #54bddb !important;
+}
+
+:deep(.ant-btn:focus),
+:deep(.ant-btn:active) {
+  border-color: #54bddb !important;
+  color: white !important;
 }
 </style>

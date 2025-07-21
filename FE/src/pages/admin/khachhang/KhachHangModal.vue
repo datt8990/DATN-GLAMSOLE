@@ -385,7 +385,7 @@ const handleSubmit = async () => {
 
     const formData = new FormData();
     formData.append('id', product?.value?.id?.trim() || '');
-    formData.append('ma', product?.value.ma?.trim() || '');
+    formData.append('code', product?.value.ma?.trim() || '');
     formData.append('cccd', product?.value?.cccd?.trim() || '');
     formData.append('user', product?.value.user?.trim() || '');
     formData.append('ten', product?.value.ten?.trim() || '');

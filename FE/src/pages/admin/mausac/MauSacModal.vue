@@ -5,7 +5,7 @@
         cancel-text="Huỷ">  
         <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>  
       </a-popconfirm>  
-      <a-button style="background-color: #54bddb;" @click="closeModal">Huỷ</a-button>  
+      <a-button style="background-color: #54bddb; color: white;" @click="closeModal">Huỷ</a-button>  
     </template>  
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">  
