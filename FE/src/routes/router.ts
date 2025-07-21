@@ -5,6 +5,11 @@ import type { RouteRecordRaw } from "vue-router";
 
 export const routes: RouteRecordRaw[] = [
   {
+    path: ROUTES_CONSTANTS.REDIRECT.path,
+    name: ROUTES_CONSTANTS.REDIRECT.name,
+    component: () => import('@/routes/guard/Redirect.vue')
+  },
+  {
     path: ROUTES_CONSTANTS.USERS.path,
     redirect: `${ROUTES_CONSTANTS.USERS.path}/${ROUTES_CONSTANTS.USERS.children.TRANGCHU.path}`,
     component: () => import("@/layout/Users.vue"),
@@ -22,7 +27,9 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.USERS.children.REGISTER.path,
         name: ROUTES_CONSTANTS.USERS.children.REGISTER.name,
+
         component: () => import("@/pages/auth/RegisterPage.vue"),
+
       },
       {
         path: ROUTES_CONSTANTS.USERS.children.SANPHAM.path,
@@ -49,7 +56,16 @@ export const routes: RouteRecordRaw[] = [
         name: ROUTES_CONSTANTS.USERS.children.GIOHANG.name,
         component: () => import("@/pages/users/cart/CartView.vue"),
       },
-    ],
+
+
+      {
+        path: ROUTES_CONSTANTS.USERS.children.THONGTINCANHAN.path,
+        name: ROUTES_CONSTANTS.USERS.children.THONGTINCANHAN.name,
+        component: () => import('@/pages/users/profile/ProfileView.vue')
+      },
+
+    ]
+
   },
   // Not Found route
   {
@@ -84,7 +100,15 @@ export const routes: RouteRecordRaw[] = [
         //   requiresAuth: true
         // }
       },
-    ],
+
+      {
+        path: ROUTES_CONSTANTS.ADMIN.children.LOGIN.path,
+        name: ROUTES_CONSTANTS.ADMIN.children.LOGIN.name,
+        component: () => import('@/pages/auth/LoginAdmin.vue'),
+
+      }
+    ]
+
   },
   {
     path: ROUTES_CONSTANTS.ADMIN.path,
@@ -213,8 +237,10 @@ export const routes: RouteRecordRaw[] = [
         //   requiresRole: ROLES.ADMIN,
         //   requiresAuth: true
         // }
+
       },
     ],
+
   },
   {
     path: ROUTES_CONSTANTS.ADMIN.path,

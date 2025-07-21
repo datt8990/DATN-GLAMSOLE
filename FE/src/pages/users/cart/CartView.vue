@@ -139,7 +139,7 @@ const cartItems = ref<CartItem[]>([
     originalPrice: 699000,
     discountPrice: 599000,
     quantity: 1,
-    imageUrl: 'https://via.placeholder.com/80x80.png?text=Giay1',
+    imageUrl: 'https://vn-test-11.slatic.net/p/23248c8fb9647b30f8013baff44c8029.jpg',
     color: 'Trắng',
     size: '42',
   },
@@ -149,10 +149,11 @@ const cartItems = ref<CartItem[]>([
     originalPrice: 489000,
     discountPrice: 489000,
     quantity: 2,
-    imageUrl: 'https://via.placeholder.com/80x80.png?text=Giay2',
+    imageUrl: 'https://lakinta.vn/wp-content/uploads/2022/12/giay-sneaker-nam-6.jpeg',
     color: 'Đen',
     size: '38',
   },
+  
 ])
 
 const selectedIds = ref<number[]>([])

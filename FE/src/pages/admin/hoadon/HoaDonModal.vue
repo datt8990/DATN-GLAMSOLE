@@ -184,6 +184,14 @@
         <template #title>
           <div class="card-title">
             <span>THÔNG TIN KHÁCH HÀNG</span>
+            <!-- <a-button
+              v-if="canChangeCustomerInfo"
+              type="primary"
+              class="change-info-btn"
+            >
+              Thay đổi thông tin
+            </a-button> -->
+
           </div>
         </template>
 
@@ -267,6 +275,7 @@
     <!-- Sản phẩm có trong hóa đơn -->
     <a-card title="DANH SÁCH SẢN PHẨM" bordered class="order-info-card">
       <template #extra>
+
       </template>
 
       <div class="product-list-container">
@@ -312,7 +321,9 @@
               :max="999"
               size="small"
               class="quantity-input"
-              disabled
+
+              :disabled="isAddProductDisabled"
+
             />
           </div>
 
@@ -386,6 +397,11 @@
           </div>
          
 
+          <div class="radio-option">
+            <a-radio value="payment_confirmed"
+              >Đã xác nhận thông tin thanh toán đơn hàng</a-radio
+            >
+          </div>
           <div class="radio-option">
             <a-radio value="delivered"
               >Đơn hàng đã được giao thành công</a-radio
@@ -525,7 +541,7 @@
           type="primary"
           @click="confirmPayment"
           :loading="paymentLoading"
-          :disabled="!canConfirmPaymentButton"
+          :disabled="!canConfirmPayment"
           class="confirm-payment-btn"
         >
           Thanh toán
@@ -549,7 +565,7 @@ import {
 } from "@/services/api/admin/hoadon.api";
 import { message } from "ant-design-vue";
 import BreadcrumbDefault from "@/components/ui/Breadcrumbs/BreadcrumbDefault.vue";
-import "./HoaDon.css";
+import './HoaDon.css';
 
 const route = useRoute();
 const hoaDon = ref<any>(null);
@@ -567,7 +583,6 @@ const customerPayment = ref(0);
 const paymentNote = ref("");
 const selectedPaymentMethod = ref("cash");
 const paymentLoading = ref(false);
-
 const lichSuThanhToan = ref<any[]>([]);
 
 const closeStatusModal = () => {
@@ -649,6 +664,7 @@ const setDefaultTemplate = (status: string) => {
 
   statusNote.value = statusTemplates[selectedStatusTemplate.value] || "";
 };
+
 
 // 1. Thêm vào phần khai báo biến reactive (sau dòng paymentLoading)
 const printLoading = ref(false);
@@ -889,6 +905,7 @@ const confirmPayment = async () => {
   paymentLoading.value = true;
 
   try {
+
     const paymentData = {
       hoaDonId: route.params.id as string,
       soTienKhachDua: customerPayment.value,
@@ -902,10 +919,12 @@ const confirmPayment = async () => {
 
     const response = await thanhToan(paymentData);
 
+
     if (response.success) {
       message.success("Xác nhận thanh toán thành công");
 
       // Cập nhật trạng thái đơn hàng
+
       if (hoaDon.value?.loaiHoaDon !== EntityLoaiHoaDon.OFFLINE) {
         currentStatus.value = EntityTrangThaiHoaDon.DANG_GIAO;
         hoaDon.value.trangThaiHoaDon = "DANG_GIAO";
@@ -913,6 +932,7 @@ const confirmPayment = async () => {
 
       // Refresh cả timeline và lịch sử thanh toán
       await Promise.all([refreshTimelineData(), loadPaymentHistory()]);
+
 
       closePaymentModal();
     } else {
@@ -958,6 +978,7 @@ const canConfirmPayment = computed(() => {
     currentStatus.value < EntityTrangThaiHoaDon.HOAN_THANH &&
     currentStatus.value !== EntityTrangThaiHoaDon.DA_HUY
   );
+
 });
 
 const canAddProduct = computed(() => {
@@ -1072,6 +1093,8 @@ const paymentColumns = [
   },
   { title: "Ghi chú", key: "ghiChu", width: 200, align: "left" },
 ];
+
+
 
 const getCurrentStepIndex = computed(() => {
   const current = currentStatus.value;
@@ -1415,4 +1438,6 @@ onMounted(async () => {
 
   console.log("Data loaded successfully");
 });
+
 </script>
+
