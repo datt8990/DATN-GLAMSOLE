@@ -37,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 System.out.println("loadUserByNhanVien: " + nhanVien);
                 return UserPrincipal.createFromNhanVien(nhanVien);
             }
-        }else {
+        }else if("USER".equals(role)) {
 
             Optional<KhachHang> existingUser = userAuthRepository.findByEmailAndStatus(email, EntityStatus.ACTIVE);
             if (existingUser.isPresent()) {
@@ -49,6 +49,5 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         throw new UsernameNotFoundException("User not found with email: " + email);
     }
-
 
 }
