@@ -7,8 +7,8 @@
           class="search-input" />
       </div>
       <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Trạng thái:</label>
-        <a-select class="select-input" v-model:value="localSearchStatus" allow-clear style="width: 180px" size="small"
+        <label for="search-status" class="filter-label">Trạng thái:</label>
+        <a-select id="search-status" class="select-input" v-model:value="localSearchStatus" allow-clear style="width: 180px" size="small"
           placeholder="Chọn trạng thái">
           <a-select-option :value="1">Hoạt động</a-select-option>
           <a-select-option :value="0">Ngừng hoạt động</a-select-option>
@@ -25,6 +25,7 @@
     </div> 
   </DivCustom>
 </template>
+
 <script setup lang="ts">
 import { ref, watch, defineProps, defineEmits } from 'vue'
 import DivCustom from '@/components/custom/Div/DivCustom.vue'
@@ -35,11 +36,6 @@ const emit = defineEmits(['update:searchQuery', 'update:searchStatus'])
 
 const localSearchQuery = ref(props.searchQuery)
 const localSearchStatus = ref(props.searchStatus)
-
-const options = [
-  { label: 'Hoạt động', value: 0 },
-  { label: 'Ngừng hoạt động', value: 1 }
-]
 
 watch([localSearchQuery, localSearchStatus], ([newQuery, newStatus]) => {
   emit('update:searchQuery', newQuery)
@@ -55,34 +51,24 @@ const resetFilters = () => {
 </script>
 
 <style scoped lang="scss">
-/* Use scoped style for better component encapsulation */
-
 .filter-container {
   display: flex;
   flex-wrap: wrap;
-  /* Allow items to wrap to the next line on smaller screens */
   gap: 20px;
-  /* Space between filter items */
   align-items: flex-end;
-  /* Align items to the bottom of the container */
   padding: 15px;
-  /* Add some padding around the filter section */
-
   border-radius: 8px;
-  /* Slightly rounded corners */
 }
 
 .filter-item {
   display: flex;    
   flex-direction: column;
-  /* Stack label above input/button */
   justify-content: flex-end;
-  /* Push content to the bottom if container has extra space */
 }
 
 .filter-label {
   font-size: 14px;
-  font-weight: bold; /* This will now be effective */
+  font-weight: bold;
   margin-bottom: 5px;
   color: #555;
   white-space: nowrap;
@@ -90,43 +76,69 @@ const resetFilters = () => {
 
 .search-input {
   width: 700px;
-  /* Adjust width as needed for better responsiveness */
   min-width: 200px;
-  /* Minimum width for search input */
+  height: 32px !important; /* Fixed height for input */
 }
 
 .reset-button {
   display: flex;
-  /* Ensure icon and text are side-by-side */
   align-items: center;
-  /* Vertically center icon and text */
   gap: 5px;
-  /* Space between text and icon */
   height: 32px;
-  /* Standard Ant Design button height */
   padding: 0 15px;
-  /* Adjust padding for better look */
   margin-top: 25px;
-  /* Align button baseline with input text. Adjust as needed based on actual font sizes/line heights */
 }
 
-/* Optional: If you want to match the Ant Design input height precisely for the button */
 .ant-input {
-  height: 32px;
-  /* Default Ant Design input height */
+  height: 32px !important; /* Fixed height for input */
 }
 
-// Basic Ant Design button styles often handle 'd-flex', 'justify-content-center', 'align-items-center', 'px-4'
-// These are likely utility classes from another framework (like Bootstrap or Tailwind).
-// If they are not working, you'd need to define them, e.g.:
-/*
-.d-flex { display: flex; }
-.align-items-center { align-items: center; }
-.justify-content-center { justify-content: center; }
-.px-4 { padding-left: 1rem; padding-right: 1rem; }
-*/
+.select-input {
+  height: 32px; /* Fixed height for select */
+  
+  :deep(.ant-select-selector) {
+    height: 32px !important; /* Fixed height for selector */
+    display: flex;
+    align-items: center;
+    padding: 0 11px; /* Padding to match input */
+    border-radius: 6px; /* Rounded corners */
+  }
 
-/* Global body font is okay, but usually specified in a global stylesheet */
+  :deep(.ant-select-selection-item) {
+    line-height: 30px !important; /* Center text in selector */
+    padding: 0; /* Remove default padding */
+  }
+
+  :deep(.ant-select-selection-placeholder) {
+    line-height: 30px !important; /* Center placeholder */
+    color: #bfbfbf; /* Placeholder color */
+  }
+
+  :deep(.ant-select-arrow) {
+    right: 11px; /* Position arrow */
+  }
+
+  :deep(.ant-select-clear) {
+    right: 32px; /* Position clear button */
+  }
+
+  :deep(.ant-select-selector:hover) {
+    border-color: #58bddb !important; /* Hover effect */
+  }
+
+  :deep(.ant-select-focused .ant-select-selector) {
+    border-color: #58bddb !important; /* Focus effect */
+    box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important; /* Focus shadow */
+  }
+}
+
+.search-input-group {
+  .ant-input,
+  .ant-select {
+    height: 32px; /* Ensure consistent height */
+  }
+}
+
 body {
   font-family: 'Roboto', sans-serif;
 }

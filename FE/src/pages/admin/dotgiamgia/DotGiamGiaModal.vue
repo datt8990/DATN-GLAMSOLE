@@ -1,24 +1,23 @@
 <template>
   <div class="add-discount-page p-6">
-    <!-- Header -->
+
     <div class="breadcrumb-section">
-      <BreadcrumbDefault :pageTitle="'Thêm đợt giảm giá'" :routes="[
-        { path: '/admin/dot-giam-gia', name: 'Quản lý đợt giảm giá' },
-        { path: '/admin/add-dot-giam-gia', name: 'Thêm đợt giảm giá' }
-      ]" />
+      <BreadcrumbDefault
+        :pageTitle="'Thêm đợt giảm giá'"
+        :routes="[
+          { path: '/admin/dot-giam-gia', name: 'Quản lý đợt giảm giá' },
+          { path: '/admin/add-dot-giam-gia', name: 'Thêm đợt giảm giá' },
+        ]"
+      />
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
-      <!-- Left Column - Form (1/4 width) -->
       <div class="xl:col-span-1 bg-white rounded-lg shadow-sm border p-6">
         <h2 class="text-lg font-semibold mb-4">Thông tin đợt giảm giá</h2>
 
         <div class="space-y-4">
-          <!-- Tên khuyến mãi -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Tên khuyến mãi
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Tên khuyến mãi </label>
             <a-input
               v-model:value="formData.tenKhuyenMai"
               placeholder="Tên khuyến mãi"
@@ -26,24 +25,19 @@
             />
           </div>
 
-          <!-- Giá trị giảm -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Giá trị giảm
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Giá trị giảm </label>
             <a-input
               v-model:value="formData.giaTriGiam"
               placeholder="Giá trị giảm"
               size="large"
               suffix="%"
+              class="hover-input"
             />
           </div>
 
-          <!-- Ngày bắt đầu -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Ngày bắt đầu
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Ngày bắt đầu </label>
             <a-date-picker
               v-model:value="formData.ngayBatDau"
               placeholder="Ngày bắt đầu"
@@ -53,11 +47,8 @@
             />
           </div>
 
-          <!-- Ngày kết thúc -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Ngày kết thúc
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Ngày kết thúc </label>
             <a-date-picker
               v-model:value="formData.ngayKetThuc"
               placeholder="Ngày kết thúc"
@@ -67,11 +58,7 @@
             />
           </div>
 
-          <!-- Submit Button -->
-          <a-popconfirm
-            title="Bạn có chắc chắn muốn lưu thay đổi?"
-            @confirm="handleSubmit"
-          >
+          <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit">
             <a-button
               type="primary"
               size="large"
@@ -85,13 +72,11 @@
         </div>
       </div>
 
-      <!-- Right Column - Products (3/4 width) -->
       <div class="xl:col-span-3 bg-white rounded-lg shadow-sm border p-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold">Sản phẩm</h2>
         </div>
 
-        <!-- Search -->
         <div class="mb-4">
           <a-input
             v-model:value="searchTerm"
@@ -106,7 +91,6 @@
           </a-input>
         </div>
 
-        <!-- Available Products Table -->
         <div class="mb-6">
           <div class="bg-gray-200 text-black px-4 py-2 rounded-t-lg">
             <div class="grid grid-cols-12 gap-2 text-sm font-medium">
@@ -121,21 +105,17 @@
               <div class="col-span-4 text-center">Tên sản phẩm</div>
               <div class="col-span-2 text-center">Thương hiệu</div>
               <div class="col-span-2 text-center">Trạng thái</div>
+
             </div>
           </div>
 
-          <div
-            class="border border-gray-200 rounded-b-lg max-h-64 overflow-y-auto"
-          >
+          <div class="border border-gray-200 rounded-b-lg max-h-64 overflow-y-auto">
             <div v-if="loading" class="p-8 text-center text-gray-500">
               <a-spin />
               <div class="mt-2">Đang tải dữ liệu...</div>
             </div>
 
-            <div
-              v-else-if="filteredProducts.length === 0"
-              class="p-8 text-center text-gray-500"
-            >
+            <div v-else-if="filteredProducts.length === 0" class="p-8 text-center text-gray-500">
               Không tìm thấy sản phẩm nào
             </div>
 
@@ -149,16 +129,26 @@
                 <a-checkbox
                   :checked="selectedProductIds.includes(product.id)"
                   :loading="loadingDetails.has(product.id)"
-                  @change="
-                    (e) => handleProductSelect(product.id, e.target.checked)
-                  "
+                  @change="(e) => handleProductSelect(product.id, e.target.checked)"
                 />
               </div>
               <div class="col-span-1 text-center">{{ index + 1 }}</div>
               <div class="col-span-4 text-center">{{ product.ten }}</div>
               <div class="col-span-2 text-center">
-                {{ product.thuongHieu.ten }}
+                {{ product.thuongHieu }}
               </div>
+              <div
+                style="color: green"
+                class="col-span-4 text-center"
+                :class="
+                  product.status === 'ACTIVE'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-red-500 text-red-600'
+                "
+              >
+                {{ product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh" }}
+              </div>
+
               <div
               style="color: green;"
                 class="col-span-2 text-center border rounded px-2 py-1"
@@ -174,12 +164,12 @@
                     : "Ngừng kinh doanh"
                 }}
               </div>
+
             </div>
           </div>
         </div>
 
-        <!-- Pagination -->
-        <div class="flex justify-center">
+        <div class="flex justify-end">
           <a-pagination
             :current="currentPage"
             :total="totalProducts"
@@ -198,26 +188,25 @@
           />
         </div>
 
-        <!-- Selected Products Details -->
         <div class="mt-6">
           <h3 class="text-md font-semibold mb-4">
             Chi tiết sản phẩm
-            <span class="text-gray-500 font-normal"
-              >({{ filteredProductDetails.length }} sản phẩm)</span
+            <span class="text-blue-500 font-normal"
+              >({{ paginatedProductDetails.length }} / {{ filteredProductDetails.length }} sản
+              phẩm)</span
             >
           </h3>
           <div class="row">
-            <!-- Row 1 - Search Filters -->
             <div class="col-md-3 mb-3">
-              <label class="form-label d-flex align-items-center">
-                <span class="ms-2">Tìm sản phẩm</span>
+              <label class="form-label hover-input d-flex align-items-center">
+                <span class="ms-2 hover-input">Tìm sản phẩm</span>
               </label>
               <a-input
                 v-model:value="productNameSearch"
                 placeholder="Nhập tên sản phẩm..."
                 size="large"
                 @input="handleDetailSearch"
-                class="w-full shadow-sm hover:shadow-md transition-shadow duration-200"
+                class="w-full shadow-sm hover:shadow-md transition-shadow duration-200 hover-input"
               />
             </div>
 
@@ -231,11 +220,7 @@
                 @change="handleDetailSearch"
                 :allowClear="true"
               >
-                <a-select-option
-                  v-for="size in sizes"
-                  :key="size.id"
-                  :value="size.id"
-                >
+                <a-select-option v-for="size in sizes" :key="size.id" :value="size.id">
                   {{ size.ten }}
                 </a-select-option>
               </a-select>
@@ -251,11 +236,7 @@
                 @change="handleDetailSearch"
                 :allowClear="true"
               >
-                <a-select-option
-                  v-for="color in colors"
-                  :key="color.id"
-                  :value="color.id"
-                >
+                <a-select-option v-for="color in colors" :key="color.id" :value="color.id">
                   {{ color.ten }}
                 </a-select-option>
               </a-select>
@@ -266,31 +247,14 @@
                 @click="clearDetailFilters"
                 size="large"
                 type="default"
-                class="mr-2"
+
+                class="mr-2 text-white"
+
               >
                 Reset
               </a-button>
             </div>
           </div>
-
-          <!-- Clear Filters Button -->
-          <!-- <div class="mb-4 flex justify-end">
-            <a-button
-              @click="clearDetailFilters"
-              size="small"
-              type="default"
-              class="mr-2"
-            >
-              Xóa bộ lọc
-            </a-button>
-            <a-button
-              @click="selectAllVisibleDetails"
-              size="small"
-              type="primary"
-            >
-              Chọn tất cả hiển thị
-            </a-button>
-          </div> -->
 
           <div class="bg-gray-200 text-black px-4 py-2 rounded-t-lg">
             <div class="grid grid-cols-12 gap-2 text-sm font-medium">
@@ -316,7 +280,7 @@
             </div>
 
             <div
-              v-else-if="filteredProductDetails.length === 0"
+              v-else-if="paginatedProductDetails.length === 0"
               class="p-8 text-center text-gray-500"
             >
               {{
@@ -328,24 +292,19 @@
 
             <div
               v-else
-              v-for="(detail, index) in filteredProductDetails"
+              v-for="(detail, index) in paginatedProductDetails"
               :key="detail.id"
               class="grid grid-cols-12 gap-2 p-3 border-b border-gray-100 text-sm hover:bg-gray-50"
             >
               <div class="col-span-1 text-center">
                 <a-checkbox
                   :checked="detail.selected"
-                  @change="
-                    (e) =>
-                      handleProductDetailSelect(detail.id, e.target.checked)
-                  "
+                  @change="(e) => handleProductDetailSelect(detail.id, e.target.checked)"
                 />
               </div>
-              <div class="col-span-1 text-center">{{ index + 1 }}</div>
+              <div class="col-span-1 text-center">{{ getDetailGlobalIndex(index) }}</div>
               <div class="col-span-2 text-center">
-                <div
-                  class="w-10 h-10 bg-gray-200 rounded mx-auto flex items-center justify-center"
-                >
+                <div class="w-10 h-10 bg-gray-200 rounded mx-auto flex items-center justify-center">
                   <img
                     v-if="detail.anh || detail.hinhAnh"
                     :src="detail.anh || detail.hinhAnh"
@@ -366,6 +325,17 @@
               </div>
             </div>
           </div>
+          <div v-if="filteredProductDetails.length > 0" class="mt-4">
+            <a-pagination
+              v-model:current="currentDetailPageIndex"
+              v-model:page-size="detailPageSize"
+              :total="filteredProductDetails.length"
+              show-size-changer
+              :page-size-options="['5', '10', '20', '50']"
+              @change="handleDetailPageChange"
+              @showSizeChange="handleDetailShowSizeChange"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -373,7 +343,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick, watch } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "ant-design-vue";
 import { SearchOutlined } from "@ant-design/icons-vue";
@@ -385,9 +355,11 @@ import {
   getSizesFromAPI,
   type DotGiamGiaResponse,
   DotGiamGiaRequest,
+  getSanPhamChiTietsByDot,
 } from "@/services/api/admin/dotgiamgia.api";
 import type { Dayjs } from "dayjs";
 import BreadcrumbDefault from "@/components/ui/Breadcrumbs/BreadcrumbDefault.vue";
+import { GetSanPhams } from "@/services/api/admin/sanpham.api";
 
 const router = useRouter();
 
@@ -416,18 +388,63 @@ const loading = ref(false);
 const productNameSearch = ref("");
 const selectedColor = ref(null);
 const selectedSize = ref(null);
-const sizes = ref([]);
-const colors = ref([]);
+const sizes = ref<any[]>([]);
+const colors = ref<any[]>([]);
+
+// Pagination for product details
+const currentDetailPageIndex = ref(1);
+const detailPageSize = ref(5);
+
+const validateForm = () => {
+  const errors = [];
+  if (!formData.value.tenKhuyenMai) {
+    errors.push("Tên khuyến mãi không được để trống.");
+  }
+  if (!formData.value.giaTriGiam) {
+    errors.push("Giá trị giảm không được để trống.");
+  } else if (
+    parseFloat(formData.value.giaTriGiam) <= 0 ||
+    parseFloat(formData.value.giaTriGiam) > 80
+  ) {
+    errors.push("Giá trị giảm phải lớn hơn 0 và không được vượt quá 80%.");
+  }
+  if (!formData.value.ngayBatDau) {
+    errors.push("Ngày bắt đầu không được để trống.");
+  }
+  if (!formData.value.ngayKetThuc) {
+    errors.push("Ngày kết thúc không được để trống.");
+  }
+  if (formData.value.ngayBatDau && formData.value.ngayKetThuc) {
+    if (formData.value.ngayBatDau.isAfter(formData.value.ngayKetThuc)) {
+      errors.push("Ngày bắt đầu phải trước ngày kết thúc.");
+    }
+  }
+  return errors;
+};
 
 const fetchColors = async () => {
-  colors.value = await getColorsFromAPI(); // Implement the API call in your service
+  colors.value = await getColorsFromAPI();
 };
 
 const fetchSizes = async () => {
   const result = await getSizesFromAPI();
-  console.log(result); // Có data
-  sizes.value = result; // Gán vào ref
+  sizes.value = result;
 };
+
+// Watch for changes in search term and refetch products
+watch(searchTerm, (newValue) => {
+  console.log("giá trị mới search :", newValue);
+  fetchProducts();
+});
+
+// Watch for changes in product detail filters and reset detail page index
+watch(
+  [productNameSearch, selectedColor, selectedSize],
+  () => {
+    currentDetailPageIndex.value = 1; // Reset to first page when filters change
+  },
+  { immediate: true }
+);
 
 // API data
 const availableProducts = ref<any[]>([]);
@@ -435,6 +452,7 @@ const totalProducts = ref(0);
 
 // Computed properties
 const filteredProducts = computed(() => {
+  console.log("danh sách product: ", availableProducts.value);
   return availableProducts.value.filter(
     (product) =>
       product.ma.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
@@ -442,33 +460,49 @@ const filteredProducts = computed(() => {
   );
 });
 
-// New computed property for filtering product details
+// Computed property for filtering product details
 const filteredProductDetails = computed(() => {
+  console.log("Filtering with:", {
+    productNameSearch: productNameSearch.value,
+    selectedColor: selectedColor.value,
+    selectedSize: selectedSize.value,
+    totalDetails: selectedProductDetails.value.length,
+  });
+
   return selectedProductDetails.value.filter((detail) => {
     // Product name search
     const productName = getProductName(detail).toLowerCase();
     const searchMatch =
-      productNameSearch.value === "" ||
-      productName.includes(productNameSearch.value.toLowerCase());
 
-    // Size filter
-    const sizeMatch =
-      selectedSize.value === null || detail.kichCo?.id === selectedSize.value;
+      !productNameSearch.value || productName.includes(productNameSearch.value.toLowerCase());
 
-    // Color filter
-    const colorMatch =
-      selectedColor.value === null || detail.mauSac?.id === selectedColor.value;
+    // Size filter - more explicit null checking
+    let sizeMatch = true;
+    if (selectedSize.value !== null && selectedSize.value !== undefined) {
+      sizeMatch = detail.kichCo?.id === selectedSize.value;
+    }
+
+    // Color filter - more explicit null checking
+    let colorMatch = true;
+    if (selectedColor.value !== null && selectedColor.value !== undefined) {
+      colorMatch = detail.mauSac?.id === selectedColor.value;
+    }
 
     return searchMatch && sizeMatch && colorMatch;
   });
 });
 
+// Computed property for paginating filtered product details
+const paginatedProductDetails = computed(() => {
+  const startIndex = (currentDetailPageIndex.value - 1) * detailPageSize.value;
+  const endIndex = startIndex + detailPageSize.value;
+  return filteredProductDetails.value.slice(startIndex, endIndex);
+});
+
 const checkAll = computed(() => {
   return (
     filteredProducts.value.length > 0 &&
-    filteredProducts.value.every((product) =>
-      selectedProductIds.value.includes(product.id)
-    )
+    filteredProducts.value.every((product) => selectedProductIds.value.includes(product.id))
   );
 });
 
@@ -479,21 +513,17 @@ const indeterminate = computed(() => {
   return selectedCount > 0 && selectedCount < filteredProducts.value.length;
 });
 
-// Updated computed properties for product details check all (based on filtered results)
+// Updated computed properties for product details check all (based on paginated results)
 const detailsCheckAll = computed(() => {
   return (
-    filteredProductDetails.value.length > 0 &&
-    filteredProductDetails.value.every((detail) => detail.selected)
+    paginatedProductDetails.value.length > 0 &&
+    paginatedProductDetails.value.every((detail) => detail.selected)
   );
 });
 
 const detailsIndeterminate = computed(() => {
-  const selectedCount = filteredProductDetails.value.filter(
-    (detail) => detail.selected
-  ).length;
-  return (
-    selectedCount > 0 && selectedCount < filteredProductDetails.value.length
-  );
+  const selectedCount = paginatedProductDetails.value.filter((detail) => detail.selected).length;
+  return selectedCount > 0 && selectedCount < paginatedProductDetails.value.length;
 });
 
 const loadingAnyDetails = computed(() => {
@@ -538,46 +568,43 @@ const onImageError = (event: Event) => {
 
 // New methods for detail search functionality
 const handleDetailSearch = () => {
-  // This function is called when any filter changes
-  // The filtering is handled by the computed property filteredProductDetails
-  console.log("Detail search filters changed:", {
-    productNameSearch: productNameSearch.value,
-    selectedColor: selectedColor.value,
-    selectedSize: selectedSize.value,
-  });
+
+  currentDetailPageIndex.value = 1; // Reset to first page when filters change
+
 };
 
 const clearDetailFilters = () => {
   productNameSearch.value = "";
   selectedColor.value = null;
   selectedSize.value = null;
-};
-
-const selectAllVisibleDetails = () => {
-  filteredProductDetails.value.forEach((detail) => {
-    detail.selected = true;
+  currentDetailPageIndex.value = 1; // Reset to first page
+  nextTick(() => {
+    console.log("Filters cleared, filtered results:", filteredProductDetails.value.length);
   });
 };
 
 const handleSubmit = async () => {
-  // Gather form data
+  const validationErrors = validateForm();
+  if (validationErrors.length > 0) {
+    validationErrors.forEach((error) => {
+      message.error(error);
+    });
+    return;
+  }
   const requestData: DotGiamGiaRequest = {
     name: formData.value.tenKhuyenMai,
-    value: parseFloat(formData.value.giaTriGiam), // Ensure this is a number
-    startDate: formData.value.ngayBatDau?.valueOf() || null, // Convert to timestamp
-    endDate: formData.value.ngayKetThuc?.valueOf() || null, // Convert to timestamp
+    value: parseFloat(formData.value.giaTriGiam),
+    startDate: formData.value.ngayBatDau?.valueOf() || null,
+    endDate: formData.value.ngayKetThuc?.valueOf() || null,
     idProductDetails: selectedProductDetails.value
       .filter((detail) => detail.selected) // Only include selected details
       .map((detail) => ({ id: detail.id })), // Map to IdProductDetail structure
   };
-
-  // Log the request data for debugging
   console.log("Request Data:", requestData);
 
   try {
     const response = await addDotGiamGia(requestData);
     console.log("Response from API:", response);
-    // Show a beautiful success notification
     message.success({
       content: "Thêm đợt giảm giá thành công!",
       duration: 1.5,
@@ -587,13 +614,12 @@ const handleSubmit = async () => {
         fontWeight: "600",
       },
     });
-    // Delay then redirect
     setTimeout(() => {
       router.push("/admin/dot-giam-gia");
     }, 1600);
-  } catch (error) {
+  } catch (error: any) {
     if (error.response && error.response.data) {
-      message.error(error.response.data.message); // Display the error message from the backend
+      message.error(error.response.data.message);
     } else {
       message.error("Lỗi khi thêm đợt giảm giá. Vui lòng thử lại.");
     }
@@ -606,7 +632,7 @@ const fetchProductDetails = async (productId: string) => {
     loadingDetails.value.add(productId);
     console.log("Fetching details for product:", productId);
 
-    const response = await getSanPhamChiTiets(productId);
+    const response = await getSanPhamChiTietsByDot(productId);
     console.log("Product details response:", response);
 
     if (response && Array.isArray(response) && response.length > 0) {
@@ -632,7 +658,6 @@ const fetchProductDetails = async (productId: string) => {
         mauSac: item.mauSac,
       }));
 
-      // Add product details to the selectedProductDetails array
       details.forEach((detail) => {
         const existingIndex = selectedProductDetails.value.findIndex(
           (item) => item.id === detail.id
@@ -645,11 +670,8 @@ const fetchProductDetails = async (productId: string) => {
           });
         }
       });
-
-      console.log(
-        "Updated selectedProductDetails:",
-        selectedProductDetails.value
-      );
+      currentDetailPageIndex.value = 1; // Reset to first page when new details are added
+      console.log("Updated selectedProductDetails:", selectedProductDetails.value);
     } else {
       console.warn("No valid data in response:", response);
     }
@@ -664,58 +686,30 @@ const fetchProducts = async () => {
   try {
     loading.value = true;
     const params = {
-      page: currentPage.value - 1,
+      page: currentPage.value,
       size: pageSize.value,
-      search: searchTerm.value,
+      q: searchTerm.value,
     };
 
-    const response = await GetSanPham(params);
+    console.log("Fetching products with params:", params);
+
+    const response = await GetSanPhams(params);
     console.log("API Response:", response);
 
     if (response) {
       let products = [];
-
-      // Handle different response structures
-      if (Array.isArray(response)) {
-        products = response;
-      } else if (response.data && Array.isArray(response.data)) {
-        products = response.data;
-      } else if (
-        response.data &&
-        response.data.content &&
-        Array.isArray(response.data.content)
-      ) {
-        products = response.data.content;
-        totalProducts.value =
-          response.data.totalElements || response.data.content.length;
-      } else if (response.content && Array.isArray(response.content)) {
-        products = response.content;
-        totalProducts.value = response.totalElements || response.content.length;
-      } else {
-        console.warn("Unexpected response structure:", response);
-        products = [];
-      }
-
-      // Map the products to the expected format
+      products = response.data.data;
       availableProducts.value = products.map((product) => ({
         id: product.id,
         ma: product.ma,
         ten: product.ten,
         status: product.status,
-        trangThai:
-          product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh",
-        thuongHieu: product.thuongHieu,
-        xuatSu: product.xuatSu,
-        danhMuc: product.danhMuc,
-        loaiDe: product.loaiDe,
-        chatLieu: product.chatLieu,
+        trangThai: product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh",
+        thuongHieu: product.tenThuongHieu,
         moTa: product.moTa,
       }));
 
-      // Set total if not already set (for non-paginated responses)
-      if (!totalProducts.value) {
-        totalProducts.value = availableProducts.value.length;
-      }
+      totalProducts.value = response.data.totalElements || availableProducts.value.length;
 
       console.log("Mapped products:", availableProducts.value);
     } else {
@@ -735,7 +729,6 @@ const fetchProducts = async () => {
 const handleProductSelect = async (productId: string, checked: boolean) => {
   if (checked) {
     selectedProductIds.value.push(productId);
-    // Fetch product details when selected
     await fetchProductDetails(productId);
   } else {
     const index = selectedProductIds.value.indexOf(productId);
@@ -748,9 +741,11 @@ const handleProductSelect = async (productId: string, checked: boolean) => {
       (detail) => detail.productId !== productId
     );
   }
+  currentDetailPageIndex.value = 1; // Reset to first page
 };
 
 const onCheckAllChange = async (e: any) => {
+  currentDetailPageIndex.value = 1; // Reset to first page when selecting/deselecting all products
   if (e.target.checked) {
     const promises = [];
     filteredProducts.value.forEach((product) => {
@@ -774,9 +769,7 @@ const onCheckAllChange = async (e: any) => {
 };
 
 const handleProductDetailSelect = (detailId: string, checked: boolean) => {
-  const detail = selectedProductDetails.value.find(
-    (item) => item.id === detailId
-  );
+  const detail = selectedProductDetails.value.find((item) => item.id === detailId);
   if (detail) {
     detail.selected = checked;
   }
@@ -784,8 +777,7 @@ const handleProductDetailSelect = (detailId: string, checked: boolean) => {
 
 const onCheckAllDetailsChange = (e: any) => {
   const checked = e.target.checked;
-  // Only affect the currently filtered/visible details
-  filteredProductDetails.value.forEach((detail) => {
+  paginatedProductDetails.value.forEach((detail) => {
     detail.selected = checked;
   });
 };
@@ -800,6 +792,21 @@ const handleSearch = () => {
   fetchProducts();
 };
 
+const handleDetailPageChange = (page: number, pageSize: number) => {
+  currentDetailPageIndex.value = page;
+  detailPageSize.value = pageSize;
+};
+
+// **Thêm phương thức mới cho việc thay đổi kích thước trang chi tiết sản phẩm**
+const handleDetailShowSizeChange = (current: number, size: number) => {
+  currentDetailPageIndex.value = 1; // Đặt lại về trang đầu tiên khi thay đổi kích thước trang
+  detailPageSize.value = size;
+};
+
+const getDetailGlobalIndex = (index: number) => {
+  return (currentDetailPageIndex.value - 1) * detailPageSize.value + index + 1;
+};
+
 onMounted(() => {
   fetchProducts();
   fetchColors();
@@ -807,9 +814,17 @@ onMounted(() => {
 });
 </script>
 
+<style scoped>
+/* Add any custom styles here if needed */
+.hover-input:hover {
+  border-color: #54bddb; /* Example hover effect */
+}
+</style>
+
 <style scoped lang="scss">
 * {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
+
 }
 
 .form-label {
@@ -1061,6 +1076,15 @@ onMounted(() => {
   color: rgb(107 114 128);
 }
 
+.text-blue-500 {
+  color: #58bddb;
+}
+
+.text-white {
+  color: white;
+  background-color: #58bddb;
+}
+
 .text-gray-700 {
   color: rgb(55 65 81);
 }
@@ -1200,4 +1224,37 @@ onMounted(() => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
   /* Subtle shadow */
 }
+
+
+.hover-input:hover {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+}
+
+/* Hover effect cho Ant Design Input */
+:deep(.ant-input:hover) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+}
+
+/* Hover effect cho Ant Design Select */
+:deep(.ant-select:hover .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+}
+
+/* Hover effect cho Ant Design DatePicker */
+:deep(.ant-picker:hover) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+}
+
+/* Focus effect để đồng bộ với hover */
+:deep(.ant-input:focus),
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-picker-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+}
 </style>
+

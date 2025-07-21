@@ -73,4 +73,19 @@ public class SanPhamChiTietController {
         return Helper.createResponseEntity(adSanPhamChiTietService.modifySanPham(request));
     }
 
+    @PostMapping("update")
+    public ResponseEntity<?> updateProduct(@ModelAttribute ADSPCTRequest request) {
+
+        return Helper.createResponseEntity(adSanPhamChiTietService.updateSanPham(request));
+    }
+
+
+    @GetMapping("/list-sp")
+    public ResponseEntity<?> getListSP() {
+
+        return Helper.createResponseEntity(adSanPhamChiTietService.getListThemSanPham());
+
+    }
+
+
 }

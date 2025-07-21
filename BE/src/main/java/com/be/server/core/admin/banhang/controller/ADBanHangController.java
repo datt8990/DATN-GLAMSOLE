@@ -1,10 +1,15 @@
 package com.be.server.core.admin.banhang.controller;
 
+import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
 import com.be.server.core.admin.banhang.model.request.ADCapNhatPhuongTHucThanhToanRequest;
+import com.be.server.core.admin.banhang.model.request.ADThanhToanRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemGioHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
+import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADPhuongThucThanhToanRespones;
@@ -12,8 +17,10 @@ import com.be.server.core.admin.banhang.model.response.ADThanhToanRespones;
 import com.be.server.core.admin.banhang.model.response.ListHoaDon;
 import com.be.server.core.admin.banhang.service.ADBanHangService;
 import com.be.server.core.admin.khachhang.model.request.ADKhachHangRequest;
+import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.HoaDon;
 import com.be.server.entity.KhachHang;
+import com.be.server.entity.PhieuGiamGia;
 import com.be.server.infrastructure.constant.MappingConstants;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +32,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -64,8 +72,8 @@ public class ADBanHangController {
     }
 
     @PostMapping("/them-so-luong")
-    public void getThemSL(ADXoaSanPhamRequest id) {
-        adBanHangService.ThemSoLuong(id);
+    public ResponseEntity<?> getThemSL(ADXoaSanPhamRequest id) {
+        return Helper.createResponseEntity(adBanHangService.ThemSoLuong(id));
     }
 
     @PostMapping("/xoa-so-luong")
@@ -103,9 +111,27 @@ public class ADBanHangController {
         adBanHangService.capNhatPhuongThucThanhToan(id);
     }
 
-    @PostMapping("/thanh-toan-thanh-cong/{id}")
-    public void thanhToanThanhCong(@PathVariable("id") String id) {
+    @PostMapping("/thanh-toan-thanh-cong")
+    public void thanhToanThanhCong(ADThanhToanRequest id) {
         adBanHangService.thanhToanThanhCong(id);
+    }
+
+    @GetMapping("/list-san-pham")
+    public ResponseEntity<?> getALl(ListSanPhamRequest request) {
+
+        return Helper.createResponseEntity(adBanHangService.getAll(request));
+    }
+
+    @GetMapping("/danh-sach-phieu-giam-gia")
+    public ResponseEntity<?> getDiscountCoupons(ChonPhieuGiamGiaRequest request) {
+        return Helper.createResponseEntity(adBanHangService.danhSachPhieuGiamGia(request));
+
+    }
+
+    @PostMapping("/giao-hang/{id}")
+    public ResponseEntity<?> getGiaoHang(@PathVariable("id") String id) {
+        return Helper.createResponseEntity(adBanHangService.giaoHang(id));
+
     }
 
 }

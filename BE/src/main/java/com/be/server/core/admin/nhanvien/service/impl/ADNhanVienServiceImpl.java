@@ -168,7 +168,7 @@ public class ADNhanVienServiceImpl implements ADNhanVienService {
         String subject = "Thông tin xác thực tài khoản";
         String content = "Chào " + nhanVien.getTen() + ",\n\n" +
                 "Đây là thông tin đăng nhập của bạn\n" +
-                "Tài khoản đăng nhập của bạn là: "+ nhanVien.getMa() +"\n" +
+                "Tài khoản đăng nhập của bạn là: "+ nhanVien.getEmail() +"\n" +
                 "Mật khẩu đăng nhập của bạn là: 123\n" +
                 "Trân trọng cảm ơn";
 

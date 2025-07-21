@@ -180,4 +180,23 @@ const resetFilters = () => {
   padding-left: 8px;
   padding-right: 8px;
 }
+
+/* Đổi màu border khi hover cho a-input */
+:deep(.ant-input:hover),
+:deep(.ant-input:focus) {
+  border-color: #58bddb !important;
+}
+
+/* Đổi màu border khi hover cho a-date-picker */
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused) {
+  border-color: #58bddb !important;
+}
+
+/* Đổi màu border khi hover cho a-select */
+:deep(.ant-select-selector:hover),
+:deep(.ant-select-focused .ant-select-selector) {
+  border-color: #58bddb !important;
+}
+
 </style>

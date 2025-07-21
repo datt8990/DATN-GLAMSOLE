@@ -1,86 +1,135 @@
 <template>
   <div class="page-container">
     <div class="breadcrumb-section">
-      <BreadcrumbDefault :pageTitle="'Quản Lý sản phẩm'" :routes="[
-        { path: '/admin/san-pham', name: 'Quản lý sản phẩm' }
-      ]" />
+      <BreadcrumbDefault
+        :pageTitle="'Quản lý sản phẩm'"
+        :routes="[{ path: '/admin/san-pham', name: 'Quản lý sản phẩm' }]"
+      />
     </div>
     <p class="section-title">
       <FilterOutlined /> Bộ lọc tìm kiếm
     </p>
-    <ProductFilter :searchQuery="state.searchQuery" :searchStatus="state.searchStatus"
-      @update:searchQuery="updateSearchQuery" @update:searchStatus="updateSearchStatus" />
+    <ProductFilter
+      v-model:searchQuery="state.searchQuery"
+      v-model:searchStatus="state.searchStatus"
+      v-model:selectedCategory="state.selectedCategory"
+      v-model:selectedMaterial="state.selectedMaterial"
+      v-model:selectedBrand="state.selectedBrand"
+      v-model:selectedSoleType="state.selectedSoleType"
+      @update:searchQuery="updateSearchQuery"
+      @update:searchStatus="updateSearchStatus"
+      @update:selectedCategory="updateSelectedCategory"
+      @update:selectedMaterial="updateSelectedMaterial"
+      @update:selectedBrand="updateSelectedBrand"
+      @update:selectedSoleType="updateSelectedSoleType"
+    />
     <p class="section-title">
-      <UnorderedListOutlined  /> Danh sách sản phẩm
+      <UnorderedListOutlined /> Danh sách sản phẩm
     </p>
-    <ProductTable :products="state.products" :paginationParams="state.paginationParams" :totalItems="state.totalItems"
-      @add="openAddModal" @view="openViewModal" @page-change="handlePageChange" @change-status="handleChangeStatus" />
+    <ProductTable
+      :products="state.products"
+      :paginationParams="state.paginationParams"
+      :totalItems="state.totalItems"
+      @add="openAddModal"
+      @view="openViewModal"
+      @page-change="handlePageChange"
+      @change-status="handleChangeStatus"
+    />
 
-    <ProductModal :open="state.isModalOpen" :openChangeStatus="state.isModalChangeStatus"
-      :productId="state.selectedProductId" :title="modalTitle" @closeChangeStatus="closeModalChangeStatus"
-      @close="closeModal" @success="fetchProducts" />
-
+    <ProductModal
+      :open="state.isModalOpen"
+      :openChangeStatus="state.isModalChangeStatus"
+      :productId="state.selectedProductId"
+      :title="modalTitle"
+      @closeChangeStatus="closeModalChangeStatus"
+      @close="closeModal"
+      @success="fetchProducts"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
-import ProductFilter from './SanPhamFilter.vue';
+import ProductFilter from './SanPhamFilter.vue'; // Corrected component name if needed
 import ProductTable from './SanPhamTable.vue';
 import ProductModal from './SanPhamModal.vue';
 import { computed, onMounted, reactive, watch } from 'vue';
 import { GetSanPhams, type SanPhamResponse, type ParamsGetSanPham } from '@/services/api/admin/sanpham.api';
 import { debounce } from 'lodash';
-import DivCustom from '@/components/custom/Div/DivCustomAll.vue'
+// DivCustom is imported but not used in this template directly. It's used within ProductFilter.
+// import DivCustom from '@/components/custom/Div/DivCustomAll.vue';
 import { FilterOutlined, UnorderedListOutlined } from '@ant-design/icons-vue';
-    
+
 const state = reactive({
   searchQuery: '',
   searchStatus: null as number | null,
+  // New filter states
+  selectedCategory: null as string | null,
+  selectedMaterial: null as string | null,
+  selectedBrand: null as string | null,
+  selectedSoleType: null as string | null,
+
   isModalOpen: false,
   isModalChangeStatus: false,
   selectedProductId: null as string | null,
   products: [] as SanPhamResponse[],
   paginationParams: { page: 1, size: 10 },
   totalItems: 0
-})
-
+});
 
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật khách hàng' : 'Thêm khách hàng'
-})
+  return state.selectedProductId ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm';
+});
 
+// Update methods for search query and status (already present)
 const updateSearchQuery = (newQuery: string) => {
-  state.searchQuery = newQuery
-}
+  state.searchQuery = newQuery;
+};
 
 const updateSearchStatus = (newStatus: number | null) => {
-  state.searchStatus = newStatus
-}
+  state.searchStatus = newStatus;
+};
+
+// New update methods for additional filters
+const updateSelectedCategory = (newCategory: string | null) => {
+  state.selectedCategory = newCategory;
+};
+
+const updateSelectedMaterial = (newMaterial: string | null) => {
+  state.selectedMaterial = newMaterial;
+};
+
+const updateSelectedBrand = (newBrand: string | null) => {
+  state.selectedBrand = newBrand;
+};
+
+const updateSelectedSoleType = (newSoleType: string | null) => {
+  state.selectedSoleType = newSoleType;
+};
 
 const openAddModal = () => {
-  state.selectedProductId = null
-  state.isModalOpen = true
-}
+  state.selectedProductId = null;
+  state.isModalOpen = true;
+};
 
 const openViewModal = (id: string) => {
-  state.selectedProductId = id
-  state.isModalOpen = true
-}
+  state.selectedProductId = id;
+  state.isModalOpen = true;
+};
 
 const openChangeStatusModal = (id: string) => {
-  state.selectedProductId = id
-  state.isModalChangeStatus = true
-}
+  state.selectedProductId = id;
+  state.isModalChangeStatus = true;
+};
 
 const closeModal = () => {
-  state.isModalOpen = false
-}
+  state.isModalOpen = false;
+};
 
 const closeModalChangeStatus = () => {
   fetchProducts();
-  state.isModalChangeStatus = false
-}
+  state.isModalChangeStatus = false;
+};
 
 const fetchProducts = async () => {
   try {
@@ -88,46 +137,55 @@ const fetchProducts = async () => {
       page: state.paginationParams.page,
       size: state.paginationParams.size,
       q: state.searchQuery,
-      status: state.searchStatus
-    }
-    const response = await GetSanPhams(params)
-    // const pagedData = response.data.data 
+      status: state.searchStatus,
+      // Pass new filter parameters to the API
+      danhMucId: state.selectedCategory, // Assuming your API expects 'danhMucId'
+      chatLieuId: state.selectedMaterial, // Assuming your API expects 'chatLieuId'
+      thuongHieuId: state.selectedBrand, // Assuming your API expects 'thuongHieuId'
+      loaiDeId: state.selectedSoleType, // Assuming your API expects 'loaiDeId'
+    };
+    const response = await GetSanPhams(params);
 
-    state.products = response.data?.data
-    state.totalItems = response.data?.totalElements
+    state.products = response.data?.data;
+    state.totalItems = response.data?.totalElements;
   } catch (error) {
-    console.error('Failed to fetch products:', error)
+    console.error('Failed to fetch products:', error);
   }
-}
+};
 
-console.log(state.products)
-
-const debouncedFetchProducts = debounce(fetchProducts, 300)
+const debouncedFetchProducts = debounce(fetchProducts, 300);
 
 onMounted(() => {
-  fetchProducts()
-})
+  fetchProducts();
+});
 
+// Watch all filter states to trigger a debounced fetch
 watch(
-  () => [state.searchQuery, state.searchStatus],
+  () => [
+    state.searchQuery,
+    state.searchStatus,
+    state.selectedCategory,
+    state.selectedMaterial,
+    state.selectedBrand,
+    state.selectedSoleType
+  ],
   () => {
-    state.paginationParams.page = 1
-    debouncedFetchProducts()
+    state.paginationParams.page = 1; // Reset to first page on filter change
+    debouncedFetchProducts();
   }
-)
+);
 
 const handlePageChange = ({ page, pageSize }: { page: number; pageSize?: number }) => {
-  state.paginationParams.page = page
+  state.paginationParams.page = page;
   if (pageSize) {
-    state.paginationParams.size = pageSize
+    state.paginationParams.size = pageSize;
   }
-  fetchProducts()
-}
-
+  fetchProducts(); // No debounce here, as it's a direct pagination change
+};
 
 const handleChangeStatus = async () => {
-  fetchProducts();
-}
+  fetchProducts(); // Re-fetch products after a status change in modal
+};
 </script>
 
 <style scoped>
@@ -136,7 +194,7 @@ const handleChangeStatus = async () => {
   /* Overall padding for the page content */
 }
 
-.breadcrumb-section { 
+.breadcrumb-section {
   margin-bottom: 25px;
   /* Space below the breadcrumb and above the first section */
   background-color: #fff;
@@ -169,7 +227,7 @@ const handleChangeStatus = async () => {
 }
 
 /* Remove or adjust body styles if they are global.
-   Scoped styles prevent them from affecting the entire app. */
+    Scoped styles prevent them from affecting the entire app. */
 body {
   font-family: 'Roboto', sans-serif;
 }

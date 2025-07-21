@@ -1,10 +1,15 @@
 package com.be.server.core.admin.banhang.service;
 
+import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
 import com.be.server.core.admin.banhang.model.request.ADCapNhatPhuongTHucThanhToanRequest;
+import com.be.server.core.admin.banhang.model.request.ADThanhToanRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemGioHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
+import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADPhuongThucThanhToanRespones;
@@ -29,7 +34,7 @@ public interface ADBanHangService {
 
     void xoaHoaDonChiTiet(ADXoaSanPhamRequest adXoaSanPhamRequest);
 
-    void ThemSoLuong(ADXoaSanPhamRequest adXoaSanPhamRequest);
+    ResponseObject<?> ThemSoLuong(ADXoaSanPhamRequest adXoaSanPhamRequest);
 
     void xoaSoLuong(ADXoaSanPhamRequest adXoaSanPhamRequest);
 
@@ -45,7 +50,11 @@ public interface ADBanHangService {
 
     void capNhatPhuongThucThanhToan(ADCapNhatPhuongTHucThanhToanRequest id);
 
+    ResponseObject<?> getAll(ListSanPhamRequest id);
 
+    ResponseObject<?> thanhToanThanhCong(ADThanhToanRequest id);
 
-    ResponseObject<?> thanhToanThanhCong(String id);
+    ResponseObject<?> danhSachPhieuGiamGia(ChonPhieuGiamGiaRequest id);
+
+    ResponseObject<?> giaoHang(String request);
 }

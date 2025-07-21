@@ -34,7 +34,7 @@
         </div>
         <div class="pending-invoices-container">
           <div v-for="tab in tabs" :key="tab.id" :class="['pending-invoice-card', { active: activeTab === tab.id }]"
-            @click="clickkActiveTab(tab.id, tab.idHD)">
+            @click="clickkActiveTab(tab.id, tab.idHD, tab.loaiHoaDon)">
             <div class="invoice-id">{{ tab.ma }}</div>
             <div class="invoice-status">Chờ xử lý</div>
             <div class="invoice-product-count">{{ tab.soLuong == null ? 0 : tab.soLuong }} sản phẩm</div>
@@ -51,20 +51,18 @@
         </div>
       </div>
 
-
-
-
       <div class="card mt-4">
         <div class="card-header">
           <h3>Giỏ hàng</h3>
         </div>
-
         <div class="tab-content-display" v-if="activeTab">
           <div class="actions-add-product">
-            <button class="btn-add-product">
-              <p class="quet">
-                Quét QR
-              </p>
+            <button class="btn-add-product" style="margin-right: 10px; width: 150px;"
+              @click="openProductSelectionModal">
+              <p class="quet">Chọn sản phẩm</p>
+            </button>
+            <button class="btn-add-product" @click="openQrModal">
+              <p class="quet">Quét QR</p>
             </button>
           </div>
           <div v-if="state.gioHang.length > 0">
@@ -80,13 +78,17 @@
                   </div>
                 </template>
 
-                <template v-if="column.key === 'soLuong'">
+                <!-- <template v-if="column.key === 'soLuong'">
                   <div class="center-cell">
                     <button class="quantity-btn" @click="decreaseQuantity(record.id)">-</button>
                     <input type="text" v-model="record.soLuong" class="quantity-input" readonly />
                     <button class="quantity-btn" @click="increaseQuantity(record.id)">+</button>
                   </div>
-                </template>
+                </template> -->
+
+                <div v-if="column.key === 'giaBan'">
+                  {{ formatCurrency(record.giaBan) }}
+                </div>
 
                 <template v-if="column.key === 'mau'">
                   <div class="center-cell">
@@ -97,7 +99,7 @@
                 </template>
                 <template v-if="column.key === 'status'">
                   <div class="center-cell">
-                    <b class="highlight">{{ record.giaBan * record.soLuong }} VNĐ</b>
+                    <b class="highlight">{{ formatCurrency(record.giaBan * record.soLuong) }}</b>
                   </div>
                 </template>
                 <template v-if="column.key === 'operation'">
@@ -120,59 +122,126 @@
         </div>
       </div>
 
-      <div class="card mt-4">
-        <div class="card-header">
-          <h3>Danh sách sản phẩm</h3>
-        </div>
-        <div class="card-body">
-          <div class="product-selection-table">
-            <a-table :columns="columns" :data-source="state.products" :pagination="{
-              current: state.paginationParams.page,
-              pageSize: state.paginationParams.size,
-              total: state.totalItems,
-              showSizeChanger: true,
-              pageSizeOptions: ['10', '20', '30', '40', '50']
-            }" :scroll="{ y: 240 }">
-              <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'status'">
-                  <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
-                    {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
-                  </a-tag>
-                </template>
-                <div v-if="column.key === 'stt'">
-                  {{ state.products.indexOf(record) + 1 }}
+      <div v-if="showProductModal" class="modal-backdrop" @click.self="showProductModal = false">
+        <div class="modal-content">
+          <div class="card mt-4">
+            <div class="card-header">
+              <h3>Danh sách sản phẩm</h3>
+            </div>
+            <div class="card-body">
+
+              <div class="filter-container">
+
+                <div class="filter-item">
+                  <label for="search-query" class="filter-label">Tìm kiếm sản phẩm</label>
+                  <a-input id="search-query" v-model:value="localSearchQuery" placeholder="Nhập mã / tên để tìm kiếm..."
+                    class="filter-control" />
                 </div>
-                <template v-if="column.key === 'anh'">
-                  <div class="center-cell">
-                    <img :src="record.anh" class="anh" style="width: 50px; height: 50px; border-radius: 50%" />
-                  </div>
-                </template>
-                <template v-if="column.key === 'mau'">
-                  <div class="center-cell">
-                    <div class="color"
-                      :style="{ width: '30px', height: '30px', backgroundColor: record.mau, border: '1px solid #000' }">
+
+                <div class="filter-item search-input-group">
+                  <label for="search-color" class="filter-label">Màu:</label>
+                  <a-select id="search-color" v-model:value="localColor" @change="handleColorChange" allow-clear
+                    :options="ColorOptions" placeholder="Chọn màu sắc" size="small" />
+                </div>
+
+                <div class="filter-item search-input-group">
+                  <label for="search-size" class="filter-label">Kích thước:</label>
+                  <a-select id="search-size" v-model:value="localSize" @change="handleSizeChange" allow-clear
+                    :options="SizeOptions" placeholder="Chọn kích thước" size="small" />
+                </div>
+
+                <div class="filter-item">
+                  <label for="category-select" class="filter-label">Danh mục:</label>
+                  <a-select id="category-select" class="filter-control" allow-clear :options="danhMucOptions"
+                    placeholder="Chọn danh mục" v-model:value="localSelectedCategory" />
+                </div>
+
+                <div class="filter-item">
+                  <label for="material-select" class="filter-label">Chất liệu:</label>
+                  <a-select id="material-select" class="filter-control" allow-clear :options="chatLieuOptions"
+                    placeholder="Chọn chất liệu" v-model:value="localSelectedMaterial" />
+                </div>
+
+                <div class="filter-item">
+                  <label for="brand-select" class="filter-label">Thương hiệu:</label>
+                  <a-select id="brand-select" class="filter-control" allow-clear :options="thuongHieuOptions"
+                    placeholder="Chọn thương hiệu" v-model:value="localSelectedBrand" />
+                </div>
+
+                <div class="filter-item">
+                  <label for="sole-type-select" class="filter-label">Loại đế:</label>
+                  <a-select id="sole-type-select" class="filter-control" allow-clear :options="loaiDeOptions"
+                    placeholder="Chọn loại đế" v-model:value="localSelectedSoleType" />
+                </div>
+
+                <div class="filter-item reset-button-group">
+                  <a-tooltip title="Làm mới bộ lọc">
+                    <a-button style="background-color: dimgrey; color: white" @click="resetFilters"
+                      class="reset-button filter-control-button">
+                      Đặt lại bộ lọc
+                      <ReloadOutlined />
+                    </a-button>
+                  </a-tooltip>
+                </div>
+              </div>
+
+              <div class="product-selection-table">
+
+                <a-table :columns="columns" :data-source="stateSP.products" :pagination="{
+                  current: stateSP.paginationParams.page,
+                  pageSize: stateSP.paginationParams.size,
+                  total: stateSP.totalItems,
+                  showSizeChanger: true,
+                  pageSizeOptions: ['10', '20', '30', '40', '50']
+                }" :scroll="{ y: 240 }" @change="handleTableChange">
+                  <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'status'">
+                      <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
+                        {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
+                      </a-tag>
+                    </template>
+                    <div v-if="column.key === 'stt'">
+                      {{ stateSP.products.indexOf(record) + 1 }}
                     </div>
-                  </div>
-                </template>
-                <template v-if="column.key === 'operation'">
-                  <div class="center-cell">
-                    <div class="d-flex gap-1 justify-center">
-                      <a-tooltip title="chọn sản phẩm">
-                        <a-button type="primary" @click="selectProduct(record.id)"
-                          style="background-color: #54bddb; color: white;"
-                          class="p-2 d-flex justify-content-center align-items-center btn-choose-product">
-                          Chọn
-                        </a-button>
-                      </a-tooltip>
+                    <div v-if="column.key === 'giaBan'">
+                      {{ formatCurrency(record.giaBan) }}
                     </div>
-                  </div>
-                </template>
-              </template>
-            </a-table>
+                    <template v-if="column.key === 'anh'">
+                      <div class="center-cell">
+                        <img :src="record.anh" class="anh" style="width: 50px; height: 50px; border-radius: 50%" />
+                      </div>
+                    </template>
+                    <template v-if="column.key === 'mau'">
+                      <div class="center-cell">
+                        <div class="color"
+                          :style="{ width: '30px', height: '30px', backgroundColor: record.mau, border: '1px solid #000' }">
+                        </div>
+                      </div>
+                    </template>
+                    <template v-if="column.key === 'operation'">
+                      <div class="center-cell">
+                        <div class="d-flex gap-1 justify-center">
+                          <a-tooltip title="chọn sản phẩm">
+                            <a-button type="primary" @click="selectProduct(record.id)"
+                              style="background-color: #54bddb; color: white;"
+                              class="p-2 d-flex justify-content-center align-items-center btn-choose-product">
+                              Chọn
+                            </a-button>
+                          </a-tooltip>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+                </a-table>
+              </div>
+            </div>
+
           </div>
+          <button class="btn-add-product" @click="showProductModal = false" style="margin-left: 1100px;">
+            <p class="quet">Hủy</p>
+          </button>
         </div>
       </div>
-
     </div>
 
     <div class="right-column">
@@ -189,7 +258,7 @@
                 <label for="customer-name">Tên khách hàng <span class="required">*</span></label>
                 <div class="input-wrapper">
                   <input :value="state.detailKhachHang.ten" type="text" id="customer-name" class="input-customer"
-                    placeholder="Tên khách hàng" />
+                    placeholder="Tên khách hàng" readonly />
                 </div>
               </div>
 
@@ -197,7 +266,7 @@
                 <label for="phone">Số điện thoại <span class="required">*</span></label>
                 <div class="input-wrapper">
                   <input :value="state.detailKhachHang.sdt" type="text" id="phone" placeholder="Số điện thoại"
-                    class="input-customer" />
+                    class="input-customer" readonly />
                 </div>
               </div>
             </div>
@@ -205,103 +274,150 @@
               <div class="form-group">
                 <label for="customer-name">Tên khách hàng <span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input type="text" id="customer-name" placeholder="Tên khách hàng" class="input-customer" />
+                  <input type="text" id="customer-name" placeholder="Tên khách hàng" class="input-customer" readonly />
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="phone">Số điện thoại <span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input type="text" id="phone" placeholder="Số điện thoại" class="input-customer" />
+                  <input type="text" id="phone" placeholder="Số điện thoại" class="input-customer" readonly />
                 </div>
               </div>
             </div>
             <div class="button-group-customer">
               <button class="add-button" @click="showKhachHangModal = true">Chọn khách hàng</button>
-              <button class="add-button" @click="">Thêm khách hàng</button>
+              <button class="add-button" @click="addCustomer">Thêm khách hàng</button>
             </div>
           </div>
         </div>
 
         <div class="card-body">
           <div class="card mt-4">
-            <div class="card-header">
-              <h3>Thông tin đơn</h3>
-            </div>
-            <div class="card-body payment-section-content">
-              <div class="form-group-payment">
-                <label for="payment-method">Chọn hộp mã giảm giá</label>
-                <select id="payment-method" class="select-discount">
-                  <option value="">Không</option>
-                </select>
+            <div class="card-body">
+              <div class="card mt-4">
+                <div class="card-header">
+                  <h3>Thông tin đơn</h3>
+                  <div class="delivery-toggle-container">
+                    <label for="delivery-switch">Bán giao hàng</label>
+                    <a-switch v-model:checked="isDeliveryEnabled" @change="giaoHang(isDeliveryEnabled)"
+                      id="delivery-switch" />
+                  </div>
+                </div>
+                <div class="card-body payment-section-content">
+                  <div v-if="isDeliveryEnabled == true" class="delivery-info-section">
+                    <div class="delivery-form">
+                      <div class="form-group">
+                        <label for="receiver-name">Tên người nhận <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                          <a-input type="text" id="receiver-name" v-model:value="deliveryInfo.tenNguoiNhan"
+                            class="input-customer" placeholder="Tên người nhận" />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="receiver-phone">Số điện thoại <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                          <a-input type="text" id="receiver-phone" v-model:value="deliveryInfo.sdtNguoiNhan"
+                            class="input-customer" placeholder="Số điện thoại" />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="province">Tỉnh/Thành phố <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                          <a-select style="width: 100%;" v-model:value="deliveryInfo.tinhThanhPho"
+                            placeholder="Chọn tỉnh/thành phố" :options="provinces" @change="onProvinceChange"
+                            show-search option-filter-prop="label" />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="district">Quận/Huyện <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                          <a-select style="width: 100%;" v-model:value="deliveryInfo.quanHuyen"
+                            placeholder="Chọn quận/huyện" :options="districts" @change="onDistrictChange" show-search
+                            option-filter-prop="label" />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="ward">Phường/Xã <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                          <a-select style="width: 100%;" v-model:value="deliveryInfo.phuongXa"
+                            placeholder="Chọn phường/xã" :options="wards" @change="onWardChange" show-search
+                            option-filter-prop="label" />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="address-detail">Địa chỉ cụ thể <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                          <a-input type="text" id="address-detail" v-model:value="deliveryInfo.diaChiCuThe"
+                            class="input-customer" placeholder="Số nhà, tên đường,..." />
+                        </div>
+                      </div>
+
+                      <div class="form-group summary-item">
+                        <label>Phí vận chuyển:</label>
+                        <span class="shipping-fee">{{ formatCurrency(shippingFee) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Các phần khác của payment-section-content giữ nguyên -->
+                  <div class="discount-code-section">
+                    <label for="discount-code">Mã giảm giá</label>
+                    <div class="discount-input-group">
+                      <input type="text" id="discount-code" class="discount-input" v-model="selectedDiscountCode"
+                        placeholder="Chọn mã giảm giá" readonly />
+                      <button class="select-discount-button" @click="showDiscountModal = true">
+                        Chọn mã
+                      </button>
+                    </div>
+                    <div v-if="selectedDiscount" class="discount-info">
+                      Giảm: {{ formatCurrency(giamGia) }}
+                    </div>
+                  </div>
+                  <div class="payment-summary">
+                    <div class="summary-item">
+                      <label>Tổng tiền hàng:</label>
+                      <span>{{ formatCurrency(tienHang) }}</span>
+                    </div>
+                    <div class="summary-item">
+                      <label>Giảm giá:</label>
+                      <span>{{ formatCurrency(giamGia) }}</span>
+                    </div>
+                    <div class="summary-item" v-if="isDeliveryEnabled">
+                      <label>Phí vận chuyển:</label>
+                      <span>{{ formatCurrency(shippingFee) }}</span>
+                    </div>
+                    <div class="summary-item total-amount">
+                      <label>Tổng tiền:</label>
+                      <span style="color: red;">{{ formatCurrency(tongTien) }}</span>
+                    </div>
+                  </div>
+                  <div class="form-group-payment">
+                    <label for="payment-method-selection" style="font-weight: bold;">Phương thức thanh toán</label>
+                    <div class="payment-method-options" id="payment-method-selection">
+                      <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '1' }"
+                        @click="handlePaymentMethod('1')">
+                        Chuyển khoản
+                      </button>
+                      <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '0' }"
+                        @click="handlePaymentMethod('0')">
+                        Tiền mặt
+                      </button>
+                      <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '2' }"
+                        @click="handlePaymentMethod('2')">
+                        Cả hai
+                      </button>
+                    </div>
+                  </div>
+                  <button class="btn-confirm-payment" @click="xacNhan">Xác nhận thanh toán</button>
+                </div>
               </div>
-              <div class="payment-summary">
-                <div class="summary-item">
-                  <label>Tổng tiền hàng:</label>
-                  <span>{{ tienHang }} VND</span>
-                </div>
-                <div class="summary-item">
-                  <label>Giảm giá:</label>
-                  <span>{{ giamGia }} VND</span>
-                </div>
-                <div class="summary-item total-amount">
-                  <label>Tổng tiền:</label>
-                  <span>{{ tongTien }} VND</span>
-                </div>
-              </div>
-              <button class="btn-confirm-payment" @click="selectThanhToan">Xác nhận thanh toán</button>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="showProductModal" class="modal-backdrop" @click.self="showProductModal = false">
-      <div class="modal-content">
-        <h3 class="modal-title">Chọn sản phẩm</h3>
-        <div class="min-h-[360px] ">
-          <a-table :columns="columns" :data-source="state.products" :pagination="{
-            current: state.paginationParams.page,
-            pageSize: state.paginationParams.size,
-            total: state.totalItems,
-            showSizeChanger: true,
-            pageSizeOptions: ['10', '20', '30', '40', '50']
-          }" :scroll="{ y: 240 }">
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'status'">
-                <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
-                  {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
-                </a-tag>
-              </template>
-              <div v-if="column.key === 'stt'">
-                {{ state.products.indexOf(record) + 1 }}
-              </div>
-              <template v-if="column.key === 'anh'">
-                <div class="center-cell">
-                  <img :src="record.anh" class="anh" style="width: 50px; height: 50px; border-radius: 50%" />
-                </div>
-              </template>
-              <template v-if="column.key === 'mau'">
-                <div class="center-cell">
-                  <div class="color"
-                    :style="{ width: '30px', height: '30px', backgroundColor: record.mau, border: '1px solid #000' }">
-                  </div>
-                </div>
-              </template>
-              <template v-if="column.key === 'operation'">
-                <div class="center-cell">
-                  <div class="d-flex gap-1 justify-center">
-                    <a-tooltip title="chọn sản phẩm">
-                      <a-button type="primary" @click="selectProduct(record.id)"
-                        class="p-2 d-flex justify-content-center align-items-center">
-                        Chọn
-                      </a-button>
-                    </a-tooltip>
-                  </div>
-                </div>
-              </template>
-            </template>
-          </a-table>
         </div>
       </div>
     </div>
@@ -339,199 +455,990 @@
       </div>
     </div>
 
-    <a-modal :open="state.isModalOpen" title="Chọn số lượng" width="400px">
+    <a-modal v-model:visible="isBothPaymentModalVisible" title="Thanh toán bằng cả hai (QR và tiền mặt)"
+      @ok="confirmBothPayment" @cancel="closeBothPaymentModal" width="500px">
+      <div style="text-align: center;">
+        <img src="/images/qr.png" alt="QR Code" style="max-width: 100%; height: auto; margin-bottom: 20px;" />
+        <a-form ref="paymentForm" name="paymentForm" autocomplete="off">
+          <a-form-item label="Số tiền khách đưa (VND)" name="amountPaid" :label-col="{ span: 24 }">
+            <a-input v-model:value="amountPaid" placeholder="Nhập số tiền" style="border-radius: 4px;" />
+          </a-form-item>
+        </a-form>
+        <div class="payment-summary">
+          <div class="summary-item">
+            <label>Tổng tiền khách đã trả (dự kiến):</label>
+            <span>{{ formatCurrency(tienKhachThanhToan + (amountPaid || 0)) }}</span>
+          </div>
+          <div class="summary-item total-amount">
+            <label>Tiền còn thiếu (dự kiến):</label>
+            <span style="color: red;">{{ formatCurrency(tongTien - (tienKhachThanhToan + (amountPaid || 0) <= 0 ? 0 :
+              tienKhachThanhToan + (amountPaid || 0))) }}</span>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <a-button key="back" @click="closeBothPaymentModal">Hủy</a-button>
+        <a-button key="submit" type="primary" :loading="bothPaymentLoading" @click="confirmBothPayment">Xác
+          nhận</a-button>
+      </template>
+    </a-modal>
+
+    <a-modal v-model:visible="isQrVNpayModalVisible" title="Quét QR để thanh toán" @ok="closeQrModalVnPay"
+      @cancel="closeQrModalVnPay" width="400px">
+      <div style="text-align: center;">
+        <img src="/images/qr.png" alt="QR Code" style="max-width: 100%; height: auto;" />
+      </div>
+      <template #footer>
+        <a-button style="background-color: #54bddb; color: white;" key="submit" type="primary"
+          @click="closeQrModalVnPay">Xác nhận</a-button>
+      </template>
+    </a-modal>
+
+    <a-modal :open="state.isModalOpen" title="Chọn số lượng" width="400px" @cancel="closeModal">
       <template #footer>
         <a-popconfirm title="Bạn có chắc chắn muốn chọn bằng này số lượng sản phẩm ?" @confirm="confirmQuantity"
           ok-text="Đồng ý" cancel-text="Huỷ">
-          <a-button type="primary">Xác nhận</a-button>
+          <a-button type="primary" style="background-color: #54bddb; color: white;">Xác nhận</a-button>
         </a-popconfirm>
         <a-button @click="closeModal">Huỷ</a-button>
       </template>
       <a-form ref="productForm" name="productForm" autocomplete="off">
-        <a-form-item label="nhập số lượng" name="ten" :label-col="{ span: 24 }">
-          <a-input v-model:value="selectedProduct.soLuong" placeholder="nhập số lượng" style="border-radius: 4px;" />
+        <a-form-item label="nhập số lượng" name="soLuong" :label-col="{ span: 24 }">
+          <a-input-number v-model:value="selectedProduct.soLuong" :min="1" placeholder="nhập số lượng"
+            style="width: 100%; border-radius: 4px;" />
         </a-form-item>
       </a-form>
     </a-modal>
 
-    <a-modal :open="state.isModaThanhToanlOpen" title="Thanh toán" width="600px">
-      <div class="payment-modal-content">
-        <div class="payment-info">
-          <span><strong>Số tiền:</strong> {{ soTien }} VND</span>
-        </div>
-        <div class="tabs-payment-method">
-          <button @click="clickPhuongThuc('0')"
-            :class="['tab-button-payment', { 'active': state.currentPaymentMethod === '0' }]">
-            Tiền mặt
-          </button>
-          <button @click="clickPhuongThuc('1')"
-            :class="['tab-button-payment', { 'active': state.currentPaymentMethod === '1' }]">
-            Chuyển khoản
-          </button>
-          <button @click="clickPhuongThuc('2')"
-            :class="['tab-button-payment', { 'active': state.currentPaymentMethod === '2' }]">
-            Thẻ
-          </button>
-        </div>
-        <div class="payment-method-summary" style="color: red; font-weight: bold; font-size: 15px;">
-          Khách cần trả: {{ state.tongTien?.tongTien }} VND
-        </div>
+    <a-modal v-model:visible="isQrModalVisible" title="Quét mã QR sản phẩm" @cancel="closeQrModal" :footer="null">
+      <div id="reader" style="width: 100%; max-width: 500px; margin: auto;"></div>
+      <p v-if="!hasCamera" style="color: red; text-align: center;">Không tìm thấy camera hoặc không có quyền truy
+        cập
+        camera.</p>
+    </a-modal>
 
-        <div class="payment-details-table">
-          <a-table :columns="columnsThanhToan" :data-source="state.phuongThuThanhToan" :scroll="{ y: 240 }">
-            <template #bodyCell="{ column, record }">
-              <div v-if="column.key === 'stt'">
-                {{ state.phuongThuThanhToan.indexOf(record) + 1 }}
-              </div>
-              <template v-if="column.key === 'status'">
-                <a-tag v-if="record.phuongThucThanhToan == 'TIEN_MAT'" :color="'green'">
-                  Tiền Mặt
-                </a-tag>
-                <a-tag v-if="record.phuongThucThanhToan == 'CHUYEN_KHOAN'" :color="'green'">
-                  Chuyển khoản
-                </a-tag>
-                <a-tag v-if="record.phuongThucThanhToan == 'THE'" :color="'green'">
-                  Thẻ
-                </a-tag>
-              </template>
-              <template v-if="column.key === 'operation'">
-                <div class="center-cell">
-                  <div class="d-flex gap-1 justify-center">
-                    <a-tooltip title="Xóa phương thức thanh toán">
-                      <a-button type="primary" @click="deletePaymentMethod(record.id)"
-                        class="p-2 d-flex justify-content-center align-items-center">
-                        <DeleteOutlined />
-                      </a-button>
-                    </a-tooltip>
-                  </div>
-                </div>
-              </template>
+    <a-modal v-model:visible="showDiscountModal" title="Chọn mã giảm giá" @cancel="showDiscountModal = false"
+      width="600px">
+      <div class="discount-modal-content">
+        <div v-if="state.discountList.length > 0">
+          <a-list item-layout="horizontal" :data-source="state.discountList">
+            <template #renderItem="{ item }">
+              <a-list-item>
+                <a-list-item-meta>
+                  <template #title>
+                    <a @click="selectDiscount(item)">{{ item.ma }} - {{ item.ten }}</a>
+                  </template>
+                  <template #description>
+                    Giá trị giảm: {{ formatCurrency(item.giaTriGiamThucTe) }}
+                  </template>
+                </a-list-item-meta>
+                <template #actions>
+                  <a-button type="primary" size="small" @click="selectDiscount(item)"
+                    style="background-color: #54bddb; color: white;">Chọn</a-button>
+                </template>
+              </a-list-item>
             </template>
-          </a-table>
+          </a-list>
         </div>
-
-        <div class="footer-payment-summary">
-          <div class="footer-info">
-            <div><strong>Khách thanh toán:</strong> {{ tienKhachThanhToan }} VND</div>
-            <div><strong>Tiền thiếu:</strong> {{ tienThieu }} VND</div>
-          </div>
+        <div v-else>
+          <a-empty description="Không có mã giảm giá nào phù hợp." />
         </div>
       </div>
-
       <template #footer>
-        <a-button type="primary" @click="sumitThanhToan">Xác nhận</a-button>
-        <a-button @click="closeModalThanhToan">Huỷ</a-button>
+        <a-button key="back" @click="showDiscountModal = false">Đóng</a-button>
+        <a-button key="clear" @click="resetDiscount" v-if="selectedDiscount">Bỏ chọn</a-button>
       </template>
     </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, watch } from 'vue'
+import { ref, onMounted, reactive, watch, nextTick } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
-import { GetHoaDons, getCreateHoaDon, themSanPham, GetGioHang, xoaSP, type ParamsXoaSP, themSL, xoaSL, type KhachHangResponse, GetKhachHang, themKhachHang, GeOneKhachHang, type thanhToanResponse, getThanhToan, type tongTienResponse, getPhuongThucThanhToan, type PhuongThucThanhToanResponse, themPTTT, thanhToanThanhCong } from '@/services/api/admin/banhang.api'
+import {
+  GetHoaDons,
+  getCreateHoaDon,
+  themSanPham,
+  GetGioHang,
+  xoaSP,
+  themSL,
+  xoaSL,
+  type KhachHangResponse,
+  GetKhachHang,
+  themKhachHang,
+  GeOneKhachHang,
+  getPhuongThucThanhToan,
+  type PhuongThucThanhToanResponse,
+  thanhToanThanhCong,
+  GetSanPhams,
+  type PhieuGiamGiaResponse,
+  getMaGiamGia,
+  type ThongTinGiaoHangResponse,
+  suaGiaoHang,
+} from '@/services/api/admin/banhang.api' // Make sure these are correctly imported
+const localSearchQuery = ref('');
+const localColor = ref<string | null>(null);
+const localSize = ref<string | null>(null);
+const localSelectedCategory = ref<string | null>(null);
+const localSelectedMaterial = ref<string | null>(null);
+const localSelectedBrand = ref<string | null>(null);
+const localSelectedSoleType = ref<string | null>(null);
 import type { TableColumnsType } from 'ant-design-vue'
-import { GetSanPhams, type ParamsGetSanPham, type SanPhamResponse } from '@/services/api/admin/sanphamchitiet.api'
-import { CreditCardOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import {
+  GetListColor,
+  GetListSize,
+  type ParamsGetSanPham,
+  type ParamsPhieuGiamGia,
+  type SanPhamResponse
+} from '@/services/api/admin/sanphamchitiet.api'
+// import { CreditCardOutlined, DeleteOutlined } from '@ant-design/icons-vue' // Không thấy dùng
 import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue'
-
-const soTien = ref(0)
-const tienKhachThanhToan = ref(0)
+import { getGHNProvinces } from '@/services/api/ghn.api.ts'
+import { getGHNDistricts } from '@/services/api/ghn.api.ts'
+import { getGHNWards } from '@/services/api/ghn.api.ts'
+import { getAvailableServices } from '@/services/api/ghn.api.ts'
+import type { AvailableServiceRequest } from '@/services/api/ghn.api.ts'
+import type { ShippingFeeRequest } from '@/services/api/ghn.api.ts'
+import axios from 'axios'
+import { calculateFee } from '@/services/api/ghn.api.ts'
+import { Html5Qrcode } from 'html5-qrcode'
+import { GetListChatLieu, GetListDanhMuc, GetListLoaiDe, GetListThuongHieu } from '@/services/api/admin/sanpham.api'
+import { debounce } from 'lodash';
+const debouncedFetchProducts = debounce(async () => {
+  stateSP.searchQuery = localSearchQuery.value;
+  stateSP.selectedCategory = localSelectedCategory.value;
+  stateSP.selectedMaterial = localSelectedMaterial.value;
+  stateSP.selectedBrand = localSelectedBrand.value;
+  stateSP.selectedSoleType = localSelectedSoleType.value;
+  await fetchProducts();
+}, 300)
+const ColorOptions = ref<{ label: string; value: string }[]>([]);
+const SizeOptions = ref<{ label: string; value: string }[]>([]);
+const isBothPaymentModalVisible = ref(false)
+const amountPaid = ref(0)
+const bothPaymentLoading = ref(false)
+const soTien = ref(0) // Should be total amount of the invoice, not just amount paid
+const tienKhachThanhToan = ref(0) // Total amount paid by customer for the current invoice
 const tienThieu = ref(0)
-const tongTien = ref(0)
-const giamGia = ref(0) // Giá trị giảm giá này cần được cập nhật dựa trên logic mã giảm giá của bạn
-const tienHang = ref(0)
-const idSP = ref('')
-const idHDS = ref('')
-const tabs = ref([])
+const tongTien = ref(0) // Final total after discounts and shipping
+const giamGia = ref(0)
+const tienHang = ref(0) // Subtotal before discount and shipping
+const idSP = ref('') // Selected product ID for quantity modal
+const idHDS = ref('') // Current active invoice ID
+const tabs = ref<Array<{ id: number, idHD: string, ma: string, soLuong: number, products: any[], loaiHoaDon: string }>>([])
 const activeTab = ref(0)
-let nextTabId = 1
+const idPGG = ref('') // Phiếu giảm giá ID (not directly used after selectedDiscount logic)
+let nextTabId = 1 // Used for local tab ID
+const loaiHD = ref('') // Current active invoice ID
+const showDiscountModal = ref(false)
+const discountList = ref<PhieuGiamGiaResponse[]>([]) // Changed from state.discountList
+const selectedDiscount = ref<PhieuGiamGiaResponse | null>(null)
+const selectedDiscountCode = ref<string>('')
+const thuongHieuOptions = ref<{ label: string; value: string }[]>([])
+const loaiDeOptions = ref<{ label: string; value: string }[]>([])
+const danhMucOptions = ref<{ label: string; value: string }[]>([])
+const chatLieuOptions = ref<{ label: string; value: string }[]>([])
+// Delivery related state and functions
+const isDeliveryEnabled = ref(false) // Toggle for delivery option
+const showDeliveryModal = ref(false) // Not used in this template, removed for consistency
+const deliveryInfo = reactive({
+  tenNguoiNhan: '',
+  sdtNguoiNhan: '',
+  diaChiCuThe: '',
+  tinhThanhPho: undefined as string | undefined, // Change to string
+  quanHuyen: undefined as string | undefined,    // Change to string
+  phuongXa: undefined as string | undefined,
+  diaChiCuThe: ''
+});
+const currentDeliveryInfo = ref<ThongTinGiaoHangResponse | null>(null) // To display current delivery info
 
+// GHN specific states
+const provinces = ref<Array<{ value: string, label: string, code: string }>>([])
+const districts = ref<Array<{ value: string, label: string, code: string }>>([])
+const wards = ref<Array<{ value: string, label: string, code: string }>>([])
+const shippingFee = ref(0)
+const provinceCode = ref<number | null>(null)
+const districtCode = ref<number | null>(null)
+const wardCode = ref<string | null>(null)
+const FROM_DISTRICT_ID = 3440
+const FROM_WARD_CODE = '13010';
+
+// Define the API URL and Shop ID for GHN
+// IMPORTANT: Replace with your actual GHN Token and Shop ID
+const GHN_API_TOKEN = '72f634c6-58a2-11f0-8a1e-1e10d8df3c04'; // Get this from GHN dashboard
+const GHN_SHOP_ID = 5872469
+
+
+// Main reactive state object
 const state = reactive({
   searchQuery: '',
   idSP: '',
   searchStatus: null as number | null,
-  isModalOpen: false,
-  isModaThanhToanlOpen: false,
-  isModalChangeStatus: false,
-  selectedProductId: null as string | null,
+  isModalOpen: false, // For quantity modal
+  isModaThanhToanlOpen: false, // Unused
+  isModalChangeStatus: false, // Unused
+  selectedProductId: null as string | null, // Unused
   khachHang: [] as KhachHangResponse[],
-  thanhToan: [] as thanhToanResponse[],
+  thanhToan: [], // Unused
+  discountList: [] as PhieuGiamGiaResponse[],
   phuongThuThanhToan: [] as PhuongThucThanhToanResponse[],
-  tongTien: null as tongTienResponse | null,
+  tongTien: null as { tongTien: number } | null, // Assuming this is the type from getTongTien
   detailKhachHang: null as KhachHangResponse | null,
-  products: [] as SanPhamResponse[],
+  products: [] as SanPhamResponse[], // Used for the product selection modal, consider renaming to modalProducts for clarity
   gioHang: [] as SanPhamResponse[],
-  paginationParams: { page: 1, size: 10 },
-  totalItems: 0,
-  currentPaymentMethod: '0' // Thêm trạng thái cho phương thức thanh toán đang chọn
+  paginationParams: { page: 1, size: 10 }, // For customer/product modals pagination
+  totalItems: 0, // For customer/product modals total items
+  selectedPaymentMethod: '' as string, // Unused
+  currentPaymentMethod: '0' // '0': Tiền mặt, '1': Chuyển khoản, '2': Cả hai
 })
 
-const clickPhuongThuc = async (pt: string) => {
+const stateSP = reactive({ // For the main product list table
+  searchQuery: '',
+  searchStatus: null as number | null,
+  selectedCategory: null as string | null,
+  selectedMaterial: null as string | null,
+  selectedBrand: null as string | null,
+  selectedSoleType: null as string | null,
+
+  isModalOpen: false, // Unused in stateSP
+  isModalChangeStatus: false, // Unused in stateSP
+  selectedProductId: null as string | null, // Unused in stateSP
+  products: [] as SanPhamResponse[],
+  paginationParams: { page: 1, size: 10 },
+  totalItems: 0
+})
+
+// --- GHN API Integration Functions ---
+
+const fetchProvinces = async () => {
   try {
-    state.currentPaymentMethod = pt; // Cập nhật phương thức thanh toán hiện tại
-    const formData = new FormData();
-    formData.append('idHD', idHDS.value);
-    formData.append('phuongThucThanhToan', pt);
-    await themPTTT(formData)
-    const response = await getPhuongThucThanhToan(idHDS.value);
-    state.phuongThuThanhToan = response
-
-    // Logic tính toán lại tiền thiếu, tiền khách thanh toán
-    let totalPaid = 0;
-    state.phuongThuThanhToan.forEach(item => {
-      totalPaid += item.tongTien; // Giả sử item.tongTien là số tiền cho phương thức đó
-    });
-    tienKhachThanhToan.value = totalPaid;
-    tienThieu.value = (state.tongTien?.tongTien || 0) - tienKhachThanhToan.value;
-    soTien.value = state.tongTien?.tongTien; // Cập nhật số tiền tổng cần trả
+    const response = await getGHNProvinces(GHN_API_TOKEN);
+    const data = response; // Xử lý cả trường hợp data hoặc data.data
+    if (Array.isArray(data)) {
+      provinces.value = data.map((item: Province) => ({
+        value: String(item.ProvinceID), // Đảm bảo value là string cho <a-select>
+        label: item.ProvinceName,
+        code: String(item.ProvinceID), // Lưu mã GHN
+      }));
+    } else {
+      console.error('Unexpected provinces data format:', data);
+      throw new Error('Dữ liệu tỉnh/thành phố không hợp lệ');
+    }
   } catch (error) {
-    console.error('Failed to add payment method:', error);
-    toast.error('Thêm phương thức thanh toán thất bại!');
-  }
-}
-
-// Thêm hàm xóa phương thức thanh toán
-const deletePaymentMethod = async (idPTTT: string) => {
-  try {
-    // Gọi API để xóa phương thức thanh toán theo idPTTT
-    // await xoaPTTT(idPTTT); // Bạn cần thêm API này vào banhang.api.ts
-    // Sau khi xóa thành công, cập nhật lại danh sách phương thức
-    state.phuongThuThanhToan = state.phuongThuThanhToan.filter(item => item.id !== idPTTT);
-
-    // Cập nhật lại tổng tiền khách đã thanh toán và tiền thiếu
-    let totalPaid = 0;
-    state.phuongThuThanhToan.forEach(item => {
-      totalPaid += item.tongTien;
-    });
-    tienKhachThanhToan.value = totalPaid;
-    tienThieu.value = (state.tongTien?.tongTien || 0) - tienKhachThanhToan.value;
-
-    toast.success('Xóa phương thức thanh toán thành công!');
-  } catch (error) {
-    console.error('Failed to delete payment method:', error);
-    toast.error('Xóa phương thức thanh toán thất bại!');
+    console.error('Failed to fetch provinces:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('GHN API Error:', error.response.data);
+    }
+    toast.error('Không thể tải danh sách Tỉnh/Thành phố. Vui lòng kiểm tra kết nối hoặc token.');
+    provinces.value = [];
   }
 };
 
+const fetchColor = async () => {
+  try {
+    const { data } = await GetListColor();
+    ColorOptions.value = data.map((c: any) => ({ label: c.ten, value: c.id }));
+  } catch (e) {
+    console.error('Error fetching colors:', e);
+  }
+};
 
-const clickkActiveTab = async (id: number, hd: string) => {
+watch(localSearchQuery, () => {
+  debouncedFetchProducts();
+});
+
+watch([localColor, localSize, localSelectedCategory, localSelectedMaterial, localSelectedBrand, localSelectedSoleType], () => {
+  debouncedFetchProducts();
+});
+
+const resetFilters = () => {
+  localSearchQuery.value = '';
+  localColor.value = null;
+  localSize.value = null;
+  localSelectedCategory.value = null;
+  localSelectedMaterial.value = null;
+  localSelectedBrand.value = null;
+  localSelectedSoleType.value = null;
+  stateSP.searchQuery = '';
+  stateSP.selectedCategory = null;
+  stateSP.selectedMaterial = null;
+  stateSP.selectedBrand = null;
+  stateSP.selectedSoleType = null;
+  fetchProducts();
+};
+
+const fetchThuongHieu = async () => {
+  try {
+    const response = await GetListThuongHieu()
+    thuongHieuOptions.value = response.data.map((item: any) => ({
+      label: item.ten,
+      value: item.id
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách thương hiệu:', error)
+  }
+}
+
+const fetchChatLieu = async () => {
+  try {
+    const response = await GetListChatLieu()
+    chatLieuOptions.value = response.data.map((item: any) => ({
+      label: item.ten,
+      value: item.id
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách chất liệu:', error)
+  }
+}
+
+const fetchDanhMuc = async () => {
+  try {
+    const response = await GetListDanhMuc()
+    danhMucOptions.value = response.data.map((item: any) => ({
+      label: item.ten,
+      value: item.id
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách danh mục:', error)
+  }
+}
+
+const fetchLoaiDe = async () => {
+  try {
+    const response = await GetListLoaiDe()
+    loaiDeOptions.value = response.data.map((item: any) => ({
+      label: item.ten,
+      value: item.id
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách loại đế:', error)
+  }
+}
+
+const fetchSize = async () => {
+  try {
+    const { data } = await GetListSize();
+    SizeOptions.value = data.map((s: any) => ({ label: s.ten, value: s.id }));
+  } catch (e) {
+    console.error('Error fetching sizes:', e);
+  }
+};
+
+const fetchDistricts = async (provinceId: number) => {
+  try {
+    const response = await getGHNDistricts(provinceId, GHN_API_TOKEN);
+    if (response && Array.isArray(response)) {
+      districts.value = response.map((item: District) => ({
+        value: String(item.DistrictID),
+        label: item.DistrictName,
+        code: String(item.DistrictID),
+      }));
+      deliveryInfo.quanHuyen = undefined;
+      deliveryInfo.phuongXa = undefined;
+      wards.value = [];
+      districtCode.value = null;
+    } else {
+      console.error('Unexpected response format for districts:', response);
+      throw new Error('Invalid districts data format');
+    }
+  } catch (error) {
+    console.error('Failed to fetch districts:', error);
+    toast.error('Không thể tải danh sách Quận/Huyện.');
+    districts.value = [];
+  }
+};
+
+const fetchWards = async (districtId: number) => {
+  try {
+    const response = await getGHNWards(districtId, GHN_API_TOKEN);
+    if (response && Array.isArray(response)) {
+      wards.value = response.map((item: Ward) => ({
+        value: item.WardCode,
+        label: item.WardName,
+        code: item.WardCode,
+      }));
+      deliveryInfo.phuongXa = undefined;
+      wardCode.value = null;
+    } else {
+      console.error('Unexpected response format for wards:', response);
+      throw new Error('Invalid wards data format');
+    }
+  } catch (error) {
+    console.error('Failed to fetch wards:', error);
+    toast.error('Không thể tải danh sách Phường/Xã.');
+    wards.value = [];
+  }
+};
+
+const checkFromDistrictAndWard = async () => {
+  try {
+    const response = await getGHNDistricts(null, GHN_API_TOKEN); // Lấy tất cả quận/huyện
+    const districtExists = response.data.some((d: District) => d.DistrictID === FROM_DISTRICT_ID);
+    if (!districtExists) {
+      console.error(`FROM_DISTRICT_ID ${FROM_DISTRICT_ID} không hợp lệ!`);
+      toast.error('Mã quận/huyện nguồn không hợp lệ.');
+      return false;
+    }
+    const wardResponse = await getGHNWards(FROM_DISTRICT_ID, GHN_API_TOKEN);
+    const wardExists = wardResponse.data.some((w: Ward) => w.WardCode === FROM_WARD_CODE);
+    if (!wardExists) {
+      console.error(`FROM_WARD_CODE ${FROM_WARD_CODE} không hợp lệ!`);
+      toast.error('Mã phường/xã nguồn không hợp lệ.');
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Lỗi khi kiểm tra mã quận/huyện hoặc phường/xã:', error);
+    return false;
+  }
+};
+
+// Gọi kiểm tra khi khởi động
+onMounted(async () => {
+  fetchDanhMuc()
+  fetchThuongHieu()
+  fetchLoaiDe()
+  fetchChatLieu()
+  await fetchColor();
+  await fetchSize();
+  await fetchHoaDon();
+  await checkFromDistrictAndWard(); // Kiểm tra mã nguồn khi mount
+  await fetchProvinces();
+  setDefaultPaymentMethod();
+});
+
+const onProvinceChange = (value: string) => {
+  deliveryInfo.tinhThanhPho = value;
+  const selectedProvince = provinces.value.find(p => p.value === value);
+  provinceCode.value = selectedProvince ? parseInt(selectedProvince.code) : null;
+  if (provinceCode.value) {
+    fetchDistricts(provinceCode.value);
+  } else {
+    districts.value = [];
+    deliveryInfo.quanHuyen = undefined;
+    deliveryInfo.phuongXa = undefined;
+    districtCode.value = null;
+    wardCode.value = null;
+    shippingFee.value = 0; // Reset phí nếu không có tỉnh
+    calculateTotalAmounts();
+  }
+};
+const onDistrictChange = (value: string) => {
+  deliveryInfo.quanHuyen = value;
+  const selectedDistrict = districts.value.find(d => d.value === value);
+  districtCode.value = selectedDistrict ? parseInt(selectedDistrict.code) : null;
+  if (districtCode.value) {
+    fetchWards(districtCode.value);
+  } else {
+    wards.value = [];
+    deliveryInfo.phuongXa = undefined;
+    wardCode.value = null;
+  }
+  calculateShippingFee();
+};
+
+const onWardChange = (value: string) => {
+  deliveryInfo.phuongXa = value;
+  const selectedWard = wards.value.find(w => w.value === value);
+  wardCode.value = selectedWard ? selectedWard.code : null;
+  calculateShippingFee();
+};
+
+
+const calculateShippingFee = async () => {
+  if (!isDeliveryEnabled.value) {
+    shippingFee.value = 0;
+    calculateTotalAmounts();
+    return;
+  }
+
+
+  console.log("0")
+
+  if (!provinceCode.value || !districtCode.value || !wardCode.value || !deliveryInfo.tinhThanhPho || !deliveryInfo.quanHuyen || !deliveryInfo.phuongXa || tienHang.value <= 0) {
+    shippingFee.value = 0;
+    calculateTotalAmounts();
+    return;
+  }
+
+  console.log("0.5")
+
+  const availableServicesRequestBody: GHNAvailableServiceRequest = {
+    shop_id: GHN_SHOP_ID,
+    from_district: FROM_DISTRICT_ID,
+    to_district: districtCode.value,
+  };
+  const availableServicesResponse = await getAvailableServices(GHN_API_TOKEN, availableServicesRequestBody);
+
+  console.log("0.9", availableServicesResponse)
+
+  if (!availableServicesResponse.data || !Array.isArray(availableServicesResponse.data)) {
+    shippingFee.value = 0;
+    calculateTotalAmounts();
+    return;
+  }
+
+  console.log("1")
+
+
+  const selectedServiceId = availableServicesResponse.data[0].service_id;
+  const requestBody: ShippingFeeRequest = {
+    myRequest: {
+      FromDistrictID: FROM_DISTRICT_ID,
+      FromWardCode: FROM_WARD_CODE,
+      ServiceID: selectedServiceId,
+      ToDistrictID: districtCode.value,
+      ToWardCode: wardCode.value,
+      Height: 15,
+      Length: 15,
+      Weight: 500,
+      Width: 15,
+      InsuranceValue: tienHang.value,
+      Coupon: null,
+      PickShift: null,
+    },
+  };
+
+  console.log("2")
+
+  const response = await calculateFee(requestBody, GHN_API_TOKEN, GHN_SHOP_ID);
+
+  console.log("3", response.data.data)
+  if (response.data && typeof response.data.total === 'number') {
+    shippingFee.value = response.data.total;
+  } else {
+    shippingFee.value = 0;
+    toast.warn('Không thể tính phí vận chuyển.');
+  }
+};
+
+const confirmBothPayment = async () => {
+  bothPaymentLoading.value = true
+  try {
+    if (!idHDS.value) throw new Error('Không có hóa đơn được chọn!')
+    if (amountPaid.value <= 0) throw new Error('Vui lòng nhập số tiền hợp lệ!')
+    const remainingAmount = tongTien.value - tienKhachThanhToan.value - amountPaid.value;
+    if (remainingAmount > 0) {
+      toast.info(`Còn ${formatCurrency(remainingAmount)} cần thanh toán qua QR.`);
+    } else {
+      toast.success('Thanh toán đủ!');
+    }
+
+    // Call your API to record the "Both" payment method
+    const formData = new FormData();
+    formData.append('idHD', idHDS.value);
+    formData.append('tongTien', amountPaid.value.toString()); // Amount paid by cash in this scenario
+    formData.append('phuongThuc', 'Cả hai'); // Or specific code for "Both"
+    await themPTTT(formData); // Assuming this API exists to record payment methods
+
+    toast.success('Xác nhận thanh toán cả hai phương thức thành công!');
+    await clickkActiveTab(activeTab.value, idHDS.value, loaiHD.value); // Refresh current invoice data
+    closeBothPaymentModal();
+
+  } catch (error: any) {
+    console.error('Error in confirmBothPayment:', error)
+    toast.error(error.message || 'Xác nhận thanh toán thất bại!')
+  } finally {
+    bothPaymentLoading.value = false
+  }
+}
+
+// Table column definitions (unchanged, assumed correct from script)
+const discountColumns: TableColumnsType = [
+  { title: 'STT', key: 'stt', dataIndex: 'stt', width: 60, align: 'center' },
+  { title: 'Mã phiếu', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
+  { title: 'Tên phiếu', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+  {
+    title: 'Giá trị giảm thực tế',
+    key: 'giaTriGiamThucTe',
+    dataIndex: 'giaTriGiamThucTe',
+    width: 150,
+    align: 'center'
+  },
+  {
+    title: 'Thao tác',
+    key: 'operation',
+    width: 90,
+    align: 'center'
+  }
+]
+
+const fetchDiscounts = async (idHD: string) => {
+  try {
+    if (!idHD) {
+      console.warn('Missing idHD:', idHD)
+      resetDiscount()
+      return
+    }
+
+    const params: ParamsPhieuGiamGia = {
+      idHD: tongTien.value,
+      idKH: state.detailKhachHang?.id || ''
+    }
+    const response = await getMaGiamGia(params)
+
+    if (!response || !response.data) {
+      console.warn('No discount data returned from API:', response)
+      state.discountList = []
+    } else {
+      state.discountList = response.data
+    }
+
+    if (state.discountList.length > 0) {
+      applyBestDiscount()
+    } else {
+      resetDiscount()
+    }
+  } catch (error) {
+    console.error('Failed to fetch discounts:', error)
+    toast.error('Lấy danh sách phiếu giảm giá thất bại!')
+    state.discountList = []
+    resetDiscount()
+  }
+}
+
+const applyBestDiscount = () => {
+  if (state.discountList.length > 0) {
+    const bestDiscount = state.discountList[0] // Assuming the first one is the best or sorted
+    selectedDiscount.value = bestDiscount
+    selectedDiscountCode.value = bestDiscount.ma
+    giamGia.value = bestDiscount.giaTriGiamThucTe || 0
+    // toast.success(`Đã áp dụng phiếu giảm giá: ${bestDiscount.ma}`)
+  } else {
+    selectedDiscount.value = null
+    selectedDiscountCode.value = ''
+    giamGia.value = 0
+  }
+  calculateTotalAmounts()
+  showDiscountModal.value = false
+}
+
+const giaoHang = async (isDeliveryEnableds: boolean) => {
+
+  if (isDeliveryEnabled.value && state.detailKhachHang) {
+    // Điền thông tin khách hàng vào deliveryInfo khi bật giao hàng
+    deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
+    deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
+    deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
+
+    // Tải danh sách tỉnh/thành phố nếu chưa có
+    if (!provinces.value.length) {
+      await fetchProvinces();
+    }
+
+
+  } else if (!isDeliveryEnabled.value) {
+    // Nếu tắt giao hàng, reset thông tin giao hàng
+    Object.assign(deliveryInfo, {
+      tenNguoiNhan: '',
+      sdtNguoiNhan: '',
+      diaChiCuThe: '',
+      tinhThanhPho: undefined,
+      quanHuyen: undefined,
+      phuongXa: undefined,
+    });
+    shippingFee.value = 0;
+    provinceCode.value = null;
+    districtCode.value = null;
+    wardCode.value = null;
+    await calculateTotalAmounts();
+  }
+
+  capNhatDanhSach()
+  await suaGiaoHang(idHDS.value)
+
+  console.log("1", isDeliveryEnabled.value)
+}
+
+const selectDiscount = (discount: PhieuGiamGiaResponse) => {
+  selectedDiscount.value = discount
+  selectedDiscountCode.value = discount.ma
+  giamGia.value = discount.giaTriGiamThucTe || 0
+  toast.success(`Đã chọn phiếu giảm giá: ${discount.ma}`)
+  calculateTotalAmounts()
+  showDiscountModal.value = false
+}
+
+const handleTableChange = (pagination: any) => {
+  stateSP.paginationParams.page = pagination.current
+  stateSP.paginationParams.size = pagination.pageSize
+  fetchProducts() // Gọi lại API với tham số mới
+}
+
+const closeBothPaymentModal = () => {
+  isBothPaymentModalVisible.value = false
+  amountPaid.value = 0
+  bothPaymentLoading.value = false
+}
+
+const themPTTT = async (formData: FormData) => {
+  // Replace with your actual API call to add payment method
+  try {
+    await new Promise(resolve => setTimeout(resolve, 500));
+  } catch (error) {
+    console.error('Failed to add payment method:', error);
+    throw error;
+  }
+}
+
+const handlePaymentMethod = async (method: string) => {
+  state.currentPaymentMethod = method;
+  if (!idHDS.value) {
+    toast.error('Vui lòng chọn hoặc tạo hóa đơn trước khi chọn phương thức thanh toán!');
+    state.currentPaymentMethod = '0'; // Revert to cash if no invoice
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('idHD', idHDS.value);
+
+    // Common logic for all payment types, record the payment if it's not "Cả hai"
+    if (method === '0') { // Tiền mặt
+      formData.append('tongTien', (tongTien.value - tienKhachThanhToan.value).toString()); // Amount left to pay
+      formData.append('phuongThuc', 'Tiền mặt');
+      await themPTTT(formData);
+      toast.success('Đã chọn phương thức thanh toán Tiền mặt.');
+    } else if (method === '1') { // Chuyển khoản (VNPay)
+      formData.append('tongTien', (tongTien.value - tienKhachThanhToan.value).toString()); // Amount left to pay
+      formData.append('phuongThuc', 'Chuyển khoản');
+      await themPTTT(formData);
+      openQrModalVNPay();
+    } else if (method === '2') { // Cả hai
+      isBothPaymentModalVisible.value = true;
+      amountPaid.value = 0; // Reset amount when opening for "Cả hai"
+    }
+
+    // After updating payment method, refresh current invoice data
+    await clickkActiveTab(activeTab.value, idHDS.value, loaiHD.value);
+
+  } catch (error: any) {
+    console.error('Failed to handle payment method:', error);
+    toast.error(error.message || 'Có lỗi khi chọn phương thức thanh toán!');
+    state.currentPaymentMethod = '0'; // Revert to cash on error
+  }
+}
+
+
+const fetchHoaDon = async () => {
+  try {
+    await fetchProducts()
+    const response = await GetHoaDons()
+    if (response && Array.isArray(response)) {
+      tabs.value = response.map((invoice, index) => ({
+        id: index + 1,
+        idHD: invoice.id,
+        ma: invoice.ma,
+        soLuong: invoice.soLuong,
+        loaiHoaDon: invoice.loaiHoaDon,
+        products: invoice.data?.products || []
+      }))
+
+      if (tabs.value.length > 0) {
+        activeTab.value = tabs.value[0].id
+        idHDS.value = tabs.value[0].idHD
+
+        const initialResponse = await GetGioHang(tabs.value[0]?.idHD)
+        state.gioHang = initialResponse
+        calculateTotalAmounts()
+
+        const responseKH = await GeOneKhachHang(idHDS.value)
+        state.detailKhachHang = responseKH.id ? responseKH : null
+        await fetchDiscounts(idHDS.value)
+      } else {
+        resetDiscount()
+        currentDeliveryInfo.value = null // Reset delivery info if no invoices
+        // Also ensure delivery form is cleared if no invoices
+        isDeliveryEnabled.value = false;
+        Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch invoices:', error)
+    toast.error('Lấy danh sách hóa đơn thất bại!')
+    resetDiscount()
+    currentDeliveryInfo.value = null
+    isDeliveryEnabled.value = false;
+    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+  }
+}
+
+const resetDiscount = () => {
+  state.discountList = []
+  selectedDiscount.value = null
+  selectedDiscountCode.value = ''
+  giamGia.value = 0
+  calculateTotalAmounts()
+}
+const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
   idHDS.value = hd
   activeTab.value = id
-  console.log("hd", hd)
-  const response = await GetGioHang(hd);
-  const responseKH = await GeOneKhachHang(hd);
-  const idKH = responseKH.id
-  if (idKH == null) {
-    state.detailKhachHang = null;
+  loaiHD.value = loaiHoaDon
+  state.currentPaymentMethod = '0' // Reset payment method when switching tabs
+  state.phuongThuThanhToan = [] // Clear previous payment methods
+  if (loaiHoaDon == "GIAO_HANG") {
+    isDeliveryEnabled.value = true
   } else {
-    state.detailKhachHang = responseKH;
+    isDeliveryEnabled.value = false
   }
-  state.gioHang = response;
-  // Sau khi cập nhật giỏ hàng, gọi hàm tính toán tổng tiền
-  calculateTotalAmounts();
+  console.log("abc" + isDeliveryEnabled.value)
+  try {
+    const response = await GetGioHang(hd)
+    state.gioHang = response
+
+    const responseKH = await GeOneKhachHang(hd)
+    state.detailKhachHang = responseKH.id ? responseKH : null
+
+    const responsePTTT = await getPhuongThucThanhToan(hd)
+    state.phuongThuThanhToan = responsePTTT
+
+    if (state.detailKhachHang) {
+      // Điền thông tin khách hàng vào deliveryInfo nếu có
+      deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
+      deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
+      deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
+    }
+
+
+    calculateTotalAmounts()
+
+    let totalPaid = 0
+    state.phuongThuThanhToan.forEach((item) => {
+      totalPaid += item.tongTien
+    })
+    tienKhachThanhToan.value = totalPaid
+    tienThieu.value = (tongTien.value || 0) - tienKhachThanhToan.value // Use tongTien.value after calculateTotalAmounts
+    soTien.value = tongTien.value || 0 // soTien should reflect total after calculation
+
+    // Fetch delivery info when switching tabs
+    // await fetchDeliveryInfo(idHDS.value)
+
+    // Gọi fetchDiscounts bất kể có khách hàng hay không
+    await fetchDiscounts(idHDS.value)
+    capNhatDanhSach()
+  } catch (error) {
+    console.error('Failed to switch invoice:', error)
+    toast.error('Chuyển hóa đơn thất bại!')
+    resetDiscount()
+    currentDeliveryInfo.value = null // Reset delivery info on error
+    isDeliveryEnabled.value = false;
+    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+  }
 }
+
+// Delivery functions
+const fetchDeliveryInfo = async (idHD: string) => {
+  try {
+    if (idHD) {
+      const response = await getThongTinGiaoHang(idHD)
+      currentDeliveryInfo.value = response || null
+      isDeliveryEnabled.value = !!response // Enable delivery toggle if info exists
+
+      if (response) {
+        // Populate the form fields with existing delivery info
+        deliveryInfo.tenNguoiNhan = response.tenNguoiNhan;
+        deliveryInfo.sdtNguoiNhan = response.sdtNguoiNhan;
+        deliveryInfo.diaChiCuThe = response.diaChiCuThe;
+        deliveryInfo.phuongXa = response.phuongXa;
+        deliveryInfo.quanHuyen = response.quanHuyen;
+        deliveryInfo.tinhThanhPho = response.tinhThanhPho;
+        await fetchProvinces(); // Ensure provinces are loaded
+        const selectedProv = provinces.value.find(p => p.value === deliveryInfo.tinhThanhPho);
+        if (selectedProv) {
+          provinceCode.value = parseInt(selectedProv.code);
+          await fetchDistricts(provinceCode.value);
+          const selectedDist = districts.value.find(d => d.value === deliveryInfo.quanHuyen);
+          if (selectedDist) {
+            districtCode.value = parseInt(selectedDist.code);
+            await fetchWards(districtCode.value);
+            const selectedWard = wards.value.find(w => w.value === deliveryInfo.phuongXa);
+            if (selectedWard) {
+              wardCode.value = selectedWard.code;
+            }
+          }
+        }
+        await calculateShippingFee();
+
+      } else {
+        // Reset form if no delivery info found
+        Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+        shippingFee.value = 0;
+        provinceCode.value = null;
+        districtCode.value = null;
+        wardCode.value = null;
+      }
+    } else {
+      currentDeliveryInfo.value = null
+      isDeliveryEnabled.value = false
+      Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+      shippingFee.value = 0;
+      provinceCode.value = null;
+      districtCode.value = null;
+      wardCode.value = null;
+    }
+  } catch (error) {
+    console.error('Failed to fetch delivery info:', error)
+    toast.error('Lấy thông tin giao hàng thất bại!')
+    currentDeliveryInfo.value = null
+    isDeliveryEnabled.value = false
+    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+    shippingFee.value = 0;
+    provinceCode.value = null;
+    districtCode.value = null;
+    wardCode.value = null;
+  }
+}
+
+// Watch for changes in isDeliveryEnabled to clear/set delivery info
+watch(isDeliveryEnabled, async (newValue) => {
+  if (!newValue) {
+    // If delivery is disabled, clear the current delivery info and reset form
+    currentDeliveryInfo.value = null
+    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+    shippingFee.value = 0;
+    provinceCode.value = null;
+    districtCode.value = null;
+    wardCode.value = null;
+    calculateTotalAmounts(); // Recalculate total
+  } else {
+    await fetchProvinces();
+  }
+}, { immediate: true });
+
+const saveDeliveryInfo = async () => {
+  try {
+    if (!idHDS.value) {
+      toast.error('Vui lòng chọn một hóa đơn trước khi lưu thông tin giao hàng!');
+      return;
+    }
+    if (!deliveryInfo.tenNguoiNhan || !deliveryInfo.sdtNguoiNhan || !deliveryInfo.diaChiCuThe ||
+      !deliveryInfo.tinhThanhPho || !deliveryInfo.quanHuyen || !deliveryInfo.phuongXa) {
+      toast.error('Vui lòng nhập đầy đủ thông tin giao hàng!');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('idHD', idHDS.value);
+    formData.append('tenNguoiNhan', deliveryInfo.tenNguoiNhan);
+    formData.append('sdtNguoiNhan', deliveryInfo.sdtNguoiNhan);
+    formData.append('diaChiCuThe', deliveryInfo.diaChiCuThe);
+    formData.append('tinhThanhPho', deliveryInfo.tinhThanhPho);
+    formData.append('quanHuyen', deliveryInfo.quanHuyen);
+    formData.append('phuongXa', deliveryInfo.phuongXa);
+    formData.append('phiVanChuyen', shippingFee.value.toString()); // Save shipping fee as well
+
+    const response = await themThongTinGiaoHang(formData); // API call to save delivery info
+    currentDeliveryInfo.value = response; // Update the displayed info
+    isDeliveryEnabled.value = true; // Ensure the toggle is on
+    toast.success('Lưu thông tin giao hàng thành công!');
+    await clickkActiveTab(activeTab.value, idHDS.value, loaiHD.value); // Refresh invoice data to reflect changes
+  } catch (error: any) {
+    console.error('Failed to save delivery info:', error);
+    toast.error(error.message || 'Lưu thông tin giao hàng thất bại!');
+  }
+};
+
 
 const columnsKhachHang: TableColumnsType = [
   { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
@@ -545,10 +1452,16 @@ const columnsKhachHang: TableColumnsType = [
   }
 ]
 
-const columnsThanhToan: TableColumnsType = [
+const columnsThanhToan: TableColumnsType = [ // Unused
   { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
   { title: 'Số tiền', key: 'tongTien', dataIndex: 'tongTien', width: 150, align: 'center' },
-  { title: 'Phương thức', key: 'phuongThucThanhToan', dataIndex: 'phuongThucThanhToan', width: 150, align: 'center' },
+  {
+    title: 'Phương thức',
+    key: 'phuongThucThanhToan',
+    dataIndex: 'phuongThucThanhToan',
+    width: 150,
+    align: 'center'
+  },
   {
     title: 'Hành động',
     key: 'operation',
@@ -558,31 +1471,34 @@ const columnsThanhToan: TableColumnsType = [
 ]
 
 const columnsGiohang: TableColumnsType = [
-  { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
-  { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
-  { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 150, align: 'center' },
-  { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 150, align: 'center' },
-  { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 150, align: 'center' },
-  { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 150, align: 'center' },
-  { title: 'Ảnh', key: 'anh', dataIndex: 'anh', width: 150, align: 'center' },
-  { title: 'tổng tiền', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
+  { title: 'STT', key: 'stt', dataIndex: 'stt', width: 60, align: 'center' },
+  { title: 'Ảnh', key: 'anh', dataIndex: 'anh', width: 90, align: 'center' },
+  { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 90, align: 'center' },
+  { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 100, align: 'center' },
+  { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 110, align: 'center' },
+  { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 80, align: 'center' },
+  { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 80, align: 'center' },
+  { title: 'tổng tiền', key: 'status', dataIndex: 'status', width: 80, align: 'center' },
   {
     title: 'Thao tác',
     key: 'operation',
-    width: 90,
+    width: 80,
     align: 'center'
   }
 ]
 
-const columns: TableColumnsType = [
-  { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
-  { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
-  { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 150, align: 'center' },
-  { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 150, align: 'center' },
-  { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 150, align: 'center' },
-  { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 150, align: 'center' },
-  { title: 'Ảnh', key: 'anh', dataIndex: 'anh', width: 150, align: 'center' },
-  { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
+const columns: TableColumnsType = [ // For product selection modal
+  { title: 'STT', key: 'stt', dataIndex: 'stt', width: 60, align: 'center' },
+  { title: 'Ảnh', key: 'anh', dataIndex: 'anh', width: 100, align: 'center' },
+  { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 100, align: 'center' },
+  { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 100, align: 'center' },
+  { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 100, align: 'center' },
+  { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 100, align: 'center' },
+  { title: 'Thương hiệu', key: 'tenThuongHieu', dataIndex: 'tenThuongHieu', width: 100, align: 'center' },
+  { title: 'Loại đế', key: 'tenLoaiDe', dataIndex: 'tenLoaiDe', width: 100, align: 'center' },
+  { title: 'Chất liệu', key: 'tenChatLieu', dataIndex: 'tenChatLieu', width: 100, align: 'center' },
+  { title: 'Danh mục', key: 'tenDanhMuc', dataIndex: 'tenDanhMuc', width: 100, align: 'center' },
+  { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 100, align: 'center' },
   {
     title: 'Hành động',
     key: 'operation',
@@ -593,78 +1509,209 @@ const columns: TableColumnsType = [
 
 const increaseQuantity = async (idSPS: any) => {
   try {
-    const formData = new FormData();
-    formData.append('idHD', idHDS.value);
-    formData.append('idSP', idSPS);
-    await themSL(formData);
-    const updatedProduct = state.gioHang.find((item) => item.id === idSPS);
-    if (updatedProduct) {
-      updatedProduct.soLuong++;
-      await calculateTotalAmounts();
+    const formData = new FormData()
+    formData.append('idHD', idHDS.value)
+    formData.append('idSP', idSPS)
+    const res = await themSL(formData)
+
+    if (res.message == 'Số lượng sản phẩm thêm vào nhiều hơn số lượng trong kho') {
+      toast.error(res.message)
+      return
     }
+    const updatedProduct = state.gioHang.find((item) => item.id === idSPS)
+    if (updatedProduct) {
+      updatedProduct.soLuong++ // Cập nhật tạm trước khi API hoàn tất
+      calculateTotalAmounts() // Tính toán lại ngay lập tức
+    }
+    await fetchDiscounts(idHDS.value)
+    capNhatDanhSach()
   } catch (error) {
-    console.error('Failed to increase quantity:', error);
-    toast.error('Tăng số lượng thất bại!');
+    console.error('Failed to increase quantity:', error)
+    toast.error('Tăng số lượng thất bại!')
   }
 }
 
 const xacNhan = async () => {
+  if (!idHDS.value) {
+    toast.error('Vui lòng chọn một hóa đơn để xác nhận thanh toán!')
+    console.error('Lỗi: idHDS.value là null khi xác nhận thanh toán.')
+    return
+  }
+
+  // Validate delivery info if enabled
+  if (isDeliveryEnabled.value) {
+    if (!deliveryInfo.tenNguoiNhan || !deliveryInfo.sdtNguoiNhan || !deliveryInfo.diaChiCuThe ||
+      !deliveryInfo.tinhThanhPho || !deliveryInfo.quanHuyen || !deliveryInfo.phuongXa) {
+      toast.error('Vui lòng nhập đầy đủ thông tin giao hàng!');
+      return;
+    }
+    if (shippingFee.value <= 0 && tienHang.value > 0) { // If shipping fee is 0 but there are items in cart
+      toast.error('Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.');
+      return;
+    }
+  }
+
+
   try {
-    console.log(idHDS.value)
-    const formData = new FormData();
-    formData.append('idHD', idHDS.value);
-    formData.append('tongTien', tongTien.value.toString()); // Chuyển số sang chuỗi
 
-    const res = await thanhToanThanhCong(formData);
-    fetchProducts();
+    const formData = new FormData()
+    formData.append('tienHang', tienHang.value.toString())
+    formData.append('idHD', idHDS.value)
+    formData.append('tongTien', tongTien.value.toString()) // Total after discount and shipping
+    formData.append('ten', deliveryInfo.tenNguoiNhan);
+    formData.append('sdt', deliveryInfo.sdtNguoiNhan);
+    formData.append('diaChi', deliveryInfo.diaChiCuThe);
+    formData.append('tienShip', shippingFee.value.toString());
 
-    tongTien.value = 0;
-    giamGia.value = 0;
-    tienHang.value = 0;
-    soTien.value = 0;
-    tienKhachThanhToan.value = 0;
-    tienThieu.value = 0;
+    if (selectedDiscount.value?.id) {
+      formData.append('idPGG', selectedDiscount.value.id)
+    }
 
-    toast.success("Thanh toán thành công");
+    // Append delivery status and info if enabled
+    formData.append('isDeliveryEnabled', isDeliveryEnabled.value.toString())
 
-    // Delay 2 giây (2000ms) trước khi reload trang
-    setTimeout(() => {
-      location.reload(); // Reload trang
-    }, 2000);
 
-  } catch (error: any) { // Sử dụng 'any' để truy cập thuộc tính 'response'
+    const res = await thanhToanThanhCong(formData)
+
+    toast.success('Thanh toán thành công!')
+
+    await fetchProducts()
+    await capNhatDanhSach()
+
+    const indexToRemove = tabs.value.findIndex((tab) => tab.idHD === idHDS.value)
+    if (indexToRemove !== -1) {
+      tabs.value.splice(indexToRemove, 1)
+    }
+
+    // Reset all states after successful payment
+    idHDS.value = ''
+    activeTab.value = 0
+    state.gioHang = []
+    state.detailKhachHang = null
+    state.phuongThuThanhToan = []
+    state.tongTien = null
+    tongTien.value = 0
+    giamGia.value = 0
+    tienHang.value = 0
+    soTien.value = 0
+    tienKhachThanhToan.value = 0
+    tienThieu.value = 0
+    state.currentPaymentMethod = '0' // Reset to 'Tiền mặt'
+    resetDiscount()
+    isDeliveryEnabled.value = false // Reset delivery toggle
+    currentDeliveryInfo.value = null // Clear delivery info
+    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+    shippingFee.value = 0;
+    provinceCode.value = null;
+    districtCode.value = null;
+    wardCode.value = null;
+
+  } catch (error: any) {
     if (error?.response?.data?.message) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error.response.data.message)
     } else {
-      toast.error('Có lỗi xảy ra khi xác nhận thanh toán!');
+      toast.error('Có lỗi xảy ra khi xác nhận thanh toán!')
+      console.error('Lỗi khi xác nhận thanh toán:', error)
     }
   }
 }
 
-const sumitThanhToan = async () => {
-  state.isModaThanhToanlOpen = false;
-  tienHang.value = state.tongTien?.tongTien || 0; // Đảm bảo giá trị không null/undefined
-  tongTien.value = tienHang.value - giamGia.value;
-}
+const deleteInvoice = async (tabId: number, invoiceId: string) => {
+  try {
+    // You'll need an API call to delete the invoice on the backend
+    await xoaHoaDon(invoiceId); // Assuming xoaHoaDon exists in your banhang.api
+
+    // Remove from UI
+    const indexToRemove = tabs.value.findIndex(tab => tab.idHD === invoiceId);
+    if (indexToRemove !== -1) {
+      tabs.value.splice(indexToRemove, 1);
+    }
+
+    // If the deleted tab was the active one, switch to the first available tab or reset
+    if (activeTab.value === tabId) {
+      if (tabs.value.length > 0) {
+        await clickkActiveTab(tabs.value[0].id, tabs.value[0].idHD);
+      } else {
+        // No more invoices, reset all states
+        idHDS.value = '';
+        activeTab.value = 0;
+        state.gioHang = [];
+        state.detailKhachHang = null;
+        state.phuongThuThanhToan = [];
+        state.tongTien = null;
+        tongTien.value = 0;
+        giamGia.value = 0;
+        tienHang.value = 0;
+        soTien.value = 0;
+        tienKhachThanhToan.value = 0;
+        tienThieu.value = 0;
+        state.currentPaymentMethod = '0';
+        resetDiscount();
+        isDeliveryEnabled.value = false;
+        currentDeliveryInfo.value = null;
+        Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+        shippingFee.value = 0;
+        provinceCode.value = null;
+        districtCode.value = null;
+        wardCode.value = null;
+      }
+    }
+    toast.success('Xóa hóa đơn thành công!');
+  } catch (error) {
+    console.error('Failed to delete invoice:', error);
+    toast.error('Xóa hóa đơn thất bại!');
+  }
+};
+
 
 const decreaseQuantity = async (idSPS: any) => {
   try {
-    const formData = new FormData();
-    formData.append('idHD', idHDS.value);
-    formData.append('idSP', idSPS);
-    await xoaSL(formData);
-    const updatedProduct = state.gioHang.find((item) => item.id === idSPS);
+    const formData = new FormData()
+    formData.append('idHD', idHDS.value)
+    formData.append('idSP', idSPS)
+
+    await xoaSL(formData)
+    const updatedProduct = state.gioHang.find((item) => item.id === idSPS)
     if (updatedProduct && updatedProduct.soLuong > 1) {
-      updatedProduct.soLuong--;
-      await calculateTotalAmounts();
+      updatedProduct.soLuong--
+      await calculateTotalAmounts()
     } else {
-      state.gioHang = state.gioHang.filter((item) => item.id !== idSPS);
-      await calculateTotalAmounts();
+      state.gioHang = state.gioHang.filter((item) => item.id !== idSPS)
+      await calculateTotalAmounts()
     }
+    await fetchDiscounts(idHDS.value)
+    capNhatDanhSach()
   } catch (error) {
-    console.error('Failed to decrease quantity:', error);
-    toast.error('Giảm số lượng thất bại!');
+    console.error('Failed to decrease quantity:', error)
+    toast.error('Giảm số lượng thất bại!')
   }
+}
+
+watch(
+  () => tienHang.value,
+  async () => {
+    if (idHDS.value) {
+      await fetchDiscounts(idHDS.value)
+    }
+  }
+)
+
+watch(
+  () => [deliveryInfo.tinhThanhPho, deliveryInfo.quanHuyen, deliveryInfo.phuongXa],
+  async () => {
+    if (isDeliveryEnabled.value) {
+      await calculateShippingFee();
+    }
+  }
+);
+
+const openProductSelectionModal = async () => {
+  if (!idHDS.value) {
+    toast.error('Vui lòng tạo hoặc chọn hóa đơn trước khi chọn sản phẩm!')
+    return
+  }
+  await fetchProducts()
+  showProductModal.value = true
 }
 
 // Hàm tạo hóa đơn
@@ -674,191 +1721,327 @@ async function createInvoice() {
     return
   }
   try {
-    const newInvoice = await getCreateHoaDon(); // Lấy thông tin hóa đơn mới từ API
-    tabs.value.push({ id: nextTabId++, idHD: newInvoice.id, products: [] }); // Thêm idHD vào tab
-    activeTab.value = tabs.value[tabs.value.length - 1].id;
-    idHDS.value = newInvoice.id; // Cập nhật idHDS cho tab mới
-    state.gioHang = []; // Đặt giỏ hàng trống cho hóa đơn mới
-    state.detailKhachHang = null; // Đặt khách hàng về null cho hóa đơn mới
-    calculateTotalAmounts(); // Tính toán lại tổng tiền
+    const newInvoice = await getCreateHoaDon()
+    tabs.value.push({
+      id: nextTabId++,
+      idHD: newInvoice.id,
+      products: [],
+      ma: newInvoice.ma,
+      soLuong: 0
+    })
+    activeTab.value = tabs.value[tabs.value.length - 1].id
+    idHDS.value = newInvoice.id
+    state.gioHang = []
+    state.detailKhachHang = null
+    resetDiscount()
+    calculateTotalAmounts()
 
-    toast.success("Tạo hóa đơn thành công!");
+    // Clear delivery info for new invoice
+    isDeliveryEnabled.value = false
+    currentDeliveryInfo.value = null
+    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+    shippingFee.value = 0;
+    provinceCode.value = null;
+    districtCode.value = null;
+    wardCode.value = null;
+
+    // Gọi fetchDiscounts cho hóa đơn mới
+    await fetchDiscounts(idHDS.value)
+
+    await capNhatDanhSach()
+    toast.success('Tạo hóa đơn thành công!')
   } catch (error) {
-    console.error("Failed to create invoice:", error);
-    toast.error("Tạo hóa đơn thất bại!");
+    console.error('Failed to create invoice:', error)
+    toast.error('Tạo hóa đơn thất bại!')
   }
 }
-
 
 const closeModal = () => {
   state.isModalOpen = false
 }
 
-const closeModalThanhToan = () => {
-  state.isModaThanhToanlOpen = false
-}
-
 const showKhachHangModal = ref(false)
-const showProductModal = ref(false)
+const showProductModal = ref(false) // This is for product selection, not product quantity
 
-// Sản phẩm đã chọn
-const selectedProduct = ref({ soLuong: 0 });
-const quantity = ref(1) // có vẻ không dùng đến quantity nữa vì dùng selectedProduct.soLuong
+// Sản phẩm đã chọn cho modal số lượng
+const selectedProduct = ref({ soLuong: 0 })
 
-// Chọn sản phẩm (cho modal)
-const selectThanhToan = async () => {
-  if (!idHDS.value) {
-    toast.error("Vui lòng chọn hoặc tạo hóa đơn trước khi thanh toán!");
-    return;
-  }
-  const response = await getThanhToan(idHDS.value)
-  state.tongTien = response
-  soTien.value = state.tongTien?.tongTien || 0; // Đảm bảo giá trị không null/undefined
-  tienThieu.value = state.tongTien?.tongTien || 0; // Đảm bảo giá trị không null/undefined
-  state.isModaThanhToanlOpen = true
+const setDefaultPaymentMethod = () => {
+  state.currentPaymentMethod = '0' // Mặc định là Tiền mặt
 }
 
 // Chọn sản phẩm (từ danh sách sản phẩm cho vào giỏ hàng)
 function selectProduct(idSPS: any) {
+  if (!idHDS.value) {
+    toast.error('Vui lòng tạo hoặc chọn hóa đơn trước khi thêm sản phẩm!');
+    return;
+  }
   idSP.value = idSPS
-  selectedProduct.value.soLuong = 1; // Đặt số lượng mặc định là 1 khi chọn sản phẩm
-  state.isModalOpen = true
-  showProductModal.value = false
+  selectedProduct.value.soLuong = 1 // Đặt số lượng mặc định là 1 khi chọn sản phẩm
+  state.isModalOpen = true // Open quantity modal
+  showProductModal.value = false // Close product selection modal if open
 }
 
 const selectKhachHang = async (getIdKH: any) => {
-  const formData = new FormData();
-  formData.append('idHD', idHDS.value);
-  formData.append('idKH', getIdKH);
-  await themKhachHang(formData);
-  const responseKH = await GeOneKhachHang(idHDS.value);
-  state.detailKhachHang = responseKH;
-  showKhachHangModal.value = false
-  toast.success("Chọn khách hàng thành công!");
-}
+  try {
+    const formData = new FormData()
+    formData.append('idHD', idHDS.value)
+    formData.append('idKH', getIdKH)
+    await themKhachHang(formData)
+    const responseKH = await GeOneKhachHang(idHDS.value)
+    state.detailKhachHang = responseKH
 
+    // Nếu chế độ giao hàng được bật, điền thông tin khách hàng vào deliveryInfo
+    if (isDeliveryEnabled.value && state.detailKhachHang) {
+      deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
+      deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
+      deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
+
+
+    }
+
+    // Gọi fetchDiscounts với idKH mới
+    await fetchDiscounts(idHDS.value)
+
+    showKhachHangModal.value = false
+    toast.success('Chọn khách hàng thành công!')
+  } catch (error) {
+    console.error('Failed to select customer:', error)
+    toast.error('Chọn khách hàng thất bại!')
+  }
+}
 const deleteProduc = async (idSPS: any) => {
   try {
-    const formData = new FormData();
-    formData.append('idHD', idHDS.value);
-    formData.append('idSP', idSPS);
+    const formData = new FormData()
+    formData.append('idHD', idHDS.value)
+    formData.append('idSP', idSPS)
 
-    await xoaSP(formData);
+    await xoaSP(formData)
 
-    state.gioHang = state.gioHang.filter((item) => item.id !== idSPS);
-    calculateTotalAmounts(); // Tính toán lại tổng tiền sau khi xóa SP
-    toast.success('Xóa sản phẩm thành công!');
+    state.gioHang = state.gioHang.filter((item) => item.id !== idSPS)
+    calculateTotalAmounts()
+
+    // Gọi fetchDiscounts bất kể có khách hàng hay không
+    await fetchDiscounts(idHDS.value)
+
+    toast.success('Xóa sản phẩm thành công!')
+    await capNhatDanhSach()
   } catch (error) {
-    console.error('Failed to delete product:', error);
-    toast.error('Xóa sản phẩm thất bại!');
+    console.error('Failed to delete product:', error)
+    toast.error('Xóa sản phẩm thất bại!')
   }
 }
 
 const fetchProducts = async () => {
   try {
     const params: ParamsGetSanPham = {
-      page: state.paginationParams.page,
-      size: state.paginationParams.size,
-      q: state.searchQuery,
-      status: state.searchStatus
-    }
-    const responseKhachHang = await GetKhachHang()
-    const response = await GetSanPhams(params)
-    state.products = response.data?.data
-    state.khachHang = responseKhachHang
-    state.totalItems = response.data?.totalElements
-
+      page: stateSP.paginationParams.page,
+      size: stateSP.paginationParams.size,
+      q: stateSP.searchQuery,
+      status: stateSP.searchStatus,
+      idMauSac: localColor.value, // Bộ lọc màu sắc
+      idKichThuoc: localSize.value, // Bộ lọc kích thước
+      idDanhMuc: localSelectedCategory.value, // Bộ lọc danh mục
+      idChatLieu: localSelectedMaterial.value, // Bộ lọc chất liệu
+      idThuongHieu: localSelectedBrand.value, // Bộ lọc thương hiệu
+      idLoaiDe: localSelectedSoleType.value, // Bộ lọc loại đế
+    };
+    const responseKhachHang = await GetKhachHang();
+    const response = await GetSanPhams(params);
+    stateSP.products = response.data?.data || [];
+    state.products = response.data?.data || [];
+    state.khachHang = responseKhachHang;
+    stateSP.totalItems = response.data?.totalElements || 0;
+    state.totalItems = response.data?.totalElements || 0;
   } catch (error) {
-    console.error('Failed to fetch products:', error)
+    console.error('Failed to fetch products:', error);
+    toast.error('Lấy danh sách sản phẩm thất bại!');
   }
-}
+};
 
 const confirmQuantity = async () => {
   try {
     if (selectedProduct.value.soLuong <= 0) {
-      toast.error("Số lượng không hợp lệ!");
-      return;
+      toast.error('Số lượng không hợp lệ!')
+      return
+    }
+    const formData = new FormData()
+    formData.append('soLuong', selectedProduct.value.soLuong.toString())
+    formData.append('idHD', idHDS.value)
+    formData.append('idSP', idSP.value)
+
+    const res = await themSanPham(formData)
+
+    if (res.message === 'Số lượng sản phẩm thêm vào nhiều hơn số lượng trong kho') {
+      toast.error(res.message)
+      return
     }
 
-    const formData = new FormData();
-    formData.append('soLuong', selectedProduct.value.soLuong.toString());
-    formData.append('idHD', idHDS.value);
-    formData.append('idSP', idSP.value);
-
-    const res = await themSanPham(formData);
     state.isModalOpen = false
-    toast.success(res.message);
-    const response = await GetGioHang(idHDS.value);
-    state.gioHang = response;
-    calculateTotalAmounts(); // Tính toán lại tổng tiền sau khi thêm SP
-    fetchProducts() // Cập nhật lại danh sách sản phẩm (để hiển thị số lượng tồn kho đúng)
+    toast.success(res.message)
+
+    const response = await GetGioHang(idHDS.value)
+    state.gioHang = response
+
+    calculateTotalAmounts()
+
+    // Gọi fetchDiscounts bất kể có khách hàng hay không
+    await fetchDiscounts(idHDS.value)
+
+    await fetchProducts()
+    await capNhatDanhSach()
   } catch (error: any) {
     if (error?.response?.data?.message) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error.response.data.message)
     } else {
-      toast.error('Thêm sản phẩm vào giỏ hàng thất bại!');
+      toast.error('Thêm sản phẩm vào giỏ hàng thất bại!')
     }
   }
 }
 
+// Hàm định dạng tiền tệ
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+}
+
 // Hàm tính toán lại tổng tiền hàng, giảm giá, tổng tiền cuối cùng
 const calculateTotalAmounts = () => {
-  tienHang.value = state.gioHang.reduce((sum, item) => sum + (item.giaBan * item.soLuong), 0);
-  // Giảm giá cần được tính toán dựa trên logic của bạn (ví dụ: voucher, khuyến mãi)
-  // Hiện tại giamGia đang là ref(0)
-  tongTien.value = tienHang.value - giamGia.value;
-};
+  tienHang.value = state.gioHang.reduce((sum, item) => sum + item.giaBan * item.soLuong, 0)
+  giamGia.value = selectedDiscount.value ? selectedDiscount.value.giaTriGiamThucTe || 0 : 0
+
+  let currentTotal = tienHang.value - giamGia.value;
+  if (currentTotal < 0) currentTotal = 0; // Ensure total doesn't go negative due to discount
+
+  if (isDeliveryEnabled.value) {
+    currentTotal += shippingFee.value;
+  }
+  tongTien.value = currentTotal;
+
+  tienThieu.value = tongTien.value - tienKhachThanhToan.value; // Update tienThieu based on new tongTien
+}
 
 // Gọi hàm tính toán khi giỏ hàng thay đổi
-watch(() => state.gioHang, calculateTotalAmounts, { deep: true });
+watch(() => state.gioHang, calculateTotalAmounts, { deep: true })
+watch(giamGia, calculateTotalAmounts); // Watch discount changes
+watch(shippingFee, calculateTotalAmounts); // Watch shipping fee changes
 
-
-onMounted(async () => {
-  const response = await GetHoaDons();
-  fetchProducts();
-
+const capNhatDanhSach = async () => {
+  const response = await GetHoaDons()
   if (response && Array.isArray(response)) {
     tabs.value = response.map((invoice, index) => ({
       id: index + 1,
       idHD: invoice.id,
       ma: invoice.ma,
       soLuong: invoice.soLuong,
+      loaiHoaDon: invoice.loaiHoaDon,
       products: invoice.data?.products || []
-    }));
-
-    activeTab.value = null;
-
-    if (tabs.value.length > 0) {
-      // Set the active tab to the first one or a default
-      activeTab.value = tabs.value[0].id;
-      idHDS.value = tabs.value[0].idHD; // Gán idHDS ban đầu
-
-      const initialResponse = await GetGioHang(tabs.value[0]?.idHD);
-      state.gioHang = initialResponse; // Cập nhật đúng ở đây
-      // Tính toán tổng tiền ban đầu
-      calculateTotalAmounts();
-
-      const responseKH = await GeOneKhachHang(idHDS.value);
-      const idKH = responseKH.id
-      if (idKH == null) {
-        state.detailKhachHang = null;
-      } else {
-        state.detailKhachHang = responseKH;
-      }
-    }
+    }))
   }
-})
+}
 
+const isQrVNpayModalVisible = ref(false)
+const qrVnPayLoading = ref(false) // Unused
+
+const openQrModalVNPay = () => {
+  isQrVNpayModalVisible.value = true
+}
+
+const closeQrModalVnPay = () => {
+  isQrVNpayModalVisible.value = false
+}
+
+const isQrModalVisible = ref(false) // For product QR scan
+const qrData = ref('')
+const hasCamera = ref(true); // To check camera availability
+
+let html5QrCode: Html5Qrcode
+
+const openQrModal = () => {
+  isQrModalVisible.value = true
+  nextTick(() => {
+    startQrScanning()
+  })
+}
+
+const startQrScanning = () => {
+  const qrRegionId = 'reader'
+  const qrRegionElement = document.getElementById(qrRegionId)
+  if (!qrRegionElement) {
+    console.error("Không tìm thấy phần tử với id 'reader'")
+    return
+  }
+
+  html5QrCode = new Html5Qrcode(qrRegionId)
+
+  Html5Qrcode.getCameras()
+    .then((cameras: { id: string; label: string }[]) => {
+      if (cameras && cameras.length) {
+        hasCamera.value = true;
+        const cameraId = cameras[0].id // Use the first camera found
+        html5QrCode.start(
+          cameraId,
+          { fps: 10, qrbox: 250 },
+          (qrCodeMessage: string) => {
+            qrData.value = qrCodeMessage
+            selectProduct(qrCodeMessage) // Select product using scanned ID
+            html5QrCode.stop()
+            closeQrModal()
+          },
+          (errorMessage) => {
+            console.warn('Lỗi đọc QR: ', errorMessage)
+          }
+        )
+      } else {
+        console.warn('Không tìm thấy camera nào!')
+        hasCamera.value = false;
+        toast.error('Không tìm thấy camera hoặc không có quyền truy cập camera!');
+      }
+    })
+    .catch((error: any) => {
+      console.error('Lỗi khi lấy camera: ', error)
+      hasCamera.value = false;
+      toast.error('Lỗi khi truy cập camera: ' + error.message);
+    })
+}
+
+const closeQrModal = () => {
+  isQrModalVisible.value = false
+  stopQrScanning()
+}
+
+const stopQrScanning = () => {
+
+  html5QrCode.stop().catch((err) => console.error('Không thể dừng scanner:', err))
+
+}
+
+// Function to add a new customer (Not implemented in the template, but good to have a placeholder)
+const addCustomer = () => {
+  toast.info('Chức năng thêm khách hàng mới đang được phát triển!');
+  // Here you would typically open a modal for new customer creation
+}
+
+
+onMounted(async () => {
+  await fetchHoaDon()
+  setDefaultPaymentMethod()
+  await fetchProvinces() // Fetch provinces on mount for delivery form
+})
 </script>
+
 
 <style scoped>
 .main-layout {
   display: flex;
-  gap: 20px;
-  padding: 20px;
-
-  background-color: #f0f2f5;
   width: 100%;
+  /* Or whatever maximum width you want for the whole content area */
+  box-sizing: border-box;
+  /* Important for consistent sizing */
+  /* Add a gap between columns if desired */
+  gap: 20px;
+  /* Adjust as needed */
+  /* Remove any fixed height that might restrict content */
+  height: auto;
 }
 
 /* Card Styling */
@@ -881,7 +2064,6 @@ onMounted(async () => {
   font-size: 18px;
   color: #333;
 }
-
 
 /* Top Header */
 .top-header {
@@ -1037,8 +2219,6 @@ onMounted(async () => {
   border-bottom: 1px solid #f0f0f0;
   margin-bottom: 15px;
 }
-
-
 
 .empty-cart {
   display: flex;
@@ -1232,7 +2412,7 @@ textarea.input-full-width {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 800px;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
@@ -1246,9 +2426,6 @@ textarea.input-full-width {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 800px;
-  width: 90%;
-  max-height: 80vh;
   overflow-y: auto;
 }
 
@@ -1278,26 +2455,6 @@ textarea.input-full-width {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.tab-button-payment {
-  background-color: #f0f2f5;
-  border: 1px solid #d9d9d9;
-  border-bottom: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 16px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-  margin-bottom: -1px;
-  /* Overlap border */
-}
-
-.tab-button-payment.active {
-  background-color: #fff;
-  border-color: #54bddb;
-  color: #54bddb;
-  border-bottom-color: #fff;
-}
-
 .payment-method-summary {
   text-align: center;
   margin-bottom: 20px;
@@ -1324,7 +2481,6 @@ textarea.input-full-width {
 }
 
 .top-header {
-
   border-radius: 5px;
   background-color: #54bddb;
   height: 60PX;
@@ -1335,7 +2491,6 @@ textarea.input-full-width {
 }
 
 .search-and-create-section {
-
   display: flex;
   align-items: center;
   gap: 15px;
@@ -1345,7 +2500,6 @@ textarea.input-full-width {
   justify-content: flex-end;
   /* Căn phải các item bên trong */
 }
-
 
 .search-box-top {
   display: flex;
@@ -1409,7 +2563,6 @@ textarea.input-full-width {
   margin-bottom: 20px;
 }
 
-
 .search-icon-top {
   background: none;
   border: none;
@@ -1418,16 +2571,247 @@ textarea.input-full-width {
   padding-left: 5px;
 }
 
-
 .left-column {
-  flex: 1;
-  width: 70%;
+  /*
+  flex-grow: 0;   -> Do not grow beyond flex-basis
+  flex-shrink: 0; -> Do not shrink below flex-basis
+  flex-basis: 80%; -> Initial size is 80% of the parent container
+  */
+  flex: 0 0 60%;
+  box-sizing: border-box;
+  /* Important for consistent sizing */
+  /* Set a min-width if you want to prevent it from getting too small,
+      but be careful not to make it too large and cause overflow. */
+  min-width: 600px;
+  /* Example: adjust based on your content. Remove if not needed. */
 }
 
 .right-column {
-  flex: 2;
+  /*
+  flex-grow: 1;   -> Grow to fill any available space
+  flex-shrink: 1; -> Allow shrinking if space is limited
+  flex-basis: 0%; -> Initial size is 0 (it will expand based on flex-grow)
+  */
+  flex: 1;
+  /* This is a shorthand for flex-grow: 1, flex-shrink: 1, flex-basis: 0% */
+  box-sizing: border-box;
+  /* Important for consistent sizing */
+  /* Set a min-width if you want to prevent it from getting too small. */
+  min-width: 250px;
+  /* Example: adjust based on your content. Remove if not needed. */
+}
+
+/* Trong phần <style scoped> của bạn */
+
+/* Khu vực phương thức thanh toán trong cột phải */
+.payment-method-options {
+  display: flex;
+  gap: 12px;
+  /* Khoảng cách giữa các nút */
+  margin-top: 10px;
+  justify-content: space-between;
+  /* Đảm bảo các nút phân bố đều */
+}
+
+.btn-payment-option {
+  flex: 1;
+  /* Các nút chiếm đều không gian */
+  padding: 12px 16px;
+  border: 1px solid #d9d9d9;
+  /* Viền nhẹ */
+  border-radius: 8px;
+  /* Bo góc mượt mà */
+  background-color: #f5f5f5;
+  /* Nền xám nhạt */
+  color: #333;
+  /* Màu chữ tối */
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  /* Hiệu ứng chuyển đổi mượt */
+}
+
+.btn-payment-option:hover {
+  background-color: #e6f7ff;
+  /* Màu xanh nhạt khi hover */
+  border-color: #54bddb;
+  /* Viền xanh khi hover */
+  color: #54bddb;
+  /* Chữ xanh khi hover */
+}
+
+.btn-payment-option.active {
+  background-color: #54bddb;
+  /* Màu xanh chính khi được chọn */
+  border-color: #54bddb;
+  color: white;
+  /* Chữ trắng */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Bóng nhẹ */
+}
+
+/* Nút xác nhận thanh toán */
+.btn-confirm-payment {
+  background-color: #54bddb;
+  /* Màu xanh chính */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
   width: 100%;
-  /* Mỗi cột chiếm 1 phần bằng nhau */
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-confirm-payment:hover {
+  background-color: #3a9cc4;
+  /* Màu xanh đậm hơn khi hover */
+}
+
+/* Modal Thanh toán */
+.payment-modal-content {
+  padding: 20px;
+  /* Tăng padding cho không gian thoáng hơn */
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.payment-info {
+  margin-bottom: 20px;
+  font-size: 18px;
+  text-align: center;
+  color: #333;
+  font-weight: 500;
+}
+
+.payment-info strong {
+  color: #000;
+}
+
+/* Tabs phương thức thanh toán trong modal */
+.tabs-payment-method {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+/* Input số tiền thanh toán */
+.payment-amount-input {
+  margin-bottom: 20px;
+}
+
+.payment-amount-input label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.payment-amount-input input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fafafa;
+  transition: border-color 0.3s ease;
+}
+
+.payment-amount-input input:focus {
+  border-color: #54bddb;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(84, 189, 219, 0.2);
+}
+
+/* Tổng kết thanh toán trong modal */
+.payment-method-summary {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff4d4f;
+  /* Màu đỏ nổi bật */
+  background-color: #fff1f0;
+  /* Nền đỏ nhạt */
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ffa39e;
+}
+
+/* Bảng chi tiết phương thức thanh toán */
+.payment-details-table {
+  margin-bottom: 20px;
+}
+
+:deep(.ant-table-thead > tr > th) {
+  background-color: #fafafa !important;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+:deep(.ant-table-tbody > tr > td) {
+  text-align: center;
+  color: #333;
+}
+
+:deep(.ant-tag) {
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Tùy chỉnh màu cho từng phương thức thanh toán */
+
+/* Footer tổng kết thanh toán */
+.footer-payment-summary {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 15px;
+  text-align: right;
+}
+
+.footer-info div {
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #333;
+}
+
+.footer-info strong {
+  font-weight: 600;
+  color: #000;
+}
+
+/* Nút trong modal footer */
+:deep(.ant-modal-footer .ant-btn-primary) {
+  background-color: #54bddb;
+  border-color: #54bddb;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 14px;
+}
+
+:deep(.ant-modal-footer .ant-btn-primary:hover) {
+  background-color: #3a9cc4;
+  border-color: #3a9cc4;
+}
+
+:deep(.ant-modal-footer .ant-btn-default) {
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 14px;
+  color: #333;
+  border-color: #d9d9d9;
+}
+
+:deep(.ant-modal-footer .ant-btn-default:hover) {
+  border-color: #54bddb;
+  color: #54bddb;
 }
 
 /* Card chung */
@@ -1466,6 +2850,14 @@ textarea.input-full-width {
   padding: 5px 10px;
   border-radius: 4px;
   font-size: 12px;
+}
+
+.select-discount-button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .tab-item.active {
@@ -1539,10 +2931,7 @@ textarea.input-full-width {
   cursor: pointer;
   height: 40px;
   width: 120px;
-
-
 }
-
 
 .empty-cart {
   text-align: center;
@@ -1741,6 +3130,13 @@ textarea.input-full-width {
   padding-top: 15px;
 }
 
+.discount-input {
+  border: none;
+  padding: 8px 12px;
+  flex-grow: 1;
+  outline: none;
+}
+
 .summary-item {
   display: flex;
   justify-content: space-between;
@@ -1788,40 +3184,61 @@ textarea.input-full-width {
   background-color: #54bddb;
 }
 
-/* Modal Thanh toán */
-.tabs-payment-method {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
 .tab-button-payment {
   flex: 1;
-  /* Chia đều không gian */
-  background-color: #f0f0f0;
-  /* Màu nền xám nhạt */
-  color: #595959;
-  padding: 10px 15px;
+  padding: 12px 16px;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
-  /* Bo tròn góc */
+  background-color: #f5f5f5;
+  color: #333;
   font-size: 14px;
+  font-weight: normal;
+  /* Chữ không đậm khi không chọn */
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  /* Sử dụng flex để căn chỉnh văn bản và biểu tượng */
+  align-items: center;
+  /* Căn giữa theo chiều dọc */
+  justify-content: center;
+  /* Căn giữa theo chiều ngang */
+  gap: 8px;
+  /* Khoảng cách giữa văn bản và biểu tượng */
+}
+
+.discount-code-section {
+  margin-bottom: 20px;
+}
+
+.discount-code-section label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 .tab-button-payment.active {
   background-color: #54bddb;
-  /* Màu xanh Ant Design khi active */
+  border-color: #54bddb;
   color: white;
-  border-color: #007bff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  /* In đậm khi chọn */
 }
 
-.tab-button-payment:hover:not(.active) {
-  background-color: #e6f7ff;
-  /* Light blue on hover for non-active */
+.tab-button-payment svg {
+  width: 16px;
+  height: 16px;
 }
 
+.discount-code-section {
+  margin-bottom: 20px;
+}
+
+.discount-code-section label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
 
 .payment-method-summary {
   margin-bottom: 15px;
@@ -1872,7 +3289,6 @@ textarea.input-full-width {
   margin-bottom: 10px;
 }
 
-
 .required {
   color: red;
 }
@@ -1880,6 +3296,7 @@ textarea.input-full-width {
 .input-wrapper {
   position: relative;
   height: 30px;
+  width: 100%;
 }
 
 .input-wrapper .icon {
@@ -1965,10 +3382,8 @@ textarea.input-full-width {
   /* Bỏ margin-top ở đây vì đã có trên button-group-customer */
 }
 
-
 .form-group {
-
-  width: 380px;
+  width: 300px;
   display: block;
   justify-self: center;
   margin-top: 10px;
@@ -1982,18 +3397,25 @@ textarea.input-full-width {
 }
 
 .input-customer {
+  width: 100%;
   margin-top: 5px;
   background-color: white;
   height: 40px;
 }
 
+.discount-input-group {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
 
 .page-container {
   padding: 20px;
   /* Overall padding for the page content */
 }
 
-.breadcrumb-section { 
+.breadcrumb-section {
   margin-bottom: 25px;
   /* Space below the breadcrumb and above the first section */
   background-color: #fff;
@@ -2025,10 +3447,394 @@ textarea.input-full-width {
   /* Space between icon and text */
 }
 
-/* Remove or adjust body styles if they are global.
-   Scoped styles prevent them from affecting the entire app. */
-body {
-  font-family: 'Roboto', sans-serif;
+.btn-payment-option.active {
+  background-color: #54bddb;
+  border-color: #54bddb;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  /* In đậm khi chọn */
 }
 
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 1300px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.discount-code-section {
+  margin-bottom: 20px;
+}
+
+.discount-label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.discount-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.discount-input {
+  border-radius: 8px !important;
+  border: 1px solid #d9d9d9;
+  transition: border-color 0.3s;
+}
+
+.discount-input:hover {
+  border-color: #54bddb;
+}
+
+.select-discount-button {
+  border-radius: 8px;
+  padding: 0 20px;
+  height: 40px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.select-discount-button:hover {
+  background-color: #3ca8c9 !important;
+  border-color: #3ca8c9 !important;
+}
+
+.discount-info {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.clear-discount-btn {
+  color: #ff4d4f;
+}
+
+.clear-discount-btn:hover {
+  color: #d9363e;
+}
+
+.discount-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.discount-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.discount-list-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.discount-list-item:hover {
+  background-color: #f5f5f5;
+}
+
+.discount-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1890ff;
+  cursor: pointer;
+}
+
+.discount-title:hover {
+  color: #40a9ff;
+}
+
+.discount-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.discount-description {
+  font-size: 12px;
+  color: #888;
+}
+
+.ant-list-item-action>.ant-btn {
+  border-radius: 4px;
+  padding: 4px 12px;
+}
+
+@media (max-width: 768px) {
+  .discount-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .select-discount-button {
+    width: 100%;
+  }
+
+  .discount-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* Cải thiện giao diện phần giao hàng */
+.delivery-info-section {
+  background: #f1f5f9;
+  /* Màu nền nhạt, tông xanh pastel */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  /* Đường viền trái màu xanh lá */
+}
+
+
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a8a;
+  /* Màu xanh đậm cho nhãn */
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group .required {
+  color: #dc3545;
+  /* Màu đỏ cho dấu * */
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-customer,
+.a-select {
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  background-color: #ffffff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-customer:focus,
+.a-select:focus {
+  border-color: #007bff;
+  /* Màu xanh dương khi focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+.input-customer::placeholder {
+  color: #6c757d;
+  /* Màu xám nhạt cho placeholder */
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 15px;
+  background-color: #e9ecef;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.summary-item label {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.shipping-fee {
+  font-weight: 700;
+
+  font-size: 16px;
+}
+
+.delivery-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.delivery-toggle-container :deep(.ant-switch-checked) {
+  background-color: #007bff;
+  /* Màu xanh lá cây mặc định của Ant Design */
+  /* Hoặc một màu xanh lá cây khác mà bạn thích */
+  /* background-color: #4CAF50; */
+}
+
+.my-button:hover {
+  background-color: #007bff;
+  /* Ví dụ: #f0f0f0 (màu xám nhạt) hoặc màu xanh bạn muốn */
+  /* Hoặc nếu bạn muốn bỏ hiệu ứng nền, có thể dùng */
+  /* background-color: transparent; */
+}
+
+.delivery-toggle-container label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+:deep(.ant-switch) {
+  background-color: #ced4da;
+  /* Màu xám khi tắt */
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .delivery-form {
+    grid-template-columns: 1fr;
+    /* Chuyển thành 1 cột trên mobile */
+  }
+}
+
+/* Filter Container */
+.filter-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 8px;
+}
+
+.search-input-wrapper {
+  position: relative;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-box:hover,
+.search-box:focus-within {
+  border-color: #54bddb;
+  box-shadow: 0 0 5px rgba(84, 189, 219, 0.3);
+}
+
+:deep(.ant-input) {
+  border: none !important;
+  background: transparent !important;
+  padding: 10px 10px 10px 36px !important;
+  font-size: 14px;
+  color: #333;
+  height: 40px;
+}
+
+:deep(.ant-input-prefix) {
+  margin-right: 8px;
+  color: #8c8c8c;
+}
+
+:deep(.ant-input::placeholder) {
+  color: #bfbfbf;
+}
+
+:deep(.ant-select) {
+  width: 100%;
+}
+
+:deep(.ant-select-selector) {
+  border-radius: 8px !important;
+  height: 40px !important;
+  display: flex;
+  align-items: center;
+}
+
+:deep(.ant-select-selection-placeholder) {
+  color: #bfbfbf;
+}
+
+.reset-button-group {
+  display: flex;
+  align-items: flex-end;
+}
+
+.reset-button {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background-color: #6b7280 !important;
+  color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.reset-button:hover {
+  background-color: #4b5563 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .filter-container {
+    grid-template-columns: 1fr;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+}
 </style>

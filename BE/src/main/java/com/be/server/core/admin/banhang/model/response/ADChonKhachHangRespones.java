@@ -4,4 +4,5 @@ public interface ADChonKhachHangRespones {
      String getId();
      String getTen();
      String getSdt();
+     String getDiaChi();
 }

@@ -47,6 +47,13 @@ public class ADDotGiamGiaRestController {
         return ResponseEntity.ok(sanPhamsTiets);
     }
 
+    @GetMapping("/san-pham-chi-tiet-by-dot/{id}")
+    public ResponseEntity<?> getSanPhamCTByDot(@PathVariable String id) {
+        List<SanPhamChiTiet> sanPhamsTiets = dotGiamGiaService.getSanPhamByDot(id);
+        return ResponseEntity.ok(sanPhamsTiets);
+    }
+
+
     @GetMapping("/mau-sac")
     public ResponseEntity<?> getMauSac() {
         List<MauSac> list = mauSacRepository.findAll();

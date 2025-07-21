@@ -1,183 +1,242 @@
 <template>
   <DivCustom label="Bộ lọc">
-    <div class="row">
-      <!-- Row 1 -->
-      <div class="col-md-4 mb-3">
-        <label class="form-label d-flex align-items-center">
-          <span class="ms-2">Mã/Tên Phiếu:</span>
-        </label>
-        <a-input 
-
-          placeholder="Tìm kiếm"
-          style="width: 100%;"
-        />
-      </div>
-      
-      <div class="col-md-4 mb-3">
-        <label class="form-label">Từ ngày:</label>
-        <a-date-picker 
-   
-          placeholder="Tìm kiếm"
-          style="width: 100%;"
-          format="DD/MM/YYYY"
-          :inputReadOnly="true"
-        />
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 mb-3">
+          <label class="form-label d-flex align-items-center">
+            <span class="ms-2">Mã/Tên Phiếu:</span>
+          </label>
+          <a-input v-model:value="localSearchQuery" placeholder="Tìm kiếm" style="width: 100%;" />
+        </div>
       </div>
 
-      <div class="col-md-4 mb-3">
-        <label class="form-label">Đến ngày:</label>
-        <a-date-picker 
-       
-          placeholder="Tìm kiếm"
-          style="width: 100%;"
-          format="DD/MM/YYYY"
-          :inputReadOnly="true"
-        />
-      </div>
-    </div>
+      <div class="row">
+        <div class="col-md-4 col-sm-6 mb-3 filter-item">
+          <label for="status-select" class="filter-label">Trạng thái:</label>
+          <a-select v-model:value="localStatusFilter" class="select-input" allow-clear style="width: 100%"
+            placeholder="Chọn trạng thái">
+            <a-select-option :value="1">Hoạt động</a-select-option>
+            <a-select-option :value="0">Ngừng hoạt động</a-select-option>
+          </a-select>
+        </div>
 
-    <!-- Row 2 -->
-    <div class="row">
-      <div class="col-md-4 mb-3">
-        <label class="form-label">Giá trị giảm:</label>
-        <a-input 
-    
-          placeholder="Tìm kiếm"
-          style="width: 100%;"
-        />
-      </div>
-      
-      <div class="col-md-4 mb-3">
-        <label class="form-label">Trạng thái:</label>
-        <a-select 
+        <div class="col-md-4 col-sm-6 mb-3 filter-item">
+          <label for="kieu-giam-select" class="filter-label">Kiểu giảm:</label>
+          <a-select v-model:value="localKieuGiamFilter" class="select-input" allow-clear style="width: 100%"
+            placeholder="Chọn kiểu giảm">
+            <a-select-option :value="0">Phần trăm</a-select-option>
+            <a-select-option :value="1">Tiền</a-select-option>
+          </a-select>
+        </div>
 
-          placeholder="Tất cả"
-          style="width: 100%;"
-          :options="statusOptions"
-          allowClear
-        />
+        <div class="col-md-4 col-sm-12 mb-3 filter-item">
+          <span class="text-sm text-gray-600 mb-1">Chọn khoảng thời gian</span>
+          <a-range-picker v-model:value="localDateRange" format="DD/MM/YYYY" :allowClear="true" style="width: 100%;"
+            placeholder="Chọn khoảng thời gian" />
+        </div>
       </div>
-      
-      <!-- Action buttons -->
-    <div class="d-flex justify-content-center gap-2 mt-3 col-md-4 mb-3 align-self-end">
-      <a-tooltip title="Làm mới bộ lọc">
-        <a-button @click="resetFilters" class="d-flex align-items-center"
-        style="background-color: #54bddb; border-color: #54bddb; color: white;">
-          Làm mới
-          <ReloadOutlined />
-        </a-button>
-      </a-tooltip>
-    </div>
-      
+
+      <div class="row">
+        <div class="col-12 mt-3 d-flex justify-content-start">
+          <a-tooltip title="Làm mới bộ lọc">
+            <a-button style="background-color: dimgrey; color: white" @click="resetFilters"
+              class="reset-button filter-control-button">
+              Đặt lại bộ lọc
+              <ReloadOutlined />
+            </a-button>
+          </a-tooltip>
+        </div>
+      </div>
     </div>
   </DivCustom>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits } from 'vue'
-import DivCustom from '@/components/custom/Div/DivCustom.vue'
-import { ReloadOutlined } from '@ant-design/icons-vue'
+import { ref, watch, defineProps, defineEmits, computed } from 'vue';
+import DivCustom from '@/components/custom/Div/DivCustom.vue'; // Ensure this path is correct
+import { ReloadOutlined } from '@ant-design/icons-vue';
+import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 
-const props = defineProps<{ searchQuery: string; searchStatus: number | null }>()
-const emit = defineEmits(['update:searchQuery', 'update:searchStatus'])
+// --- Props Definition ---
+const props = defineProps<{
+  searchQuery: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  kieuGiam?: number | null; // 0 for Percentage, 1 for Amount
+  status?: number | null; // 0 for Active, 1 for Inactive
+}>();
 
-const localSearchQuery = ref(props.searchQuery)
-const localSearchStatus = ref(props.searchStatus)
+// --- Emits Definition ---
+const emit = defineEmits([
+  'update:searchQuery',
+  'update:startDate',
+  'update:endDate',
+  'update:kieuGiam',
+  'update:status',
+]);
 
-const options = [
-  { label: 'Hoạt động', value: 0 },
-  { label: 'Ngừng hoạt động', value: 1 }
-]
+// --- Local Reactive Variables for Filters ---
+const localSearchQuery = ref(props.searchQuery);
+const localKieuGiamFilter = ref(props.kieuGiam);
+const localStatusFilter = ref(props.status);
 
-watch([localSearchQuery, localSearchStatus], ([newQuery, newStatus]) => {
-  emit('update:searchQuery', newQuery)
-  emit('update:searchStatus', newStatus)
-})
-const statusOptions = [
-  { label: 'Chưa kích hoạt', value: 'CHUA_KICH_HOAT' },
-  { label: 'Đang kích hoạt', value: 'DANG_KICH_HOAT' },
-]
+// --- Computed Property for Date Range Picker ---
+const localDateRange = computed<[Dayjs, Dayjs] | null>({
+  get: () => {
+    return props.startDate && props.endDate
+      ? [dayjs(props.startDate) as Dayjs, dayjs(props.endDate) as Dayjs]
+      : null;
+  },
+  set: (val: [Dayjs, Dayjs] | null) => {
+    emit('update:startDate', val && val.length === 2 ? val[0].format('YYYY-MM-DD') : null);
+    emit('update:endDate', val && val.length === 2 ? val[1].format('YYYY-MM-DD') : null);
+  },
+});
+
+// --- Watchers for Filter Changes ---
+watch(localSearchQuery, (newValue) => {
+  emit('update:searchQuery', newValue);
+});
+
+watch(localKieuGiamFilter, (newValue) => {
+  emit('update:kieuGiam', newValue);
+});
+
+watch(localStatusFilter, (newValue) => {
+  emit('update:status', newValue);
+});
+
+// --- Reset Filters Function ---
 const resetFilters = () => {
-  localSearchQuery.value = ''
-  localSearchStatus.value = null
-  emit('update:searchQuery', '')
-  emit('update:searchStatus', null)
-}
+  localSearchQuery.value = '';
+  localKieuGiamFilter.value = null;
+  localStatusFilter.value = null;
+  localDateRange.value = null;
+
+  emit('update:searchQuery', '');
+  emit('update:kieuGiam', null); // Corrected typo back to 'kieuGiam'
+  emit('update:status', null);
+  emit('update:startDate', null);
+  emit('update:endDate', null);
+};
 </script>
 
-<style scoped lang="scss">
-/* Use scoped style for better component encapsulation */
+---
 
-.filter-container {
+<style scoped lang="scss">
+/* Basic Bootstrap-like grid system for responsiveness */
+.container-fluid {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.row {
   display: flex;
   flex-wrap: wrap;
-  /* Allow items to wrap to the next line on smaller screens */
-  gap: 20px;
-  /* Space between filter items */
-  align-items: flex-end;
-  /* Align items to the bottom of the container */
-  padding: 15px;
-  /* Add some padding around the filter section */
+  margin-left: -15px;
+  margin-right: -15px;
+}
 
-  border-radius: 8px;
-  /* Slightly rounded corners */
+.col-12, .col-md-4, .col-sm-6 {
+  position: relative;
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.col-12 {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 576px) { // Small devices (tablets, 576px and up)
+  .col-sm-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 768px) { // Medium devices (desktops, 768px and up)
+  .col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+}
+
+.mb-3 {
+  margin-bottom: 1rem !important; // Use !important to ensure it overrides defaults if needed
+}
+
+.mt-3 {
+  margin-top: 1rem !important;
 }
 
 .filter-item {
   display: flex;
   flex-direction: column;
-  /* Stack label above input/button */
   justify-content: flex-end;
-  /* Push content to the bottom if container has extra space */
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
 }
 
 .filter-label {
   font-size: 14px;
-  font-weight: bold; /* This will now be effective */
+  font-weight: bold;
   margin-bottom: 5px;
   color: #555;
   white-space: nowrap;
 }
 
-.search-input {
-  width: 700px;
-  /* Adjust width as needed for better responsiveness */
-  min-width: 200px;
-  /* Minimum width for search input */
+/* Ensure Ant Design components fill the width of their column */
+.ant-input,
+.ant-picker,
+.ant-select {
+  width: 100%;
+  height: 32px;
 }
 
 .reset-button {
   display: flex;
-  /* Ensure icon and text are side-by-side */
   align-items: center;
-  /* Vertically center icon and text */
   gap: 5px;
-  /* Space between text and icon */
   height: 32px;
-  /* Standard Ant Design button height */
   padding: 0 15px;
-  /* Adjust padding for better look */
-  margin-top: 25px;
-  /* Align button baseline with input text. Adjust as needed based on actual font sizes/line heights */
+  width: auto;
 }
 
-/* Optional: If you want to match the Ant Design input height precisely for the button */
-.ant-input {
-  height: 32px;
-  /* Default Ant Design input height */
+/* Utility classes */
+.d-flex {
+  display: flex;
 }
 
-// Basic Ant Design button styles often handle 'd-flex', 'justify-content-center', 'align-items-center', 'px-4'
-// These are likely utility classes from another framework (like Bootstrap or Tailwind).
-// If they are not working, you'd need to define them, e.g.:
-/*
-.d-flex { display: flex; }
-.align-items-center { align-items: center; }
-.justify-content-center { justify-content: center; }
-.px-4 { padding-left: 1rem; padding-right: 1rem; }
-*/
+.align-items-center {
+  align-items: center;
+}
 
-/* Global body font is okay, but usually specified in a global stylesheet */
+.justify-content-start {
+  justify-content: flex-start; /* Align the reset button to the left */
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.ms-2 {
+  margin-left: 0.5rem;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
 }

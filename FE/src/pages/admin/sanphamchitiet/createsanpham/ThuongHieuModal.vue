@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="open" :title="props.title" width="400px">
+  <a-modal :open="open" title="Thêm thương hiệu" width="400px" @cancel="closeModal">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
 
@@ -12,7 +12,7 @@
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="tên thương hiệu" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="Tên thương hiệu" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"

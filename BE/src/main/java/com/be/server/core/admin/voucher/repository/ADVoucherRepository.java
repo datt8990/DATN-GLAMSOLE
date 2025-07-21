@@ -3,6 +3,9 @@ package com.be.server.core.admin.voucher.repository;
 
 
 import com.be.server.core.admin.SanPhamChiTiet.model.response.ADThemSanPhamChiTietResponse;
+import com.be.server.core.admin.sanpham.model.request.ADSanPhamSearchRequest;
+import com.be.server.core.admin.sanpham.model.response.ADSanPhamResponse;
+import com.be.server.core.admin.voucher.model.request.ADVoucherSearchRequest;
 import com.be.server.core.admin.voucher.model.response.ADPhieuGiamGiaResponse;
 
 
@@ -25,8 +28,53 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ADVoucherRepository extends VoucherRepository {
 
-    Page<PhieuGiamGia> findByMaContainingOrTenContaining(String ma, String ten, Pageable pageable);
-
+    @Query(value = """
+        SELECT
+            pgg.id as id,
+            pgg.ma as ma,
+            pgg.ten as ten,
+            pgg.dieuKien as dieuKien,
+            pgg.giaGiam as giaGiam,
+            pgg.kieuGiam as kieuGiam,
+            pgg.loaiGiam as loaiGiam,
+            pgg.phanTramGiam as phanTramGiam,
+            pgg.soLuongPhieu as soLuongPhieu,
+            pgg.ngayBatDau as ngayBatDau,
+            pgg.ngayKetThuc as ngayKetThuc,
+            pgg.status as status   
+        FROM
+            PhieuGiamGia pgg
+        WHERE
+            (
+                :#{#req.q == null || #req.q.isEmpty()} = TRUE OR
+                LOWER(pgg.ma) LIKE LOWER(CONCAT('%', :#{#req.q}, '%')) OR
+                LOWER(pgg.ten) LIKE LOWER(CONCAT('%', :#{#req.q}, '%'))
+            )
+            AND (:#{#req.startDate == null} = TRUE OR pgg.ngayBatDau >= :#{#req.startDate})
+            AND (:#{#req.endDate == null} = TRUE OR pgg.ngayKetThuc <= :#{#req.endDate})
+            AND (:#{#req.kieuGiam == null} = TRUE OR pgg.kieuGiam = :#{#req.kieu})
+            AND (:#{#req.status == null} = TRUE OR pgg.status = :#{#req.entityStatus})
+            
+        ORDER BY pgg.createdDate DESC
+    """,
+            countQuery = """
+        SELECT
+            COUNT(pgg.id)
+        FROM
+            PhieuGiamGia pgg
+        WHERE
+            (
+                :#{#req.q == null || #req.q.isEmpty()} = TRUE OR
+                LOWER(pgg.ma) LIKE LOWER(CONCAT('%', :#{#req.q}, '%')) OR
+                LOWER(pgg.ten) LIKE LOWER(CONCAT('%', :#{#req.q}, '%'))
+            )
+            AND (:#{#req.startDate == null} = TRUE OR pgg.ngayBatDau >= :#{#req.startDate})
+            AND (:#{#req.endDate == null} = TRUE OR pgg.ngayKetThuc <= :#{#req.endDate})
+            AND (:#{#req.kieuGiam == null} = TRUE OR pgg.kieuGiam = :#{#req.kieu})
+            AND (:#{#req.status == null} = TRUE OR pgg.status = :#{#req.entityStatus})
+"""
+    )
+    Page<ADPhieuGiamGiaResponse> getAllPhieuGiamGiaFilter(Pageable pageable, @Param("req") ADVoucherSearchRequest req);
 
 
     @Query(value = """
@@ -56,5 +104,12 @@ public interface ADVoucherRepository extends VoucherRepository {
 """)
     List<String> getDanhSachKhachHang(@Param("id") String id);
 
-
+    @Query("""
+    select distinct spct.id
+    from PhieuGiamGia spct
+    where spct.ten = :tenSP
+""")
+    String checkThemPhieu(
+            @Param("tenSP") String tenSP
+    );
 }

@@ -33,12 +33,12 @@ public interface ADDotGiamGiaRepository extends com.be.server.repository.DotGiam
                 AND (:#{#req.phanTramGiam} IS NULL OR dgg.phan_tram = :#{#req.phanTramGiam})
                 AND (:#{#req.trangThai} IS NULL OR dgg.trang_thai = :#{#req.trangThai})
                 AND (
-                    (:#{#req.ngayBatDau} IS NULL OR :#{#req.ngayKetThuc} IS NULL)
-                    OR (
-                        dgg.ngay_ket_thuc >= :#{#req.ngayBatDau}
-                        AND dgg.ngay_bat_dau <= :#{#req.ngayKetThuc}
-                    )
-                )
+                     (:#{#req.ngayBatDau} IS NULL OR :#{#req.ngayKetThuc} IS NULL)
+                     OR (
+                         dgg.ngay_bat_dau >= :#{#req.ngayBatDau}
+                         AND dgg.ngay_ket_thuc <= :#{#req.ngayKetThuc}
+                     )
+                 )
             GROUP BY dgg.id
             ORDER BY dgg.last_modified_date DESC
             """, nativeQuery = true)

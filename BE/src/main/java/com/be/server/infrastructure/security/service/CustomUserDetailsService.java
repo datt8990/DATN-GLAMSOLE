@@ -6,6 +6,7 @@ import com.be.server.infrastructure.constant.EntityStatus;
 import com.be.server.infrastructure.security.repository.KhachHangAuthRepository;
 import com.be.server.infrastructure.security.repository.NhanVienAuthRepository;
 import com.be.server.infrastructure.security.user.UserPrincipal;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,24 +24,27 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final KhachHangAuthRepository userAuthRepository;
 
     private final NhanVienAuthRepository nhanVienAuthRepository;
-
+    private  final HttpSession httpSession;
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         System.out.println("EMAIL: " + email);
+        String role = (String) httpSession.getAttribute("role");
+        if ("ADMIN".equals(role)) {
+            Optional<NhanVien> existingNhanVien = nhanVienAuthRepository.findByEmailAndStatus(email, EntityStatus.ACTIVE);
+            if (existingNhanVien.isPresent()) {
+                NhanVien nhanVien = existingNhanVien.get();
+                System.out.println("loadUserByNhanVien: " + nhanVien);
+                return UserPrincipal.createFromNhanVien(nhanVien);
+            }
+        }else {
 
-        Optional<KhachHang> existingUser = userAuthRepository.findByEmailAndStatus(email, EntityStatus.ACTIVE);
-        if (existingUser.isPresent()) {
-            KhachHang user = existingUser.get();
-            System.out.println("loadUserByKhachHang: " + user);
-            return UserPrincipal.createFromKhachHang(user);
-        }
-
-        Optional<NhanVien> existingNhanVien = nhanVienAuthRepository.findByEmailAndStatus(email, EntityStatus.ACTIVE);
-        if (existingNhanVien.isPresent()) {
-            NhanVien nhanVien = existingNhanVien.get();
-            System.out.println("loadUserByNhanVien: " + nhanVien);
-            return UserPrincipal.createFromNhanVien(nhanVien);
+            Optional<KhachHang> existingUser = userAuthRepository.findByEmailAndStatus(email, EntityStatus.ACTIVE);
+            if (existingUser.isPresent()) {
+                KhachHang user = existingUser.get();
+                System.out.println("loadUserByKhachHang: " + user);
+                return UserPrincipal.createFromKhachHang(user);
+            }
         }
 
         throw new UsernameNotFoundException("User not found with email: " + email);

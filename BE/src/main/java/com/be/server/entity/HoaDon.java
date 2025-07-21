@@ -14,6 +14,7 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class HoaDon extends PrimaryEntity implements Serializable {
     private Double phiVanChuyen;
 
     @Column(name = "dia_chi_giao_hang")
-    private Double diaChi;
+    private String diaChi;
 
     @Column(name = "tong_tien_sau_giam")
     private Double tongTienSauGiam;

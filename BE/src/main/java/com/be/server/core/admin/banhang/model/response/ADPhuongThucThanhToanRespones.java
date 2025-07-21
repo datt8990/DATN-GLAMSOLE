@@ -1,8 +1,10 @@
 package com.be.server.core.admin.banhang.model.response;
 
+import java.math.BigDecimal;
+
 public interface ADPhuongThucThanhToanRespones {
 
-    Double getTongTien();
+    BigDecimal getTongTien();
 
     String getPhuongThucThanhToan();
 }

@@ -23,6 +23,7 @@ import com.be.server.repository.SanPhamChiTietRepository;
 import com.be.server.repository.SanPhamRepository;
 import com.be.server.utils.Helper;
 import com.be.server.utils.RandomNumberGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class DotGiamGiaServiceImpl implements DotGiamGiaService {
 
     @Autowired
@@ -76,6 +78,11 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
     }
 
     @Override
+    public List<SanPhamChiTiet> getSanPhamByDot(String id) {
+        return  sanPhamChiTietRepository.detailSPCTByDot(id);
+    }
+
+    @Override
     public DotGiamGia add(CreateDotGiamGiaRequest request) throws Exception {
         Optional<DotGiamGia> optionalPromotion = dotGiamGiaRepository.findByTen(request.getName());
         if (optionalPromotion.isPresent()) {
@@ -90,16 +97,28 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
                 throw new BadRequestException("Có sản phẩm không tồn tại");
             }
         }
-        if (request.getEndDate() <= request.getStartDate()) {
+        long currentMillis = System.currentTimeMillis();
+
+// Lấy ngày hiện tại (today)
+        LocalDate today = Instant.ofEpochMilli(currentMillis)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+// Lấy ngày từ request
+        LocalDate startDate = Instant.ofEpochMilli(request.getStartDate())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+// Chỉ reject nếu startDate nằm **trước hôm nay**
+        if (startDate.isBefore(today)) {
+            throw new BadRequestException("Ngày bắt đầu không được nằm trong quá khứ");
+        }
+        if (request.getEndDate() < request.getStartDate()) {
             throw new BadRequestException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
         }
-        long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
-        if (request.getEndDate() <= currentSeconds) {
-            throw new BadRequestException("Ngày kết thúc phải lớn hơn hiện tại");
-        }
-        if (hasOverlappingDiscounts(request.getIdProductDetails(), request.getStartDate(), request.getEndDate())) {
-            throw new BadRequestException("Một số sản phẩm đã nằm trong đợt giảm giá khác trong khoảng thời gian đã chọn.");
-        }
+//        if (hasOverlappingDiscounts(request.getIdProductDetails(), request.getStartDate(), request.getEndDate())) {
+//            throw new BadRequestException("Một số sản phẩm đã nằm trong đợt giảm giá khác trong khoảng thời gian đã chọn.");
+//        }
         StatusPromotion status = getStatusPromotion(request.getStartDate(), request.getEndDate());
         DotGiamGia dotGiamGia = DotGiamGia.builder().ma(new RandomNumberGenerator().randomToString("KM", 900000000))
                 .ten(request.getName()).phanTramGiam(request.getValue())
@@ -124,15 +143,39 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
     @Override
     @Transactional
     public DotGiamGia update(UpdateDotGiamGiaRequest request) {
+
+        log.info("Request update Đợt giảm giá : ====>{}  ",request.toString());
         Optional<DotGiamGia> optional = dotGiamGiaRepository.findById(request.getId());
         if (!optional.isPresent()) {
             throw new RuntimeException("Khuyến mại không tồn tại");
         }
+        log.info("Danh sách id product");
+
         for (IdProductDetail x : request.getIdProductDetails()) {
+            log.info(x.toString());
             Optional<SanPhamChiTiet> optional1 = sanPhamChiTietRepository.findById(x.getId());
             if (!optional1.isPresent()) {
                 throw new RuntimeException("Có sản phẩm không tồn tại");
             }
+        }
+        long currentMillis = System.currentTimeMillis();
+
+// Lấy ngày hiện tại (today)
+        LocalDate today = Instant.ofEpochMilli(currentMillis)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+// Lấy ngày từ request
+        LocalDate startDate = Instant.ofEpochMilli(request.getStartDate())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+// Chỉ reject nếu startDate nằm **trước hôm nay**
+        if (startDate.isBefore(today)) {
+            throw new BadRequestException("Ngày bắt đầu không được nằm trong quá khứ");
+        }
+        if (request.getEndDate() < request.getStartDate()) {
+            throw new BadRequestException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
         }
 
         StatusPromotion status = getStatusPromotion(request.getStartDate(), request.getEndDate());

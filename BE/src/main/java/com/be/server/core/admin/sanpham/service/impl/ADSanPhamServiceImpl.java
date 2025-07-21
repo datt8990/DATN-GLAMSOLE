@@ -1,5 +1,6 @@
 package com.be.server.core.admin.sanpham.service.impl;
 
+import com.be.server.core.admin.SanPhamChiTiet.repository.ADSanPhamChiTietRepository;
 import com.be.server.core.admin.sanpham.model.request.ADSanPhamRequest;
 import com.be.server.core.admin.sanpham.model.request.ADSanPhamSearchRequest;
 import com.be.server.core.admin.sanpham.model.response.ADSanPhamResponse;
@@ -11,6 +12,7 @@ import com.be.server.entity.ChatLieu;
 import com.be.server.entity.DanhMuc;
 import com.be.server.entity.LoaiDe;
 import com.be.server.entity.SanPham;
+import com.be.server.entity.SanPhamChiTiet;
 import com.be.server.entity.ThuongHieu;
 import com.be.server.entity.XuatSu;
 import com.be.server.infrastructure.constant.EntityStatus;
@@ -27,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,6 +37,8 @@ import java.util.Optional;
 public class ADSanPhamServiceImpl implements ADSanPhamService {
 
     private final ADSanPhamRepository adSanPhamRepository;
+
+    private final ADSanPhamChiTietRepository adSanPhamChiTietRepository;
 
     private final ThuongHieuRepository thuongHieuRepository;
 
@@ -47,9 +52,16 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
 
     @Override
     public ResponseObject<?> getAll(ADSanPhamSearchRequest id) {
-            Pageable pageable = Helper.createPageable(id, "created_date");
+        Pageable pageable = Helper.createPageable(id, "created_date");
 
-        Page<ADSanPhamResponse> page = adSanPhamRepository.getAllSanPhamByFilter(pageable,id);
+        if (id.getStatus() != null && !id.getStatus().isEmpty()) {
+            if (id.getStatus().equals("0")) {
+                id.setEntityStatus(EntityStatus.INACTIVE);
+            } else {
+                id.setEntityStatus(EntityStatus.ACTIVE);
+            }
+        }
+        Page<ADSanPhamResponse> page = adSanPhamRepository.getAllSanPhamByFilter(pageable, id);
 
         return new ResponseObject<>(
                 PageableObject.of(page),
@@ -78,7 +90,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
 
                 sanPham.setMoTa(request.getMoTa());
 
-                if(request.getIdThuongHieu() != null) {
+                if (request.getIdThuongHieu() != null) {
                     Optional<ThuongHieu> thuongHieuOptional = thuongHieuRepository.findById(request.getIdThuongHieu());
                     if (thuongHieuOptional.isPresent()) {
                         ThuongHieu thuongHieu = thuongHieuOptional.get();
@@ -88,7 +100,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
                     }
                 }
 
-                if(request.getIdDanhMuc() != null) {
+                if (request.getIdDanhMuc() != null) {
                     Optional<DanhMuc> danhMucOptional = danhMucRepository.findById(request.getIdDanhMuc());
                     if (danhMucOptional.isPresent()) {
                         DanhMuc danhMuc = danhMucOptional.get();
@@ -98,7 +110,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
                     }
                 }
 
-                if(request.getIdLoaiDe() != null) {
+                if (request.getIdLoaiDe() != null) {
                     Optional<LoaiDe> loaiDeOptional = loaiDeRepository.findById(request.getIdLoaiDe());
                     if (loaiDeOptional.isPresent()) {
                         LoaiDe loaiDe = loaiDeOptional.get();
@@ -108,7 +120,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
                     }
                 }
 
-                if(request.getIdXuatXu() != null) {
+                if (request.getIdXuatXu() != null) {
                     Optional<XuatSu> xuatSuOptional = xuatSuRepository.findById(request.getIdXuatXu());
                     if (xuatSuOptional.isPresent()) {
                         XuatSu xuatSu = xuatSuOptional.get();
@@ -118,7 +130,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
                     }
                 }
 
-                if(request.getIdChatLieu() != null) {
+                if (request.getIdChatLieu() != null) {
                     Optional<ChatLieu> xuatSuOptional = chatLieuRepository.findById(request.getIdChatLieu());
                     if (xuatSuOptional.isPresent()) {
                         ChatLieu xuatSu = xuatSuOptional.get();
@@ -140,7 +152,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
 
         newSanPham.setMoTa(request.getMoTa());
 
-        if(request.getIdThuongHieu() != null) {
+        if (request.getIdThuongHieu() != null) {
             Optional<ThuongHieu> thuongHieuOptional = thuongHieuRepository.findById(request.getIdThuongHieu());
             if (thuongHieuOptional.isPresent()) {
                 ThuongHieu thuongHieu = thuongHieuOptional.get();
@@ -150,7 +162,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
             }
         }
 
-        if(request.getIdDanhMuc() != null) {
+        if (request.getIdDanhMuc() != null) {
             Optional<DanhMuc> danhMucOptional = danhMucRepository.findById(request.getIdDanhMuc());
             if (danhMucOptional.isPresent()) {
                 DanhMuc danhMuc = danhMucOptional.get();
@@ -160,7 +172,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
             }
         }
 
-        if(request.getIdLoaiDe() != null) {
+        if (request.getIdLoaiDe() != null) {
             Optional<LoaiDe> loaiDeOptional = loaiDeRepository.findById(request.getIdLoaiDe());
             if (loaiDeOptional.isPresent()) {
                 LoaiDe loaiDe = loaiDeOptional.get();
@@ -170,7 +182,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
             }
         }
 
-        if(request.getIdXuatXu() != null) {
+        if (request.getIdXuatXu() != null) {
             Optional<XuatSu> xuatSuOptional = xuatSuRepository.findById(request.getIdXuatXu());
             if (xuatSuOptional.isPresent()) {
                 XuatSu xuatSu = xuatSuOptional.get();
@@ -180,7 +192,7 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
             }
         }
 
-        if(request.getIdChatLieu() != null) {
+        if (request.getIdChatLieu() != null) {
             Optional<ChatLieu> xuatSuOptional = chatLieuRepository.findById(request.getIdChatLieu());
             if (xuatSuOptional.isPresent()) {
                 ChatLieu xuatSu = xuatSuOptional.get();
@@ -200,42 +212,64 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
 
     @Override
     public ResponseObject<?> changeSanPhamStatus(String id) {
-        Optional<SanPham> nemberOptional = adSanPhamRepository.findById(id);
+        Optional<SanPham> optional = adSanPhamRepository.findById(id);
 
-        nemberOptional.map(nember -> {
-            nember.setStatus(nember.getStatus() == EntityStatus.ACTIVE ? EntityStatus.INACTIVE : EntityStatus.ACTIVE);
-            return new ResponseObject(adSanPhamRepository.save(nember), HttpStatus.OK, "Thay đổi trạng thái thành công");
-        });
+        if (optional.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm");
+        }
 
-        return nemberOptional
-                .map(product -> ResponseObject.successForward(HttpStatus.OK, "Đổi trạng thái thành công"))
-                .orElseGet(() -> ResponseObject.successForward(HttpStatus.NOT_FOUND, "Không tìm sản phẩm"));
+        SanPham sanPham = optional.get();
+
+        // Đảo trạng thái
+        EntityStatus newStatus = sanPham.getStatus() == EntityStatus.ACTIVE
+                ? EntityStatus.INACTIVE
+                : EntityStatus.ACTIVE;
+
+        sanPham.setStatus(newStatus);
+        adSanPhamRepository.save(sanPham);
+
+        // Lấy danh sách ID chi tiết sản phẩm liên quan
+        List<String> sanPhamChiTietIds = adSanPhamChiTietRepository.checkIdSanPhamCT(id);
+
+        for (String spctId : sanPhamChiTietIds) {
+            Optional<SanPhamChiTiet> spctOpt = adSanPhamChiTietRepository.findById(spctId);
+
+            if (spctOpt.isPresent()) {
+                SanPhamChiTiet spct = spctOpt.get();
+                spct.setStatus(newStatus);
+                adSanPhamChiTietRepository.save(spct);
+            }
+        }
+
+        return new ResponseObject<>(null, HttpStatus.OK, "Thay đổi trạng thái thành công");
     }
+
+
 
     @Override
     public ResponseObject<?> getListThuongHieu() {
 
-        return new ResponseObject<>(adSanPhamRepository.getListThuongHieu(),HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
+        return new ResponseObject<>(adSanPhamRepository.getListThuongHieu(), HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
     }
 
     @Override
     public ResponseObject<?> getXuatXu() {
-        return new ResponseObject<>(adSanPhamRepository.getListXuatXu(),HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
+        return new ResponseObject<>(adSanPhamRepository.getListXuatXu(), HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
     }
 
     @Override
     public ResponseObject<?> getListLoaiDe() {
-        return new ResponseObject<>(adSanPhamRepository.getLoaiDe(),HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
+        return new ResponseObject<>(adSanPhamRepository.getLoaiDe(), HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
     }
 
     @Override
     public ResponseObject<?> getListDanhMuc() {
-        return new ResponseObject<>(adSanPhamRepository.getListDanhMuc(),HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
+        return new ResponseObject<>(adSanPhamRepository.getListDanhMuc(), HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
     }
 
     @Override
     public ResponseObject<?> getListChetLieu() {
-        return new ResponseObject<>(adSanPhamRepository.getListChatLieu(),HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
+        return new ResponseObject<>(adSanPhamRepository.getListChatLieu(), HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
     }
 
 }

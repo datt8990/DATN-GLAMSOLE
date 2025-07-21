@@ -141,54 +141,61 @@ const router = useRouter();
 const emit = defineEmits(["page-change", "add", "view", "changeStatus","tab-change"]);
 
 const columns: TableColumnsType = [
-  { title: "STT", key: "stt", dataIndex: "stt", width: 70, align: "center" },
+  { title: "STT", key: "stt", dataIndex: "stt", width: 60, align: "center" },
   {
-    title: "Mã HĐ",
+    title: "Mã Hóa Đơn",
     key: "maHoaDon",
     dataIndex: "maHoaDon",
-    width: 100,
+    width: 115,
     align: "center",
   },
   {
-    title: "Tên KH",
+    title: "Tên Khách Hàng",
     key: "tenKhachHang",
     dataIndex: "tenKhachHang",
-    width: 150,
+    width: 135,
     align: "center",
   },
   {
-    title: "SDT KH",
+    title: "SDT Khách Hàng",
     key: "sdtKhachHang",
     dataIndex: "sdtKhachHang",
-    width: 150,
+    width: 138,
     align: "center",
   },
   {
-    title: "Loại HĐ",
+    title: "Loại Hóa Đơn",
     key: "loaiHD",
     dataIndex: "loaiHoaDon",
-    width: 150,
+    width: 119,
     align: "center",
   },
   {
-    title: "Tên NV",
+    title: "Mã Nhân Viên",
+    key: "maNhanVien",
+    dataIndex: "maNhanVien",
+    width: 125,
+    align: "center",
+  },
+  {
+    title: "Tên Nhân Viên",
     key: "tenNhanVien",
     dataIndex: "tenNhanVien",
-    width: 150,
+    width: 125,
     align: "center",
   },
   {
     title: "Tổng Tiền",
     key: "tongTien",
     dataIndex: "tongTien",
-    width: 100,
+    width: 120,
     align: "center",
   },
   {
     title: "Ngày Tạo",
     key: "ngayTao",
     dataIndex: "createdDate",
-    width: 150,
+    width: 115,
     align: "center",
   },
   {
@@ -198,7 +205,7 @@ const columns: TableColumnsType = [
     width: 100,
     align: "center",
   },
-  { title: "Hành Động", key: "operation", width: 100, align: "center" },
+  { title: "Hành Động", key: "operation", width: 120, align: "center" },
 ];
 
 const trangThaiTab = ref<string>('ALL');

@@ -13,6 +13,7 @@ public class ADHoaDonResponse {
     private String maHoaDon;
     private String tenKhachHang;
     private String sdtKhachHang;
+    private String maNhanVien;
     private String tenNhanVien;
     private Double tongTien;
     private EntityLoaiHoaDon loaiHoaDon;

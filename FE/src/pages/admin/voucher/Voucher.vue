@@ -5,153 +5,205 @@
         { path: '/admin/voucher', name: 'Quản lý phiếu giảm giá' }
       ]" />
     </div>
+
     <p class="section-title">
       <FilterOutlined /> Bộ lọc tìm kiếm
     </p>
-    <ProductFilter :searchQuery="state.searchQuery" :searchStatus="state.searchStatus"
-      @update:searchQuery="updateSearchQuery" @update:searchStatus="updateSearchStatus" />
+    <VoucherFilter
+      v-model:searchQuery="state.searchQuery"
+      v-model:startDate="state.startDate"
+      v-model:endDate="state.endDate"
+      v-model:kieuGiam="state.kieuGiam"
+      v-model:status="state.status"
+      @resetFilters="handleResetFilters"
+    />
+
     <p class="section-title">
       <UnorderedListOutlined /> Danh sách phiếu giảm giá
     </p>
-    <ProductTable :products="state.products" :paginationParams="state.paginationParams" :totalItems="state.totalItems"
-      @add="openAddModal" @view="openViewModal" @page-change="handlePageChange" @change-status="handleChangeStatus" />
-  </div>
+    <VoucherTable
+      :products="state.vouchers" :paginationParams="state.paginationParams"
+      :totalItems="state.totalItems"
+      @add="openAddModal"
+      @view="openViewModal"
+      @page-change="handlePageChange"
+      @change-status="handleChangeStatus"
+    />
+
+    </div>
 </template>
 
 <script setup lang="ts">
 import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
-import ProductFilter from './VoucherFilter.vue';
-import ProductTable from './VoucherTable.vue';
-import ProductModal from './VoucherModal.vue';
+import VoucherFilter from './VoucherFilter.vue';
+import VoucherTable from './VoucherTable.vue';
+// import VoucherModal from './VoucherModal.vue'; // Uncomment if you are using a modal
 import { computed, onMounted, reactive, watch } from 'vue';
-import { GetSizes, type SizeResponse, type ParamsGetSize } from '@/services/api/admin/voucher.api';
 import { debounce } from 'lodash';
-import DivCustom from '@/components/custom/Div/DivCustomAll.vue'
+import { FilterOutlined, UnorderedListOutlined } from '@ant-design/icons-vue';
 
+// --- IMPORTANT: Adjust these imports and types to match your actual API ---
+// Assuming you have an API service for vouchers.
+// Replace `GetSizes`, `SizeResponse`, `ParamsGetSize` with your actual voucher API.
+import { GetSizes, type SizeResponse, type ParamsGetSize } from '@/services/api/admin/voucher.api';
+// If your API returns a generic data structure, define it. Example:
+// interface ApiResponse<T> {
+//   data?: {
+//     data: T[];
+//     totalElements: number;
+//     // ... other pagination info
+//   };
+//   // ... other response properties
+// }
 
+// Khai báo state với đầy đủ các bộ lọc và dữ liệu
 const state = reactive({
   searchQuery: '',
-  searchStatus: null as number | null,
+  startDate: null as string | null,
+  endDate: null as string | null,
+  kieuGiam: null as number | null, // Use number | null for 0 (percentage), 1 (amount)
+  status: null as number | null, // Use number | null for 0 (active), 1 (inactive)
   isModalOpen: false,
   isModalChangeStatus: false,
-  selectedProductId: null as string | null,
-  products: [] as SizeResponse[],
+  selectedVoucherId: null as string | null,
+  vouchers: [] as SizeResponse[], // Renamed from 'products' to 'vouchers' for clarity
   paginationParams: { page: 1, size: 10 },
-  totalItems: 0
-})
-
+  totalItems: 0,
+});
 
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'
-})
-
-const updateSearchQuery = (newQuery: string) => {
-  state.searchQuery = newQuery
-}
-
-const updateSearchStatus = (newStatus: number | null) => {
-  state.searchStatus = newStatus
-}
+  return state.selectedVoucherId ? 'Cập nhật phiếu giảm giá' : 'Thêm phiếu giảm giá';
+});
 
 const openAddModal = () => {
-  state.selectedProductId = null
-  state.isModalOpen = true
-}
+  state.selectedVoucherId = null;
+  state.isModalOpen = true;
+};
 
 const openViewModal = (id: string) => {
-  state.selectedProductId = id
-  state.isModalOpen = true
-}
+  state.selectedVoucherId = id;
+  state.isModalOpen = true;
+};
 
 const openChangeStatusModal = (id: string) => {
-  state.selectedProductId = id
-  state.isModalChangeStatus = true
-}
+  state.selectedVoucherId = id;
+  state.isModalChangeStatus = true;
+};
 
 const closeModal = () => {
-  state.isModalOpen = false
-}
+  state.isModalOpen = false;
+  fetchVouchers(); // Refresh list after modal closes
+};
 
 const closeModalChangeStatus = () => {
-  fetchProducts();
-  state.isModalChangeStatus = false
-}
+  state.isModalChangeStatus = false;
+  fetchVouchers(); // Refresh list after status change modal closes
+};
 
-const fetchProducts = async () => {
+// Hàm fetch chính để lấy danh sách voucher
+const fetchVouchers = async () => {
   try {
-    const params: ParamsGetSize = {
+    const params: ParamsGetSize = { // Use your actual parameter type here
       page: state.paginationParams.page,
       size: state.paginationParams.size,
       q: state.searchQuery,
-      status: state.searchStatus
-    }
-    const response = await GetSizes(params)
-    // const pagedData = response.data.data 
+      startDate: state.startDate,
+      endDate: state.endDate,
+      kieuGiam: state.kieuGiam,
+      status: state.status,
+    };
+    console.log('Fetching vouchers with params:', params); // For debugging
 
-    state.products = response.data?.data
-    state.totalItems = response.data?.totalElements
+    // Replace `GetVouchers` with your actual API call for fetching vouchers
+    const response = await GetSizes(params);
+
+    state.vouchers = response.data?.data || [];
+    state.totalItems = response.data?.totalElements || 0;
   } catch (error) {
-    console.error('Failed to fetch products:', error)
+    console.error('Failed to fetch vouchers:', error);
+    state.vouchers = [];
+    state.totalItems = 0;
   }
-}
+};
 
-console.log(state.products)
-
-const debouncedFetchProducts = debounce(fetchProducts, 300)
+// Debounced version of fetchVouchers to limit API calls when typing in search
+const debouncedFetchVouchers = debounce(() => {
+  state.paginationParams.page = 1; // Reset page on filter changes (except page change itself)
+  fetchVouchers();
+}, 300);
 
 onMounted(() => {
-  fetchProducts()
-})
+  fetchVouchers(); // Initial data fetch when component mounts
+});
 
+// Watch all filter variables. When any of them change (due to v-model updates from VoucherFilter),
+// trigger the debounced fetch.
 watch(
-  () => [state.searchQuery, state.searchStatus],
+  [
+    () => state.searchQuery,
+    () => state.startDate,
+    () => state.endDate,
+    () => state.kieuGiam,
+    () => state.status,
+  ],
   () => {
-    state.paginationParams.page = 1
-    debouncedFetchProducts()
+    debouncedFetchVouchers();
   }
-)
+);
+
+// Removed handleApplyFilters as it's no longer needed with v-model and watchers
+// If you want an "Apply Filters" button, VoucherFilter would need to emit a custom event.
+// Given the current design, changes are applied immediately.
+
+// This function will be triggered by the `resetFilters` emit from VoucherFilter
+const handleResetFilters = () => {
+  // The VoucherFilter component already resets its internal state and emits nulls.
+  // We just need to trigger a fresh fetch here after the state is updated.
+  state.paginationParams.page = 1; // Reset page to 1 after filters are reset
+  fetchVouchers();
+};
+
 
 const handlePageChange = ({ page, pageSize }: { page: number; pageSize?: number }) => {
-  state.paginationParams.page = page
+  state.paginationParams.page = page;
   if (pageSize) {
-    state.paginationParams.size = pageSize
+    state.paginationParams.size = pageSize;
   }
-  fetchProducts()
-}
-
+  fetchVouchers(); // Fetch data when page or page size changes
+};
 
 const handleChangeStatus = async () => {
-  fetchProducts();
-}
+  // This function likely handles the status change logic,
+  // and then triggers a refetch of the vouchers list.
+  fetchVouchers();
+};
 </script>
 
 <style scoped>
 .page-container {
-  padding: 20px; /* Overall padding for the page content */
+  padding: 20px;
 }
 
 .breadcrumb-section {
-  margin-bottom: 25px; /* Space below the breadcrumb and above the first section */
-  background-color: #fff; /* White background for the breadcrumb box */
-  padding: 15px 20px; /* Padding inside the breadcrumb box */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
+  margin-bottom: 25px;
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
 }
 
 .section-title {
-  margin-top: 30px; /* Space above each main section title */
+  margin-top: 30px;
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 20px; /* Space below the title */
-  margin-left: 0px; /* Remove left margin if section-title is directly under padding */
-  color: #333; /* Darker color for titles */
-  display: flex; /* To align icon and text */
-  align-items: center; /* Vertically center icon and text */
-  gap: 8px; /* Space between icon and text */
+  margin-bottom: 20px;
+  margin-left: 0px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
- 
-/* Remove or adjust body styles if they are global.
-   Scoped styles prevent them from affecting the entire app. */
+
 body {
   font-family: 'Roboto', sans-serif;
 }

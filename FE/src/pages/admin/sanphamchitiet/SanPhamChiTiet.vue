@@ -1,7 +1,13 @@
 <template>
   <div class="page-container">
-    <div class="breadcrumb-section">
-      <BreadcrumbDefault :pageTitle="'Quản Lý sản phẩm chi tiết'" :routes="[
+    <div class="breadcrumb-section" v-if="state.products.length > 0">
+      <BreadcrumbDefault :pageTitle="'Quản lý sản phẩm chi tiết: ' + state.products[0].ten" :routes="[
+        { path: '/admin/san-pham', name: 'Quản lý sản phẩm ' },
+        { path: '/admin/san-pham-chi-tiet?id=' + idSanPham, name: 'Quản lý sản phẩm chi tiết: ' + state.products[0].ten }
+      ]" />
+    </div>
+    <div class="breadcrumb-section" v-else>
+      <BreadcrumbDefault :pageTitle="'Quản lý sản phẩm chi tiết'" :routes="[
         { path: '/admin/san-pham', name: 'Quản lý sản phẩm ' },
         { path: '/admin/san-pham-chi-tiet?id=' + idSanPham, name: 'Quản lý sản phẩm chi tiết' }
       ]" />
@@ -10,11 +16,14 @@
       <FilterOutlined /> Bộ lọc tìm kiếm
     </p>
 
-    <ProductFilter :searchQuery="state.searchQuery" :searchStatus="state.searchStatus" :priceRange="state.priceRange"
+    <ProductFilter :searchQuery="state.searchQuery" :searchStatus="state.searchStatus" :giaMax="state.products.giaMax" :priceRange="state.priceRange"
       :searchColor="state.searchColor" :searchSize="state.searchSize" @update:searchQuery="updateSearchQuery"
       @update:searchStatus="updateSearchStatus" @update:priceRange="updatePriceRange"
       @update:searchColor="updateSearchColor" @update:searchSize="updateSearchSize" />
-    <p class="section-title">
+    <p class="section-title" v-if="state.products.length > 0">
+      <UnorderedListOutlined /> Danh sách sản phẩm chi tiết: {{ state.products[0].ten }}
+    </p>
+     <p class="section-title" v-else>
       <UnorderedListOutlined /> Danh sách sản phẩm chi tiết
     </p>
     <ProductTable :products="state.products" :paginationParams="state.paginationParams" :totalItems="state.totalItems"
@@ -22,8 +31,8 @@
       @change-status="handleChangeStatus" />
 
     <ProductModal :open="state.isModalOpen" :openChangeStatus="state.isModalChangeStatus"
-      :productId="state.selectedProductId" :title="modalTitle" @closeChangeStatus="closeModalChangeStatus"
-      @close="closeModal" @success="fetchProducts" />
+      :productId="state.selectedProductId" :idSP="idSanPham" :title="modalTitle"
+      @closeChangeStatus="closeModalChangeStatus" @close="closeModal" @success="fetchProducts" />
 
   </div>
 </template>
@@ -38,6 +47,7 @@ import { GetSanPhams, type SanPhamResponse, type ParamsGetSanPham } from '@/serv
 import { debounce } from 'lodash';
 import DivCustom from '@/components/custom/Div/DivCustomAll.vue'
 import { useRoute } from 'vue-router';
+import { FilterOutlined, UnorderedListOutlined } from '@ant-design/icons-vue';
 const route = useRoute();
 const state = reactive({
   searchQuery: '',
@@ -94,6 +104,7 @@ const openChangeStatusModal = (id: string) => {
 }
 
 const closeModal = () => {
+  fetchProducts();
   state.isModalOpen = false
 }
 
@@ -124,6 +135,8 @@ const fetchProducts = async () => {
 
 
     state.products = response.data?.data
+    console.log('Products fetched:', state.products)
+    console.log('Products fetched:', state.products.ten)
     state.totalItems = response.data?.totalElements
   } catch (error) {
     console.error('Failed to fetch products:', error)

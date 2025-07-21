@@ -10,6 +10,7 @@ import com.be.server.infrastructure.security.service.CustomUserDetailsService;
 import com.be.server.infrastructure.security.service.TokenProvider;
 import com.be.server.infrastructure.security.user.UserPrincipal;
 import com.be.server.utils.Helper;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -31,8 +32,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest,HttpSession httpSession) {
         try {
+            httpSession.setAttribute("role", "USER");
             System.out.println("tài khoản"+loginRequest.getEmail()+"/"+loginRequest.getPassword());
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
@@ -79,8 +81,9 @@ public class AuthController {
     }
 
     @PostMapping("/login-admin")
-    public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest loginRequest,HttpSession httpSession) {
         try {
+            httpSession.setAttribute("role", "ADMIN");
             System.out.println("chua implement chuc nang này");
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
@@ -89,6 +92,7 @@ public class AuthController {
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             String accessToken = tokenProvider.createTokenForAdmin(authentication);
             String refreshToken = tokenProvider.createRefreshTokenForAdmin(authentication);
+            System.out.println("access token admin"+accessToken);
             return Helper.createResponseEntity(
                     new ResponseObject<>(new AuthTokens(accessToken, refreshToken), HttpStatus.OK, "Lấy token thành công")
             );

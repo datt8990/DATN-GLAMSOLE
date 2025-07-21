@@ -1,10 +1,12 @@
 package com.be.server.core.admin.voucher.service.impl;
 
+import com.be.server.core.admin.SanPhamChiTiet.model.response.ADSanPhamChiTietResponse;
 import com.be.server.core.admin.khachhang.repository.ADKhachHangRepository;
 import com.be.server.core.admin.thuonghieu.model.request.ADThuongHieuRequest;
 import com.be.server.core.admin.thuonghieu.model.request.ADThuongHieuSearchRequest;
 import com.be.server.core.admin.voucher.model.request.ADVoucherRequest;
 import com.be.server.core.admin.voucher.model.request.ADVoucherSearchRequest;
+import com.be.server.core.admin.voucher.model.response.ADPhieuGiamGiaResponse;
 import com.be.server.core.admin.voucher.repository.ADVoucherRepository;
 import com.be.server.core.admin.voucher.service.ADVoucherService;
 import com.be.server.core.common.base.PageableObject;
@@ -40,15 +42,33 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
     @Override
     public ResponseObject<?> getAllVoucher(ADVoucherSearchRequest request) {
-        Pageable pageable = Helper.createPageable(request, "created_date");
-        Page<PhieuGiamGia> page;
-        if (request.getQ() == null || request.getQ().isEmpty()) {
-            page = advoucherRepository.findAll(pageable);
-        } else {
-            page = advoucherRepository.findByMaContainingOrTenContaining(request.getQ(), request.getQ(), pageable);
+        Pageable pageable = Helper.createPageable(request, "created_date");;
+
+        if (request.getKieuGiam() != null) {
+            if (request.getKieuGiam() == 0) {
+                request.setKieu(true);
+            } else {
+                request.setKieu(false);
+            }
         }
 
-        return new ResponseObject<>(PageableObject.of(page), HttpStatus.OK, "Lấy danh sách thương hiệu thành công");
+        if (request.getStatus() != null ) {
+            if (request.getStatus() == 0) {
+                request.setEntityStatus(EntityStatus.INACTIVE);
+            } else {
+                request.setEntityStatus(EntityStatus.ACTIVE);
+            }
+        }
+
+
+        Page<ADPhieuGiamGiaResponse> page = advoucherRepository.getAllPhieuGiamGiaFilter(pageable, request);
+
+        return new ResponseObject<>(
+                PageableObject.of(page),
+                HttpStatus.OK,
+                "Lấy danh sách phiếu giảm giá thành công"
+        );
+
     }
 
     @Override
@@ -78,7 +98,7 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
                 voucher.setDieuKien(request.getDieuKien());
 
-                voucher.setGiaGiam(request.getGiaGiamToiDa());
+                voucher.setGiaGiam(request.getGiaGiam());
 
                 voucher.setLoaiGiam(request.getLoaiGiam());
 
@@ -91,14 +111,14 @@ public class ADVoucherServiceImpl implements ADVoucherService {
                 voucher.setSoLuongPhieu(request.getSoLuongPhieu());
 
                 if (request.getLoaiGiam() == true) {
-                    voucher.setPhanTramGiam(request.getPhanTramGiam());
+                    voucher.setPhanTramGiam(request.getLoiPhanNay());
                 } else {
-                    voucher.setPhanTramGiam(request.getGiaGiamToiDa());
+                    voucher.setPhanTramGiam(request.getGiaGiam());
                 }
 
                 advoucherRepository.save(voucher);
 
-                if (request.getKhachHangIds() != null && request.getKhachHangIds().size() > 0) {
+                if (request.getKhachHangIds() != null ) {
                     for (int i = 0; i < request.getKhachHangIds().size(); i++) {
 
 
@@ -123,10 +143,13 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
                 }
 
-                return new ResponseObject<>(voucher, HttpStatus.OK, "Cập nhật size thành công");
+                return new ResponseObject<>(voucher, HttpStatus.OK, "Cập nhật phiếu giảm giá thành công");
             }
         }
 
+        if(advoucherRepository.checkThemPhieu(request.getTen()) != null){
+            return new ResponseObject<>(null, HttpStatus.OK, "phiếu giảm giá này đã tồn tại");
+        }
 
         PhieuGiamGia voucher = new PhieuGiamGia();
 
@@ -134,7 +157,7 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
         voucher.setDieuKien(request.getDieuKien());
 
-        voucher.setGiaGiam(request.getGiaGiamToiDa());
+        voucher.setGiaGiam(request.getGiaGiam());
 
         voucher.setLoaiGiam(request.getLoaiGiam());
 
@@ -146,10 +169,14 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
         voucher.setKieuGiam(request.getKieuGiam());
 
-        if (request.getLoaiGiam() == true) {
-            voucher.setPhanTramGiam(request.getPhanTramGiam());
+        System.out.println(request.getLoiPhanNay());
+
+        System.out.println(request.getLoaiGiam());
+
+        if (request.getKieuGiam() == true) {
+            voucher.setPhanTramGiam(request.getLoiPhanNay());
         } else {
-            voucher.setPhanTramGiam(request.getGiaGiamToiDa());
+            voucher.setPhanTramGiam(request.getGiaGiam());
         }
 
 
@@ -157,11 +184,7 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
         advoucherRepository.save(voucher);
 
-        for (int i = 0; i < request.getKhachHangIds().size(); i++) {
-            System.out.println(request.getKhachHangIds().get(i));
-        }
-
-        if (request.getKhachHangIds() != null && request.getKhachHangIds().size() > 0) {
+        if (request.getKhachHangIds() != null) {
             for (int i = 0; i < request.getKhachHangIds().size(); i++) {
                 System.out.println(request.getKhachHangIds().get(i));
 

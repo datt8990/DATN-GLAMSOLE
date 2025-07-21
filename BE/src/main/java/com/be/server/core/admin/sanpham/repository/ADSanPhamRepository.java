@@ -17,52 +17,65 @@ import java.util.Optional;
 public interface ADSanPhamRepository extends SanPhamRepository {
 
     @Query(value = """
-        SELECT 
-            ROW_NUMBER() OVER (ORDER BY sp.id DESC) AS stt,
-            sp.id AS id, 
-            sp.ma AS ma, 
-            sp.ten AS ten, 
-            th.ten AS tenThuongHieu,
-            th.id AS idThuongHieu,
-            xx.ten AS tenXuatXu,
-            xx.id AS idXuatXu, 
-            ld.ten AS tenLoaiDe,
-            ld.id AS idLoaiDe, 
-            dm.ten AS tenDanhMuc,
-            dm.id AS idDanhMuc,
-           cl.ten AS tenChatLieu,
-            cl.id AS idChatLieu,                       
-            sp.moTa AS moTa,
-            SUM(spct.soLuong) AS tongSP,
-            sp.status AS status
-        FROM 
-            SanPham sp
-            LEFT JOIN SanPhamChiTiet AS spct ON  spct.sanPham.id = sp.id
-            LEFT JOIN ThuongHieu AS th ON th.id = sp.thuongHieu.id
-            LEFT JOIN XuatSu AS xx ON xx.id = sp.xuatSu.id
-            LEFT JOIN LoaiDe AS ld ON ld.id = sp.loaiDe.id
-            LEFT JOIN DanhMuc AS dm ON dm.id = sp.danhMuc.id  
-            LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  
-        WHERE 
-            (:#{#rep.q} IS NULL OR
-            sp.ten LIKE CONCAT('%', :#{#rep.q}, '%') OR
-            sp.ma LIKE CONCAT('%', :#{#rep.q}, '%'))                      
-        GROUP BY sp.id,sp.ma,sp.ten,sp.moTa,sp.status,th.id
-        order by  sp.createdDate desc
-        """, countQuery = """
-        SELECT 
-            COUNT(d.id)
-        FROM 
-            SanPham d
-        WHERE 
-            (:#{#rep.q} IS NULL OR
-            d.ten LIKE CONCAT('%', :#{#rep.q}, '%') OR
-            d.ma LIKE CONCAT('%', :#{#rep.q}, '%') )
-        
-            """
+    SELECT
+        ROW_NUMBER() OVER (ORDER BY sp.id DESC) AS stt,
+        sp.id AS id,
+        sp.ma AS ma,
+        sp.ten AS ten,
+        th.ten AS tenThuongHieu,
+        th.id AS idThuongHieu,
+        xx.ten AS tenXuatXu,
+        xx.id AS idXuatXu,
+        ld.ten AS tenLoaiDe,
+        ld.id AS idLoaiDe,
+        dm.ten AS tenDanhMuc,
+        dm.id AS idDanhMuc,
+        cl.ten AS tenChatLieu,
+        cl.id AS idChatLieu,
+        sp.moTa AS moTa,
+        SUM(spct.soLuong) AS tongSP,
+        sp.status AS status
+    FROM
+        SanPham sp
+        LEFT JOIN SanPhamChiTiet AS spct ON  spct.sanPham.id = sp.id
+        LEFT JOIN ThuongHieu AS th ON th.id = sp.thuongHieu.id
+        LEFT JOIN XuatSu AS xx ON xx.id = sp.xuatSu.id
+        LEFT JOIN LoaiDe AS ld ON ld.id = sp.loaiDe.id
+        LEFT JOIN DanhMuc AS dm ON dm.id = sp.danhMuc.id
+        LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id
+    WHERE
+        (:#{#rep.q} IS NULL OR
+        sp.ten LIKE CONCAT('%', :#{#rep.q}, '%') OR
+        sp.ma LIKE CONCAT('%', :#{#rep.q}, '%'))
+        AND (:#{#rep.danhMucId} IS NULL OR sp.danhMuc.id = :#{#rep.danhMucId})
+        AND (:#{#rep.chatLieuId} IS NULL OR sp.chatLieu.id = :#{#rep.chatLieuId})
+        AND (:#{#rep.thuongHieuId} IS NULL OR sp.thuongHieu.id = :#{#rep.thuongHieuId})
+        AND (:#{#rep.loaiDeId} IS NULL OR sp.loaiDe.id = :#{#rep.loaiDeId})
+        AND (:#{#rep.status} IS NULL OR sp.status = :#{#rep.entityStatus})
+    GROUP BY sp.id, sp.ma, sp.ten, sp.moTa, sp.status, th.id, xx.id, ld.id, dm.id, cl.id 
+    ORDER BY sp.createdDate DESC
+    """, countQuery = """
+    SELECT
+        COUNT(sp.id)
+    FROM
+        SanPham sp
+        LEFT JOIN ThuongHieu AS th ON th.id = sp.thuongHieu.id
+        LEFT JOIN XuatSu AS xx ON xx.id = sp.xuatSu.id
+        LEFT JOIN LoaiDe AS ld ON ld.id = sp.loaiDe.id
+        LEFT JOIN DanhMuc AS dm ON dm.id = sp.danhMuc.id
+        LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id
+    WHERE
+        (:#{#rep.q} IS NULL OR
+        sp.ten LIKE CONCAT('%', :#{#rep.q}, '%') OR
+        sp.ma LIKE CONCAT('%', :#{#rep.q}, '%'))
+        AND (:#{#rep.danhMucId} IS NULL OR sp.danhMuc.id = :#{#rep.danhMucId})
+        AND (:#{#rep.chatLieuId} IS NULL OR sp.chatLieu.id = :#{#rep.chatLieuId})
+        AND (:#{#rep.thuongHieuId} IS NULL OR sp.thuongHieu.id = :#{#rep.thuongHieuId})
+        AND (:#{#rep.loaiDeId} IS NULL OR sp.loaiDe.id = :#{#rep.loaiDeId})
+        AND (:#{#rep.status} IS NULL OR sp.status = :#{#rep.entityStatus})
+    """
     )
     Page<ADSanPhamResponse> getAllSanPhamByFilter(Pageable pageable, @Param("rep") ADSanPhamSearchRequest req);
-
 
     @Query(value = """
         SELECT 

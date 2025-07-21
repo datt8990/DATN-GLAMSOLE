@@ -1,9 +1,9 @@
 <template>
-  <a-modal :open="open" :title="props.title" width="600px">
+  <a-modal :open="open" :title="props.title" width="600px" @cancel="closeModal">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý"
         cancel-text="Huỷ">
-        <a-button type="primary">Xác nhận</a-button>
+        <a-button type="primary" style="background-color: #54bddb; color: white;">Xác nhận</a-button>
       </a-popconfirm>
       <a-button @click="closeModal">Huỷ</a-button>
     </template>
@@ -14,7 +14,7 @@
       </a-form-item>
 
       <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-        <a-form-item label="Thương hiệu" name="facilityId" :label-col="{ span: 24 }">
+        <a-form-item label="Thương hiệu" name="facilityId" :label-col="{ span: 24 }" >
           <a-select v-model:value="product.idThuongHieu" :options="thuongHieuOptions" placeholder="Chọn thuong hiệu" />
         </a-form-item>
       </a-form>
@@ -220,3 +220,44 @@ onMounted(() => {
 
 const closeModal = () => emit('close');
 </script>
+<style scoped lang="scss">
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #54bddb !important;
+  box-shadow: 0 0 0 2px rgba(95, 179, 179, 0.2) !important;
+}
+
+:deep(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+:deep(.ant-select-focused:not(.ant-select-disabled) .ant-select-selector) {
+  border-color: #54bddb !important;
+  box-shadow: 0 0 0 2px rgba(95, 179, 179, 0.2) !important;
+}
+
+:deep(.ant-textarea:focus),
+:deep(.ant-textarea-focused) {
+  border-color: #54bddb !important;
+  box-shadow: 0 0 0 2px rgba(95, 179, 179, 0.2) !important;
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio .ant-radio-inner),
+:deep(.ant-checkbox-wrapper:hover .ant-checkbox .ant-checkbox-inner),
+:deep(.ant-radio-input:focus + .ant-radio-inner),
+:deep(.ant-checkbox-input:focus + .ant-checkbox-inner) {
+  border-color: #54bddb !important;
+}
+
+:deep(.ant-radio-checked .ant-radio-inner::after) {
+  background-color: #54bddb !important;
+}
+
+:deep(.ant-checkbox-checked .ant-checkbox-inner) {
+  background-color: #54bddb !important;
+  border-color: #54bddb !important;
+}
+
+:deep(.ant-btn:focus),
+:deep(.ant-btn:active) {
+  border-color: #54bddb !important;
+  color: white !important;
+}
+</style>

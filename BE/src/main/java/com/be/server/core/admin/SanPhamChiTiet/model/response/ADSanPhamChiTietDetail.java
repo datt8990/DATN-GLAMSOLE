@@ -8,6 +8,8 @@ public interface ADSanPhamChiTietDetail {
 
     String getTen();
 
+    String getAnh();
+
     String getIdThuongHieu();
 
     String getTenThuongHieu();

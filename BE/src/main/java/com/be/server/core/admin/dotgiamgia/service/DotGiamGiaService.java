@@ -20,6 +20,8 @@ public interface DotGiamGiaService {
 
     List<SanPhamChiTiet> getSanPhamCT(String id);
 
+    List<SanPhamChiTiet> getSanPhamByDot(String id);
+
     DotGiamGia add(CreateDotGiamGiaRequest createDotGiamGiaRequest) throws Exception;
 
     DotGiamGia update(UpdateDotGiamGiaRequest request);
