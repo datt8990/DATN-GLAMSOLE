@@ -1,5 +1,6 @@
 package com.be.server.core.permitall.sanpham.controller;
 
+import com.be.server.core.common.base.ResponseObject;
 import com.be.server.core.permitall.sanpham.dto.request.PMSanPhamMoiSearchRequest;
 import com.be.server.core.permitall.sanpham.service.PMSanPhamService;
 import com.be.server.infrastructure.constant.MappingConstants;
@@ -26,5 +27,6 @@ public class PMSanPhamController {
     public ResponseEntity<?> getAllSanPhamMoi(PMSanPhamMoiSearchRequest request) {
         return Helper.createResponseEntity(PMSanPhamService.getAllSanPhamMoi(request));
     }
+
 
 }
