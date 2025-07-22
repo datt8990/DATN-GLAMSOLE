@@ -2,6 +2,8 @@ package com.be.server.core.admin.banhang.service;
 
 import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
 import com.be.server.core.admin.banhang.model.request.ADCapNhatPhuongTHucThanhToanRequest;
+import com.be.server.core.admin.banhang.model.request.ADHuyRequest;
+import com.be.server.core.admin.banhang.model.request.ADNhanVienRequest;
 import com.be.server.core.admin.banhang.model.request.ADThanhToanRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemGioHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemKhachHangRequest;
@@ -16,6 +18,7 @@ import com.be.server.core.admin.banhang.model.response.ADPhuongThucThanhToanResp
 import com.be.server.core.admin.banhang.model.response.ADThanhToanRespones;
 import com.be.server.core.admin.banhang.model.response.ListHoaDon;
 import com.be.server.core.admin.loaide.model.request.ADLoaiDeRequest;
+import com.be.server.core.admin.nhanvien.repository.ADNhanVienRepository;
 import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.HoaDon;
 import com.be.server.entity.KhachHang;
@@ -26,7 +29,7 @@ public interface ADBanHangService {
 
     List<ListHoaDon> getHoaDon();
 
-    ResponseObject<?> createHoaDon();
+    ResponseObject<?> createHoaDon(ADNhanVienRequest adNhanVienRequest);
 
     ResponseObject<?> createThemSanPham(ADThemSanPhamRequest adThemSanPhamRequest);
 
@@ -57,4 +60,6 @@ public interface ADBanHangService {
     ResponseObject<?> danhSachPhieuGiamGia(ChonPhieuGiamGiaRequest id);
 
     ResponseObject<?> giaoHang(String request);
+
+    ResponseObject<?> huy(ADHuyRequest request);
 }
