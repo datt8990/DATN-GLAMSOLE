@@ -128,6 +128,8 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
 
         khachHang.setNgaySinh(request.getNgaySinh());
 
+        khachHang.setMat_khau("$2y$10$ey6ASnw6etj4YQtRFKZTjOlzjynNjDYgKXzf9/LDibTIXjEOdOgwa");
+
         khachHang.setGioiTimh(request.getGioiTinh());
 
         if(request.getAvatar() != null){

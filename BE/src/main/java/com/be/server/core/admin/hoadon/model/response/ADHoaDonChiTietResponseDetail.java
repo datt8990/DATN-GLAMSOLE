@@ -30,4 +30,5 @@ public interface ADHoaDonChiTietResponseDetail {
     Double getPhiVanChuyen();
     String getMaVoucher();
     Double getTongTienSauGiam();
+    Double getTongTien();
 }

@@ -1,6 +1,6 @@
 import type { AxiosResponse } from 'axios'
 import request from '@/services/request'
-import { PREFIX_API_HOA_DON_ADMIN, PREFIX_API_KHACH_HANG_ADMIN} from '@/constants/url'
+import { PREFIX_API_HOA_DON_ADMIN, PREFIX_API_KHACH_HANG_ADMIN } from '@/constants/url'
 import type {
   PaginationParams,
   DefaultResponse,
@@ -99,57 +99,44 @@ export const getHoaDonChiTiets = async (maHoaDon: string) => {
 // 3. Cải tiến API functions với better error handling
 export const inPDFOFFLINE = async (maHoaDon: string): Promise<Blob> => {
   try {
-    const response = await fetch(`${PREFIX_API_HOA_DON_ADMIN}/pdf/${maHoaDon}`, {
+    const res = (await request({
+      url: `${PREFIX_API_HOA_DON_ADMIN}/pdf/${maHoaDon}`,
       method: 'GET',
+      responseType: 'blob', // Quan trọng để nhận về file PDF
       headers: {
-        'Accept': 'application/pdf',
+        Accept: 'application/pdf',
       },
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Lỗi API: ${response.status} - ${errorText}`);
-    }
-    
-    const blob = await response.blob();
-    
-    // Kiểm tra content type
-    if (!blob.type.includes('pdf')) {
+    })) as AxiosResponse<Blob>;
+
+    if (!res.data.type.includes('pdf')) {
       throw new Error('Response không phải là file PDF');
     }
-    
-    return blob;
+
+    return res.data;
   } catch (error) {
     console.error('Lỗi inPDFOFFLINE:', error);
     throw error;
   }
-};
+}
 
 export const inPDFONLINE = async (maHoaDon: string): Promise<Blob> => {
   try {
-    const response = await fetch(`${PREFIX_API_HOA_DON_ADMIN}/delivery/${maHoaDon}/pdf`, {
+    const res = (await request({
+      url: `${PREFIX_API_HOA_DON_ADMIN}/delivery/${maHoaDon}/pdf`,
       method: 'GET',
+      responseType: 'blob',
       headers: {
-        'Accept': 'application/pdf',
+        Accept: 'application/pdf',
       },
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Lỗi API: ${response.status} - ${errorText}`);
-    }
-    
-    const blob = await response.blob();
-    
-    // Kiểm tra content type
-    if (!blob.type.includes('pdf')) {
+    })) as AxiosResponse<Blob>;
+
+    if (!res.data.type.includes('pdf')) {
       throw new Error('Response không phải là file PDF');
     }
-    
-    return blob;
+
+    return res.data;
   } catch (error) {
     console.error('Lỗi inPDFONLINE:', error);
     throw error;
   }
-};
-
+}

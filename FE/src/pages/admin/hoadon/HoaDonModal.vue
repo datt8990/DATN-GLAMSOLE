@@ -913,7 +913,7 @@ const confirmPayment = async () => {
       ghiChu: paymentNote.value,
       loaiGiaoDich:
         selectedPaymentMethod.value === "cash" ? "TIEN_MAT" : "CHUYEN_KHOAN",
-      nhanVienId: "0a838f53-c6c3-4bac-8639-2fbd92bba710", // Thay bằng ID nhân viên hiện tại
+      nhanVienId: "4a28e718-e682-4436-8c8e-e69916872ec2", // Thay bằng ID nhân viên hiện tại
       trangThai: hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE ? "CHO_XAC_NHAN" : "DANG_GIAO",
     };
 

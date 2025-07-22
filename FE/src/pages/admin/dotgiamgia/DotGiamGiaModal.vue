@@ -1,6 +1,5 @@
 <template>
   <div class="add-discount-page p-6">
-
     <div class="breadcrumb-section">
       <BreadcrumbDefault
         :pageTitle="'Thêm đợt giảm giá'"
@@ -104,8 +103,7 @@
               <div class="col-span-1 text-center">STT</div>
               <div class="col-span-4 text-center">Tên sản phẩm</div>
               <div class="col-span-2 text-center">Thương hiệu</div>
-              <div class="col-span-2 text-center">Trạng thái</div>
-
+              <div class="col-span-4 text-center">Trạng thái</div>
             </div>
           </div>
 
@@ -148,23 +146,6 @@
               >
                 {{ product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh" }}
               </div>
-
-              <div
-              style="color: green;"
-                class="col-span-2 text-center border rounded px-2 py-1"
-                :class="
-                  product.status === 'ACTIVE'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-red-500 text-red-600'
-                "
-              >
-                {{
-                  product.status === "ACTIVE"
-                    ? "Đang kinh doanh"
-                    : "Ngừng kinh doanh"
-                }}
-              </div>
-
             </div>
           </div>
         </div>
@@ -247,9 +228,7 @@
                 @click="clearDetailFilters"
                 size="large"
                 type="default"
-
                 class="mr-2 text-white"
-
               >
                 Reset
               </a-button>
@@ -473,7 +452,6 @@ const filteredProductDetails = computed(() => {
     // Product name search
     const productName = getProductName(detail).toLowerCase();
     const searchMatch =
-
       !productNameSearch.value || productName.includes(productNameSearch.value.toLowerCase());
 
     // Size filter - more explicit null checking
@@ -487,7 +465,6 @@ const filteredProductDetails = computed(() => {
     if (selectedColor.value !== null && selectedColor.value !== undefined) {
       colorMatch = detail.mauSac?.id === selectedColor.value;
     }
-
     return searchMatch && sizeMatch && colorMatch;
   });
 });
@@ -568,9 +545,7 @@ const onImageError = (event: Event) => {
 
 // New methods for detail search functionality
 const handleDetailSearch = () => {
-
   currentDetailPageIndex.value = 1; // Reset to first page when filters change
-
 };
 
 const clearDetailFilters = () => {
@@ -824,7 +799,6 @@ onMounted(() => {
 <style scoped lang="scss">
 * {
   font-family: "Roboto", sans-serif;
-
 }
 
 .form-label {
@@ -1225,7 +1199,6 @@ onMounted(() => {
   /* Subtle shadow */
 }
 
-
 .hover-input:hover {
   border-color: #58bddb !important;
   box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
@@ -1257,4 +1230,3 @@ onMounted(() => {
   box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
 }
 </style>
-

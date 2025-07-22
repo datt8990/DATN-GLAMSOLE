@@ -81,9 +81,9 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         hoaDon.setTongTien(0d);
 
-        NhanVien nhanVien = adNhanVienRepository.findById("1").get();
-
-        hoaDon.setNhanVien(nhanVien);
+//        NhanVien nhanVien = adNhanVienRepository.findById("1").get();
+//
+//        hoaDon.setNhanVien(nhanVien);
 
         hoaDon.setTrangThaiHoaDon(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
 
@@ -336,13 +336,13 @@ public class ADBanHangServiceImpl implements ADBanHangService {
             HoaDon hoaDon1 = adTaoHoaDonRepository.findById(id.getIdHD())
                     .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
 
-            NhanVien nhanVien = adNhanVienRepository.findById("1").get();
+//            NhanVien nhanVien = adNhanVienRepository.findById("1").get();
 
             LichSuThanhToan lichSu = new LichSuThanhToan();
             lichSu.setHoaDon(hoaDon1);
             lichSu.setSoTien(id.getTongTien());
             lichSu.setThoiGian(LocalDateTime.now());
-            lichSu.setNhanVien(nhanVien);
+//            lichSu.setNhanVien(nhanVien);
             lichSu.setMaGiaoDich(UUID.randomUUID().toString());
 
             adLichSuThanhToanRepository.save(lichSu);
@@ -413,13 +413,13 @@ public class ADBanHangServiceImpl implements ADBanHangService {
         HoaDon hoaDon1 = adTaoHoaDonRepository.findById(id.getIdHD())
                 .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
 
-        NhanVien nhanVien = adNhanVienRepository.findById("1").get();
+//        NhanVien nhanVien = adNhanVienRepository.findById("1").get();
 
         LichSuThanhToan lichSu = new LichSuThanhToan();
         lichSu.setHoaDon(hoaDon1);
         lichSu.setSoTien(id.getTongTien());
         lichSu.setThoiGian(LocalDateTime.now());
-        lichSu.setNhanVien(nhanVien);
+//        lichSu.setNhanVien(nhanVien);
         lichSu.setMaGiaoDich(UUID.randomUUID().toString());
 
         adLichSuThanhToanRepository.save(lichSu);
