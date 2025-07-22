@@ -9,16 +9,15 @@ import type {
 } from "@/types/api.common";
 
 export interface ParamsGetSanPham extends PaginationParams {
-  q?: string | ''
-  idSP?: string | undefined
-  status?: number | null
+  q?: string | "";
+  idSP?: string | undefined;
+  status?: number | null;
 }
 
 export interface ParamsPhieuGiamGia extends PaginationParams {
-  idKH?: string | undefined
-  idHD?: number | null
+  idKH?: string | undefined;
+  idHD?: number | null;
 }
-
 
 export interface ParamsGetHoaDon extends PaginationParams {
   q?: string | "";
@@ -62,7 +61,6 @@ export interface ThemThongTinGiaoHangRequest {
   ghiChu?: string;
 }
 
-
 export type KhachHangResponse = ResponseList & {
   id: string;
   ten: string;
@@ -97,7 +95,7 @@ export type PhieuGiamGiaResponse = ResponseList & {
   giaTriGiam: number; // Giá trị giảm (tiền hoặc %)
   laPhanTram: boolean; // true nếu là %, false nếu là tiền
   giaTriGiamThucTe: number; // Giá trị giảm thực tế (đã tính dựa trên tongTien)
-}
+};
 
 export interface PhieuGiamGiaRequest {
   idHD: number;
@@ -121,21 +119,20 @@ export type XoaSPResponse = {
 };
 
 export type SanPhamResponse = ResponseList & {
-  id: string
-  ma: string,
-  ten: string,
-  moTa: string,
-  mau: string,
-  idSP: string,
-  idCL: string,
-  idLG: string,
-  idLD: string,
-  idXX: string,
-  idMau: string,
-  idSize: string,
-  status: string,
-}
-
+  id: string;
+  ma: string;
+  ten: string;
+  moTa: string;
+  mau: string;
+  idSP: string;
+  idCL: string;
+  idLG: string;
+  idLD: string;
+  idXX: string;
+  idMau: string;
+  idSize: string;
+  status: string;
+};
 
 export const GetHoaDons = async (params: ParamsGetHoaDon) => {
   const res = (await request({
@@ -146,10 +143,20 @@ export const GetHoaDons = async (params: ParamsGetHoaDon) => {
   return res.data;
 };
 
-export const getCreateHoaDon = async (maHoaDon: string) => {
+export const getCreateHoaDon = async (maHoaDon: ADThemSanPhamRequest) => {
   const res = (await request({
     url: `${PREFIX_API_BAN_HANG_ADMIN}/create-hoa-don`,
     method: "POST",
+    data: maHoaDon,
+  })) as AxiosResponse<DefaultResponse<BanHangResponse>>;
+  return res.data;
+};
+
+export const huyHoaDon = async (maHoaDon: ADThemSanPhamRequest) => {
+  const res = (await request({
+    url: `${PREFIX_API_BAN_HANG_ADMIN}/huy`,
+    method: "POST",
+    data: maHoaDon,
   })) as AxiosResponse<DefaultResponse<BanHangResponse>>;
   return res.data;
 };
@@ -228,7 +235,6 @@ export const getThanhToan = async (id: string) => {
   return res.data;
 };
 
-
 export const getPhuongThucThanhToan = async (id: string) => {
   const res = (await request({
     url: `${PREFIX_API_BAN_HANG_ADMIN}/phuong-thuc-thanh-toan/${id}`,
@@ -270,12 +276,12 @@ export const themKhachHang = async (data: themKHResponse) => {
 export const GetSanPhams = async (params: ParamsGetSanPham) => {
   const res = (await request({
     url: `${PREFIX_API_BAN_HANG_ADMIN}/list-san-pham`,
-    method: 'GET',
-    params: params
-  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<SanPhamResponse>>>>
+    method: "GET",
+    params: params,
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<SanPhamResponse>>>>;
 
-  return res.data
-}
+  return res.data;
+};
 
 export const getMaGiamGia = async (data: ParamsPhieuGiamGia) => {
   const res = (await request({
@@ -286,7 +292,6 @@ export const getMaGiamGia = async (data: ParamsPhieuGiamGia) => {
 
   return res.data;
 };
-
 
 export const suaGiaoHang = async (id: string) => {
   const res = (await request({
