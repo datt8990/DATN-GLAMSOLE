@@ -141,7 +141,7 @@ public class ADNhanVienServiceImpl implements ADNhanVienService {
 
         nhanVien.setCccd(request.getCccd());
 
-        nhanVien.setMatKhau("123");
+        nhanVien.setMatKhau("$2y$10$ey6ASnw6etj4YQtRFKZTjOlzjynNjDYgKXzf9/LDibTIXjEOdOgwa");
 
         nhanVien.setChucVu(EntityRole.STAFF);
 
