@@ -425,7 +425,20 @@
     <div v-if="showKhachHangModal" class="modal-backdrop" @click.self="showKhachHangModal = false">
       <div class="modal-content">
         <h3 class="modal-title">Khách Hàng</h3>
-        <div class="min-h-[360px] ">
+        <!-- Thêm phần tìm kiếm -->
+        <div class="search-customer mb-3">
+          <a-input v-model:value="customerSearchQuery" placeholder="Tìm kiếm theo tên hoặc số điện thoại..."
+            class="search-input-customer" @input="debouncedFetchCustomers">
+            <template #prefix>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+                viewBox="0 0 16 16">
+                <path
+                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.085.12c.047.061.096.119.146.177l3.85 3.85a1 1 0 0 0 1.415-1.415zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+              </svg>
+            </template>
+          </a-input>
+        </div>
+        <div class="min-h-[360px]">
           <a-table :columns="columnsKhachHang" :data-source="state.khachHang" :pagination="{
             current: state.paginationParams.page,
             pageSize: state.paginationParams.size,
@@ -440,9 +453,10 @@
               <template v-if="column.key === 'operation'">
                 <div class="center-cell">
                   <div class="d-flex gap-1 justify-center">
-                    <a-tooltip title="chọn khách hàng">
+                    <a-tooltip title="Chọn khách hàng">
                       <a-button type="primary" @click="selectKhachHang(record.id)"
-                        class="p-2 d-flex justify-content-center align-items-center">
+                        class="p-2 d-flex justify-content-center align-items-center"
+                        style="background-color: #54bddb; color: white;">
                         Chọn
                       </a-button>
                     </a-tooltip>
@@ -656,7 +670,7 @@ const deliveryInfo = reactive({
   diaChiCuThe: ''
 });
 const currentDeliveryInfo = ref<ThongTinGiaoHangResponse | null>(null) // To display current delivery info
-
+const customerSearchQuery = ref('');
 // GHN specific states
 const provinces = ref<Array<{ value: string, label: string, code: string }>>([])
 const districts = ref<Array<{ value: string, label: string, code: string }>>([])
@@ -696,6 +710,30 @@ const state = reactive({
   selectedPaymentMethod: '' as string, // Unused
   currentPaymentMethod: '0' // '0': Tiền mặt, '1': Chuyển khoản, '2': Cả hai
 })
+
+const debouncedFetchCustomers = debounce(async () => {
+  // await fetchCustomers();
+}, 300);
+
+const fetchCustomers = async () => {
+  try {
+    const params = {
+      page: state.paginationParams.page,
+      size: state.paginationParams.size,
+      q: customerSearchQuery.value.trim(),
+    };
+    const response = await GetKhachHang(params);
+         console.log("Khách hàng (object):", response.data?.data);
+    state.khachHang = response.data?.data
+
+    state.totalItems = response.totalElements || 0;
+  } catch (error) {
+    console.error('Failed to fetch customers:', error);
+    toast.error('Lấy danh sách khách hàng thất bại!');
+    state.khachHang = []; // Đặt lại thành mảng rỗng khi lỗi
+    state.totalItems = 0;
+  }
+};
 
 const stateSP = reactive({ // For the main product list table
   searchQuery: '',
@@ -1165,10 +1203,13 @@ const selectDiscount = (discount: PhieuGiamGiaResponse) => {
 }
 
 const handleTableChange = (pagination: any) => {
-  stateSP.paginationParams.page = pagination.current
-  stateSP.paginationParams.size = pagination.pageSize
-  fetchProducts() // Gọi lại API với tham số mới
-}
+  stateSP.paginationParams.page = pagination.current;
+  stateSP.paginationParams.size = pagination.pageSize;
+  state.paginationParams.page = pagination.current;
+  state.paginationParams.size = pagination.pageSize;
+  fetchProducts(); // Gọi lại API sản phẩm
+  fetchCustomers(); // Gọi lại API khách hàng
+};
 
 const closeBothPaymentModal = () => {
   isBothPaymentModalVisible.value = false
@@ -1901,25 +1942,31 @@ const fetchProducts = async () => {
       size: stateSP.paginationParams.size,
       q: stateSP.searchQuery,
       status: stateSP.searchStatus,
-      idMauSac: localColor.value, // Bộ lọc màu sắc
-      idKichThuoc: localSize.value, // Bộ lọc kích thước
-      idDanhMuc: localSelectedCategory.value, // Bộ lọc danh mục
-      idChatLieu: localSelectedMaterial.value, // Bộ lọc chất liệu
-      idThuongHieu: localSelectedBrand.value, // Bộ lọc thương hiệu
-      idLoaiDe: localSelectedSoleType.value, // Bộ lọc loại đế
+      idMauSac: localColor.value,
+      idKichThuoc: localSize.value,
+      idDanhMuc: localSelectedCategory.value,
+      idChatLieu: localSelectedMaterial.value,
+      idThuongHieu: localSelectedBrand.value,
+      idLoaiDe: localSelectedSoleType.value,
     };
-    const responseKhachHang = await GetKhachHang();
+    // const responseKhachHang = await GetKhachHang({ q: customerSearchQuery.value });
     const response = await GetSanPhams(params);
+    console.log(response)
     stateSP.products = response.data?.data || [];
     state.products = response.data?.data || [];
-    state.khachHang = responseKhachHang;
+    // state.khachHang = responseKhachHang.data?.data || [];
     stateSP.totalItems = response.data?.totalElements || 0;
     state.totalItems = response.data?.totalElements || 0;
   } catch (error) {
-    console.error('Failed to fetch products:', error);
-    toast.error('Lấy danh sách sản phẩm thất bại!');
+    console.error('Failed to fetch products or customers:', error);
+    toast.error('Lấy danh sách sản phẩm hoặc khách hàng thất bại!');
   }
 };
+
+watch(customerSearchQuery, () => {
+  state.paginationParams.page = 1; // Reset về trang đầu khi tìm kiếm
+  debouncedFetchCustomers();
+});
 
 const confirmQuantity = async () => {
   try {
@@ -2085,6 +2132,7 @@ const addCustomer = () => {
 
 
 onMounted(async () => {
+   await fetchCustomers();
   await fetchHoaDon()
   setDefaultPaymentMethod()
   await fetchProvinces() // Fetch provinces on mount for delivery form

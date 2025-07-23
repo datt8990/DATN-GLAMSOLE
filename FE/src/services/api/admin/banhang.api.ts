@@ -208,15 +208,6 @@ export const xoaSL = async (data: ParamsXoaSP) => {
   return res.data; // Added return statement
 };
 
-export const GetKhachHang = async () => {
-  const res = (await request({
-    url: `${PREFIX_API_BAN_HANG_ADMIN}/list-khach-hang`,
-    method: "GET",
-  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<KhachHangResponse>>>>;
-
-  return res.data;
-};
-
 export const GeOneKhachHang = async (id: string) => {
   const res = (await request({
     url: `${PREFIX_API_BAN_HANG_ADMIN}/khach-hang/${id}`,
@@ -279,6 +270,16 @@ export const GetSanPhams = async (params: ParamsGetSanPham) => {
     method: "GET",
     params: params,
   })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<SanPhamResponse>>>>;
+
+  return res.data;
+};
+
+export const GetKhachHang = async (data: ParamsXoaSP) => {
+  const res = (await request({
+    url: `${PREFIX_API_BAN_HANG_ADMIN}/list-khach-hang`,
+    method: "GET",
+    params: data,
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<KhachHangResponse>>>>;
 
   return res.data;
 };
