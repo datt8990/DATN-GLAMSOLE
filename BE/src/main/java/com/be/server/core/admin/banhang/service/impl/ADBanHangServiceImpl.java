@@ -96,6 +96,10 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         LichSuTrangThaiHoaDon lichSuTrangThaiHoaDon = new LichSuTrangThaiHoaDon();
 
+        lichSuTrangThaiHoaDon.setThoiGian(LocalDateTime.now());
+
+        lichSuTrangThaiHoaDon.setNote("Đơn hàng đã được tạo và đang chờ xử lý.");
+
         lichSuTrangThaiHoaDon.setHoaDon(hoaDon);
 
         lichSuTrangThaiHoaDon.setThoiGian(LocalDateTime.now());
@@ -332,8 +336,13 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
             System.out.println(idLSTT);
 
-            LichSuTrangThaiHoaDon lichSuTrangThaiHoaDon = lichSuTrangThaiHoaDonRepository.findById(idLSTT).get();
+            LichSuTrangThaiHoaDon lichSuTrangThaiHoaDon = new LichSuTrangThaiHoaDon();
 
+            lichSuTrangThaiHoaDon.setThoiGian(LocalDateTime.now());
+
+            lichSuTrangThaiHoaDon.setNote("Đơn hàng đã được xác nhận và chờ giao cho đơn vị vận chuyển.");
+
+            lichSuTrangThaiHoaDon.setHoaDon(hoaDon);
 
             lichSuTrangThaiHoaDon.setTrangThai(EntityTrangThaiHoaDon.DA_XAC_NHAN);
 
@@ -409,8 +418,13 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         System.out.println(idLSTT);
 
-        LichSuTrangThaiHoaDon lichSuTrangThaiHoaDon = lichSuTrangThaiHoaDonRepository.findById(idLSTT).get();
+        LichSuTrangThaiHoaDon lichSuTrangThaiHoaDon = new LichSuTrangThaiHoaDon();
 
+        lichSuTrangThaiHoaDon.setThoiGian(LocalDateTime.now());
+
+        lichSuTrangThaiHoaDon.setNote("Đơn hàng đã được khách hàng thanh toán thành công.");
+
+        lichSuTrangThaiHoaDon.setHoaDon(hoaDon);
 
         lichSuTrangThaiHoaDon.setTrangThai(EntityTrangThaiHoaDon.HOAN_THANH);
 
