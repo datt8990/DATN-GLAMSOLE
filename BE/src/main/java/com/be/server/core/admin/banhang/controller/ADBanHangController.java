@@ -2,6 +2,8 @@ package com.be.server.core.admin.banhang.controller;
 
 import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
 import com.be.server.core.admin.banhang.model.request.ADCapNhatPhuongTHucThanhToanRequest;
+import com.be.server.core.admin.banhang.model.request.ADHuyRequest;
+import com.be.server.core.admin.banhang.model.request.ADNhanVienRequest;
 import com.be.server.core.admin.banhang.model.request.ADThanhToanRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemGioHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemKhachHangRequest;
@@ -52,8 +54,13 @@ public class ADBanHangController {
     }
 
     @PostMapping("/create-hoa-don")
-    public ResponseEntity<?> createHoaDon() {
-        return Helper.createResponseEntity(adBanHangService.createHoaDon());
+    public ResponseEntity<?> createHoaDon(ADNhanVienRequest adNhanVienRequest) {
+        return Helper.createResponseEntity(adBanHangService.createHoaDon(adNhanVienRequest));
+    }
+
+    @PostMapping("/huy")
+    public ResponseEntity<?> huyHoaDon(ADHuyRequest adNhanVienRequest) {
+        return Helper.createResponseEntity(adBanHangService.huy(adNhanVienRequest));
     }
 
     @PostMapping("them-san-pham")

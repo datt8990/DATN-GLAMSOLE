@@ -38,7 +38,7 @@
             <div class="invoice-id">{{ tab.ma }}</div>
             <div class="invoice-status">Chờ xử lý</div>
             <div class="invoice-product-count">{{ tab.soLuong == null ? 0 : tab.soLuong }} sản phẩm</div>
-            <button class="delete-invoice-btn" @click.stop="deleteInvoice(tab.id, tab.idHD)">
+            <button class="delete-invoice-btn" @click.stop="huy(tab.idHD)">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash"
                 viewBox="0 0 16 16">
                 <path
@@ -576,6 +576,7 @@ import {
   getMaGiamGia,
   type ThongTinGiaoHangResponse,
   suaGiaoHang,
+  huyHoaDon,
 } from '@/services/api/admin/banhang.api' // Make sure these are correctly imported
 const localSearchQuery = ref('');
 const localColor = ref<string | null>(null);
@@ -605,6 +606,8 @@ import { calculateFee } from '@/services/api/ghn.api.ts'
 import { Html5Qrcode } from 'html5-qrcode'
 import { GetListChatLieu, GetListDanhMuc, GetListLoaiDe, GetListThuongHieu } from '@/services/api/admin/sanpham.api'
 import { debounce } from 'lodash';
+import { localStorageAction } from '@/utils/storage';
+import { USER_INFO_STORAGE_KEY } from '@/constants/storageKey';
 const debouncedFetchProducts = debounce(async () => {
   stateSP.searchQuery = localSearchQuery.value;
   stateSP.selectedCategory = localSelectedCategory.value;
@@ -613,6 +616,7 @@ const debouncedFetchProducts = debounce(async () => {
   stateSP.selectedSoleType = localSelectedSoleType.value;
   await fetchProducts();
 }, 300)
+const idNV = localStorageAction.get(USER_INFO_STORAGE_KEY)
 const ColorOptions = ref<{ label: string; value: string }[]>([]);
 const SizeOptions = ref<{ label: string; value: string }[]>([]);
 const isBothPaymentModalVisible = ref(false)
@@ -1531,6 +1535,59 @@ const increaseQuantity = async (idSPS: any) => {
   }
 }
 
+const huy = async (idHD: string) => {
+
+  try {
+
+    const formData = new FormData()
+    formData.append('idNV', idNV.userId)
+    formData.append('idHD', idHD)
+
+    const res = await huyHoaDon(formData)
+
+    toast.success(res.message)
+
+    await fetchProducts()
+    await capNhatDanhSach()
+
+    const indexToRemove = tabs.value.findIndex((tab) => tab.idHD === idHDS.value)
+    if (indexToRemove !== -1) {
+      tabs.value.splice(indexToRemove, 1)
+    }
+
+    // Reset all states after successful payment
+    idHDS.value = ''
+    activeTab.value = 0
+    state.gioHang = []
+    state.detailKhachHang = null
+    state.phuongThuThanhToan = []
+    state.tongTien = null
+    tongTien.value = 0
+    giamGia.value = 0
+    tienHang.value = 0
+    soTien.value = 0
+    tienKhachThanhToan.value = 0
+    tienThieu.value = 0
+    state.currentPaymentMethod = '0' // Reset to 'Tiền mặt'
+    resetDiscount()
+    isDeliveryEnabled.value = false // Reset delivery toggle
+    currentDeliveryInfo.value = null // Clear delivery info
+    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
+    shippingFee.value = 0;
+    provinceCode.value = null;
+    districtCode.value = null;
+    wardCode.value = null;
+
+  } catch (error: any) {
+    if (error?.response?.data?.message) {
+      toast.error(error.response.data.message)
+    } else {
+      toast.error('Có lỗi xảy ra khi xác nhận thanh toán!')
+      console.error('Lỗi khi xác nhận thanh toán:', error)
+    }
+  }
+}
+
 const xacNhan = async () => {
   if (!idHDS.value) {
     toast.error('Vui lòng chọn một hóa đơn để xác nhận thanh toán!')
@@ -1555,6 +1612,7 @@ const xacNhan = async () => {
   try {
 
     const formData = new FormData()
+    formData.append('idNV', idNV.userId)
     formData.append('tienHang', tienHang.value.toString())
     formData.append('idHD', idHDS.value)
     formData.append('tongTien', tongTien.value.toString()) // Total after discount and shipping
@@ -1716,12 +1774,16 @@ const openProductSelectionModal = async () => {
 
 // Hàm tạo hóa đơn
 async function createInvoice() {
-  if (tabs.value.length >= 5) {
-    toast.warning('Chỉ được tạo tối đa 5 hóa đơn!', { autoClose: 3000 })
+  // alert(idNV.userId)
+  if (tabs.value.length >= 10) {
+    toast.warning('Chỉ được tạo tối đa 10 hóa đơn!', { autoClose: 3000 })
     return
   }
+  console.log(idNV.value)
   try {
-    const newInvoice = await getCreateHoaDon()
+    const formData = new FormData()
+    formData.append('idNV', idNV.userId)
+    const newInvoice = await getCreateHoaDon(formData)
     tabs.value.push({
       id: nextTabId++,
       idHD: newInvoice.id,

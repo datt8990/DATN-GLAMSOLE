@@ -17,6 +17,8 @@ public class ADThanhToanRequest {
 
     private String diaChi;
 
+    private String idNV;
+
     private String idHD;
 
     private String idPGG;
