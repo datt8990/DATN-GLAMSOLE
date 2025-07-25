@@ -6,6 +6,7 @@ import com.be.server.core.admin.SanPhamChiTiet.model.response.ADThemSanPhamChiTi
 import com.be.server.core.admin.banhang.model.request.ADThemGioHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADPhuongThucThanhToanRespones;
@@ -61,15 +62,28 @@ public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
     String checkGioHang(@Param("rep") ADThemSanPhamRequest req);
 
 
-    @Query(value= """
-    select  kh.id as id,  kh.ten as ten, kh.sdt as sdt from KhachHang kh 
-    where kh.status = 0
-""")
-    List<ADChonKhachHangRespones> getAllList();
+    @Query(value = """
+        SELECT kh.id AS id, kh.ten AS ten, kh.sdt AS sdt 
+        FROM KhachHang kh 
+        WHERE kh.status = 0 
+         AND ((:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ten LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+         OR (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ma LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+         OR (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+        )   
+        """,
+            countQuery = """
+        SELECT COUNT(*) 
+        FROM KhachHang kh 
+        WHERE kh.status = 0 
+        AND ((:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ten LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+         OR (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ma LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+         OR (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+                )
+    """)
+    Page<ADChonKhachHangRespones> getAllList(@Param("req") ListKhachHangRequest request, Pageable pageable);
 
-
     @Query(value= """
-    select kh.id as id , kh.ten as ten, kh.sdt as sdt, kh.diaChi as diaChi from HoaDon hd 
+    select kh.id as id , kh.ten as ten, kh.sdt as sdt, kh.diaChi as diaChi, kh.tinh as tinh, kh.huyen as huyen, kh.xa as xa  from HoaDon hd 
     left Join KhachHang kh on kh.id = hd.khachHang.id
     where hd.id = :#{#rep}
 """)

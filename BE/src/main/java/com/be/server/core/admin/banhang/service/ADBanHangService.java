@@ -10,6 +10,7 @@ import com.be.server.core.admin.banhang.model.request.ADThemKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
+import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
@@ -22,6 +23,7 @@ import com.be.server.core.admin.nhanvien.repository.ADNhanVienRepository;
 import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.HoaDon;
 import com.be.server.entity.KhachHang;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -41,7 +43,7 @@ public interface ADBanHangService {
 
     void xoaSoLuong(ADXoaSanPhamRequest adXoaSanPhamRequest);
 
-    List<ADChonKhachHangRespones> listKhachHang();
+    ResponseObject<?> listKhachHang(ListKhachHangRequest request );
 
     void themKhachHang(ADThemKhachHangRequest id);
 

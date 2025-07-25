@@ -10,6 +10,7 @@ import com.be.server.core.admin.banhang.model.request.ADThemKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
+import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
@@ -27,6 +28,7 @@ import com.be.server.infrastructure.constant.MappingConstants;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -89,8 +91,14 @@ public class ADBanHangController {
     }
 
     @GetMapping("/list-khach-hang")
-    public List<ADChonKhachHangRespones> getListKhachHang() {
-      return adBanHangService.listKhachHang();
+    public ResponseEntity<?> getListKhachHang(ListKhachHangRequest request) {
+      return Helper.createResponseEntity(adBanHangService.listKhachHang(request));
+    }
+
+    @GetMapping("/list-san-pham")
+    public ResponseEntity<?> getALl(ListSanPhamRequest request) {
+
+        return Helper.createResponseEntity(adBanHangService.getAll(request));
     }
 
     @PostMapping("/them-khach-hang")
@@ -123,11 +131,7 @@ public class ADBanHangController {
         adBanHangService.thanhToanThanhCong(id);
     }
 
-    @GetMapping("/list-san-pham")
-    public ResponseEntity<?> getALl(ListSanPhamRequest request) {
 
-        return Helper.createResponseEntity(adBanHangService.getAll(request));
-    }
 
     @GetMapping("/danh-sach-phieu-giam-gia")
     public ResponseEntity<?> getDiscountCoupons(ChonPhieuGiamGiaRequest request) {

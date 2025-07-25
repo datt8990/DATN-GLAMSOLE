@@ -11,6 +11,7 @@ import com.be.server.core.admin.banhang.model.request.ADThemKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
+import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
@@ -100,6 +101,8 @@ public class ADBanHangServiceImpl implements ADBanHangService {
         lichSuTrangThaiHoaDon.setNote("Đơn hàng đã được tạo và đang chờ xử lý.");
 
         lichSuTrangThaiHoaDon.setHoaDon(hoaDon);
+
+        lichSuTrangThaiHoaDon.setThoiGian(LocalDateTime.now());
 
         lichSuTrangThaiHoaDon.setTrangThai(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
 
@@ -222,8 +225,11 @@ public class ADBanHangServiceImpl implements ADBanHangService {
     }
 
     @Override
-    public List<ADChonKhachHangRespones> listKhachHang() {
-        return adTaoHoaDonChiTietRepository.getAllList();
+    public ResponseObject<?> listKhachHang(ListKhachHangRequest listKhachHangRequest) {
+        
+        Pageable pageable = Helper.createPageable(listKhachHangRequest, "created_date");
+        Page<ADChonKhachHangRespones> page = adTaoHoaDonChiTietRepository.getAllList(listKhachHangRequest,pageable );
+        return new ResponseObject<>( PageableObject.of(page), HttpStatus.OK, "lấy danh sách khách hàng thanh công");
     }
 
     @Override

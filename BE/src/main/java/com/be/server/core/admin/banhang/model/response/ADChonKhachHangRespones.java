@@ -5,4 +5,7 @@ public interface ADChonKhachHangRespones {
      String getTen();
      String getSdt();
      String getDiaChi();
+     String getXa();
+     String getHuyen();
+     String getTinh();
 }

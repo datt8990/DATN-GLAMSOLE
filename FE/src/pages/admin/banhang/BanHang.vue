@@ -425,11 +425,24 @@
     <div v-if="showKhachHangModal" class="modal-backdrop" @click.self="showKhachHangModal = false">
       <div class="modal-content">
         <h3 class="modal-title">Khách Hàng</h3>
-        <div class="min-h-[360px] ">
+        <!-- Thêm phần tìm kiếm -->
+        <div class="search-customer mb-3">
+          <a-input v-model:value="customerSearchQuery" placeholder="Tìm kiếm theo tên hoặc số điện thoại..."
+            class="search-input-customer" @input="debouncedFetchCustomers">
+            <template #prefix>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+                viewBox="0 0 16 16">
+                <path
+                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.085.12c.047.061.096.119.146.177l3.85 3.85a1 1 0 0 0 1.415-1.415zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+              </svg>
+            </template>
+          </a-input>
+        </div>
+        <div class="min-h-[360px]">
           <a-table :columns="columnsKhachHang" :data-source="state.khachHang" :pagination="{
             current: state.paginationParams.page,
             pageSize: state.paginationParams.size,
-            total: state.totalItems,
+            total: state.totalItemsKH,
             showSizeChanger: true,
             pageSizeOptions: ['10', '20', '30', '40', '50']
           }" :scroll="{ y: 240 }">
@@ -440,9 +453,10 @@
               <template v-if="column.key === 'operation'">
                 <div class="center-cell">
                   <div class="d-flex gap-1 justify-center">
-                    <a-tooltip title="chọn khách hàng">
+                    <a-tooltip title="Chọn khách hàng">
                       <a-button type="primary" @click="selectKhachHang(record.id)"
-                        class="p-2 d-flex justify-content-center align-items-center">
+                        class="p-2 d-flex justify-content-center align-items-center"
+                        style="background-color: #54bddb; color: white;">
                         Chọn
                       </a-button>
                     </a-tooltip>
@@ -577,7 +591,8 @@ import {
   type ThongTinGiaoHangResponse,
   suaGiaoHang,
   huyHoaDon,
-} from '@/services/api/admin/banhang.api' // Make sure these are correctly imported
+  getCustomerAddress // Assuming this API exists to fetch customer address details
+} from '@/services/api/admin/banhang.api' // Make sure to import getCustomerAddress
 const localSearchQuery = ref('');
 const localColor = ref<string | null>(null);
 const localSize = ref<string | null>(null);
@@ -593,7 +608,6 @@ import {
   type ParamsPhieuGiamGia,
   type SanPhamResponse
 } from '@/services/api/admin/sanphamchitiet.api'
-// import { CreditCardOutlined, DeleteOutlined } from '@ant-design/icons-vue' // Không thấy dùng
 import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue'
 import { getGHNProvinces } from '@/services/api/ghn.api.ts'
 import { getGHNDistricts } from '@/services/api/ghn.api.ts'
@@ -656,7 +670,8 @@ const deliveryInfo = reactive({
   diaChiCuThe: ''
 });
 const currentDeliveryInfo = ref<ThongTinGiaoHangResponse | null>(null) // To display current delivery info
-
+const customerSearchQuery = ref('');
+const deliveryInfoByInvoice = reactive<{ [key: string]: any }>({});
 // GHN specific states
 const provinces = ref<Array<{ value: string, label: string, code: string }>>([])
 const districts = ref<Array<{ value: string, label: string, code: string }>>([])
@@ -693,9 +708,33 @@ const state = reactive({
   gioHang: [] as SanPhamResponse[],
   paginationParams: { page: 1, size: 10 }, // For customer/product modals pagination
   totalItems: 0, // For customer/product modals total items
+  totalItemsKH: 0, // For customer/product modals total items
   selectedPaymentMethod: '' as string, // Unused
   currentPaymentMethod: '0' // '0': Tiền mặt, '1': Chuyển khoản, '2': Cả hai
 })
+
+const debouncedFetchCustomers = debounce(async () => {
+  await fetchCustomers();
+}, 300);
+
+const fetchCustomers = async () => {
+  try {
+    const params = {
+      page: state.paginationParams.page,
+      size: state.paginationParams.size,
+      q: customerSearchQuery.value.trim(),
+    };
+    const response = await GetKhachHang(params);
+    console.log("Khách hàng (object):", response.data?.data);
+    state.khachHang = response.data?.data;
+    state.totalItemsKH = response.totalElements || 0;
+  } catch (error) {
+    console.error('Failed to fetch customers:', error);
+    toast.error('Lấy danh sách khách hàng thất bại!');
+    state.khachHang = [];
+    state.totalItemsKH = 0;
+  }
+};
 
 const stateSP = reactive({ // For the main product list table
   searchQuery: '',
@@ -715,27 +754,72 @@ const stateSP = reactive({ // For the main product list table
 
 // --- GHN API Integration Functions ---
 
+// const fetchProvinces = async () => {
+//   try {
+//     const response = await getGHNProvinces(GHN_API_TOKEN);
+//     const data = response; // Xử lý cả trường hợp data hoặc data.data
+//     if (Array.isArray(data)) {
+//       provinces.value = data.map((item: Province) => ({
+//         value: String(item.ProvinceID), // Đảm bảo value là string cho <a-select>
+//         label: item.ProvinceName,
+//         code: String(item.ProvinceID), // Lưu mã GHN
+//       }));
+//     } else {
+//       console.error('Unexpected provinces data format:', data);
+//       throw new Error('Dữ liệu tỉnh/thành phố không hợp lệ');
+//     }
+//   } catch (error) {
+//     console.error('Failed to fetch provinces:', error);
+//     if (axios.isAxiosError(error) && error.response) {
+//       console.error('GHN API Error:', error.response.data);
+//     }
+//     toast.error('Không thể tải danh sách Tỉnh/Thành phố. Vui lòng kiểm tra kết nối hoặc token.');
+//     provinces.value = [];
+//   }
+// };
+
 const fetchProvinces = async () => {
   try {
     const response = await getGHNProvinces(GHN_API_TOKEN);
-    const data = response; // Xử lý cả trường hợp data hoặc data.data
-    if (Array.isArray(data)) {
-      provinces.value = data.map((item: Province) => ({
-        value: String(item.ProvinceID), // Đảm bảo value là string cho <a-select>
-        label: item.ProvinceName,
-        code: String(item.ProvinceID), // Lưu mã GHN
-      }));
-    } else {
-      console.error('Unexpected provinces data format:', data);
-      throw new Error('Dữ liệu tỉnh/thành phố không hợp lệ');
-    }
+    provinces.value = response.map((item: any) => ({
+      value: String(item.ProvinceID),
+      label: item.ProvinceName,
+      code: String(item.ProvinceID),
+    }));
   } catch (error) {
     console.error('Failed to fetch provinces:', error);
-    if (axios.isAxiosError(error) && error.response) {
-      console.error('GHN API Error:', error.response.data);
-    }
-    toast.error('Không thể tải danh sách Tỉnh/Thành phố. Vui lòng kiểm tra kết nối hoặc token.');
+    toast.error('Không thể tải danh sách Tỉnh/Thành phố.');
     provinces.value = [];
+  }
+};
+
+const fetchDistricts = async (provinceId: number) => {
+  try {
+    const response = await getGHNDistricts(provinceId, GHN_API_TOKEN);
+    districts.value = response.map((item: any) => ({
+      value: String(item.DistrictID),
+      label: item.DistrictName,
+      code: String(item.DistrictID),
+    }));
+  } catch (error) {
+    console.error('Failed to fetch districts:', error);
+    toast.error('Không thể tải danh sách Quận/Huyện.');
+    districts.value = [];
+  }
+};
+
+const fetchWards = async (districtId: number) => {
+  try {
+    const response = await getGHNWards(districtId, GHN_API_TOKEN);
+    wards.value = response.map((item: any) => ({
+      value: item.WardCode,
+      label: item.WardName,
+      code: item.WardCode,
+    }));
+  } catch (error) {
+    console.error('Failed to fetch wards:', error);
+    toast.error('Không thể tải danh sách Phường/Xã.');
+    wards.value = [];
   }
 };
 
@@ -829,51 +913,51 @@ const fetchSize = async () => {
   }
 };
 
-const fetchDistricts = async (provinceId: number) => {
-  try {
-    const response = await getGHNDistricts(provinceId, GHN_API_TOKEN);
-    if (response && Array.isArray(response)) {
-      districts.value = response.map((item: District) => ({
-        value: String(item.DistrictID),
-        label: item.DistrictName,
-        code: String(item.DistrictID),
-      }));
-      deliveryInfo.quanHuyen = undefined;
-      deliveryInfo.phuongXa = undefined;
-      wards.value = [];
-      districtCode.value = null;
-    } else {
-      console.error('Unexpected response format for districts:', response);
-      throw new Error('Invalid districts data format');
-    }
-  } catch (error) {
-    console.error('Failed to fetch districts:', error);
-    toast.error('Không thể tải danh sách Quận/Huyện.');
-    districts.value = [];
-  }
-};
+// const fetchDistricts = async (provinceId: number) => {
+//   try {
+//     const response = await getGHNDistricts(provinceId, GHN_API_TOKEN);
+//     if (response && Array.isArray(response)) {
+//       districts.value = response.map((item: District) => ({
+//         value: String(item.DistrictID),
+//         label: item.DistrictName,
+//         code: String(item.DistrictID),
+//       }));
+//       deliveryInfo.quanHuyen = undefined;
+//       deliveryInfo.phuongXa = undefined;
+//       wards.value = [];
+//       districtCode.value = null;
+//     } else {
+//       console.error('Unexpected response format for districts:', response);
+//       throw new Error('Invalid districts data format');
+//     }
+//   } catch (error) {
+//     console.error('Failed to fetch districts:', error);
+//     toast.error('Không thể tải danh sách Quận/Huyện.');
+//     districts.value = [];
+//   }
+// };
 
-const fetchWards = async (districtId: number) => {
-  try {
-    const response = await getGHNWards(districtId, GHN_API_TOKEN);
-    if (response && Array.isArray(response)) {
-      wards.value = response.map((item: Ward) => ({
-        value: item.WardCode,
-        label: item.WardName,
-        code: item.WardCode,
-      }));
-      deliveryInfo.phuongXa = undefined;
-      wardCode.value = null;
-    } else {
-      console.error('Unexpected response format for wards:', response);
-      throw new Error('Invalid wards data format');
-    }
-  } catch (error) {
-    console.error('Failed to fetch wards:', error);
-    toast.error('Không thể tải danh sách Phường/Xã.');
-    wards.value = [];
-  }
-};
+// const fetchWards = async (districtId: number) => {
+//   try {
+//     const response = await getGHNWards(districtId, GHN_API_TOKEN);
+//     if (response && Array.isArray(response)) {
+//       wards.value = response.map((item: Ward) => ({
+//         value: item.WardCode,
+//         label: item.WardName,
+//         code: item.WardCode,
+//       }));
+//       deliveryInfo.phuongXa = undefined;
+//       wardCode.value = null;
+//     } else {
+//       console.error('Unexpected response format for wards:', response);
+//       throw new Error('Invalid wards data format');
+//     }
+//   } catch (error) {
+//     console.error('Failed to fetch wards:', error);
+//     toast.error('Không thể tải danh sách Phường/Xã.');
+//     wards.value = [];
+//   }
+// };
 
 const checkFromDistrictAndWard = async () => {
   try {
@@ -912,108 +996,203 @@ onMounted(async () => {
   setDefaultPaymentMethod();
 });
 
-const onProvinceChange = (value: string) => {
+const onProvinceChange = async (value: string) => {
   deliveryInfo.tinhThanhPho = value;
   const selectedProvince = provinces.value.find(p => p.value === value);
   provinceCode.value = selectedProvince ? parseInt(selectedProvince.code) : null;
   if (provinceCode.value) {
-    fetchDistricts(provinceCode.value);
-  } else {
-    districts.value = [];
+    await fetchDistricts(provinceCode.value);
     deliveryInfo.quanHuyen = undefined;
     deliveryInfo.phuongXa = undefined;
     districtCode.value = null;
     wardCode.value = null;
-    shippingFee.value = 0; // Reset phí nếu không có tỉnh
+    await calculateShippingFee();
+  } else {
+    districts.value = [];
+    wards.value = [];
+    shippingFee.value = 0;
     calculateTotalAmounts();
   }
+
+  deliveryInfoByInvoice[idHDS.value] = {
+    tenNguoiNhan: deliveryInfo.tenNguoiNhan,
+    sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
+    diaChiCuThe: deliveryInfo.diaChiCuThe,
+    tinhThanhPho: deliveryInfo.tinhThanhPho,
+    quanHuyen: deliveryInfo.quanHuyen,
+    phuongXa: deliveryInfo.phuongXa,
+    provinceCode: provinceCode.value,
+    districtCode: districtCode.value,
+    wardCode: wardCode.value,
+    shippingFee: shippingFee.value,
+  };
 };
-const onDistrictChange = (value: string) => {
+
+const onDistrictChange = async (value: string) => {
   deliveryInfo.quanHuyen = value;
   const selectedDistrict = districts.value.find(d => d.value === value);
   districtCode.value = selectedDistrict ? parseInt(selectedDistrict.code) : null;
   if (districtCode.value) {
-    fetchWards(districtCode.value);
-  } else {
-    wards.value = [];
+    await fetchWards(districtCode.value);
     deliveryInfo.phuongXa = undefined;
     wardCode.value = null;
+    await calculateShippingFee();
+  } else {
+    wards.value = [];
+    shippingFee.value = 0;
+    calculateTotalAmounts();
   }
-  calculateShippingFee();
+
+  deliveryInfoByInvoice[idHDS.value] = {
+    tenNguoiNhan: deliveryInfo.tenNguoiNhan,
+    sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
+    diaChiCuThe: deliveryInfo.diaChiCuThe,
+    tinhThanhPho: deliveryInfo.tinhThanhPho,
+    quanHuyen: deliveryInfo.quanHuyen,
+    phuongXa: deliveryInfo.phuongXa,
+    provinceCode: provinceCode.value,
+    districtCode: districtCode.value,
+    wardCode: wardCode.value,
+    shippingFee: shippingFee.value,
+  };
 };
 
-const onWardChange = (value: string) => {
+const onWardChange = async (value: string) => {
   deliveryInfo.phuongXa = value;
   const selectedWard = wards.value.find(w => w.value === value);
   wardCode.value = selectedWard ? selectedWard.code : null;
-  calculateShippingFee();
+  await calculateShippingFee();
+
+  deliveryInfoByInvoice[idHDS.value] = {
+    tenNguoiNhan: deliveryInfo.tenNguoiNhan,
+    sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
+    diaChiCuThe: deliveryInfo.diaChiCuThe,
+    tinhThanhPho: deliveryInfo.tinhThanhPho,
+    quanHuyen: deliveryInfo.quanHuyen,
+    phuongXa: deliveryInfo.phuongXa,
+    provinceCode: provinceCode.value,
+    districtCode: districtCode.value,
+    wardCode: wardCode.value,
+    shippingFee: shippingFee.value,
+  };
 };
 
 
+// const calculateShippingFee = async () => {
+//   if (!isDeliveryEnabled.value) {
+//     shippingFee.value = 0;
+//     calculateTotalAmounts();
+//     return;
+//   }
+
+
+//   console.log("0")
+
+//   if (!provinceCode.value || !districtCode.value || !wardCode.value || !deliveryInfo.tinhThanhPho || !deliveryInfo.quanHuyen || !deliveryInfo.phuongXa || tienHang.value <= 0) {
+//     shippingFee.value = 0;
+//     calculateTotalAmounts();
+//     return;
+//   }
+
+//   console.log("0.5")
+
+//   const availableServicesRequestBody: GHNAvailableServiceRequest = {
+//     shop_id: GHN_SHOP_ID,
+//     from_district: FROM_DISTRICT_ID,
+//     to_district: districtCode.value,
+//   };
+//   const availableServicesResponse = await getAvailableServices(GHN_API_TOKEN, availableServicesRequestBody);
+
+//   console.log("0.9", availableServicesResponse)
+
+//   if (!availableServicesResponse.data || !Array.isArray(availableServicesResponse.data)) {
+//     shippingFee.value = 0;
+//     calculateTotalAmounts();
+//     return;
+//   }
+
+//   console.log("1")
+
+
+//   const selectedServiceId = availableServicesResponse.data[0].service_id;
+//   const requestBody: ShippingFeeRequest = {
+//     myRequest: {
+//       FromDistrictID: FROM_DISTRICT_ID,
+//       FromWardCode: FROM_WARD_CODE,
+//       ServiceID: selectedServiceId,
+//       ToDistrictID: districtCode.value,
+//       ToWardCode: wardCode.value,
+//       Height: 15,
+//       Length: 15,
+//       Weight: 500,
+//       Width: 15,
+//       InsuranceValue: tienHang.value,
+//       Coupon: null,
+//       PickShift: null,
+//     },
+//   };
+
+//   console.log("2")
+
+//   const response = await calculateFee(requestBody, GHN_API_TOKEN, GHN_SHOP_ID);
+
+//   console.log("3", response.data.data)
+//   if (response.data && typeof response.data.total === 'number') {
+//     shippingFee.value = response.data.total;
+//   } else {
+//     shippingFee.value = 0;
+//     toast.warn('Không thể tính phí vận chuyển.');
+//   }
+// };
+
 const calculateShippingFee = async () => {
-  if (!isDeliveryEnabled.value) {
+  if (!isDeliveryEnabled.value || !idHDS.value || !provinceCode.value || !districtCode.value || !wardCode.value || tienHang.value <= 0) {
     shippingFee.value = 0;
     calculateTotalAmounts();
     return;
   }
 
+  try {
+    const availableServicesRequestBody: AvailableServiceRequest = {
+      shop_id: GHN_SHOP_ID,
+      from_district: FROM_DISTRICT_ID,
+      to_district: districtCode.value,
+    };
+    const availableServicesResponse = await getAvailableServices(GHN_API_TOKEN, availableServicesRequestBody);
 
-  console.log("0")
+    if (!availableServicesResponse.data || !availableServicesResponse.data.length) {
+      shippingFee.value = 0;
+      toast.warn('Không tìm thấy dịch vụ vận chuyển phù hợp.');
+      calculateTotalAmounts();
+      return;
+    }
 
-  if (!provinceCode.value || !districtCode.value || !wardCode.value || !deliveryInfo.tinhThanhPho || !deliveryInfo.quanHuyen || !deliveryInfo.phuongXa || tienHang.value <= 0) {
-    shippingFee.value = 0;
+    const selectedServiceId = availableServicesResponse.data[0].service_id;
+    const requestBody: ShippingFeeRequest = {
+      myRequest: {
+        FromDistrictID: FROM_DISTRICT_ID,
+        FromWardCode: FROM_WARD_CODE,
+        ServiceID: selectedServiceId,
+        ToDistrictID: districtCode.value,
+        ToWardCode: wardCode.value,
+        Height: 15,
+        Length: 15,
+        Weight: 500,
+        Width: 15,
+        InsuranceValue: tienHang.value,
+        Coupon: null,
+        PickShift: null,
+      },
+    };
+
+    const response = await calculateFee(requestBody, GHN_API_TOKEN, GHN_SHOP_ID);
+    shippingFee.value = response.data.total || 0;
     calculateTotalAmounts();
-    return;
-  }
-
-  console.log("0.5")
-
-  const availableServicesRequestBody: GHNAvailableServiceRequest = {
-    shop_id: GHN_SHOP_ID,
-    from_district: FROM_DISTRICT_ID,
-    to_district: districtCode.value,
-  };
-  const availableServicesResponse = await getAvailableServices(GHN_API_TOKEN, availableServicesRequestBody);
-
-  console.log("0.9", availableServicesResponse)
-
-  if (!availableServicesResponse.data || !Array.isArray(availableServicesResponse.data)) {
+  } catch (error) {
+    console.error('Failed to calculate shipping fee:', error);
     shippingFee.value = 0;
+    toast.error('Không thể tính phí vận chuyển.');
     calculateTotalAmounts();
-    return;
-  }
-
-  console.log("1")
-
-
-  const selectedServiceId = availableServicesResponse.data[0].service_id;
-  const requestBody: ShippingFeeRequest = {
-    myRequest: {
-      FromDistrictID: FROM_DISTRICT_ID,
-      FromWardCode: FROM_WARD_CODE,
-      ServiceID: selectedServiceId,
-      ToDistrictID: districtCode.value,
-      ToWardCode: wardCode.value,
-      Height: 15,
-      Length: 15,
-      Weight: 500,
-      Width: 15,
-      InsuranceValue: tienHang.value,
-      Coupon: null,
-      PickShift: null,
-    },
-  };
-
-  console.log("2")
-
-  const response = await calculateFee(requestBody, GHN_API_TOKEN, GHN_SHOP_ID);
-
-  console.log("3", response.data.data)
-  if (response.data && typeof response.data.total === 'number') {
-    shippingFee.value = response.data.total;
-  } else {
-    shippingFee.value = 0;
-    toast.warn('Không thể tính phí vận chuyển.');
   }
 };
 
@@ -1121,39 +1300,94 @@ const applyBestDiscount = () => {
 const giaoHang = async (isDeliveryEnableds: boolean) => {
 
   if (isDeliveryEnabled.value && state.detailKhachHang) {
-    // Điền thông tin khách hàng vào deliveryInfo khi bật giao hàng
     deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
     deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
     deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
 
-    // Tải danh sách tỉnh/thành phố nếu chưa có
     if (!provinces.value.length) {
       await fetchProvinces();
     }
 
+    const tinhThanhPhoId = state.detailKhachHang.tinh;
+    const quanHuyenId = state.detailKhachHang.huyen;
+    const phuongXaId = state.detailKhachHang.xa;
 
-  } else if (!isDeliveryEnabled.value) {
-    // Nếu tắt giao hàng, reset thông tin giao hàng
+    if (tinhThanhPhoId) {
+      const selectedProvince = provinces.value.find(p => p.code === tinhThanhPhoId.toString());
+      if (selectedProvince) {
+        deliveryInfo.tinhThanhPho = selectedProvince.value;
+        provinceCode.value = parseInt(tinhThanhPhoId);
+        await fetchDistricts(provinceCode.value);
+      }
+    }
+
+    if (quanHuyenId && provinceCode.value) {
+      const selectedDistrict = districts.value.find(d => d.code === quanHuyenId.toString());
+      if (selectedDistrict) {
+        deliveryInfo.quanHuyen = selectedDistrict.value;
+        districtCode.value = parseInt(quanHuyenId);
+        await fetchWards(districtCode.value);
+      }
+    }
+
+    if (phuongXaId && districtCode.value) {
+      const selectedWard = wards.value.find(w => w.code === phuongXaId);
+      if (selectedWard) {
+        deliveryInfo.phuongXa = selectedWard.value;
+        wardCode.value = phuongXaId;
+      }
+    }
+
+    await calculateShippingFee();
+
+    // Lưu thông tin giao hàng cục bộ
+    deliveryInfoByInvoice[idHDS.value] = {
+      tenNguoiNhan: deliveryInfo.tenNguoiNhan,
+      sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
+      diaChiCuThe: deliveryInfo.diaChiCuThe,
+      tinhThanhPho: deliveryInfo.tinhThanhPho,
+      quanHuyen: deliveryInfo.quanHuyen,
+      phuongXa: deliveryInfo.phuongXa,
+      provinceCode: provinceCode.value,
+      districtCode: districtCode.value,
+      wardCode: wardCode.value,
+      shippingFee: shippingFee.value,
+    };
+  } else {
     Object.assign(deliveryInfo, {
-      tenNguoiNhan: '',
-      sdtNguoiNhan: '',
-      diaChiCuThe: '',
+      tenNguoiNhan: state.detailKhachHang?.ten || '',
+      sdtNguoiNhan: state.detailKhachHang?.sdt || '',
+      diaChiCuThe: state.detailKhachHang?.diaChi || '',
       tinhThanhPho: undefined,
       quanHuyen: undefined,
       phuongXa: undefined,
     });
-    shippingFee.value = 0;
     provinceCode.value = null;
     districtCode.value = null;
     wardCode.value = null;
-    await calculateTotalAmounts();
-  }
+    shippingFee.value = 0;
+    calculateTotalAmounts();
 
-  capNhatDanhSach()
+    // Lưu trạng thái không giao hàng
+    deliveryInfoByInvoice[idHDS.value] = {
+      tenNguoiNhan: state.detailKhachHang?.ten || '',
+      sdtNguoiNhan: state.detailKhachHang?.sdt || '',
+      diaChiCuThe: state.detailKhachHang?.diaChi || '',
+      tinhThanhPho: undefined,
+      quanHuyen: undefined,
+      phuongXa: undefined,
+      provinceCode: null,
+      districtCode: null,
+      wardCode: null,
+      shippingFee: 0,
+    };
+  }
   await suaGiaoHang(idHDS.value)
 
-  console.log("1", isDeliveryEnabled.value)
-}
+  await capNhatDanhSach();
+
+
+};
 
 const selectDiscount = (discount: PhieuGiamGiaResponse) => {
   selectedDiscount.value = discount
@@ -1165,10 +1399,13 @@ const selectDiscount = (discount: PhieuGiamGiaResponse) => {
 }
 
 const handleTableChange = (pagination: any) => {
-  stateSP.paginationParams.page = pagination.current
-  stateSP.paginationParams.size = pagination.pageSize
-  fetchProducts() // Gọi lại API với tham số mới
-}
+  stateSP.paginationParams.page = pagination.current;
+  stateSP.paginationParams.size = pagination.pageSize;
+  state.paginationParams.page = pagination.current;
+  state.paginationParams.size = pagination.pageSize;
+  fetchProducts(); // Gọi lại API sản phẩm
+  fetchCustomers(); // Gọi lại API khách hàng
+};
 
 const closeBothPaymentModal = () => {
   isBothPaymentModalVisible.value = false
@@ -1275,124 +1512,152 @@ const resetDiscount = () => {
   giamGia.value = 0
   calculateTotalAmounts()
 }
+
 const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
-  idHDS.value = hd
-  activeTab.value = id
-  loaiHD.value = loaiHoaDon
-  state.currentPaymentMethod = '0' // Reset payment method when switching tabs
-  state.phuongThuThanhToan = [] // Clear previous payment methods
-  if (loaiHoaDon == "GIAO_HANG") {
-    isDeliveryEnabled.value = true
-  } else {
-    isDeliveryEnabled.value = false
-  }
-  console.log("abc" + isDeliveryEnabled.value)
+  idHDS.value = hd;
+  activeTab.value = id;
+  loaiHD.value = loaiHoaDon;
+  state.currentPaymentMethod = '0';
+  state.phuongThuThanhToan = [];
+
   try {
-    const response = await GetGioHang(hd)
-    state.gioHang = response
-
-    const responseKH = await GeOneKhachHang(hd)
-    state.detailKhachHang = responseKH.id ? responseKH : null
-
-    const responsePTTT = await getPhuongThucThanhToan(hd)
-    state.phuongThuThanhToan = responsePTTT
-
-    if (state.detailKhachHang) {
-      // Điền thông tin khách hàng vào deliveryInfo nếu có
-      deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
-      deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
-      deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
-    }
-
-
-    calculateTotalAmounts()
-
-    let totalPaid = 0
-    state.phuongThuThanhToan.forEach((item) => {
-      totalPaid += item.tongTien
-    })
-    tienKhachThanhToan.value = totalPaid
-    tienThieu.value = (tongTien.value || 0) - tienKhachThanhToan.value // Use tongTien.value after calculateTotalAmounts
-    soTien.value = tongTien.value || 0 // soTien should reflect total after calculation
-
-    // Fetch delivery info when switching tabs
-    // await fetchDeliveryInfo(idHDS.value)
-
-    // Gọi fetchDiscounts bất kể có khách hàng hay không
-    await fetchDiscounts(idHDS.value)
-    capNhatDanhSach()
-  } catch (error) {
-    console.error('Failed to switch invoice:', error)
-    toast.error('Chuyển hóa đơn thất bại!')
-    resetDiscount()
-    currentDeliveryInfo.value = null // Reset delivery info on error
-    isDeliveryEnabled.value = false;
-    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
-  }
-}
-
-// Delivery functions
-const fetchDeliveryInfo = async (idHD: string) => {
-  try {
-    if (idHD) {
-      const response = await getThongTinGiaoHang(idHD)
-      currentDeliveryInfo.value = response || null
-      isDeliveryEnabled.value = !!response // Enable delivery toggle if info exists
-
-      if (response) {
-        // Populate the form fields with existing delivery info
-        deliveryInfo.tenNguoiNhan = response.tenNguoiNhan;
-        deliveryInfo.sdtNguoiNhan = response.sdtNguoiNhan;
-        deliveryInfo.diaChiCuThe = response.diaChiCuThe;
-        deliveryInfo.phuongXa = response.phuongXa;
-        deliveryInfo.quanHuyen = response.quanHuyen;
-        deliveryInfo.tinhThanhPho = response.tinhThanhPho;
-        await fetchProvinces(); // Ensure provinces are loaded
-        const selectedProv = provinces.value.find(p => p.value === deliveryInfo.tinhThanhPho);
-        if (selectedProv) {
-          provinceCode.value = parseInt(selectedProv.code);
-          await fetchDistricts(provinceCode.value);
-          const selectedDist = districts.value.find(d => d.value === deliveryInfo.quanHuyen);
-          if (selectedDist) {
-            districtCode.value = parseInt(selectedDist.code);
-            await fetchWards(districtCode.value);
-            const selectedWard = wards.value.find(w => w.value === deliveryInfo.phuongXa);
-            if (selectedWard) {
-              wardCode.value = selectedWard.code;
-            }
-          }
-        }
-        await calculateShippingFee();
-
-      } else {
-        // Reset form if no delivery info found
-        Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
-        shippingFee.value = 0;
-        provinceCode.value = null;
-        districtCode.value = null;
-        wardCode.value = null;
-      }
-    } else {
-      currentDeliveryInfo.value = null
-      isDeliveryEnabled.value = false
-      Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
-      shippingFee.value = 0;
-      provinceCode.value = null;
-      districtCode.value = null;
-      wardCode.value = null;
-    }
-  } catch (error) {
-    console.error('Failed to fetch delivery info:', error)
-    toast.error('Lấy thông tin giao hàng thất bại!')
-    currentDeliveryInfo.value = null
-    isDeliveryEnabled.value = false
-    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
-    shippingFee.value = 0;
+    // Reset thông tin giao hàng
+    Object.assign(deliveryInfo, {
+      tenNguoiNhan: '',
+      sdtNguoiNhan: '',
+      diaChiCuThe: '',
+      tinhThanhPho: undefined,
+      quanHuyen: undefined,
+      phuongXa: undefined,
+    });
     provinceCode.value = null;
     districtCode.value = null;
     wardCode.value = null;
+    shippingFee.value = 0;
+    isDeliveryEnabled.value = loaiHoaDon === 'GIAO_HANG';
+
+    // Khôi phục thông tin giao hàng từ deliveryInfoByInvoice nếu có
+    if (deliveryInfoByInvoice[hd] && loaiHoaDon === 'GIAO_HANG') {
+      Object.assign(deliveryInfo, {
+        tenNguoiNhan: deliveryInfoByInvoice[hd].tenNguoiNhan,
+        sdtNguoiNhan: deliveryInfoByInvoice[hd].sdtNguoiNhan,
+        diaChiCuThe: deliveryInfoByInvoice[hd].diaChiCuThe,
+        tinhThanhPho: deliveryInfoByInvoice[hd].tinhThanhPho,
+        quanHuyen: deliveryInfoByInvoice[hd].quanHuyen,
+        phuongXa: deliveryInfoByInvoice[hd].phuongXa,
+      });
+      provinceCode.value = deliveryInfoByInvoice[hd].provinceCode;
+      districtCode.value = deliveryInfoByInvoice[hd].districtCode;
+      wardCode.value = deliveryInfoByInvoice[hd].wardCode;
+      shippingFee.value = deliveryInfoByInvoice[hd].shippingFee;
+
+      // Tải lại danh sách quận/huyện và phường/xã nếu cần
+      if (provinceCode.value && !districts.value.length) {
+        await fetchDistricts(provinceCode.value);
+      }
+      if (districtCode.value && !wards.value.length) {
+        await fetchWards(districtCode.value);
+      }
+    } else if (loaiHoaDon === 'GIAO_HANG') {
+      // Lấy thông tin khách hàng từ API nếu hóa đơn là giao hàng
+      const responseKH = await GeOneKhachHang(hd);
+      state.detailKhachHang = responseKH.id ? responseKH : null;
+
+      if (state.detailKhachHang) {
+        deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
+        deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
+        deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
+
+        const tinhThanhPhoId = state.detailKhachHang.tinh;
+        const quanHuyenId = state.detailKhachHang.huyen;
+        const phuongXaId = state.detailKhachHang.xa;
+
+        if (!provinces.value.length) {
+          await fetchProvinces();
+        }
+
+        if (tinhThanhPhoId) {
+          const selectedProvince = provinces.value.find(p => p.code === tinhThanhPhoId.toString());
+          if (selectedProvince) {
+            deliveryInfo.tinhThanhPho = selectedProvince.value;
+            provinceCode.value = parseInt(tinhThanhPhoId);
+            await fetchDistricts(provinceCode.value);
+          }
+        }
+
+        if (quanHuyenId && provinceCode.value) {
+          const selectedDistrict = districts.value.find(d => d.code === quanHuyenId.toString());
+          if (selectedDistrict) {
+            deliveryInfo.quanHuyen = selectedDistrict.value;
+            districtCode.value = parseInt(quanHuyenId);
+            await fetchWards(districtCode.value);
+          }
+        }
+
+        if (phuongXaId && districtCode.value) {
+          const selectedWard = wards.value.find(w => w.code === phuongXaId);
+          if (selectedWard) {
+            deliveryInfo.phuongXa = selectedWard.value;
+            wardCode.value = phuongXaId;
+          }
+        }
+
+        // Lưu thông tin giao hàng cục bộ
+        deliveryInfoByInvoice[hd] = {
+          tenNguoiNhan: deliveryInfo.tenNguoiNhan,
+          sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
+          diaChiCuThe: deliveryInfo.diaChiCuThe,
+          tinhThanhPho: deliveryInfo.tinhThanhPho,
+          quanHuyen: deliveryInfo.quanHuyen,
+          phuongXa: deliveryInfo.phuongXa,
+          provinceCode: provinceCode.value,
+          districtCode: districtCode.value,
+          wardCode: wardCode.value,
+          shippingFee: shippingFee.value,
+        };
+      }
+    }
+
+    const response = await GetGioHang(hd);
+    state.gioHang = response;
+
+    const responsePTTT = await getPhuongThucThanhToan(hd);
+    state.phuongThuThanhToan = responsePTTT;
+
+    calculateTotalAmounts();
+    if (isDeliveryEnabled.value && provinceCode.value && districtCode.value && wardCode.value) {
+      await calculateShippingFee();
+    }
+
+    let totalPaid = 0;
+    state.phuongThuThanhToan.forEach((item) => {
+      totalPaid += item.tongTien;
+    });
+    tienKhachThanhToan.value = totalPaid;
+    tienThieu.value = (tongTien.value || 0) - tienKhachThanhToan.value;
+
+    await fetchDiscounts(hd);
+    await capNhatDanhSach();
+  } catch (error) {
+    console.error('Failed to switch invoice:', error);
+    toast.error('Chuyển hóa đơn thất bại!');
+    resetDiscount();
+    isDeliveryEnabled.value = false;
+    Object.assign(deliveryInfo, {
+      tenNguoiNhan: '',
+      sdtNguoiNhan: '',
+      diaChiCuThe: '',
+      tinhThanhPho: undefined,
+      quanHuyen: undefined,
+      phuongXa: undefined,
+    });
+    provinceCode.value = null;
+    districtCode.value = null;
+    wardCode.value = null;
+    shippingFee.value = 0;
+    calculateTotalAmounts();
   }
-}
+};
 
 // Watch for changes in isDeliveryEnabled to clear/set delivery info
 watch(isDeliveryEnabled, async (newValue) => {
@@ -1409,40 +1674,6 @@ watch(isDeliveryEnabled, async (newValue) => {
     await fetchProvinces();
   }
 }, { immediate: true });
-
-const saveDeliveryInfo = async () => {
-  try {
-    if (!idHDS.value) {
-      toast.error('Vui lòng chọn một hóa đơn trước khi lưu thông tin giao hàng!');
-      return;
-    }
-    if (!deliveryInfo.tenNguoiNhan || !deliveryInfo.sdtNguoiNhan || !deliveryInfo.diaChiCuThe ||
-      !deliveryInfo.tinhThanhPho || !deliveryInfo.quanHuyen || !deliveryInfo.phuongXa) {
-      toast.error('Vui lòng nhập đầy đủ thông tin giao hàng!');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('idHD', idHDS.value);
-    formData.append('tenNguoiNhan', deliveryInfo.tenNguoiNhan);
-    formData.append('sdtNguoiNhan', deliveryInfo.sdtNguoiNhan);
-    formData.append('diaChiCuThe', deliveryInfo.diaChiCuThe);
-    formData.append('tinhThanhPho', deliveryInfo.tinhThanhPho);
-    formData.append('quanHuyen', deliveryInfo.quanHuyen);
-    formData.append('phuongXa', deliveryInfo.phuongXa);
-    formData.append('phiVanChuyen', shippingFee.value.toString()); // Save shipping fee as well
-
-    const response = await themThongTinGiaoHang(formData); // API call to save delivery info
-    currentDeliveryInfo.value = response; // Update the displayed info
-    isDeliveryEnabled.value = true; // Ensure the toggle is on
-    toast.success('Lưu thông tin giao hàng thành công!');
-    await clickkActiveTab(activeTab.value, idHDS.value, loaiHD.value); // Refresh invoice data to reflect changes
-  } catch (error: any) {
-    console.error('Failed to save delivery info:', error);
-    toast.error(error.message || 'Lưu thông tin giao hàng thất bại!');
-  }
-};
-
 
 const columnsKhachHang: TableColumnsType = [
   { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
@@ -1490,7 +1721,6 @@ const columnsGiohang: TableColumnsType = [
     align: 'center'
   }
 ]
-
 const columns: TableColumnsType = [ // For product selection modal
   { title: 'STT', key: 'stt', dataIndex: 'stt', width: 60, align: 'center' },
   { title: 'Ảnh', key: 'anh', dataIndex: 'anh', width: 100, align: 'center' },
@@ -1674,54 +1904,6 @@ const xacNhan = async () => {
   }
 }
 
-const deleteInvoice = async (tabId: number, invoiceId: string) => {
-  try {
-    // You'll need an API call to delete the invoice on the backend
-    await xoaHoaDon(invoiceId); // Assuming xoaHoaDon exists in your banhang.api
-
-    // Remove from UI
-    const indexToRemove = tabs.value.findIndex(tab => tab.idHD === invoiceId);
-    if (indexToRemove !== -1) {
-      tabs.value.splice(indexToRemove, 1);
-    }
-
-    // If the deleted tab was the active one, switch to the first available tab or reset
-    if (activeTab.value === tabId) {
-      if (tabs.value.length > 0) {
-        await clickkActiveTab(tabs.value[0].id, tabs.value[0].idHD);
-      } else {
-        // No more invoices, reset all states
-        idHDS.value = '';
-        activeTab.value = 0;
-        state.gioHang = [];
-        state.detailKhachHang = null;
-        state.phuongThuThanhToan = [];
-        state.tongTien = null;
-        tongTien.value = 0;
-        giamGia.value = 0;
-        tienHang.value = 0;
-        soTien.value = 0;
-        tienKhachThanhToan.value = 0;
-        tienThieu.value = 0;
-        state.currentPaymentMethod = '0';
-        resetDiscount();
-        isDeliveryEnabled.value = false;
-        currentDeliveryInfo.value = null;
-        Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
-        shippingFee.value = 0;
-        provinceCode.value = null;
-        districtCode.value = null;
-        wardCode.value = null;
-      }
-    }
-    toast.success('Xóa hóa đơn thành công!');
-  } catch (error) {
-    console.error('Failed to delete invoice:', error);
-    toast.error('Xóa hóa đơn thất bại!');
-  }
-};
-
-
 const decreaseQuantity = async (idSPS: any) => {
   try {
     const formData = new FormData()
@@ -1833,45 +2015,117 @@ const setDefaultPaymentMethod = () => {
 }
 
 // Chọn sản phẩm (từ danh sách sản phẩm cho vào giỏ hàng)
-function selectProduct(idSPS: any) {
-  if (!idHDS.value) {
-    toast.error('Vui lòng tạo hoặc chọn hóa đơn trước khi thêm sản phẩm!');
-    return;
-  }
-  idSP.value = idSPS
-  selectedProduct.value.soLuong = 1 // Đặt số lượng mặc định là 1 khi chọn sản phẩm
-  state.isModalOpen = true // Open quantity modal
-  showProductModal.value = false // Close product selection modal if open
-}
-
 const selectKhachHang = async (getIdKH: any) => {
   try {
-    const formData = new FormData()
-    formData.append('idHD', idHDS.value)
-    formData.append('idKH', getIdKH)
-    await themKhachHang(formData)
-    const responseKH = await GeOneKhachHang(idHDS.value)
-    state.detailKhachHang = responseKH
+    const formData = new FormData();
+    formData.append('idHD', idHDS.value);
+    formData.append('idKH', getIdKH);
+    await themKhachHang(formData);
+    const responseKH = await GeOneKhachHang(idHDS.value);
+    state.detailKhachHang = responseKH;
 
-    // Nếu chế độ giao hàng được bật, điền thông tin khách hàng vào deliveryInfo
-    if (isDeliveryEnabled.value && state.detailKhachHang) {
+    // Reset thông tin giao hàng
+    Object.assign(deliveryInfo, {
+      tenNguoiNhan: '',
+      sdtNguoiNhan: '',
+      diaChiCuThe: '',
+      tinhThanhPho: undefined,
+      quanHuyen: undefined,
+      phuongXa: undefined,
+    });
+    provinceCode.value = null;
+    districtCode.value = null;
+    wardCode.value = null;
+    shippingFee.value = 0;
+
+    if (state.detailKhachHang) {
+      // Điền thông tin cơ bản
       deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
       deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
       deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
 
+      // Chỉ xử lý địa chỉ nếu hóa đơn là giao hàng
+      if (loaiHD.value === 'GIAO_HANG') {
+        const tinhThanhPhoId = state.detailKhachHang.tinh;
+        const quanHuyenId = state.detailKhachHang.huyen;
+        const phuongXaId = state.detailKhachHang.xa;
 
+        if (!provinces.value.length) {
+          await fetchProvinces();
+        }
+
+        if (tinhThanhPhoId) {
+          const selectedProvince = provinces.value.find(p => p.code === tinhThanhPhoId.toString());
+          if (selectedProvince) {
+            deliveryInfo.tinhThanhPho = selectedProvince.value;
+            provinceCode.value = parseInt(tinhThanhPhoId);
+            await fetchDistricts(provinceCode.value);
+          } else {
+            console.warn(`Không tìm thấy tỉnh với mã: ${tinhThanhPhoId}`);
+            toast.warn('Không tìm thấy tỉnh/thành phố trong dữ liệu khách hàng!');
+          }
+        }
+
+        if (quanHuyenId && provinceCode.value) {
+          const selectedDistrict = districts.value.find(d => d.code === quanHuyenId.toString());
+          if (selectedDistrict) {
+            deliveryInfo.quanHuyen = selectedDistrict.value;
+            districtCode.value = parseInt(quanHuyenId);
+            await fetchWards(districtCode.value);
+          } else {
+            console.warn(`Không tìm thấy quận/huyện với mã: ${quanHuyenId}`);
+            toast.warn('Không tìm thấy quận/huyện trong dữ liệu khách hàng!');
+          }
+        }
+
+        if (phuongXaId && districtCode.value) {
+          const selectedWard = wards.value.find(w => w.code === phuongXaId);
+          if (selectedWard) {
+            deliveryInfo.phuongXa = selectedWard.value;
+            wardCode.value = phuongXaId;
+          } else {
+            console.warn(`Không tìm thấy phường/xã với mã: ${phuongXaId}`);
+            toast.warn('Không tìm thấy phường/xã trong dữ liệu khách hàng!');
+          }
+        }
+
+        // Bật giao hàng và tính phí nếu có đầy đủ địa chỉ
+        if (tinhThanhPhoId && quanHuyenId && phuongXaId) {
+          isDeliveryEnabled.value = true;
+          await calculateShippingFee();
+        } else {
+          isDeliveryEnabled.value = false;
+          toast.info('Thông tin địa chỉ khách hàng không đầy đủ, vui lòng nhập thủ công.');
+        }
+      } else {
+        isDeliveryEnabled.value = false;
+      }
+
+      // Lưu thông tin giao hàng cục bộ
+      deliveryInfoByInvoice[idHDS.value] = {
+        tenNguoiNhan: deliveryInfo.tenNguoiNhan,
+        sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
+        diaChiCuThe: deliveryInfo.diaChiCuThe,
+        tinhThanhPho: deliveryInfo.tinhThanhPho,
+        quanHuyen: deliveryInfo.quanHuyen,
+        phuongXa: deliveryInfo.phuongXa,
+        provinceCode: provinceCode.value,
+        districtCode: districtCode.value,
+        wardCode: wardCode.value,
+        shippingFee: shippingFee.value,
+      };
     }
 
-    // Gọi fetchDiscounts với idKH mới
-    await fetchDiscounts(idHDS.value)
-
-    showKhachHangModal.value = false
-    toast.success('Chọn khách hàng thành công!')
+    await fetchDiscounts(idHDS.value);
+    showKhachHangModal.value = false;
+    toast.success('Chọn khách hàng thành công!');
   } catch (error) {
-    console.error('Failed to select customer:', error)
-    toast.error('Chọn khách hàng thất bại!')
+    console.error('Failed to select customer:', error);
+    toast.error('Chọn khách hàng thất bại!');
   }
-}
+};
+
+
 const deleteProduc = async (idSPS: any) => {
   try {
     const formData = new FormData()
@@ -1901,25 +2155,31 @@ const fetchProducts = async () => {
       size: stateSP.paginationParams.size,
       q: stateSP.searchQuery,
       status: stateSP.searchStatus,
-      idMauSac: localColor.value, // Bộ lọc màu sắc
-      idKichThuoc: localSize.value, // Bộ lọc kích thước
-      idDanhMuc: localSelectedCategory.value, // Bộ lọc danh mục
-      idChatLieu: localSelectedMaterial.value, // Bộ lọc chất liệu
-      idThuongHieu: localSelectedBrand.value, // Bộ lọc thương hiệu
-      idLoaiDe: localSelectedSoleType.value, // Bộ lọc loại đế
+      idMauSac: localColor.value,
+      idKichThuoc: localSize.value,
+      idDanhMuc: localSelectedCategory.value,
+      idChatLieu: localSelectedMaterial.value,
+      idThuongHieu: localSelectedBrand.value,
+      idLoaiDe: localSelectedSoleType.value,
     };
-    const responseKhachHang = await GetKhachHang();
+    // const responseKhachHang = await GetKhachHang({ q: customerSearchQuery.value });
     const response = await GetSanPhams(params);
+    console.log(response)
     stateSP.products = response.data?.data || [];
     state.products = response.data?.data || [];
-    state.khachHang = responseKhachHang;
+    // state.khachHang = responseKhachHang.data?.data || [];
     stateSP.totalItems = response.data?.totalElements || 0;
     state.totalItems = response.data?.totalElements || 0;
   } catch (error) {
-    console.error('Failed to fetch products:', error);
-    toast.error('Lấy danh sách sản phẩm thất bại!');
+    console.error('Failed to fetch products or customers:', error);
+    toast.error('Lấy danh sách sản phẩm hoặc khách hàng thất bại!');
   }
 };
+
+watch(customerSearchQuery, () => {
+  state.paginationParams.page = 1; // Reset về trang đầu khi tìm kiếm
+  debouncedFetchCustomers();
+});
 
 const confirmQuantity = async () => {
   try {
@@ -2025,6 +2285,17 @@ const openQrModal = () => {
   })
 }
 
+function selectProduct(idSPS: any) {
+  if (!idHDS.value) {
+    toast.error('Vui lòng tạo hoặc chọn hóa đơn trước khi thêm sản phẩm!');
+    return;
+  }
+  idSP.value = idSPS
+  selectedProduct.value.soLuong = 1 // Đặt số lượng mặc định là 1 khi chọn sản phẩm
+  state.isModalOpen = true // Open quantity modal
+  showProductModal.value = false // Close product selection modal if open
+}
+
 const startQrScanning = () => {
   const qrRegionId = 'reader'
   const qrRegionElement = document.getElementById(qrRegionId)
@@ -2085,6 +2356,7 @@ const addCustomer = () => {
 
 
 onMounted(async () => {
+  await fetchCustomers();
   await fetchHoaDon()
   setDefaultPaymentMethod()
   await fetchProvinces() // Fetch provinces on mount for delivery form
