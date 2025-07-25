@@ -41,7 +41,8 @@ public interface ADSanPhamBanHangRepository extends SanPhamChiTietRepository {
         LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  
         LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id
     WHERE 
-         ( :#{#req.q} IS NULL OR sp.ten LIKE CONCAT('%', :#{#req.q}, '%') 
+        spct.soLuong > 0 and spct.status = 0 And
+         (( :#{#req.q} IS NULL OR sp.ten LIKE CONCAT('%', :#{#req.q}, '%') 
             OR spct.ma LIKE CONCAT('%', :#{#req.q}, '%') )
         AND ( :#{#req.status} IS NULL OR spct.status = :#{#req.status} )
         AND ( :#{#req.idMauSac} IS NULL OR spct.mauSac.id = :#{#req.idMauSac} )
@@ -49,7 +50,7 @@ public interface ADSanPhamBanHangRepository extends SanPhamChiTietRepository {
         AND ( :#{#req.idDanhMuc} IS NULL OR sp.danhMuc.id = :#{#req.idDanhMuc} )
         AND ( :#{#req.idChatLieu} IS NULL OR sp.chatLieu.id = :#{#req.idChatLieu} )
         AND ( :#{#req.idThuongHieu} IS NULL OR sp.thuongHieu.id = :#{#req.idThuongHieu} )
-        AND ( :#{#req.idLoaiDe} IS NULL OR sp.loaiDe.id = :#{#req.idLoaiDe} )
+        AND ( :#{#req.idLoaiDe} IS NULL OR sp.loaiDe.id = :#{#req.idLoaiDe} ))
     ORDER BY spct.createdDate DESC
     """, countQuery = """
     SELECT 
@@ -65,7 +66,8 @@ public interface ADSanPhamBanHangRepository extends SanPhamChiTietRepository {
         LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  
         LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id
     WHERE 
-        ( :#{#req.q} IS NULL OR sp.ten LIKE CONCAT('%', :#{#req.q}, '%') 
+         spct.soLuong > 0 and spct.status = 0 And
+       ( ( :#{#req.q} IS NULL OR sp.ten LIKE CONCAT('%', :#{#req.q}, '%') 
             OR spct.ma LIKE CONCAT('%', :#{#req.q}, '%') )
         AND ( :#{#req.status} IS NULL OR spct.status = :#{#req.status} )
         AND ( :#{#req.idMauSac} IS NULL OR spct.mauSac.id = :#{#req.idMauSac} )
@@ -73,7 +75,7 @@ public interface ADSanPhamBanHangRepository extends SanPhamChiTietRepository {
         AND ( :#{#req.idDanhMuc} IS NULL OR sp.danhMuc.id = :#{#req.idDanhMuc} )
         AND ( :#{#req.idChatLieu} IS NULL OR sp.chatLieu.id = :#{#req.idChatLieu} )
         AND ( :#{#req.idThuongHieu} IS NULL OR sp.thuongHieu.id = :#{#req.idThuongHieu} )
-        AND ( :#{#req.idLoaiDe} IS NULL OR sp.loaiDe.id = :#{#req.idLoaiDe} )
+        AND ( :#{#req.idLoaiDe} IS NULL OR sp.loaiDe.id = :#{#req.idLoaiDe} ))
     """)
     Page<ADSanPhamChiTietResponse> getAllSanPhamChiTietByFilter(Pageable pageable, @Param("req") ListSanPhamRequest req);
 }

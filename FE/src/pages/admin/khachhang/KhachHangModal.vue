@@ -7,12 +7,11 @@
       ]" />
     </div>
 
-    <DivCustom label="Thêm khách hàng" customClasses="mt-5">
+    <DivCustom :label="label" customClasses="mt-5">
       <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-        <a-button style=" color: white; background-color: #54bddb; margin-left: 1300px;  width: 150px;"
-          @click="openQrModal">Quét
-          QR</a-button>
-        <a-row gutter={16}> 
+        <a-button style="color: white; background-color: #54bddb; margin-left: 1300px; width: 150px;"
+          @click="openQrModal">Quét QR</a-button>
+        <a-row :gutter="16">
 
           <a-col :span="8">
             <a-form-item label="Ảnh đại diện" name="avatar" :label-col="{ span: 24 }">
@@ -21,9 +20,8 @@
                   Chọn ảnh đại diện
                 </div>
                 <a-image v-else :src="imageUrl" class="image-upload-container"
-                  style="width: 250px;   margin-left: 80px; height: 250px; border-radius: 10px; border-radius: 50%;" />
+                  style="width: 250px; margin-left: 80px; height: 250px; border-radius: 50%;" />
               </a-upload>
-
             </a-form-item>
 
             <a-form-item label="Tên khách hàng" name="ten" :label-col="{ span: 24 }" :rules="rules.name">
@@ -33,7 +31,7 @@
           </a-col>
 
           <a-col :span="16" style="margin-top: 25px;">
-            <a-row gutter={16}>
+            <a-row :gutter="16">
               <a-col :span="12">
                 <a-form-item label="Mã định danh (Số CMND/CCCD)" name="cccd" :label-col="{ span: 24 }"
                   style="margin-left: 15px;" :rules="rules.cccd">
@@ -74,39 +72,42 @@
                 </a-form-item>
               </a-col>
             </a-row>
-            <a-row gutter={16}>
+            <a-row :gutter="16">
 
               <a-col :span="8">
                 <a-form-item style="width: 250px; margin-left: 15px;" label="Tỉnh/thành phố" name="tinhThanhPho"
                   :label-col="{ span: 24 }">
-                  <a-select v-model:value="product.tinh" placeholder="Chọn tỉnh/thành phố">
-                    <a-select-option v-for="province in tinhThanh" :key="province.code" :value="province.name">
-                      {{ province.name }}
-                    </a-select-option>
+                  <a-select v-model:value="product.tinh" placeholder="Chọn tỉnh/thành phố"
+                    @change="handleProvinceChange" :options="tinhThanhOptions" label-in-value
+                    :key="tinhThanhOptions.length">
+                    <template v-if="tinhThanhOptions.length === 0">
+                      <a-select-option value="" disabled>Đang tải dữ liệu...</a-select-option>
+                    </template>
                   </a-select>
                 </a-form-item>
               </a-col>
-
 
               <a-col :span="8">
                 <a-form-item style="width: 250px; margin-left: 15px;" label="Quận/huyện" name="quanHuyen"
                   :label-col="{ span: 24 }">
-                  <a-select v-model:value="product.huyen" placeholder="Chọn quận/huyện">
-                    <a-select-option v-for="district in quanHuyen" :key="district.code" :value="district.name">
-                      {{ district.name }}
-                    </a-select-option>
+                  <a-select v-model:value="product.huyen" placeholder="Chọn quận/huyện" @change="handleDistrictChange"
+                    :options="quanHuyenOptions" label-in-value :key="quanHuyenOptions.length">
+                    <template v-if="quanHuyenOptions.length === 0">
+                      <a-select-option value="" disabled>Đang tải dữ liệu...</a-select-option>
+                    </template>
                   </a-select>
                 </a-form-item>
               </a-col>
 
-
               <a-col :span="8">
-                <a-form-item style="width: 250px ; margin-left: 15px;" label="Xã/phường/Thị trấn" name="xaPhuong"
+                <a-form-item style="width: 250px; margin-left: 15px;" label="Xã/phường/Thị trấn" name="xaPhuong"
                   :label-col="{ span: 24 }">
-                  <a-select v-model:value="product.xa" placeholder="Chọn xã/phường/thi trấn">
-                    <a-select-option v-for="commune in phuongXa" :key="commune.code" :value="commune.name">
-                      {{ commune.name }}
-                    </a-select-option>
+                  <a-select v-model:value="product.xa" placeholder="Chọn xã/phường/thị trấn"
+                    @change="handleCommuneChange" :options="phuongXaOptions" label-in-value
+                    :key="phuongXaOptions.length">
+                    <template v-if="phuongXaOptions.length === 0">
+                      <a-select-option value="" disabled>Đang tải dữ liệu...</a-select-option>
+                    </template>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -117,11 +118,9 @@
         <a-form-item
           style="text-align: right; display: flex; justify-content: flex-end; margin-top: 30px; margin-right: 120px;">
           <a-button style="background-color: #54bddb; color: white; width: 150px; margin-right: 1000px;"
-            @click="closeModal">Quay
-            lại</a-button>
+            @click="closeModal">Quay lại</a-button>
           <a-button style="background-color: #54bddb; color: white; margin-right: 30px; width: 150px;"
             html-type="submit" @click="handleSubmit">{{ label }}</a-button>
-
         </a-form-item>
       </a-form>
       <a-modal v-model:visible="isQrModalVisible" title="Quét QR" @cancel="closeQrModal">
@@ -131,9 +130,8 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits, onMounted, nextTick } from 'vue';
+import { ref, watch, defineProps, defineEmits, onMounted, nextTick, computed } from 'vue';
 import { getKhachHang, type KhachHangResponse, modifyKhachHang } from '@/services/api/admin/khachhang.api';
 import { toast } from 'vue3-toastify';
 import dayjs from 'dayjs';
@@ -142,6 +140,10 @@ import axios from 'axios';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useRoute, useRouter } from 'vue-router';
 import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
+import { getGHNProvinces, getGHNDistricts, getGHNWards } from '@/services/api/ghn.api'; // Import từ module của bạn
+
+// Token GHN (thay bằng token thực tế từ GHN)
+const GHN_TOKEN = '72f634c6-58a2-11f0-8a1e-1e10d8df3c04'; // Thay bằng token thực tế
 
 const route = useRoute();
 const router = useRouter();
@@ -156,23 +158,34 @@ const imageUrl = ref<string | null>(null);
 const imageFile = ref<File | null>(null);
 const imageError = ref(false);
 
-interface AdministrativeUnit {
-  code: string;
-  name: string;
+interface Province {
+  ProvinceID: number;
+  ProvinceName: string;
 }
 
-const tinhThanh = ref<AdministrativeUnit[]>([]);
-const quanHuyen = ref<AdministrativeUnit[]>([]);
-const phuongXa = ref<AdministrativeUnit[]>([]);
+interface District {
+  DistrictID: number;
+  DistrictName: string;
+  ProvinceID: number;
+}
+
+interface Ward {
+  WardCode: string;
+  WardName: string;
+  DistrictID: number;
+}
+
+const tinhThanh = ref<Province[]>([]);
+const quanHuyen = ref<District[]>([]);
+const phuongXa = ref<Ward[]>([]);
 
 const label = ref('');
-
 const isQrModalVisible = ref(false);
 const qrData = ref('');
 
 let html5QrCode: Html5Qrcode;
 
-// Khởi tạo product với các trường địa chỉ là chuỗi rỗng
+// Initialize product with fields for storing codes
 const product = ref<KhachHangResponse>({
   id: '',
   ten: '',
@@ -180,11 +193,52 @@ const product = ref<KhachHangResponse>({
   diaChi: '',
   email: '',
   ma: '',
+  cccd: '',
   gioiTinh: true,
-  tinh: '', // Bây giờ sẽ lưu tên tỉnh
-  huyen: '', // Bây giờ sẽ lưu tên huyện
-  xa: '', // Bây giờ sẽ lưu tên xã
+  tinh: '', // Store ProvinceID
+  huyen: '', // Store DistrictID
+  xa: '', // Store WardCode
 });
+
+// Computed properties for a-select options
+const tinhThanhOptions = computed(() => {
+  return tinhThanh.value.map(item => ({ value: item.ProvinceID.toString(), label: item.ProvinceName }));
+});
+
+const quanHuyenOptions = computed(() => {
+  return quanHuyen.value.map(item => ({ value: item.DistrictID.toString(), label: item.DistrictName }));
+});
+
+const phuongXaOptions = computed(() => {
+  return phuongXa.value.map(item => ({ value: item.WardCode, label: item.WardName }));
+});
+
+// Handle province change
+const handleProvinceChange = (value: { value: string; label: string }) => {
+  product.value.tinh = value.value;
+  product.value.huyen = '';
+  product.value.xa = '';
+  quanHuyen.value = [];
+  phuongXa.value = [];
+  if (value.value) {
+    fetchGHNDistricts(parseInt(value.value));
+  }
+};
+
+// Handle district change
+const handleDistrictChange = (value: { value: string; label: string }) => {
+  product.value.huyen = value.value;
+  product.value.xa = '';
+  phuongXa.value = [];
+  if (value.value && product.value.tinh) {
+    fetchGHNWards(parseInt(value.value));
+  }
+};
+
+// Handle commune change
+const handleCommuneChange = (value: { value: string; label: string }) => {
+  product.value.xa = value.value;
+};
 
 const handleQrData = (message: string) => {
   const parts = message.split('|');
@@ -193,8 +247,6 @@ const handleQrData = (message: string) => {
   product.value.ngaySinh = parts[3] ? dayjs(parts[3], 'DDMMYYYY') : undefined;
   product.value.gioiTinh = parts[4] === 'Nam';
   product.value.diaChi = parts[5];
-  // QR data might not contain specific province/district/commune names,
-  // so these might still need manual selection or complex parsing.
 };
 
 const openQrModal = () => {
@@ -250,32 +302,36 @@ const stopQrScanning = () => {
   }
 };
 
-const fetchTinhThanh = async () => {
+// Fetch data from GHN
+const fetchGHNProvinces = async () => {
   try {
-    const response = await axios.get('https://provinces.open-api.vn/api/p');
-    tinhThanh.value = response.data;
+    const provinces = await getGHNProvinces(GHN_TOKEN);
+    tinhThanh.value = provinces;
+    console.log('Fetched provinces:', provinces);
   } catch (error) {
-    toast.error('Không lấy được danh sách tỉnh.');
+    console.error('Lỗi khi lấy danh sách tỉnh:', error);
+    toast.error('Không lấy được danh sách tỉnh từ GHN.');
   }
 };
 
-// Hàm này nhận MÃ CODE tỉnh để fetch quận/huyện
-const fetchQuanHuyen = async (provinceCode: string) => {
+const fetchGHNDistricts = async (provinceId: number) => {
   try {
-    const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
-    quanHuyen.value = response.data.districts;
-    phuongXa.value = []; // Clear phuongXa when province changes
+    const districts = await getGHNDistricts(provinceId, GHN_TOKEN);
+    quanHuyen.value = districts;
+    console.log('Fetched districts:', districts);
   } catch (error) {
+    console.error('Lỗi khi lấy danh sách quận/huyện:', error);
     toast.error('Không lấy được danh sách quận/huyện.');
   }
 };
 
-// Hàm này nhận MÃ CODE huyện để fetch xã/phường
-const fetchPhuongXa = async (districtCode: string) => {
+const fetchGHNWards = async (districtId: number) => {
   try {
-    const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
-    phuongXa.value = response.data.wards;
+    const wards = await getGHNWards(districtId, GHN_TOKEN);
+    phuongXa.value = wards;
+    console.log('Fetched wards:', wards);
   } catch (error) {
+    console.error('Lỗi khi lấy danh sách phường/xã:', error);
     toast.error('Không lấy được danh sách phường/xã.');
   }
 };
@@ -306,31 +362,44 @@ const fetchProductDetails = async (id: string) => {
     const response = await getKhachHang(id);
     const data = response.data;
 
+    await fetchGHNProvinces();
+    await nextTick();
+
     product.value = {
       ...data,
-      ngayTuyenDung: data.ngayTuyenDung ? dayjs(data.ngayTuyenDung) : undefined,
       ngaySinh: data.ngaySinh ? dayjs(data.ngaySinh) : undefined,
       gioiTinh: data.gioiTinh === true || data.gioiTinh === 'true',
+      tinh: '',
+      huyen: '',
+      xa: '',
     };
 
     imageUrl.value = data.avatar || null;
 
-    // Sau khi gán product.value (đã có tên tỉnh/huyện/xã từ API của bạn)
-    // chúng ta cần tìm code của chúng để gọi API bên thứ 3 (provinces.open-api.vn)
-    if (product.value.tinh) {
-      const provinceFound = tinhThanh.value.find(p => p.name === product.value.tinh);
-      if (provinceFound) {
-        await fetchQuanHuyen(provinceFound.code);
-        // Đảm bảo quanHuyen đã được populate trước khi tìm district
-        if (product.value.huyen && quanHuyen.value.length > 0) {
-          const districtFound = quanHuyen.value.find(d => d.name === product.value.huyen);
-          if (districtFound) {
-            await fetchPhuongXa(districtFound.code);
+    if (data.tinh && tinhThanh.value.length > 0) {
+      const province = tinhThanh.value.find(p => p.ProvinceID.toString() === data.tinh);
+      if (province) {
+        product.value.tinh = province.ProvinceID.toString();
+        await fetchGHNDistricts(province.ProvinceID);
+        await nextTick();
+
+        if (data.huyen && quanHuyen.value.length > 0) {
+          const district = quanHuyen.value.find(d => d.DistrictID.toString() === data.huyen);
+          if (district) {
+            product.value.huyen = district.DistrictID.toString();
+            await fetchGHNWards(district.DistrictID);
+            await nextTick();
+
+            if (data.xa && phuongXa.value.length > 0) {
+              const ward = phuongXa.value.find(w => w.WardCode === data.xa);
+              if (ward) {
+                product.value.xa = ward.WardCode;
+              }
+            }
           }
         }
       }
     }
-
   } catch (error) {
     if (error?.response?.data?.message) {
       toast.error(error?.response?.data?.message);
@@ -345,17 +414,13 @@ watch(
       if (productForm.value) {
         productForm.value.resetFields();
       }
-      // Luôn fetch danh sách tỉnh đầu tiên
-      await fetchTinhThanh();
+      await fetchGHNProvinces();
 
       if (id) {
-        // Sau khi có danh sách tỉnh, mới fetch chi tiết sản phẩm
-        // để có thể tìm code từ tên tỉnh/huyện đã lưu
         await fetchProductDetails(id as string);
       } else {
-        // Nếu không có id (thêm mới), reset product và ảnh
         product.value = {
-          id: '', ten: '', sdt: '', diaChi: '', email: '', ma: '', gioiTinh: true, tinh: '', huyen: '', xa: ''
+          id: '', ten: '', sdt: '', diaChi: '', email: '', ma: '', cccd: '', gioiTinh: true, tinh: '', huyen: '', xa: ''
         };
         imageUrl.value = null;
         imageFile.value = null;
@@ -384,18 +449,16 @@ const handleSubmit = async () => {
     await productForm.value.validate();
 
     const formData = new FormData();
-    formData.append('id', product?.value?.id?.trim() || '');
-    formData.append('code', product?.value.ma?.trim() || '');
-    formData.append('cccd', product?.value?.cccd?.trim() || '');
-    formData.append('user', product?.value.user?.trim() || '');
-    formData.append('ten', product?.value.ten?.trim() || '');
-    formData.append('ngaySinh', product.value?.ngaySinh ? dayjs(product.value?.ngaySinh).format('YYYY-MM-DD') : '');
-    formData.append('email', product?.value.email?.trim() || '');
-    formData.append('sdt', product?.value.sdt?.trim() || '');
-    formData.append('diaChi', product?.value.diaChi?.trim() || '');
+    formData.append('id', product.value.id?.trim() || '');
+    formData.append('code', product.value.ma?.trim() || '');
+    formData.append('cccd', product.value.cccd?.trim() || '');
+    formData.append('user', product.value.user?.trim() || '');
+    formData.append('ten', product.value.ten?.trim() || '');
+    formData.append('ngaySinh', product.value.ngaySinh ? dayjs(product.value.ngaySinh).format('YYYY-MM-DD') : '');
+    formData.append('email', product.value.email?.trim() || '');
+    formData.append('sdt', product.value.sdt?.trim() || '');
+    formData.append('diaChi', product.value.diaChi?.trim() || '');
     formData.append('gioiTinh', product.value.gioiTinh?.toString() || 'true');
-
-    // Gửi trực tiếp tên tỉnh, huyện, xã đã chọn
     formData.append('tinh', product.value.tinh || '');
     formData.append('huyen', product.value.huyen || '');
     formData.append('xa', product.value.xa || '');
@@ -411,9 +474,7 @@ const handleSubmit = async () => {
         message: res.message || 'Thao tác thành công!',
         type: 'success'
       }));
-      router.push({
-        name: 'khach-hang-admin',
-      });
+      router.push({ name: 'khach-hang-admin' });
     });
   } catch (error) {
     if (error?.response?.data?.message) {
@@ -433,83 +494,25 @@ onMounted(() => {
     pathName.value = 'Thêm khách hàng';
     label.value = 'Thêm khách hàng';
   }
+  fetchGHNProvinces();
   if (idSanPham.value) {
-    fetchProductDetails(idSanPham.value);  // Gọi hàm lấy chi tiết
-  }
-  fetchTinhThanh(); // Fetch provinces on mount
-  // Việc fetch data ban đầu và cascade đã được handle bởi watcher của idSanPham và props.open
-  // (Không cần gọi fetchProductDetails/fetchTinhThanh trực tiếp ở đây nữa để tránh trùng lặp)
-});
-
-// Watch cho thay đổi của product.value.tinh (tên tỉnh)
-watch(() => product.value.tinh, async (newVal, oldVal) => {
-  // Tránh việc chạy watcher khi component khởi tạo và product.tinh chưa có giá trị
-  // hoặc khi giá trị không đổi (trường hợp load ban đầu có thể trùng tên)
-  if (newVal !== oldVal) {
-    // Reset huyện và xã khi tỉnh thay đổi, trừ khi là lần đầu load dữ liệu
-    // Kiểm tra oldVal để tránh reset khi product được gán lần đầu
-    if (oldVal !== undefined && oldVal !== null && oldVal !== '') {
-      product.value.huyen = '';
-      product.value.xa = '';
-      quanHuyen.value = []; // Clear list for new province
-      phuongXa.value = []; // Clear list for new province
-    }
-
-    if (newVal) { // Nếu có giá trị mới (tên tỉnh)
-      const provinceFound = tinhThanh.value.find(p => p.name === newVal);
-      if (provinceFound) {
-        await fetchQuanHuyen(provinceFound.code);
-      } else {
-        // Tên tỉnh không hợp lệ hoặc không tìm thấy, xóa danh sách huyện/xã
-        quanHuyen.value = [];
-        phuongXa.value = [];
-      }
-    } else { // Nếu giá trị mới là rỗng (người dùng xóa chọn)
-      quanHuyen.value = [];
-      phuongXa.value = [];
-    }
-  }
-});
-
-// Watch cho thay đổi của product.value.huyen (tên huyện)
-watch(() => product.value.huyen, async (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    // Reset xã khi huyện thay đổi, trừ khi là lần đầu load dữ liệu
-    if (oldVal !== undefined && oldVal !== null && oldVal !== '') {
-      product.value.xa = '';
-      phuongXa.value = []; // Clear list for new district
-    }
-
-    if (newVal && product.value.tinh) { // Chỉ fetch nếu có tên huyện và tỉnh đã được chọn
-      const districtFound = quanHuyen.value.find(d => d.name === newVal);
-      if (districtFound) {
-        await fetchPhuongXa(districtFound.code);
-      } else {
-        phuongXa.value = [];
-      }
-    } else {
-      phuongXa.value = [];
-    }
+    fetchProductDetails(idSanPham.value);
   }
 });
 
 const closeModal = () => {
-  router.push({
-    name: 'khach-hang-admin',
-  });
+  router.push({ name: 'khach-hang-admin' });
 };
 </script>
 
 <style scoped>
-/* (Giữ nguyên phần style của bạn) */
+/* Giữ nguyên phần style của bạn */
 .input-item {
   margin-left: 10px;
   margin-bottom: 16px;
-  /* Tạo khoảng cách giữa các input */
 }
 
 .image-upload-container {
-
   text-align: center;
   display: flex;
   justify-content: center;
@@ -522,34 +525,23 @@ const closeModal = () => {
   cursor: pointer;
 }
 
-
-
-/* Thêm màu xanh nước biển nhạt cho các phần chọn ảnh */
 .image-upload-container {
   margin-left: 80px;
   width: 250px;
-  /* Điều chỉnh kích thước của vùng chọn ảnh */
   height: 250px;
   border-radius: 10px;
-  /* Bo tròn góc để trông mềm mại hơn */
   border: 2px dashed #1890ff;
-  /* Đặt viền màu xanh với gạch chéo */
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   background-color: #f5f5f5;
-  /* Thêm màu nền nhẹ */
   text-align: center;
   border-radius: 50%;
 }
 
-
 a-image .avatar-upload {
-  /* width:  300px;
-  height:  300px; */
   border-radius: 50%;
-  /* border: 2px dashed #1890ff; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -557,8 +549,6 @@ a-image .avatar-upload {
 }
 
 .avatar-image {
-  /* width: 300px;
-  height: 300px; */
   border-radius: 50%;
 }
 
@@ -572,31 +562,23 @@ a-image .avatar-upload {
   text-decoration: underline;
 }
 
-/* Tăng kích thước cho a-upload */
 .a-upload {
   width: 150px;
-  /* Kích thước lớn hơn cho vùng chọn ảnh */
   height: 150px;
   border-radius: 50%;
-  /* Tạo hình tròn */
   border: none !important;
-  /* Loại bỏ viền */
   outline: none !important;
-  /* Loại bỏ outline */
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   background-color: #f5f5f5;
-  /* Thêm màu nền nhẹ để nổi bật hơn */
 }
 
 .a-upload .ant-upload-trigger {
   width: 100%;
-  /* Đảm bảo vùng chọn ảnh chiếm toàn bộ không gian */
   height: 100%;
   border: none !important;
-  /* Loại bỏ viền của button */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -604,54 +586,36 @@ a-image .avatar-upload {
 
 .a-upload .ant-upload-list-picture-card {
   display: none;
-  /* Ẩn hình ảnh nếu không có ảnh */
 }
 
-/* Tăng kích thước icon */
 .ant-upload .ant-upload-trigger a-icon {
   font-size: 40px;
-  /* Tăng kích thước icon "+" */
 }
 
 .page-container {
   padding: 20px;
-  /* Overall padding for the page content */
 }
 
 .breadcrumb-section {
   margin-bottom: 25px;
-  /* Space below the breadcrumb and above the first section */
   background-color: #fff;
-  /* White background for the breadcrumb box */
   padding: 15px 20px;
-  /* Padding inside the breadcrumb box */
   border-radius: 8px;
-  /* Rounded corners */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
-  /* Subtle shadow */
 }
 
 .section-title {
   margin-top: 30px;
-  /* Space above each main section title */
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 20px;
-  /* Space below the title */
   margin-left: 0px;
-  /* Remove left margin if section-title is directly under padding */
   color: #333;
-  /* Darker color for titles */
   display: flex;
-  /* To align icon and text */
   align-items: center;
-  /* Vertically center icon and text */
   gap: 8px;
-  /* Space between icon and text */
 }
 
-/* Remove or adjust body styles if they are global.
-   Scoped styles prevent them from affecting the entire app. */
 body {
   font-family: 'Roboto', sans-serif;
 }

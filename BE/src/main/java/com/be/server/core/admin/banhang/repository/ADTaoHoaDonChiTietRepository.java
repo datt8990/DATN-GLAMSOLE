@@ -66,18 +66,24 @@ public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
         SELECT kh.id AS id, kh.ten AS ten, kh.sdt AS sdt 
         FROM KhachHang kh 
         WHERE kh.status = 0 
-        AND (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ten LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
-    """,
+         AND ((:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ten LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+         OR (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ma LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+         OR (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+        )   
+        """,
             countQuery = """
         SELECT COUNT(*) 
         FROM KhachHang kh 
         WHERE kh.status = 0 
-        AND (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ten LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+        AND ((:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ten LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+         OR (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.ma LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+         OR (:#{#req.q} IS NULL OR :#{#req.q} = '' OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%') OR kh.sdt LIKE CONCAT('%', :#{#req.q}, '%'))
+                )
     """)
     Page<ADChonKhachHangRespones> getAllList(@Param("req") ListKhachHangRequest request, Pageable pageable);
 
     @Query(value= """
-    select kh.id as id , kh.ten as ten, kh.sdt as sdt, kh.diaChi as diaChi from HoaDon hd 
+    select kh.id as id , kh.ten as ten, kh.sdt as sdt, kh.diaChi as diaChi, kh.tinh as tinh, kh.huyen as huyen, kh.xa as xa  from HoaDon hd 
     left Join KhachHang kh on kh.id = hd.khachHang.id
     where hd.id = :#{#rep}
 """)
