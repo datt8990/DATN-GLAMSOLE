@@ -12,6 +12,7 @@ import com.be.server.entity.DotGiamGiaChiTietSanPham;
 import com.be.server.entity.SanPhamChiTiet;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @Service
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class PMSanPhamServiceImpl implements PMSanPhamService {
 
     private final PMSanPhamRepository pmsanphamRepository;
@@ -40,9 +42,12 @@ public class PMSanPhamServiceImpl implements PMSanPhamService {
 
     @Override
     public ResponseObject<?> getAllSanPhamMoi(PMSanPhamMoiSearchRequest request) {
+
+        log.info("Request truyền vào sane phẩm mới : ==>" ,request.toString());
+
         Pageable pageable = Helper.createPageable(request, "created_date");
         Page<PMSanPhamMoiResponse> page = pmsanphamRepository.getSanPhamMoiResponsePage(pageable);
-
+        log.info("Danh sách sản phẩm : ===> {}",page.getContent().toString());
         Long currentTimestamp = System.currentTimeMillis();
 
         for (PMSanPhamMoiResponse dto : page.getContent()) {

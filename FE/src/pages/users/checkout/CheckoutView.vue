@@ -5,7 +5,6 @@
     </div>
 
     <div class="row g-4">
-      <!-- Form thông tin nhận hàng -->
       <div class="col-lg-5">
         <div class="bg-white p-4 rounded shadow-sm">
           <h5 class="fw-semibold mb-4">Thông tin nhận hàng</h5>
@@ -68,23 +67,32 @@
         </div>
       </div>
 
-      <!-- Đơn hàng + thanh toán -->
       <div class="col-lg-7">
         <div class="bg-white p-4 rounded shadow-sm mb-4">
           <h5 class="fw-semibold mb-4">Đơn hàng ({{ listSanPham.length }} sản phẩm)</h5>
 
           <ul class="list-unstyled mb-3">
-            <li
-              class="d-flex align-items-center mb-3"
-              v-for="item in listSanPham"
-              :key="item.id"
-            >
-              <img :src="item.anh" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover" />
+            <li class="d-flex align-items-center mb-3" v-for="item in listSanPham" :key="item.id">
+              <img
+                :src="item.imageUrl"
+                class="rounded me-3"
+                style="width: 50px; height: 50px; object-fit: cover"
+              />
               <div class="flex-grow-1">
-                <div class="fw-medium">{{ item.ten }}</div>
-                <div class="small text-muted">{{ item.bienThe }}</div>
+                <div class="fw-medium">{{ item.name }}</div>
+                <div class="small text-muted">
+                  Phân loại: Màu {{ item.color }} / Size {{ item.size }} - SL: {{ item.quantity }}
+                </div>
               </div>
-              <div class="fw-semibold">{{ item.gia.toLocaleString() }}đ</div>
+              <div class="fw-semibold">
+                {{
+                  ((item.discountPrice < item.originalPrice
+                    ? item.discountPrice
+                    : item.originalPrice) *
+                    item.quantity) |
+                    localeString
+                }}đ
+              </div>
             </li>
           </ul>
 
@@ -93,7 +101,6 @@
             <a-button @click="handleApplyDiscount">Áp dụng</a-button>
           </div>
 
-          <!-- Tính toán tạm tính + phí ship + tổng cộng -->
           <div class="border-top pt-3">
             <div class="d-flex justify-content-between mb-2">
               <span class="fw-semibold">Tạm tính:</span>
@@ -124,7 +131,7 @@
             type="primary"
             block
             class="mt-4"
-            style="height: 52px; font-size: 1.15rem;"
+            style="height: 52px; font-size: 1.15rem"
             @click="handleCheckout"
           >
             ĐẶT HÀNG
@@ -136,123 +143,119 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { message } from 'ant-design-vue'
+import { ref, computed, onMounted } from "vue";
+import { message } from "ant-design-vue";
+import { useRouter } from "vue-router";
+import BreadCrumbUser from "@/components/ui/Breadcrumbs/BreadCrumbUser.vue";
 
 const breadcrumbRoutes = [
-  { name: 'Trang chủ', path: '/' },
-  { name: 'Giỏ hàng', path: '/gio-hang' },
-  { name: 'Thanh toán', path: '/checkout' }
-]
+  { name: "Trang chủ", path: "/" },
+  { name: "Giỏ hàng", path: "/gio-hang" },
+  { name: "Thanh toán", path: "/thanh-toan" },
+];
 
-const formRef = ref()
+// Định nghĩa lại CartItem interface hoặc import nếu có sẵn
+interface CartItem {
+  id: number;
+  name: string;
+  originalPrice: number;
+  discountPrice: number;
+  quantity: number;
+  imageUrl: string;
+  color: string;
+  size: string;
+}
+
+const formRef = ref();
 const form = ref({
-  hoTen: '',
-  soDienThoai: '',
-  tinh: '',
-  huyen: '',
-  phuong: '',
-  diaChi: '',
-  ghiChu: '',
-  thanhToan: 'COD',
-  maGiamGia: ''
-})
+  hoTen: "",
+  soDienThoai: "",
+  tinh: "",
+  huyen: "",
+  phuong: "",
+  diaChi: "",
+  ghiChu: "",
+  thanhToan: "COD",
+  maGiamGia: "",
+});
 
 // Danh sách mã giảm giá
 const maGiamGiaList = [
   {
-    code: 'GIAM50K',
-    loai: 'donHang', // giảm theo đơn hàng
-    giam: 50000
+    code: "GIAM50K",
+    loai: "donHang", // giảm theo đơn hàng
+    giam: 50000,
   },
   {
-    code: 'SP10%',
-    loai: 'sanPham', // giảm theo sản phẩm
-    giam: 0.1 // 10%
-  }
-]
+    code: "SP10%",
+    loai: "sanPham", // giảm theo sản phẩm
+    giam: 0.1, // 10%
+  },
+];
 
-// Danh sách sản phẩm gốc (để reset nếu áp dụng lại mã khác)
-const sanPhamGoc = [
-  {
-    id: 1,
-    ten: 'Áo thun nam',
-    bienThe: 'Size M / Màu đen',
-    gia: 200000,
-    anh: 'https://www.chuphinhsanpham.vn/wp-content/uploads/2021/06/chup-hinh-giay-dincox-shoes-c-photo-studio-4.jpg'
-  },
-  {
-    id: 2,
-    ten: 'Quần jeans nữ',
-    bienThe: 'Size S / Màu xanh',
-    gia: 300000,
-    anh: 'https://tse4.mm.bing.net/th/id/OIP.C0b3zlLfZ0GD-5txQXOkzQHaE8?pid=Api&P=0&h=180'
-  },
-  {
-    id: 3,
-    ten: 'Áo khoác unisex',
-    bienThe: 'Size L / Màu trắng',
-    gia: 100000,
-    anh: 'https://kingmedia.vn/wp-content/uploads/2022/01/Anh-san-pham-2-min.jpg'
-  }
-]
+// Sử dụng ref cho listSanPham để nó có thể phản ứng và gán giá trị từ history.state
+const listSanPham = ref<CartItem[]>([]);
+const giamGia = ref(0);
 
-const listSanPham = ref([...sanPhamGoc])
-const giamGia = ref(0)
+// Hàm để lấy giá đúng của một sản phẩm (giá khuyến mãi hoặc giá gốc)
+const getPrice = (item: CartItem) => {
+  return item.discountPrice < item.originalPrice ? item.discountPrice : item.originalPrice;
+};
 
 const tongTien = computed(() =>
-  listSanPham.value.reduce((sum, sp) => sum + sp.gia, 0)
-)
+  listSanPham.value.reduce((sum, sp) => sum + getPrice(sp) * sp.quantity, 0)
+);
 
-const phiShip = 30000
-const tongCong = computed(() => tongTien.value + phiShip - giamGia.value)
+const phiShip = 30000;
+const tongCong = computed(() => tongTien.value + phiShip - giamGia.value);
 
 const rules = {
-  hoTen: [{ required: true, message: 'Vui lòng nhập họ tên', trigger: 'blur' }],
-  soDienThoai: [{ required: true, message: 'Vui lòng nhập số điện thoại', trigger: 'blur' }],
-  tinh: [{ required: true, message: 'Chọn tỉnh', trigger: 'change' }],
-  huyen: [{ required: true, message: 'Chọn huyện', trigger: 'change' }],
-  phuong: [{ required: true, message: 'Chọn phường', trigger: 'change' }],
-  diaChi: [{ required: true, message: 'Nhập địa chỉ cụ thể', trigger: 'blur' }]
-}
+  hoTen: [{ required: true, message: "Vui lòng nhập họ tên", trigger: "blur" }],
+  soDienThoai: [{ required: true, message: "Vui lòng nhập số điện thoại", trigger: "blur" }],
+  tinh: [{ required: true, message: "Chọn tỉnh", trigger: "change" }],
+  huyen: [{ required: true, message: "Chọn huyện", trigger: "change" }],
+  phuong: [{ required: true, message: "Chọn phường", trigger: "change" }],
+  diaChi: [{ required: true, message: "Nhập địa chỉ cụ thể", trigger: "blur" }],
+};
 
 const handleApplyDiscount = () => {
-  const ma = form.value.maGiamGia?.trim().toUpperCase()
-  const found = maGiamGiaList.find(m => m.code === ma)
+  const ma = form.value.maGiamGia?.trim().toUpperCase();
+  const found = maGiamGiaList.find((m) => m.code === ma);
 
   if (!ma) {
-    message.warning('⚠️ Vui lòng nhập mã giảm giá')
-    return
+    message.warning("⚠️ Vui lòng nhập mã giảm giá");
+    return;
   }
 
-  // Reset sản phẩm về giá gốc trước khi áp mã
-  listSanPham.value = [...sanPhamGoc]
+  // Tạo một bản sao ban đầu của danh sách sản phẩm để reset trước khi áp dụng mã mới
+  const initialListSanPham = JSON.parse(JSON.stringify(history.state.selectedItems || []));
+  listSanPham.value = initialListSanPham;
 
   if (!found) {
-    giamGia.value = 0
-    message.error('❌ Mã giảm giá không hợp lệ!')
-    return
+    giamGia.value = 0;
+    message.error("❌ Mã giảm giá không hợp lệ!");
+    return;
   }
 
-  if (found.loai === 'donHang') {
-    giamGia.value = found.giam
-    message.success(`✅ Giảm ${found.giam.toLocaleString()}đ trên đơn hàng!`)
-  } else if (found.loai === 'sanPham') {
-    listSanPham.value = listSanPham.value.map(sp => ({
+  if (found.loai === "donHang") {
+    giamGia.value = found.giam;
+    message.success(`✅ Giảm ${found.giam.toLocaleString()}đ trên đơn hàng!`);
+  } else if (found.loai === "sanPham") {
+    listSanPham.value = listSanPham.value.map((sp) => ({
       ...sp,
-      gia: Math.round(sp.gia * (1 - found.giam))
-    }))
-    giamGia.value = 0
-    message.success(`✅ Giảm ${found.giam * 100}% cho từng sản phẩm!`)
+      // Áp dụng giảm giá vào giá có hiệu lực (discountPrice hoặc originalPrice)
+      discountPrice: Math.round(getPrice(sp) * (1 - found.giam)),
+      originalPrice: sp.originalPrice, // Giữ nguyên originalPrice nếu chỉ discountPrice bị ảnh hưởng
+    }));
+    giamGia.value = 0;
+    message.success(`✅ Giảm ${found.giam * 100}% cho từng sản phẩm!`);
   }
-}
-import { useRouter } from 'vue-router'
-import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
+};
 
-const router = useRouter()
+const router = useRouter();
 const handleCheckout = async () => {
   try {
-    await formRef.value.validate()
+    await formRef.value.validate();
 
     const dataThanhToan = {
       hoTen: form.value.hoTen,
@@ -264,17 +267,35 @@ const handleCheckout = async () => {
       tongTien: tongTien.value,
       phiShip,
       giamGia: giamGia.value,
-      tongCong: tongCong.value
-    }
+      tongCong: tongCong.value,
+      items: listSanPham.value, // Bao gồm các mặt hàng đã chọn trong dữ liệu thanh toán
+    };
 
-    console.log('✅ Dữ liệu thanh toán:', dataThanhToan)
-    message.success('✅ Thông tin hợp lệ, chuẩn bị thanh toán!')
-    router.push({ name: 'thanh-toan-thanh-cong' })
-      
- 
+    console.log("✅ Dữ liệu thanh toán:", dataThanhToan);
+    message.success("✅ Thông tin hợp lệ, chuẩn bị thanh toán!");
+    router.push({ name: "thanh-toan-thanh-cong" });
   } catch (err) {
-    message.error('❌ Vui lòng kiểm tra lại thông tin!')
+    message.error("❌ Vui lòng kiểm tra lại thông tin!");
   }
-}
+};
+
+// Khi component được mount, lấy các sản phẩm đã chọn từ history.state
+onMounted(() => {
+  // Lấy dữ liệu từ Local Storage
+  const storedItems = localStorage.getItem("checkoutItems");
+  if (storedItems) {
+    listSanPham.value = JSON.parse(storedItems);
+    console.log("Dữ liệu sản phẩm đã nhận từ Local Storage:", listSanPham.value);
+  } else {
+    console.warn("Không tìm thấy dữ liệu sản phẩm trong Local Storage.");
+    // Có thể chuyển hướng hoặc hiển thị thông báo
+    // router.push('/gio-hang');
+  }
+});
 </script>
 
+<style scoped>
+.text-decoration-line-through {
+  text-decoration: line-through;
+}
+</style>

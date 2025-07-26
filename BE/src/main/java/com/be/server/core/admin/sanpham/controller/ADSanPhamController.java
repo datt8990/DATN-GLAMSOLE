@@ -28,7 +28,6 @@ public class ADSanPhamController {
 
     @GetMapping
     public ResponseEntity<?> getALl(ADSanPhamSearchRequest request) {
-
         return Helper.createResponseEntity(sanPhamService.getAll(request));
     }
 
