@@ -87,8 +87,8 @@ const columns: TableColumnsType = [
   { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 100, align: 'center' },
   { title: 'Tên Đợt', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
   { title: 'Giá Trị Giảm', key: 'phanTramGiam', dataIndex: 'phanTramGiam', width: 90, align: 'center' },
-  { title: 'Ngày Bắt Đầu', key: 'ngayBatDau', dataIndex: 'ngayBatDau', width: 100, align: 'center' },
-  { title: 'Ngày Kết Thúc', key: 'ngayKetThuc', dataIndex: 'ngayKetThuc', width: 100, align: 'center' },
+  { title: 'Ngày Bắt Đầu', key: 'ngayBatDau', dataIndex: 'ngayBatDau', width: 150, align: 'center' },
+  { title: 'Ngày Kết Thúc', key: 'ngayKetThuc', dataIndex: 'ngayKetThuc', width: 150, align: 'center' },
   { title: 'Trạng Thái', key: 'trangThai', dataIndex: 'trangThai', width: 130, align: 'center' },
   { title: 'Hành Động', key: 'operation', width: 100, align: 'center' }
 ]
@@ -111,7 +111,10 @@ const formatDate = (timestamp: number) => {
   const day = String(date.getDate()).padStart(2, '0')
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const year = date.getFullYear()
-  return `${day}/${month}/${year}`
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
 }
 </script>
 

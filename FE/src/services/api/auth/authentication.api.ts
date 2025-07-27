@@ -1,4 +1,4 @@
-import {PREFIX_API_LOGIN, PREFIX_API_LOGIN_ADMIN, PREFIX_API_REGISTER} from "@/constants/url";
+import {PREFIX_API_LOGIN, PREFIX_API_LOGIN_ADMIN, PREFIX_API_REGISTER, PREFIX_API_CHANGE_PASSWORD} from "@/constants/url";
 import request from "@/services/request";
 import type {DefaultResponse} from "@/utils/types/api.common";
 import type {AxiosResponse} from "axios";
@@ -18,6 +18,11 @@ export interface RegisterForm {
     email: string;
     phone: string;
     password: string;
+}
+
+export interface ChangePassWordForm {
+    currentPassword: string;
+    newPassword: string;
 }
 
 
@@ -50,6 +55,17 @@ export const Register = async (
         const res = (await request({
             url: `${PREFIX_API_REGISTER}`,
             method: "PUT",
+            data: params,
+        })) as AxiosResponse<DefaultResponse<null>>;
+        return res.data;
+};
+
+export const ChangePass = async (
+    params: ChangePassWordForm
+) => {
+        const res = (await request({
+            url: `${PREFIX_API_CHANGE_PASSWORD}`,
+            method: "POST",
             data: params,
         })) as AxiosResponse<DefaultResponse<null>>;
         return res.data;

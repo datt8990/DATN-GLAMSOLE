@@ -140,6 +140,7 @@ const props = defineProps<{
 const router = useRouter();
 const emit = defineEmits(["page-change", "add", "view", "changeStatus","tab-change"]);
 
+
 const columns: TableColumnsType = [
   { title: "STT", key: "stt", dataIndex: "stt", width: 60, align: "center" },
   {

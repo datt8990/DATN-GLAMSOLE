@@ -19,13 +19,13 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             SELECT
                 spct.*
             FROM
-                db_datn.san_pham_chi_tiet spct
+                san_pham_chi_tiet spct
             JOIN
-                db_datn.san_pham sp ON sp.id = spct.id_san_pham
+                san_pham sp ON sp.id = spct.id_san_pham
             LEFT JOIN
-                db_datn.dot_giam_gia_chi_tiet_san_pham dggctsp ON dggctsp.id_chi_tiet_san_pham = spct.id
+                dot_giam_gia_chi_tiet_san_pham dggctsp ON dggctsp.id_chi_tiet_san_pham = spct.id
             LEFT JOIN
-                db_datn.dot_giam_gia dgg ON dgg.id = dggctsp.id_dot_giam_gia
+                dot_giam_gia dgg ON dgg.id = dggctsp.id_dot_giam_gia
             WHERE
                 sp.id = :idSP
                 AND spct.status = 0

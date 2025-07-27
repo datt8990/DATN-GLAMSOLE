@@ -84,6 +84,8 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         hoaDon.setTongTien(0d);
 
+        hoaDon.setTongTienSauGiam(0.0);
+
         NhanVien nhanVien = adNhanVienRepository.findById(adNhanVienRequest.getIdNV()).get();
 
         hoaDon.setNhanVien(nhanVien);
@@ -502,13 +504,10 @@ public class ADBanHangServiceImpl implements ADBanHangService {
                     } else {
 
                         pg.setGiaTriGiamThucTe(tongTien - (tongTien - pg.getPhanTramGiam()));
-                        System.out.println("giá trị" + pg.getGiaTriGiamThucTe());
                     }
                 }
             });
         }
-
-        System.out.println("giảm1" + phieuGiamGias.get(0).getGiaTriGiamThucTe());
 
         if (phieuGiamGias.size() > 0) {
             phieuGiamGias = phieuGiamGias.stream()

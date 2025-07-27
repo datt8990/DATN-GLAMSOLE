@@ -15,6 +15,10 @@ export interface ParamsGetHoaDon extends PaginationParams {
   endDate?: number | null
 }
 
+export interface ParamsGetHoaDonCT extends PaginationParams {
+  maHoaDon?: string | ''
+}
+
 export interface ParamsChangeStatus {
   maHoaDon?: string | ''
   status?: number | null
@@ -84,11 +88,12 @@ export const updateOrderStatusInDatabase = async (params: ParamsChangeStatus) =>
   return res.data
 }
 
-export const getHoaDonChiTiets = async (maHoaDon: string) => {
+export const getHoaDonChiTiets = async (params: ParamsGetHoaDonCT) => {
   const res = (await request({
-    url: `${PREFIX_API_HOA_DON_ADMIN}/all/${maHoaDon}`,
-    method: 'GET'
-  })) as AxiosResponse<DefaultResponse<HoaDonResponse>>
+    url: `${PREFIX_API_HOA_DON_ADMIN}/all`,
+    method: 'GET',
+    params: params
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<HoaDonResponse>>>>
 
   return res.data
 }

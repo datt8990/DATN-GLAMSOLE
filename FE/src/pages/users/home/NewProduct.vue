@@ -41,7 +41,7 @@
                 v-if="item.dotGiamGia"
                 class="origin-price ms-2"
               >
-                {{ item.giaBan.toLocaleString() }}₫
+                {{ item.dotGiamGia.giaTruoc.toLocaleString() }}₫
               </span>
               <span
                 v-if="item.dotGiamGia"

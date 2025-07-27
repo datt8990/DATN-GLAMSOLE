@@ -1,6 +1,7 @@
 package com.be.server.core.admin.hoadon.service.impl;
 
 import com.be.server.core.admin.hoadon.model.request.ADChangeStatusRequest;
+import com.be.server.core.admin.hoadon.model.request.ADHoaDonDetailRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
 import com.be.server.core.admin.hoadon.model.request.ThanhToanRequest;
 import com.be.server.core.admin.hoadon.model.response.*;
@@ -63,10 +64,10 @@ public class ADHoaDonServiceImpl implements ADHoaDonService {
     }
 
     @Override
-    public ResponseObject<?> getAllHoaDonCT(String maHoaDon) {
+    public ResponseObject<?> getAllHoaDonCT(ADHoaDonDetailRequest request) {
         try {
-            List<ADHoaDonChiTietResponseDetail> page = adHoaDonChiTietRepository.getAllHoaDonChiTietResponse(maHoaDon);
-
+            Pageable pageable = Helper.createPageable(request, "created_date");
+            Page<ADHoaDonChiTietResponseDetail> page = adHoaDonChiTietRepository.getAllHoaDonChiTietResponse(request.getMaHoaDon(), pageable);
             return new ResponseObject<>(
                     page,
                     HttpStatus.OK,
@@ -140,7 +141,8 @@ public class ADHoaDonServiceImpl implements ADHoaDonService {
 
         adLichSuThanhToanRepository.save(lichSu);
 
-        hoaDon.setTongTien(request.getSoTienKhachDua());
+        hoaDon.setTongTienSauGiam(request.getSoTienKhachDua());
+        hoaDon.setTongTien(request.getSoTienGoc());
         hoaDon.setTrangThaiHoaDon(request.getTrangThai());
 
         adHoaDonRepository.save(hoaDon);

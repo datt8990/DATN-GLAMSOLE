@@ -11,5 +11,6 @@ public interface DotGiamGiaRepository extends JpaRepository<DotGiamGia, String> 
 
     List<DotGiamGia> findAllByTrangThaiAndNgayBatDauLessThanEqual(StatusPromotion trangThai, Long thoiGianHienTai);
     List<DotGiamGia> findAllByTrangThaiAndNgayKetThucLessThan(StatusPromotion trangThai, Long thoiGianHienTai);
+    List<DotGiamGia> findAllByTrangThai(StatusPromotion trangThai);
 
 }

@@ -59,7 +59,7 @@ public class PDFInvoiceService {
         }
 
         // Lấy chi tiết hóa đơn
-        List<ADHoaDonChiTietResponseDetail> chiTietList = hoaDonChiTietRepository.getAllHoaDonChiTietResponse(maHoaDon);
+        List<ADHoaDonChiTietResponseDetail> chiTietList = hoaDonChiTietRepository.getAllHoaDonChiTietResponse1(maHoaDon);
 
         if (chiTietList.isEmpty()) {
             throw new RuntimeException("Không tìm thấy chi tiết hóa đơn");
@@ -240,7 +240,7 @@ public class PDFInvoiceService {
             productTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(detail.getGiaBan()) + " VND").setFont(regularFont).setFontSize(9))
                     .setTextAlignment(TextAlignment.RIGHT).setPadding(3));
 
-            double thanhTien = detail.getThanhTien() != null ? detail.getThanhTien() : 0;
+            double thanhTien = detail.getThanhTienSP() != null ? detail.getThanhTienSP() : 0;
             totalAmount += thanhTien;
 
             productTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(thanhTien) + " VND").setFont(regularFont).setFontSize(9))
@@ -261,12 +261,14 @@ public class PDFInvoiceService {
         leftCell.add(new Paragraph("Tổng tiền:").setFont(regularFont))
                 .add(new Paragraph("Phí vận chuyển:").setFont(regularFont))
                 .add(new Paragraph("Giảm giá:").setFont(regularFont))
+                .add(new Paragraph("Thanh toán:").setFont(regularFont))
                 .setBorder(Border.NO_BORDER);
 
         Cell rightCell = new Cell();
-        rightCell.add(new Paragraph(currencyFormat.format(detail.getTongTienSauGiam()) + " VND").setFont(regularFont).setTextAlignment(TextAlignment.RIGHT))
+        rightCell.add(new Paragraph(currencyFormat.format(detail.getTongTien()) + " VND").setFont(regularFont).setTextAlignment(TextAlignment.RIGHT))
                 .add(new Paragraph(currencyFormat.format(detail.getPhiVanChuyen() != null ? detail.getPhiVanChuyen() : 0) + " VND").setFont(regularFont).setTextAlignment(TextAlignment.RIGHT))
                 .add(new Paragraph(currencyFormat.format(detail.getTongTienSauGiam() != null ? (detail.getThanhTien() - detail.getTongTienSauGiam()) : 0) + " VND").setFont(regularFont).setTextAlignment(TextAlignment.RIGHT))
+                .add(new Paragraph(currencyFormat.format(detail.getTongTienSauGiam() != null ? (detail.getTongTien() - (detail.getThanhTien() - detail.getTongTienSauGiam())) : 0) + " VND").setFont(regularFont).setTextAlignment(TextAlignment.RIGHT))
                 .setBorder(Border.NO_BORDER);
 
         totalTable.addCell(leftCell);

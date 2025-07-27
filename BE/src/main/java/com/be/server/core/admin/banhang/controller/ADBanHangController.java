@@ -131,8 +131,6 @@ public class ADBanHangController {
         adBanHangService.thanhToanThanhCong(id);
     }
 
-
-
     @GetMapping("/danh-sach-phieu-giam-gia")
     public ResponseEntity<?> getDiscountCoupons(ChonPhieuGiamGiaRequest request) {
         return Helper.createResponseEntity(adBanHangService.danhSachPhieuGiamGia(request));

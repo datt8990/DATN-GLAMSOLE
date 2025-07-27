@@ -39,5 +39,6 @@ public class MappingConstants {
     public static final String API_PERMITALL_SANPHAM= API_PERMITALL_PREFIX + "/san-pham";
     public static final String API_PERMITALL_SANPHAM_CHITIET= API_PERMITALL_PREFIX + "/san-pham-chi-tiet";
     public static final String API_PERMITALL_THUONGHIEU= API_PERMITALL_PREFIX + "/thuong-hieu";
+    public static final String API_PERMITALL_PROFILE= API_PERMITALL_PREFIX + "/profile";
 
 }

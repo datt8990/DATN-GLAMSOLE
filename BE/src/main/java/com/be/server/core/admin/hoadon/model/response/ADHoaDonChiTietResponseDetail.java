@@ -18,6 +18,7 @@ public interface ADHoaDonChiTietResponseDetail {
     String getSize();
     Integer getSoLuong();
     Double getGiaBan();
+    Double getThanhTienSP();
     Double getThanhTien();
     String getTenKhachHang();
     String getSdtKH();
@@ -29,6 +30,8 @@ public interface ADHoaDonChiTietResponseDetail {
     Long getNgayTao();
     Double getPhiVanChuyen();
     String getMaVoucher();
+    String getTenVoucher();
+    Double getGiaTriVoucher();
     Double getTongTienSauGiam();
     Double getTongTien();
 }

@@ -16,7 +16,9 @@
 
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"> Tên khuyến mãi </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Tên khuyến mãi
+            </label>
             <a-input
               v-model:value="formData.tenKhuyenMai"
               placeholder="Tên khuyến mãi"
@@ -25,7 +27,9 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"> Giá trị giảm </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Giá trị giảm
+            </label>
             <a-input
               v-model:value="formData.giaTriGiam"
               placeholder="Giá trị giảm"
@@ -36,28 +40,37 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"> Ngày bắt đầu </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Ngày bắt đầu
+            </label>
             <a-date-picker
               v-model:value="formData.ngayBatDau"
               placeholder="Ngày bắt đầu"
               size="large"
               class="w-full"
-              format="DD/MM/YYYY"
+              format="DD/MM/YYYY HH:mm:ss"
+              :show-time="true"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"> Ngày kết thúc </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Ngày kết thúc
+            </label>
             <a-date-picker
               v-model:value="formData.ngayKetThuc"
               placeholder="Ngày kết thúc"
               size="large"
               class="w-full"
-              format="DD/MM/YYYY"
+              format="DD/MM/YYYY HH:mm:ss"
+              :show-time="true"
             />
           </div>
 
-          <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit">
+          <a-popconfirm
+            title="Bạn có chắc chắn muốn lưu thay đổi?"
+            @confirm="handleSubmit"
+          >
             <a-button
               type="primary"
               size="large"
@@ -107,13 +120,18 @@
             </div>
           </div>
 
-          <div class="border border-gray-200 rounded-b-lg max-h-64 overflow-y-auto">
+          <div
+            class="border border-gray-200 rounded-b-lg max-h-64 overflow-y-auto"
+          >
             <div v-if="loading" class="p-8 text-center text-gray-500">
               <a-spin />
               <div class="mt-2">Đang tải dữ liệu...</div>
             </div>
 
-            <div v-else-if="filteredProducts.length === 0" class="p-8 text-center text-gray-500">
+            <div
+              v-else-if="filteredProducts.length === 0"
+              class="p-8 text-center text-gray-500"
+            >
               Không tìm thấy sản phẩm nào
             </div>
 
@@ -127,7 +145,9 @@
                 <a-checkbox
                   :checked="selectedProductIds.includes(product.id)"
                   :loading="loadingDetails.has(product.id)"
-                  @change="(e) => handleProductSelect(product.id, e.target.checked)"
+                  @change="
+                    (e) => handleProductSelect(product.id, e.target.checked)
+                  "
                 />
               </div>
               <div class="col-span-1 text-center">{{ index + 1 }}</div>
@@ -144,7 +164,11 @@
                     : 'border-red-500 text-red-600'
                 "
               >
-                {{ product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh" }}
+                {{
+                  product.status === "ACTIVE"
+                    ? "Đang kinh doanh"
+                    : "Ngừng kinh doanh"
+                }}
               </div>
             </div>
           </div>
@@ -173,8 +197,8 @@
           <h3 class="text-md font-semibold mb-4">
             Chi tiết sản phẩm
             <span class="text-blue-500 font-normal"
-              >({{ paginatedProductDetails.length }} / {{ filteredProductDetails.length }} sản
-              phẩm)</span
+              >({{ paginatedProductDetails.length }} /
+              {{ filteredProductDetails.length }} sản phẩm)</span
             >
           </h3>
           <div class="row">
@@ -201,7 +225,11 @@
                 @change="handleDetailSearch"
                 :allowClear="true"
               >
-                <a-select-option v-for="size in sizes" :key="size.id" :value="size.id">
+                <a-select-option
+                  v-for="size in sizes"
+                  :key="size.id"
+                  :value="size.id"
+                >
                   {{ size.ten }}
                 </a-select-option>
               </a-select>
@@ -217,7 +245,11 @@
                 @change="handleDetailSearch"
                 :allowClear="true"
               >
-                <a-select-option v-for="color in colors" :key="color.id" :value="color.id">
+                <a-select-option
+                  v-for="color in colors"
+                  :key="color.id"
+                  :value="color.id"
+                >
                   {{ color.ten }}
                 </a-select-option>
               </a-select>
@@ -278,12 +310,19 @@
               <div class="col-span-1 text-center">
                 <a-checkbox
                   :checked="detail.selected"
-                  @change="(e) => handleProductDetailSelect(detail.id, e.target.checked)"
+                  @change="
+                    (e) =>
+                      handleProductDetailSelect(detail.id, e.target.checked)
+                  "
                 />
               </div>
-              <div class="col-span-1 text-center">{{ getDetailGlobalIndex(index) }}</div>
+              <div class="col-span-1 text-center">
+                {{ getDetailGlobalIndex(index) }}
+              </div>
               <div class="col-span-2 text-center">
-                <div class="w-10 h-10 bg-gray-200 rounded mx-auto flex items-center justify-center">
+                <div
+                  class="w-10 h-10 bg-gray-200 rounded mx-auto flex items-center justify-center"
+                >
                   <img
                     v-if="detail.anh || detail.hinhAnh"
                     :src="detail.anh || detail.hinhAnh"
@@ -452,7 +491,8 @@ const filteredProductDetails = computed(() => {
     // Product name search
     const productName = getProductName(detail).toLowerCase();
     const searchMatch =
-      !productNameSearch.value || productName.includes(productNameSearch.value.toLowerCase());
+      !productNameSearch.value ||
+      productName.includes(productNameSearch.value.toLowerCase());
 
     // Size filter - more explicit null checking
     let sizeMatch = true;
@@ -479,7 +519,9 @@ const paginatedProductDetails = computed(() => {
 const checkAll = computed(() => {
   return (
     filteredProducts.value.length > 0 &&
-    filteredProducts.value.every((product) => selectedProductIds.value.includes(product.id))
+    filteredProducts.value.every((product) =>
+      selectedProductIds.value.includes(product.id)
+    )
   );
 });
 
@@ -499,8 +541,12 @@ const detailsCheckAll = computed(() => {
 });
 
 const detailsIndeterminate = computed(() => {
-  const selectedCount = paginatedProductDetails.value.filter((detail) => detail.selected).length;
-  return selectedCount > 0 && selectedCount < paginatedProductDetails.value.length;
+  const selectedCount = paginatedProductDetails.value.filter(
+    (detail) => detail.selected
+  ).length;
+  return (
+    selectedCount > 0 && selectedCount < paginatedProductDetails.value.length
+  );
 });
 
 const loadingAnyDetails = computed(() => {
@@ -554,7 +600,10 @@ const clearDetailFilters = () => {
   selectedSize.value = null;
   currentDetailPageIndex.value = 1; // Reset to first page
   nextTick(() => {
-    console.log("Filters cleared, filtered results:", filteredProductDetails.value.length);
+    console.log(
+      "Filters cleared, filtered results:",
+      filteredProductDetails.value.length
+    );
   });
 };
 
@@ -646,7 +695,10 @@ const fetchProductDetails = async (productId: string) => {
         }
       });
       currentDetailPageIndex.value = 1; // Reset to first page when new details are added
-      console.log("Updated selectedProductDetails:", selectedProductDetails.value);
+      console.log(
+        "Updated selectedProductDetails:",
+        selectedProductDetails.value
+      );
     } else {
       console.warn("No valid data in response:", response);
     }
@@ -679,12 +731,14 @@ const fetchProducts = async () => {
         ma: product.ma,
         ten: product.ten,
         status: product.status,
-        trangThai: product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh",
+        trangThai:
+          product.status === "ACTIVE" ? "Đang kinh doanh" : "Ngừng kinh doanh",
         thuongHieu: product.tenThuongHieu,
         moTa: product.moTa,
       }));
 
-      totalProducts.value = response.data.totalElements || availableProducts.value.length;
+      totalProducts.value =
+        response.data.totalElements || availableProducts.value.length;
 
       console.log("Mapped products:", availableProducts.value);
     } else {
@@ -744,7 +798,9 @@ const onCheckAllChange = async (e: any) => {
 };
 
 const handleProductDetailSelect = (detailId: string, checked: boolean) => {
-  const detail = selectedProductDetails.value.find((item) => item.id === detailId);
+  const detail = selectedProductDetails.value.find(
+    (item) => item.id === detailId
+  );
   if (detail) {
     detail.selected = checked;
   }
