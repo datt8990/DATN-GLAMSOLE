@@ -1,7 +1,7 @@
 import type { AxiosResponse } from 'axios'
 import request from '@/services/request'
 import { PREFIX_API_SANPHAM_PERMITALL } from '@/constants/url'
-import type { DefaultResponse, PaginationParams, PaginationResponse } from '@/types/api.common'
+import type { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } from '@/types/api.common'
 
 export interface MauSacDTO {
   ten: string
@@ -21,6 +21,14 @@ export interface DotGiamGiaInfo {
   ngayBatDau: number
   ngayKetThuc: number
 }
+
+export type SanPhamResponse = ResponseList & {
+  ma: string,
+  ten: string,
+  moTa: string,
+  status: string,
+}
+
 
 export interface SanPhamMoiResponse {
   id: string
@@ -53,13 +61,71 @@ export const GetSanPhamMoiTrangChu = async (
   return res.data
 }
 
-export const GetSanPhamGiamGiaTrangChu = async (
+export const GetDanhSachSanPhamTrangSanPham = async (
   params: ParamsGetSanPhamMoi
 ) => {
+  const res = (await request({
+    url: `${PREFIX_API_SANPHAM_PERMITALL}/get-all/danh-sach-san-pham`,
+    method: 'GET',
+    params
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<SanPhamMoiResponse[]>>>
+  return res.data
+}
+
+export const GetSanPhamGiamGiaTrangChu = async (
+  params: ParamsGetSanPhamMoi
+) => { 
   const res = (await request({
     url: `${PREFIX_API_SANPHAM_PERMITALL}/get-all/san-pham-giam-gia`,
     method: 'GET',
     params
   })) as AxiosResponse<DefaultResponse<PaginationResponse<SanPhamMoiResponse[]>>>
+  return res.data
+}
+
+
+export const GetListThuongHieu = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SANPHAM_PERMITALL}/list-thuong-hieu`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
+export const GetListXuatXu = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SANPHAM_PERMITALL}/list-xuat-xu`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
+export const GetListChatLieu= async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SANPHAM_PERMITALL}/list-chat-lieu`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
+
+export const GetListLoaiDe = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SANPHAM_PERMITALL}/list-loai-de`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
+export const GetListDanhMuc = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SANPHAM_PERMITALL}/list-danh-muc`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
   return res.data
 }

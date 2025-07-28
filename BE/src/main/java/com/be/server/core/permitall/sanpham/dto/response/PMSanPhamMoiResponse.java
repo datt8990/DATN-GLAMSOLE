@@ -1,9 +1,13 @@
 package com.be.server.core.permitall.sanpham.dto.response;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 @Data
 public class PMSanPhamMoiResponse {
     private String id;
@@ -14,7 +18,7 @@ public class PMSanPhamMoiResponse {
     private String chatLieu;
     private String xuatXu;
     private String moTa;
-    private Double giaBan;
+    private Double giaBan ;
     private Double giaSauGiam;
     private List<PMKichCoDTO> kichCo;
     private List<PMMauSacDTO> mauSac;

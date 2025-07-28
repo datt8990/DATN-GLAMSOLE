@@ -49,7 +49,7 @@
                 {{ getPriceAfterSale(item).toLocaleString() }}₫
               </span>
               <span v-if="item.dotGiamGia" class="origin-price">
-                {{ item.giaBan.toLocaleString() }}₫
+                {{ item.giaBan }}₫
               </span>
             </div>
             <div v-if="item.dotGiamGia" class="save-amount mb-2">

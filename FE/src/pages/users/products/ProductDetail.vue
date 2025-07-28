@@ -9,7 +9,9 @@
     <div class="row gx-5 align-items-start">
       <!-- Cột trái -->
       <div class="col-md-6 d-flex flex-column gap-4">
-        <div class="bg-white border rounded shadow-sm p-3 d-flex justify-content-center align-items-center product-img-box position-relative">
+        <div
+          class="bg-white border rounded shadow-sm p-3 d-flex justify-content-center align-items-center product-img-box position-relative"
+        >
           <img
             :src="currentVariant?.hinhAnh || 'https://via.placeholder.com/400'"
             class="product-img-main"
@@ -18,7 +20,9 @@
           <!-- Ribbon giảm giá góc chéo -->
           <template v-if="currentVariant?.dotGiamGia">
             <div class="sale-ribbon-main shadow">
-              <span class="sale-percent">-{{ Math.round(currentVariant.dotGiamGia.phanTramGiam) }}%</span>
+              <span class="sale-percent"
+                >-{{ Math.round(currentVariant.dotGiamGia.phanTramGiam) }}%</span
+              >
               <span class="sale-text">SALE</span>
             </div>
           </template>
@@ -26,10 +30,13 @@
 
         <div class="border-top pt-4">
           <h5 class="fw-bold mb-3">Mô tả sản phẩm</h5>
-          <p class="text-muted" style="white-space: pre-line;">{{ displayedDescription }}</p>
-          <button v-if="hasMoreDescription" class="btn btn-sm btn-outline-secondary"
-            @click="showFullDescription = !showFullDescription">
-            {{ showFullDescription ? 'Thu gọn' : 'Xem thêm' }}
+          <p class="text-muted" style="white-space: pre-line">{{ displayedDescription }}</p>
+          <button
+            v-if="hasMoreDescription"
+            class="btn btn-sm btn-outline-secondary"
+            @click="showFullDescription = !showFullDescription"
+          >
+            {{ showFullDescription ? "Thu gọn" : "Xem thêm" }}
             <i :class="'ri-arrow-' + (showFullDescription ? 'up' : 'down') + '-s-line ms-1'"></i>
           </button>
         </div>
@@ -40,39 +47,56 @@
         <div class="bg-white border rounded shadow-sm p-3 d-flex flex-column gap-2">
           <h5 class="fw-bold mb-1">{{ product.tenSanPham }}</h5>
           <div class="text-muted small">
-            Thương hiệu: <strong>{{ product.thuongHieu?.tenThuongHieu || '-' }}</strong> |
-            Xuất xứ: <strong>{{ product.xuatXu?.tenXuatXu || '-' }}</strong>
+            Thương hiệu: <strong>{{ product.thuongHieu?.tenThuongHieu || "-" }}</strong> | Xuất xứ:
+            <strong>{{ product.xuatXu?.tenXuatXu || "-" }}</strong>
           </div>
 
           <!-- Giá -->
           <div class="text-danger fw-bold fs-6 mb-2">
             <template v-if="currentVariant?.dotGiamGia">
               <del class="text-muted me-2">
-                {{ currentVariant?.dotGiamGia?.giaTruoc?.toLocaleString('vi-VN') || currentVariant?.giaBan?.toLocaleString('vi-VN') }} ₫
+                {{
+                  currentVariant?.dotGiamGia?.giaTruoc?.toLocaleString("vi-VN") ||
+                  currentVariant?.giaBan?.toLocaleString("vi-VN")
+                }}
+                ₫
               </del>
-              {{ (currentVariant?.dotGiamGia?.giaSau || currentVariant?.giaBan)?.toLocaleString('vi-VN') }} ₫
-              <span class="badge bg-success ms-2">-{{ currentVariant?.dotGiamGia?.phanTramGiam }}%</span>
+              {{
+                (currentVariant?.dotGiamGia?.giaSau || currentVariant?.giaBan)?.toLocaleString(
+                  "vi-VN"
+                )
+              }}
+              ₫
+              <span class="badge bg-success ms-2"
+                >-{{ currentVariant?.dotGiamGia?.phanTramGiam }}%</span
+              >
             </template>
-            <template v-else>
-              {{ currentVariant?.giaBan?.toLocaleString('vi-VN') }} ₫
-            </template>
+            <template v-else> {{ currentVariant?.giaBan?.toLocaleString("vi-VN") }} ₫ </template>
           </div>
 
           <!-- Màu sắc -->
           <div>
             <label class="form-label small fw-semibold mb-1">Màu sắc</label>
             <div class="d-flex flex-wrap gap-2">
-              <div v-for="color in uniqueColors" :key="color.id" class="d-flex flex-column align-items-center"
-                style="cursor: pointer; width: 50px;" @click="handleChooseColor(color)">
-                <div class="shadow-sm" :style="{
-                  backgroundColor: color.maMau,
-                  width: '30px',
-                  height: '30px',
-                  borderRadius: '50%',
-                  border: colorSelected?.id === color.id ? '2px solid #0d6efd' : '1px solid #ccc',
-                  transition: 'border 0.2s ease'
-                }"></div>
-                <small class="mt-1 text-muted text-center" style="font-size: 0.7rem;">
+              <div
+                v-for="color in uniqueColors"
+                :key="color.id"
+                class="d-flex flex-column align-items-center"
+                style="cursor: pointer; width: 50px"
+                @click="handleChooseColor(color)"
+              >
+                <div
+                  class="shadow-sm"
+                  :style="{
+                    backgroundColor: color.maMau,
+                    width: '30px',
+                    height: '30px',
+                    borderRadius: '50%',
+                    border: colorSelected?.id === color.id ? '2px solid #0d6efd' : '1px solid #ccc',
+                    transition: 'border 0.2s ease',
+                  }"
+                ></div>
+                <small class="mt-1 text-muted text-center" style="font-size: 0.7rem">
                   {{ color.tenMauSac }}
                 </small>
               </div>
@@ -83,9 +107,14 @@
           <div>
             <label class="form-label small fw-semibold mb-1">Kích thước</label>
             <div class="d-flex flex-wrap gap-2">
-              <span v-for="size in filteredSizes" :key="size.id" class="px-2 py-1 border rounded text-center"
+              <span
+                v-for="size in filteredSizes"
+                :key="size.id"
+                class="px-2 py-1 border rounded text-center"
                 :class="sizeSelected?.id === size.id ? 'bg-dark text-white' : 'bg-light text-dark'"
-                style="min-width: 40px; font-size: 0.85rem; cursor: pointer;" @click="handleChooseSize(size)">
+                style="min-width: 40px; font-size: 0.85rem; cursor: pointer"
+                @click="handleChooseSize(size)"
+              >
                 {{ size.tenKichCo }}
               </span>
             </div>
@@ -94,8 +123,13 @@
           <!-- Số lượng -->
           <div class="d-flex justify-content-between align-items-center">
             <label class="form-label mb-0 small fw-semibold">Số lượng</label>
-            <input type="number" class="form-control form-control-sm w-25 text-end" v-model="cart.quantity"
-              :max="currentVariant?.soLuong" min="1" />
+            <input
+              type="number"
+              class="form-control form-control-sm w-25 text-end"
+              v-model="cart.quantity"
+              :max="currentVariant?.soLuong"
+              min="1"
+            />
             <span class="text-muted small ms-2">(Tồn: {{ currentVariant?.soLuong || 0 }})</span>
           </div>
 
@@ -103,7 +137,7 @@
           <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
             <span class="fw-semibold small">Tạm tính:</span>
             <span class="fw-bold text-primary small">
-              {{ ((displayedPrice || 0) * (cart.quantity || 1)).toLocaleString('vi-VN') }} ₫
+              {{ ((displayedPrice || 0) * (cart.quantity || 1)).toLocaleString("vi-VN") }} ₫
             </span>
           </div>
 
@@ -113,9 +147,7 @@
             <button class="btn btn-outline-primary btn-sm fw-semibold" @click="addToCart">
               <i class="ri-shopping-cart-line me-1"></i> Giỏ hàng
             </button>
-            <button class="btn btn-primary btn-sm fw-semibold" @click="buyNow">
-              Mua ngay
-            </button>
+            <button class="btn btn-primary btn-sm fw-semibold" @click="buyNow">Mua ngay</button>
           </div>
         </div>
       </div>
@@ -124,131 +156,136 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
-import { GetSanPhamChiTietById } from '@/services/api/permitall/sanphamchitiet/pmsanphamchitiet.api'
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import BreadCrumbUser from "@/components/ui/Breadcrumbs/BreadCrumbUser.vue";
+import { GetSanPhamChiTietById } from "@/services/api/permitall/sanphamchitiet/pmsanphamchitiet.api";
+import { createCartDetail } from "@/services/api/permitall/cart/cart";
+import { log } from "console";
+import { localStorageAction } from "@/utils/storage";
+import { USER_INFO_STORAGE_KEY } from "@/constants/storageKey";
+import { toast } from "vue3-toastify";
 
-const router = useRouter()
-const route = useRoute()
-const idSanPham = route.params.idsp?.toString() || ''
-const colorIdParam = route.query.colorId?.toString() || null
-const sizeIdParam = route.query.sizeId?.toString() || null
+const router = useRouter();
+const route = useRoute();
+const idSanPham = route.params.idsp?.toString() || "";
+const colorIdParam = route.query.colorId?.toString() || null;
+const sizeIdParam = route.query.sizeId?.toString() || null;
 
-const product = ref<any>(null)
-const colorSelected = ref<any>(null)
-const sizeSelected = ref<any>(null)
-const cart = ref({ quantity: 1 })
-const showFullDescription = ref(false)
+const product = ref<any>(null);
+const colorSelected = ref<any>(null);
+const sizeSelected = ref<any>(null);
+const cart = ref({ quantity: 1 });
+const showFullDescription = ref(false);
 
 const breadcrumbRoutes = [
-  { name: 'Trang chủ', path: '/' },
-  { name: 'Sản phẩm', path: '/san-pham' },
-  { name: 'Chi tiết sản phẩm', path: '/chi-tiet-san-pham' }
-]
+  { name: "Trang chủ", path: "/" },
+  { name: "Sản phẩm", path: "/san-pham" },
+  { name: "Chi tiết sản phẩm", path: "/chi-tiet-san-pham" },
+];
 
 onMounted(async () => {
-  await loadSanPhamChiTiet()
-  pickVariantFromParamOrDefault()
-})
+  await loadSanPhamChiTiet();
+  pickVariantFromParamOrDefault();
+});
 
 /** Hàm gọi API */
 async function loadSanPhamChiTiet() {
-  if (!idSanPham) return
-  const res = await GetSanPhamChiTietById({ idSanPham })
-  product.value = res.data
+  if (!idSanPham) return;
+  const res = await GetSanPhamChiTietById({ idSanPham });
+  product.value = res.data;
 }
 
 /** Hàm chọn variant theo param nếu có, không thì lấy mặc định */
 function pickVariantFromParamOrDefault() {
-  const variants = product.value?.chiTietSanPham || []
-  let chosenVariant = null
+  const variants = product.value?.chiTietSanPham || [];
+  let chosenVariant = null;
 
   if (colorIdParam && sizeIdParam) {
     chosenVariant = variants.find(
-      ct => ct.mauSac.id === colorIdParam && ct.kichCo.id === sizeIdParam
-    )
+      (ct) => ct.mauSac.id === colorIdParam && ct.kichCo.id === sizeIdParam
+    );
   } else if (colorIdParam) {
-    chosenVariant = variants.find(ct => ct.mauSac.id === colorIdParam)
+    chosenVariant = variants.find((ct) => ct.mauSac.id === colorIdParam);
   }
 
   if (chosenVariant) {
-    colorSelected.value = chosenVariant.mauSac
-    sizeSelected.value = chosenVariant.kichCo
+    colorSelected.value = chosenVariant.mauSac;
+    sizeSelected.value = chosenVariant.kichCo;
   } else if (variants.length > 0) {
-    setDefaultVariant()
+    setDefaultVariant();
   }
 }
 
 /** Hàm chọn variant mặc định */
 function setDefaultVariant() {
-  const variants = product.value?.chiTietSanPham || []
+  const variants = product.value?.chiTietSanPham || [];
   if (variants.length > 0) {
-    colorSelected.value = variants[0].mauSac
-    sizeSelected.value = variants[0].kichCo
+    colorSelected.value = variants[0].mauSac;
+    sizeSelected.value = variants[0].kichCo;
   }
 }
 
 /** Lấy danh sách màu không trùng */
 const uniqueColors = computed(() => {
-  const seen = new Set()
+  const seen = new Set();
   return (product.value?.chiTietSanPham || [])
-    .map(ct => ct.mauSac)
-    .filter(color => {
-      if (seen.has(color.id)) return false
-      seen.add(color.id)
-      return true
-    })
-})
+    .map((ct) => ct.mauSac)
+    .filter((color) => {
+      if (seen.has(color.id)) return false;
+      seen.add(color.id);
+      return true;
+    });
+});
 
 /** Lấy danh sách size phù hợp với màu đang chọn */
 const filteredSizes = computed(() => {
   return (product.value?.chiTietSanPham || [])
-    .filter(ct => ct.mauSac.id === colorSelected.value?.id)
-    .map(ct => ct.kichCo)
-})
+    .filter((ct) => ct.mauSac.id === colorSelected.value?.id)
+    .map((ct) => ct.kichCo);
+});
 
 /** Lấy variant hiện tại (đúng màu + size) */
 const currentVariant = computed(() => {
   return (product.value?.chiTietSanPham || []).find(
-    ct => ct.mauSac.id === colorSelected.value?.id && ct.kichCo.id === sizeSelected.value?.id
-  )
-})
+    (ct) => ct.mauSac.id === colorSelected.value?.id && ct.kichCo.id === sizeSelected.value?.id
+  );
+});
 
 /** Giá hiển thị */
 const displayedPrice = computed(() => {
-  if (currentVariant.value?.dotGiamGia?.giaSau) return currentVariant.value.dotGiamGia.giaSau
-  return currentVariant.value?.giaBan
-})
+  if (currentVariant.value?.dotGiamGia?.giaSau) return currentVariant.value.dotGiamGia.giaSau;
+  return currentVariant.value?.giaBan;
+});
 
 /** Mô tả sản phẩm rút gọn */
 const displayedDescription = computed(() =>
   showFullDescription.value
-    ? product.value?.moTa || ''
-    : (product.value?.moTa || '').split('\n').slice(0, 2).join('\n')
-)
+    ? product.value?.moTa || ""
+    : (product.value?.moTa || "").split("\n").slice(0, 2).join("\n")
+);
 
-const hasMoreDescription = computed(() => (product.value?.moTa || '').split('\n').length > 2)
+const hasMoreDescription = computed(() => (product.value?.moTa || "").split("\n").length > 2);
 
 const errValidate = computed(() => {
-  if (!currentVariant.value) return { cart: 'Vui lòng chọn đủ màu và kích thước' }
-  if (cart.value.quantity > currentVariant.value.soLuong) return { cart: 'Vượt quá tồn kho' }
-  if (cart.value.quantity < 1) return { cart: 'Số lượng không hợp lệ' }
-  return { cart: '' }
-})
+  if (!currentVariant.value) return { cart: "Vui lòng chọn đủ màu và kích thước" };
+  if (cart.value.quantity > currentVariant.value.soLuong) return { cart: "Vượt quá tồn kho" };
+  if (cart.value.quantity < 1) return { cart: "Số lượng không hợp lệ" };
+  return { cart: "" };
+});
 
 function handleChooseColor(color: any) {
-  colorSelected.value = color
+  colorSelected.value = color;
   // Nếu size hiện tại không tồn tại với màu này, chọn size đầu tiên có thể chọn
   const sizesWithColor = (product.value?.chiTietSanPham || [])
-    .filter(ct => ct.mauSac.id === color.id)
-    .map(ct => ct.kichCo)
-  if (!sizesWithColor.some(sz => sz.id === sizeSelected.value?.id)) {
-    sizeSelected.value = sizesWithColor[0] || null
+    .filter((ct) => ct.mauSac.id === color.id)
+    .map((ct) => ct.kichCo);
+  if (!sizesWithColor.some((sz) => sz.id === sizeSelected.value?.id)) {
+    sizeSelected.value = sizesWithColor[0] || null;
   }
 }
 function handleChooseSize(size: any) {
-  sizeSelected.value = size
+  sizeSelected.value = size;
 }
 
 function getCartData() {
@@ -271,30 +308,85 @@ function getCartData() {
     soLuongTrongKho: currentVariant.value?.soLuong,
     dotGiamGia: currentVariant.value?.dotGiamGia,
     // Số lượng muốn mua
-    soLuongMua: cart.value.quantity
+    soLuongMua: cart.value.quantity,
+  };
+}
+
+const idUser = localStorageAction.get(USER_INFO_STORAGE_KEY);
+
+async function addToCart() {
+  if (errValidate.value.cart) {
+    alert(errValidate.value.cart);
+    return;
+  }
+
+  console.log("userid", idUser.userId);
+
+  const cartItem = getCartData();
+
+  console.log(cartItem)
+  // **Added checks for required data and user login**
+  if (!idUser.userId) {
+    alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
+    return;
+  }
+  if (!cartItem.idChiTietSanPham || !cartItem.giaBan || !cartItem.soLuongMua) {
+    alert("Không thể thêm sản phẩm vào giỏ hàng. Thiếu thông tin sản phẩm.");
+    return;
+  }
+
+  try {
+    // **Construct the data object expected by createCartDetail**
+    const dataToSend = {
+      idKhachHang: idUser.userId,
+      idSPCT: cartItem.idChiTietSanPham,
+      price: cartItem.giaBan.toString(), // Convert to string as per requestCartDetail interface
+      quantity: cartItem.soLuongMua.toString(), // Convert to string as per requestCartDetail interface
+    };
+
+    console.log("Dữ liệu gửi đến API createCartDetail:", dataToSend);
+
+    const res = await createCartDetail(dataToSend);
+
+    if(res.message == 'Số lượng sản phẩm trong giỏ hàng đã vượt quá số lượng sản phẩm'){
+         toast.warning(res.message);
+         return
+    }
+
+    toast.success(res.message);
+  } catch (error: any) {
+    // Added type 'any' to 'error' for better TypeScript handling
+    console.error("Lỗi khi thêm vào giỏ hàng:", error);
   }
 }
 
-function addToCart() {
-  if (errValidate.value.cart) {
-    alert(errValidate.value.cart)
-    return
-  }
-  const cartItem = getCartData()
-  console.log('Dữ liệu thêm vào giỏ hàng:', cartItem)
-  alert('Đã thêm vào giỏ hàng!')
-}
+// function addToCart() {
+//   if (errValidate.value.cart) {
+//     alert(errValidate.value.cart);
+//     return;
+//   }
+//   try {
+//     const res = createCartDetail();
+//   } catch (error) {
+//     // Chỉ cần khai báo 'error'
+//     console.error(error); // Nên dùng console.error() để log lỗi
+//   }
+
+//   const cartItem = getCartData();
+//   console.log("Dữ liệu thêm vào giỏ hàng:", cartItem);
+//   alert("Đã thêm vào giỏ hàng!");
+// }
 
 function buyNow() {
   if (errValidate.value.cart) {
-    alert(errValidate.value.cart)
-    return
+    alert(errValidate.value.cart);
+    return;
   }
-  const buyItem = getCartData()
-  console.log('Dữ liệu mua ngay:', buyItem)
-  alert('Chuyển đến trang thanh toán!')
+  const buyItem = getCartData();
+  console.log("Dữ liệu mua ngay:", buyItem);
+  alert("Chuyển đến trang thanh toán!");
   // Thực tế chuyển trang như cũ
-  router.push(`/checkout?ctspId=${buyItem.idChiTietSanPham}&quantity=${buyItem.soLuongMua}`)
+  router.push(`/checkout?ctspId=${buyItem.idChiTietSanPham}&quantity=${buyItem.soLuongMua}`);
 }
 </script>
 
@@ -317,7 +409,7 @@ function buyNow() {
   background: #f7f7f7;
   border-radius: 18px;
   display: block;
-  box-shadow: 0 3px 16px 0 rgba(60,60,60,0.10);
+  box-shadow: 0 3px 16px 0 rgba(60, 60, 60, 0.1);
   margin: 0 auto;
   transition: box-shadow 0.18s;
 }
@@ -335,9 +427,9 @@ function buyNow() {
   font-size: 1.05rem;
   padding: 6px 0;
   border-radius: 8px;
-  box-shadow: 0 3px 12px rgba(255,102,0,0.14), 0 1.5px 6px rgba(0,0,0,0.06);
+  box-shadow: 0 3px 12px rgba(255, 102, 0, 0.14), 0 1.5px 6px rgba(0, 0, 0, 0.06);
   letter-spacing: 1.1px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.09);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.09);
   transform: rotate(-24deg);
   z-index: 4;
   display: flex;

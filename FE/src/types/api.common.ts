@@ -3,7 +3,15 @@ export interface PaginationParams {
     size: number;
     orderBy?: string;
     sortBy?: string;
-    q?: string;
+   q?: string;
+  thuongHieuIds?: string[];
+  mauSacIds?: string[];
+  kichCoIds?: string[];
+  chatLieuIds?: string[];
+  loaiDeIds?: string[];
+  danhMucIds?: string[];
+  giaMin?: number;
+  giaMax?: number;
 }
 
 export interface DefaultResponse<T> {

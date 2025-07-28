@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-content-center align-items-center w-100 bg-light">
+  <div class="d-flex justify-content-center align-items-center w-100 bg-light" style="margin-top: 100px;">
     <div class="position-relative border rounded shadow p-4 bg-white" style="max-width: 500px; width: 100%;">
       <!-- Icon Thành công -->
       <div class="position-absolute top-0 start-50 translate-middle" style="transform: translate(-50%, -50%);">
@@ -12,8 +12,7 @@
       <div class="text-center pt-5 mt-3">
         <h4 class="fw-bold text-success">Đặt hàng thành công!</h4>
         <p class="mt-3">
-          Cảm ơn bạn đã đặt hàng với mã đơn 
-          <span class="text-primary fw-semibold">#{{ route.params.id ?? '' }}</span>
+          Cảm ơn bạn đã đặt hàng
         </p>
         <p class="text-muted small">
           Chúng tôi sẽ gửi email xác nhận với thông tin chi tiết và đường dẫn để theo dõi đơn hàng của bạn.

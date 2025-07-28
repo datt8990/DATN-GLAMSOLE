@@ -112,7 +112,7 @@ import { USER_INFO_STORAGE_KEY } from '@/constants/storageKey'
 
 const keyword = ref('')
 const showDropdown = ref(false)
-const cartItemCount = ref(3)
+const cartItemCount = ref(0)
 const accountRef = ref<HTMLElement | null>(null)
 
 const router = useRouter()

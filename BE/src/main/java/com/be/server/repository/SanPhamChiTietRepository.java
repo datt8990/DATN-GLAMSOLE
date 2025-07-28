@@ -11,25 +11,25 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
 
     @Query(value = """
-            SELECT spct.* FROM san_pham_chi_tiet spct JOIN san_pham sp ON sp.id = spct.id_san_pham WHERE sp.id = :idSP AND spct.status = 0""", nativeQuery = true)
+      SELECT spct FROM SanPhamChiTiet spct JOIN SanPham sp ON sp.id = spct.sanPham.id WHERE sp.id = :idSP AND spct.status = 0""")
     List<SanPhamChiTiet> findBySanPham(String idSP);
 
 
     @Query(value = """
             SELECT
-                spct.*
+                spct
             FROM
-                db_datn.san_pham_chi_tiet spct
+                SanPhamChiTiet spct
             JOIN
-                db_datn.san_pham sp ON sp.id = spct.id_san_pham
+                SanPham sp ON sp.id = spct.sanPham.id
             LEFT JOIN
-                db_datn.dot_giam_gia_chi_tiet_san_pham dggctsp ON dggctsp.id_chi_tiet_san_pham = spct.id
+                DotGiamGiaChiTietSanPham dggctsp ON dggctsp.sanPhamChiTiet.id = spct.id
             LEFT JOIN
-                db_datn.dot_giam_gia dgg ON dgg.id = dggctsp.id_dot_giam_gia
+                DotGiamGia dgg ON dgg.id = dggctsp.dotGiamGia.id
             WHERE
                 sp.id = :idSP
                 AND spct.status = 0
-                AND (dgg.id IS NULL OR dgg.trang_thai != 'DANG_KICH_HOAT');
-            """, nativeQuery = true)
+                AND (dgg.id IS NULL OR dgg.status != 0)
+            """)
     List<SanPhamChiTiet> detailSPCTByDot(String idSP);
 }
