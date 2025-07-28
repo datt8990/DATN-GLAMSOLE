@@ -115,7 +115,7 @@ const fetchProducts = async () => {
     // const pagedData = response.data.data
 
     state.products = response.data?.page?.content;
-    state.totalItems = response.data?.totalElements;
+    state.totalItems = response.data?.page?.totalElements;
     state.countByStatus = response.data?.countByStatus || {};
   } catch (error) {
     console.error("Failed to fetch products:", error);

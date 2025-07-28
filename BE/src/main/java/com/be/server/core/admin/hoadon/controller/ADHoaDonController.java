@@ -1,6 +1,7 @@
 package com.be.server.core.admin.hoadon.controller;
 
 import com.be.server.core.admin.hoadon.model.request.ADChangeStatusRequest;
+import com.be.server.core.admin.hoadon.model.request.ADHoaDonDetailRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
 import com.be.server.core.admin.hoadon.model.request.ThanhToanRequest;
 import com.be.server.core.admin.hoadon.service.ADHoaDonService;
@@ -38,9 +39,9 @@ public class ADHoaDonController {
         return Helper.createResponseEntity(service.getAllHoaDon(request));
     }
 
-    @GetMapping("/all/{maHoaDon}")
-    public ResponseEntity<?> getHDCT(@PathVariable String maHoaDon) {
-        return Helper.createResponseEntity(service.getAllHoaDonCT(maHoaDon));
+    @GetMapping("/all")
+    public ResponseEntity<?> getHDCT(@ModelAttribute ADHoaDonDetailRequest request) {
+        return Helper.createResponseEntity(service.getAllHoaDonCT(request));
     }
 
     @GetMapping("/{id}")

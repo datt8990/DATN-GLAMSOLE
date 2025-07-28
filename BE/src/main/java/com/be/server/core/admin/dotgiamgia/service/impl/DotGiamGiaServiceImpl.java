@@ -36,6 +36,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -101,26 +102,20 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
         }
         long currentMillis = System.currentTimeMillis();
 
-// Lấy ngày hiện tại (today)
         LocalDate today = Instant.ofEpochMilli(currentMillis)
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-// Lấy ngày từ request
         LocalDate startDate = Instant.ofEpochMilli(request.getStartDate())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-// Chỉ reject nếu startDate nằm **trước hôm nay**
         if (startDate.isBefore(today)) {
             throw new BadRequestException("Ngày bắt đầu không được nằm trong quá khứ");
         }
         if (request.getEndDate() < request.getStartDate()) {
             throw new BadRequestException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
         }
-//        if (hasOverlappingDiscounts(request.getIdProductDetails(), request.getStartDate(), request.getEndDate())) {
-//            throw new BadRequestException("Một số sản phẩm đã nằm trong đợt giảm giá khác trong khoảng thời gian đã chọn.");
-//        }
         StatusPromotion status = getStatusPromotion(request.getStartDate(), request.getEndDate());
         DotGiamGia dotGiamGia = DotGiamGia.builder().ma(new RandomNumberGenerator().randomToString("KM", 900000000))
                 .ten(request.getName()).phanTramGiam(request.getValue())
@@ -135,7 +130,7 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
 
             Double giaGoc = sanPhamChiTiet.getGiaBan();
             Double giaSauGiam = giaGoc - (giaGoc * request.getValue() / 100);
-            giaSauGiam = Math.round(giaSauGiam * 100.0) / 100.0; // Làm tròn
+            giaSauGiam = Math.round(giaSauGiam * 100.0) / 100.0;
 
             DotGiamGiaChiTietSanPham promotionProductDetail = new DotGiamGiaChiTietSanPham();
             promotionProductDetail.setMa("DGCTSP-" + UUID.randomUUID());
@@ -154,7 +149,6 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
     @Override
     @Transactional
     public DotGiamGia update(UpdateDotGiamGiaRequest request) {
-
         log.info("Request update Đợt giảm giá : ====>{}  ", request.toString());
         Optional<DotGiamGia> optional = dotGiamGiaRepository.findById(request.getId());
         if (!optional.isPresent()) {
@@ -178,9 +172,6 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-        if (startDate.isBefore(today)) {
-            throw new BadRequestException("Ngày bắt đầu không được nằm trong quá khứ");
-        }
         if (request.getEndDate() < request.getStartDate()) {
             throw new BadRequestException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
         }
@@ -275,6 +266,28 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
         return promotion;
     }
 
+    private StatusPromotion getStatusPromotion(long startDate, long endDate) {
+        LocalDateTime currentDateTime = Instant.ofEpochMilli(System.currentTimeMillis())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        LocalDateTime start = Instant.ofEpochMilli(startDate)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        LocalDateTime end = Instant.ofEpochMilli(endDate)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        if (start.isAfter(currentDateTime)) {
+            return StatusPromotion.CHUA_KICH_HOAT;
+        } else if (end.isBefore(currentDateTime)) {
+            return StatusPromotion.HET_HAN_KICH_HOAT;
+        } else {
+            return StatusPromotion.DANG_KICH_HOAT;
+        }
+    }
+
     @Override
     public DotGiamGia updateStatus(String id) {
         Optional<DotGiamGia> optional = dotGiamGiaRepository.findById(id);
@@ -308,29 +321,6 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
     private Status getStatus(StatusPromotion status) {
         return status == StatusPromotion.DANG_KICH_HOAT || status == StatusPromotion.CHUA_KICH_HOAT ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
     }
-
-    private StatusPromotion getStatusPromotion(long startDate, long endDate) {
-        LocalDate currentDate = Instant.ofEpochMilli(System.currentTimeMillis())
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        LocalDate start = Instant.ofEpochMilli(startDate)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        LocalDate end = Instant.ofEpochMilli(endDate)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        if (start.isAfter(currentDate)) {
-            return StatusPromotion.CHUA_KICH_HOAT;
-        } else if (end.isBefore(currentDate)) {
-            return StatusPromotion.HET_HAN_KICH_HOAT;
-        } else {
-            return StatusPromotion.DANG_KICH_HOAT;
-        }
-    }
-
 
     private boolean updateProductDetailsStatus(String idPromotion, StatusPromotion status) {
         List<DotGiamGiaChiTietSanPham> promotionProductDetailList = dotGiamGiaChiTietRepository.findAllByIdPromotion(idPromotion);

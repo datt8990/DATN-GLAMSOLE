@@ -56,7 +56,7 @@ public class PDFDeliveryService {
         }
 
         // Lấy chi tiết hóa đơn
-        List<ADHoaDonChiTietResponseDetail> chiTietList = hoaDonChiTietRepository.getAllHoaDonChiTietResponse(maHoaDon);
+        List<ADHoaDonChiTietResponseDetail> chiTietList = hoaDonChiTietRepository.getAllHoaDonChiTietResponse1(maHoaDon);
 
         if (chiTietList.isEmpty()) {
             throw new RuntimeException("Không tìm thấy chi tiết hóa đơn");

@@ -35,7 +35,7 @@ public class ADHoaDonRepositoryImpl implements ADHoaDonRepositoryCustom {
                         kh.sdt,
                         nv.ma,
                         nv.ten,
-                        hd.tongTien,
+                        hd.tongTienSauGiam,
                         hd.loaiHoaDon,
                         hd.createdDate,
                         hd.trangThaiHoaDon
@@ -137,10 +137,10 @@ public class ADHoaDonRepositoryImpl implements ADHoaDonRepositoryCustom {
                     hd.createdDate
                 )
                 FROM HoaDonChiTiet hdct
-                JOIN hdct.hoaDon hd
-                JOIN hd.khachHang kh
-                JOIN hdct.spct spct
-                JOIN spct.sanPham sp
+                LEFT JOIN hdct.hoaDon hd
+                LEFT JOIN hd.khachHang kh
+                LEFT JOIN hdct.spct spct
+                LEFT JOIN spct.sanPham sp
                 WHERE hdct.hoaDon.ma = :maHoaDon
                 """;
 

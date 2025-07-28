@@ -13,7 +13,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     // Doanh số tháng này (trạng thái 4 = HOAN_THANH)
     @Query(value = """
-            SELECT COALESCE(SUM(h.tong_tien), 0) 
+            SELECT COALESCE(SUM(h.tong_tien_sau_giam), 0) 
             FROM hoa_don h 
             WHERE h.trang_thai_hoa_don = 4
             AND h.created_date >= :startOfMonth 
@@ -35,7 +35,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     // Doanh số hôm nay (trạng thái 4 = HOAN_THANH)
     @Query(value = """
-            SELECT COALESCE(SUM(h.tong_tien), 0) 
+            SELECT COALESCE(SUM(h.tong_tien_sau_giam), 0) 
             FROM hoa_don h 
             WHERE h.trang_thai_hoa_don = 4
             AND h.created_date >= :startOfDay 
@@ -69,7 +69,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     // Query test để kiểm tra dữ liệu
     @Query(value = """
-            SELECT h.id, h.tong_tien, h.created_date, h.trang_thai_hoa_don 
+            SELECT h.id, h.tong_tien_sau_giam, h.created_date, h.trang_thai_hoa_don 
             FROM hoa_don h 
             ORDER BY h.created_date DESC 
             LIMIT 10

@@ -50,7 +50,8 @@
               placeholder="Ngày bắt đầu"
               size="large"
               class="w-full"
-              format="DD/MM/YYYY"
+              format="DD/MM/YYYY HH:mm:ss"
+              :show-time="true"
             />
           </div>
 
@@ -61,7 +62,8 @@
               placeholder="Ngày kết thúc"
               size="large"
               class="w-full"
-              format="DD/MM/YYYY"
+              format="DD/MM/YYYY HH:mm:ss"
+              :show-time="true"
             />
           </div>
 

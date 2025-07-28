@@ -49,7 +49,7 @@
                 {{ getPriceAfterSale(item).toLocaleString() }}₫
               </span>
               <span v-if="item.dotGiamGia" class="origin-price">
-                {{ item.giaBan }}₫
+                {{ item.dotGiamGia.giaTruoc.toLocaleString() }}₫
               </span>
             </div>
             <div v-if="item.dotGiamGia" class="save-amount mb-2">
@@ -121,7 +121,7 @@ const getShowImage = (item: SanPhamMoiResponse) => {
 // Tính giá sau giảm dựa vào phần trăm giảm giá
 const getPriceAfterSale = (item: SanPhamMoiResponse) => {
   if (item.dotGiamGia && typeof item.dotGiamGia.phanTramGiam === 'number') {
-    return Math.round(item.giaBan * (1 - item.dotGiamGia.phanTramGiam / 100))
+    return Math.round(item.dotGiamGia.giaTruoc * (1 - item.dotGiamGia.phanTramGiam / 100))
   }
   return item.giaBan
 }
@@ -129,7 +129,7 @@ const getPriceAfterSale = (item: SanPhamMoiResponse) => {
 // Tính số tiền tiết kiệm
 const getSaveAmount = (item: SanPhamMoiResponse) => {
   if (item.dotGiamGia && typeof item.dotGiamGia.phanTramGiam === 'number') {
-    return Math.round(item.giaBan * (item.dotGiamGia.phanTramGiam / 100))
+    return Math.round(item.dotGiamGia.giaTruoc * (item.dotGiamGia.phanTramGiam / 100))
   }
   return 0
 }

@@ -1,6 +1,7 @@
 package com.be.server.core.admin.hoadon.service;
 
 import com.be.server.core.admin.hoadon.model.request.ADChangeStatusRequest;
+import com.be.server.core.admin.hoadon.model.request.ADHoaDonDetailRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
 import com.be.server.core.admin.hoadon.model.request.ThanhToanRequest;
 import com.be.server.core.common.base.ResponseObject;
@@ -9,7 +10,7 @@ public interface ADHoaDonService {
 
     ResponseObject<?> getAllHoaDon(ADHoaDonSearchRequest request);
 
-    ResponseObject<?> getAllHoaDonCT(String maHoaDon);
+    ResponseObject<?> getAllHoaDonCT(ADHoaDonDetailRequest request);
 
     ResponseObject<?> changeStatus(ADChangeStatusRequest adChangeStatusRequest);
 

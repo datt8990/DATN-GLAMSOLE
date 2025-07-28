@@ -207,6 +207,12 @@ const formatDateForAPI = (date: Dayjs): string => {
   return date.format("DD/MM/YYYY");
 };
 
+// Helper function to format percentage
+const formatPercent = (value: number): string => {
+  const percent = Math.round(Number(value) * 100) / 100;
+  return percent.toFixed(2);
+};
+
 // Fetch doanh thu data
 const fetchDoanhThu = async () => {
   try {
@@ -389,22 +395,22 @@ const updatePieChart = () => {
   }
 
   const labels = orderStatusData.value.map((item) => {
-    const percent = Number(item.tiLePhanTram).toFixed(2);
+    const formattedPercent = formatPercent(item.tiLePhanTram);
     switch (item.trangThai) {
       case "CHO_XAC_NHAN":
-        return `Chờ xác nhận (${percent}%)`;
+        return `Chờ xác nhận (${formattedPercent}%)`;
       case "DA_XAC_NHAN":
-        return `Đã xác nhận (${percent}%)`;
+        return `Đã xác nhận (${formattedPercent}%)`;
       case "CHO_GIAO":
-        return `Chờ giao (${percent}%)`;
+        return `Chờ giao (${formattedPercent}%)`;
       case "DANG_GIAO":
-        return `Đang giao (${percent}%)`;
+        return `Đang giao (${formattedPercent}%)`;
       case "HOAN_THANH":
-        return `Hoàn thành (${percent}%)`;
+        return `Hoàn thành (${formattedPercent}%)`;
       case "DA_HUY":
-        return `Đã hủy (${percent}%)`;
+        return `Đã hủy (${formattedPercent}%)`;
       default:
-        return `${item.trangThai} (${percent}%)`;
+        return `${item.trangThai} (${formattedPercent}%)`;
     }
   });
 
@@ -444,7 +450,11 @@ const updatePieChart = () => {
         },
         tooltip: {
           callbacks: {
-            label: (context) => `${context.label}: ${context.raw}%`,
+            label: (context) => {
+              const formattedPercent = formatPercent(context.raw as number);
+              const statusName = context.label.split(' (')[0];
+              return `${statusName}: ${formattedPercent}%`;
+            },
           },
         },
       },

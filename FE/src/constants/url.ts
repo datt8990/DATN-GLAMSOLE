@@ -40,6 +40,8 @@ export const PREFIX_API_LOGIN_ADMIN = (PREFIX_API_AUTH + `/login-admin`) as stri
 
 export const PREFIX_API_REGISTER = (PREFIX_API_AUTH + `/register`) as string;
 
+export const PREFIX_API_CHANGE_PASSWORD = (PREFIX_API_AUTH + `/change-password`) as string;
+
 // API PREFIX ADMIN
 export const PREFIX_API_ADMIN = `${API_URL}/admin` as string;
 
@@ -72,3 +74,5 @@ export const PREFIX_API_SANPHAMCHITIET_PERMITALL =
   `${PREFIX_API_PERMITALL}/san-pham-chi-tiet` as string;
 export const PREFIX_API_THUONGHIEU_PERMITALL = `${PREFIX_API_PERMITALL}/thuong-hieu` as string;
 export const PREFIX_API_CART_PERMITALL = `${PREFIX_API_PERMITALL}/cart` as string;
+
+export const PREFIX_API_PROFILE_PERMITALL = `${PREFIX_API_PERMITALL}/profile` as string;

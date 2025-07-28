@@ -1,5 +1,6 @@
 package com.be.server.core.auth.service.impl;
 
+import com.be.server.core.auth.dto.request.ChangePasswordRequest;
 import com.be.server.core.auth.dto.request.RegisterRequest;
 import com.be.server.core.auth.repository.AuthUserRepository;
 import com.be.server.core.auth.service.AuthService;
@@ -87,6 +88,30 @@ public class AuthServiceImpl implements AuthService {
 
         return new ResponseObject<>().success("Đăng ký thành công");
 
+    }
+
+    @Override
+    public ResponseObject<?> changePassword(String email, ChangePasswordRequest request) {
+        Optional<KhachHang> optionalUser = authUserRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy người dùng");
+        }
+
+        KhachHang user = optionalUser.get();
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getMat_khau())) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mật khẩu hiện tại không đúng");
+        }
+
+        String newPassword = request.getNewPassword();
+        if (newPassword.length() < 6 || !newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d).{6,}$")) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mật khẩu mới phải chứa cả chữ và số, tối thiểu 6 ký tự");
+        }
+
+        user.setMat_khau(passwordEncoder.encode(newPassword));
+        authUserRepository.save(user);
+
+        return new ResponseObject<>().success("Đổi mật khẩu thành công");
     }
 
 }

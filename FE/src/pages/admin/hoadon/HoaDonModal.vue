@@ -124,7 +124,7 @@
         </a-button>
       </div>
     </a-card>
-    
+
     <!-- Thông tin đơn hàng và khách hàng -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Thông tin đơn hàng -->
@@ -139,6 +139,10 @@
             <div class="order-info-row">
               <span class="label">Mã đơn hàng:</span>
               <span class="value code">{{ hoaDon?.maHoaDon }}</span>
+            </div>
+            <div class="order-info-row">
+              <span class="label">Phiếu giảm giá:</span>
+              <span class="value code">{{ hoaDon?.tenPGG || 'Không có' }}</span>
             </div>
             <div class="order-info-row">
               <span class="label">Loại đơn hàng:</span>
@@ -166,13 +170,21 @@
             <div class="order-info-row">
               <span class="label">Tổng tiền:</span>
               <span class="value price">{{
-                formatCurrency(subtotalAmount)
+                // formatCurrency(subtotalAmount)
+                formatCurrency(hoaDon?.thanhTien)
+              }}</span>
+            </div>
+            <div class="order-info-row">
+              <span class="label">Được giảm giá:</span>
+              <span class="value price">{{
+                formatCurrency(hoaDon?.giaTriPGG || 0)
               }}</span>
             </div>
             <div class="order-info-row">
               <span class="label">Phải thanh toán:</span>
               <span class="value total">{{
-                formatCurrency(finalTotalAmount)
+                // formatCurrency(finalTotalAmount)
+                formatCurrency((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen)
               }}</span>
             </div>
           </div>
@@ -191,7 +203,6 @@
             >
               Thay đổi thông tin
             </a-button> -->
-
           </div>
         </template>
 
@@ -272,100 +283,64 @@
         </template>
       </a-table>
     </a-card>
-    <!-- Sản phẩm có trong hóa đơn -->
-    <a-card title="DANH SÁCH SẢN PHẨM" bordered class="order-info-card">
-      <template #extra>
+      <a-card title="DANH SÁCH SẢN PHẨM" bordered class="order-info-card">
+    <a-table
+      :columns="columns"
+      :data-source="state.chiTietList"
+      :pagination="{
+        current: state.paginationParams.page,
+        pageSize: state.paginationParams.size,
+        total: state.totalItems,
+        showSizeChanger: true,
+        pageSizeOptions: ['3', '5', '10', '20'],
+      }"
+      :scroll="{ y: 300 }"
+      @change="handlePageChange"
+      rowKey="maHoaDonChiTiet"
+    >
+      <template #bodyCell="{ column, record, index }">
+        <template v-if="column.key === 'stt'">
+          {{
+            (state.paginationParams.page - 1) * state.paginationParams.size + index + 1
+          }}
+        </template>
 
-      </template>
+        <template v-if="column.key === 'image'">
+          <img
+            :src="record.anhSanPham || 'placeholder-image.png'"
+            alt="Ảnh sản phẩm"
+            style="width: 60px; height: 60px; object-fit: cover"
+          />
+        </template>
 
-      <div class="product-list-container">
-        <div
-          v-for="(record, index) in chiTietList"
-          :key="record.maHoaDonChiTiet"
-          class="product-row"
-        >
-          <!-- STT -->
-          <div class="product-stt">
-            {{ index + 1 }}
-          </div>
-
-          <!-- Product Image -->
-          <div class="product-image">
-            <img
-              :src="record.anhSanPham || 'placeholder-image.png'"
-              alt="Ảnh sản phẩm"
-              class="product-img"
-            />
-          </div>
-
-          <!-- Product Details -->
-          <div class="product-details">
-            <h4 class="product-name">
-              {{ record.tenSanPham }} [{{ record.mauSac }} - {{ record.size }}]
-            </h4>
-            <p class="product-code">
-              {{ record.thuongHieu }}
-            </p>
-            <div class="product-info">
-              <span class="product-price"
-                >Đơn giá: {{ formatCurrency(record.giaBan) }}</span
-              >
+        <template v-if="column.key === 'productInfo'">
+          <div>
+            <div>
+              <strong>
+                {{ record.tenSanPham }} [{{ record.mauSac }} - {{ record.size }}]
+              </strong>
             </div>
+            <div>{{ record.thuongHieu }}</div>
+            <div>Đơn giá: {{ formatCurrency(record.giaBan) }}</div>
           </div>
+        </template>
 
-          <!-- Quantity Controls -->
-          <div class="product-quantity">
-            <a-input-number
-              v-model:value="record.soLuong"
-              :min="1"
-              :max="999"
-              size="small"
-              class="quantity-input"
+        <template v-if="column.key === 'soLuong'">
+          <a-input-number
+            v-model:value="record.soLuong"
+            :min="1"
+            :max="999"
+            size="small"
+            :disabled="isAddProductDisabled"
+          />
+        </template>
 
-              :disabled="isAddProductDisabled"
-
-            />
-          </div>
-
-          <!-- Total Price -->
-          <div class="product-total">
-            {{ formatCurrency(record.soLuong * record.giaBan) }}
-          </div>
-        </div>
-
-        <!-- Pagination -->
-        <div class="product-pagination">
-          <div class="pagination-info">3 / page</div>
-          <div class="pagination-controls">
-            <a-button size="small" class="pagination-btn">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M15 18L9 12L15 6" />
-              </svg>
-            </a-button>
-            <a-button size="small" class="pagination-current">1</a-button>
-            <a-button size="small" class="pagination-btn">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M9 18L15 12L9 6" />
-              </svg>
-            </a-button>
-          </div>
-        </div>
-      </div>
-    </a-card>
+        <template v-if="column.key === 'thanhTien'">
+          {{ formatCurrency(record.soLuong * record.giaBan) }}
+        </template>
+      </template>
+    </a-table>
+  </a-card>
   </div>
   <a-modal
     v-model:open="showStatusModal"
@@ -377,13 +352,13 @@
   >
     <div class="status-modal-content">
       <div class="status-selection">
-        <p class="selection-label">*Chọn mẫu tin nhắn:</p>
+        <p class="selection-label">*Nhập mẫu tin nhắn:</p>
 
         <a-radio-group
           v-model:value="selectedStatusTemplate"
           class="status-radio-group"
         >
-          <div class="radio-option">
+          <!-- <div class="radio-option">
             <a-radio value="confirmed">Đã xác nhận đơn hàng</a-radio>
           </div>
           Cinder
@@ -395,7 +370,6 @@
           <div class="radio-option">
             <a-radio value="shipped">Đã bàn giao cho đơn vị vận chuyển</a-radio>
           </div>
-         
 
           <div class="radio-option">
             <a-radio value="payment_confirmed"
@@ -412,7 +386,7 @@
           </div>
           <div class="radio-option">
             <a-radio value="other">Khác</a-radio>
-          </div>
+          </div> -->
         </a-radio-group>
       </div>
 
@@ -552,7 +526,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, nextTick } from "vue";
+import { ref, onMounted, computed, watch, nextTick, reactive } from "vue";
 import { useRoute } from "vue-router";
 import {
   getHoaDonChiTiets,
@@ -562,10 +536,15 @@ import {
   thanhToan,
   inPDFOFFLINE,
   inPDFONLINE,
+  type HoaDonResponse,
+  type ParamsGetHoaDonCT,
 } from "@/services/api/admin/hoadon.api";
 import { message } from "ant-design-vue";
+import type { TableColumnsType } from "ant-design-vue";
 import BreadcrumbDefault from "@/components/ui/Breadcrumbs/BreadcrumbDefault.vue";
-import './HoaDon.css';
+import "./HoaDon.css";
+import { localStorageAction } from '@/utils/storage';
+import { USER_INFO_STORAGE_KEY } from '@/constants/storageKey';
 
 const route = useRoute();
 const hoaDon = ref<any>(null);
@@ -576,6 +555,7 @@ const selectedStatusTemplate = ref("delivered");
 const statusNote = ref("Đơn hàng đã được giao thành công");
 const statusUpdateLoading = ref(false);
 const pendingStatusChange = ref("");
+const idNV = localStorageAction.get(USER_INFO_STORAGE_KEY)
 
 // Payment modal state
 const showPaymentModal = ref(false);
@@ -664,7 +644,6 @@ const setDefaultTemplate = (status: string) => {
 
   statusNote.value = statusTemplates[selectedStatusTemplate.value] || "";
 };
-
 
 // 1. Thêm vào phần khai báo biến reactive (sau dòng paymentLoading)
 const printLoading = ref(false);
@@ -771,14 +750,14 @@ const handleViewPDF = async () => {
 
     // Tạo URL cho blob và mở trong tab mới
     const url = window.URL.createObjectURL(blob);
-    const newWindow = window.open(url, '_blank');
-    
+    const newWindow = window.open(url, "_blank");
+
     if (!newWindow) {
       // Fallback nếu popup bị block
       downloadPDF(blob, `HoaDon_${maHoaDon}.pdf`);
     } else {
       // Cleanup URL sau khi tab đã load
-      newWindow.addEventListener('load', () => {
+      newWindow.addEventListener("load", () => {
         setTimeout(() => {
           window.URL.revokeObjectURL(url);
         }, 1000);
@@ -800,7 +779,7 @@ const confirmStatusChange = async () => {
   // Validate for offline order completion
   if (
     hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE &&
-    pendingStatusChange.value === 'HOAN_THANH' &&
+    pendingStatusChange.value === "HOAN_THANH" &&
     !hasPaymentHistory.value
   ) {
     message.error("Vui lòng xác nhận thanh toán trước khi hoàn thành đơn hàng");
@@ -902,10 +881,13 @@ const confirmPayment = async () => {
     return;
   }
 
+  const soTienGoc = (hoaDon.value?.thanhTien || 0) + 
+                      (hoaDon.value?.phiVanChuyen || 0) + 
+                      (hoaDon.value?.giaTriPGG || 0);
+
   paymentLoading.value = true;
 
   try {
-
     const paymentData = {
       hoaDonId: route.params.id as string,
       soTienKhachDua: customerPayment.value,
@@ -913,12 +895,15 @@ const confirmPayment = async () => {
       ghiChu: paymentNote.value,
       loaiGiaoDich:
         selectedPaymentMethod.value === "cash" ? "TIEN_MAT" : "CHUYEN_KHOAN",
-      nhanVienId: "4a28e718-e682-4436-8c8e-e69916872ec2", // Thay bằng ID nhân viên hiện tại
-      trangThai: hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE ? "CHO_XAC_NHAN" : "DANG_GIAO",
+      nhanVienId: idNV.userId,
+      soTienGoc: soTienGoc,
+      trangThai:
+        hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE
+          ? "CHO_XAC_NHAN"
+          : "DANG_GIAO",
     };
 
     const response = await thanhToan(paymentData);
-
 
     if (response.success) {
       message.success("Xác nhận thanh toán thành công");
@@ -932,7 +917,6 @@ const confirmPayment = async () => {
 
       // Refresh cả timeline và lịch sử thanh toán
       await Promise.all([refreshTimelineData(), loadPaymentHistory()]);
-
 
       closePaymentModal();
     } else {
@@ -973,12 +957,50 @@ const refreshTimelineData = async () => {
 };
 
 // Update the existing canConfirmPayment computed to use the new name
+// Computed property to control visibility of the button that opens payment modal
 const canConfirmPayment = computed(() => {
-  return (
-    currentStatus.value < EntityTrangThaiHoaDon.HOAN_THANH &&
-    currentStatus.value !== EntityTrangThaiHoaDon.DA_HUY
-  );
-
+  // Check if payment history is empty
+  const isPaymentHistoryEmpty = !lichSuThanhToan.value || lichSuThanhToan.value.length === 0;
+  
+  // Get current invoice type and status - FIX: use trangThaiHoaDon instead of trangThai
+  const invoiceType = hoaDon.value?.loaiHoaDon;
+  const invoiceStatus = hoaDon.value?.trangThaiHoaDon;
+  
+  console.log('=== DEBUG canConfirmPayment ===');
+  console.log('invoiceType:', invoiceType);
+  console.log('invoiceStatus:', invoiceStatus);
+  console.log('isPaymentHistoryEmpty:', isPaymentHistoryEmpty);
+  
+  // If no invoice data, don't show button
+  if (!hoaDon.value || invoiceType === undefined || invoiceStatus === undefined) {
+    console.log('Missing invoice data');
+    return false;
+  }
+  
+  // If payment history is not empty, don't show button
+  if (!isPaymentHistoryEmpty) {
+    console.log('Payment history is not empty');
+    return false;
+  }
+  
+  let result = false;
+  
+  // For OFFLINE invoices: show button when status is CHO_XAC_NHAN ("0") and payment history is empty
+  if (invoiceType === 'OFFLINE') {
+    result = invoiceStatus === "0"; // Compare with string "0"
+    console.log('OFFLINE check - invoiceStatus === "0":', result);
+  }
+  
+  // For GIAO_HANG and ONLINE invoices: show button when status is DANG_GIAO ("3") and payment history is empty
+  if (invoiceType === 'GIAO_HANG' || invoiceType === 'ONLINE') {
+    result = invoiceStatus === "3"; // Compare with string "3"
+    console.log('GIAO_HANG/ONLINE check - invoiceStatus === "3":', result);
+  }
+  
+  console.log('Final result:', result);
+  console.log('=== END DEBUG ===');
+  
+  return result;
 });
 
 const canAddProduct = computed(() => {
@@ -1094,8 +1116,6 @@ const paymentColumns = [
   { title: "Ghi chú", key: "ghiChu", width: 200, align: "left" },
 ];
 
-
-
 const getCurrentStepIndex = computed(() => {
   const current = currentStatus.value;
   console.log("Computing step index for status:", current);
@@ -1190,7 +1210,10 @@ const timelineStatusData = ref<any[]>([]);
 // Button visibility and actions
 const canConfirmOrder = computed(() => {
   if (hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE) {
-    return currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN && hasPaymentHistory.value;
+    return (
+      currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN &&
+      hasPaymentHistory.value
+    );
   }
 
   // Nếu là trạng thái DANG_GIAO, phải check có lịch sử thanh toán
@@ -1234,9 +1257,15 @@ const handleConfirmOrderClick = () => {
 
 const canCompleteOrder = computed(() => {
   if (hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE) {
-    return currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN && hasPaymentHistory.value;
+    return (
+      currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN &&
+      hasPaymentHistory.value
+    );
   }
-  return currentStatus.value === EntityTrangThaiHoaDon.DANG_GIAO && hasPaymentHistory.value;
+  return (
+    currentStatus.value === EntityTrangThaiHoaDon.DANG_GIAO &&
+    hasPaymentHistory.value
+  );
 });
 
 const getNextStatus = () => {
@@ -1300,15 +1329,17 @@ const formatDateTime = (dateString: string) => {
 };
 
 const subtotalAmount = computed(() => {
-  return chiTietList.value.reduce((sum, item) => {
-    return sum + item.soLuong * item.giaBan;
-  }, 0);
+  return hoaDon.value?.thanhTien || 0;
 });
 
+// Final amount to be paid (after discount and shipping)
 const finalTotalAmount = computed(() => {
-  const subtotal = subtotalAmount.value;
+  const subtotal = hoaDon.value?.thanhTien || 0;
+  const discount = hoaDon.value?.giaTriPGG || 0;
   const shipping = hoaDon.value?.phiVanChuyen || 0;
-  return subtotal + shipping;
+  
+  // Final amount = (subtotal - discount) + shipping
+  return (subtotal - discount) + shipping;
 });
 
 watch([subtotalAmount, finalTotalAmount], ([newSubtotal, newFinalTotal]) => {
@@ -1348,6 +1379,84 @@ const formatCurrency = (value: number | undefined | null) => {
   return value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 };
 
+const props = defineProps<{
+  paginationParams: { page: number; size: number };
+  totalItems: number;
+  chiTietList: any[];
+}>();
+
+const emit = defineEmits(["page-change"]);
+
+const handlePageChange = (pagination: any) => {
+  state.paginationParams.page = pagination.current;
+  state.paginationParams.size = pagination.pageSize;
+  fetchHoaDonChiTiet();
+};
+
+const state = reactive({
+  chiTietList: [] as any[],
+  paginationParams: {
+    page: 1,
+    size: 3,
+  },
+  totalItems: 0,
+});
+
+const fetchHoaDonChiTiet = async () => {
+  const maHoaDon = route.params.maHoaDon as string;
+
+  if (!maHoaDon) {
+    message.error("Không tìm thấy mã hóa đơn");
+    return;
+  }
+
+  try {
+    const res = await getHoaDonChiTiets({
+      maHoaDon,
+      page: state.paginationParams.page,
+      size: state.paginationParams.size,
+    });
+
+    state.chiTietList = res.data?.content || [];
+    state.totalItems = res.data?.totalElements || 0;
+  } catch (error) {
+    console.error("Lỗi khi tải chi tiết hóa đơn:", error);
+    message.error("Không thể tải dữ liệu sản phẩm");
+  }
+};
+
+const columns: TableColumnsType = [
+  {
+    title: "STT",
+    key: "stt",
+    width: 50,
+    align: "center",
+  },
+  {
+    title: "Ảnh",
+    key: "image",
+    width: 70,
+    align: "center",
+  },
+  {
+    title: "Thông tin sản phẩm",
+    key: "productInfo",
+    width: 250,
+  },
+  {
+    title: "Số lượng",
+    key: "soLuong",
+    width: 100,
+    align: "center",
+  },
+  {
+    title: "Thành tiền",
+    key: "thanhTien",
+    width: 120,
+    align: "right",
+  },
+];
+
 onMounted(async () => {
   const maHoaDon = route.params.maHoaDon as string;
   const idHoaDon = route.params.id as string;
@@ -1360,6 +1469,12 @@ onMounted(async () => {
       message.error("Không tìm thấy ID hóa đơn");
       return;
     }
+
+    const params: ParamsGetHoaDonCT = {
+      maHoaDon: route.params.maHoaDon as string,
+      page: state.paginationParams.page,
+      size: state.paginationParams.size,
+    };
 
     // Gọi API GetLSTTHD
     console.log("Calling GetLSTTHD with idHoaDon:", idHoaDon);
@@ -1382,11 +1497,14 @@ onMounted(async () => {
     }
 
     console.log("Calling getHoaDonChiTiets with maHoaDon:", maHoaDon);
-    const res = await getHoaDonChiTiets(maHoaDon);
+    const res = await getHoaDonChiTiets(params);
     console.log("getHoaDonChiTiets response:", res);
 
-    if (res && res.data && res.data.length > 0) {
-      const hoaDonData = res.data[0];
+    state.products = res.data?.content || [];
+    state.totalItems = res.data?.totalElements || 0;
+
+    if (res && res.data?.content && res.data?.content.length > 0) {
+      const hoaDonData = res.data.content[0];
 
       hoaDon.value = {
         maHoaDon: hoaDonData.maHoaDon,
@@ -1405,6 +1523,9 @@ onMounted(async () => {
         ngayTao: hoaDonData.ngayTao,
         phiVanChuyen: hoaDonData.phiVanChuyen,
         maPGG: hoaDonData.maVoucher,
+        tenPGG: hoaDonData.tenVoucher,
+        giaTriPGG: hoaDonData.giaTriVoucher,
+        thanhTien: hoaDonData.thanhTien,
         tongTienSauGiam: hoaDonData.tongTienSauGiam,
       };
 
@@ -1415,9 +1536,9 @@ onMounted(async () => {
       console.log("Current status set to:", currentStatus.value);
       console.log("Display status:", getStatusText(currentStatus.value));
 
-      chiTietList.value = res.data;
+      chiTietList.value = res.data.content || [];
       tongTien.value = chiTietList.value.reduce(
-        (sum: number, item: any) => sum + item.thanhTien,
+        (sum: number, item: any) => sum + (item.thanhTien || 0),
         0
       );
 
@@ -1435,9 +1556,8 @@ onMounted(async () => {
     message.error("Có lỗi xảy ra khi tải dữ liệu: " + (error as Error).message);
   }
   await loadPaymentHistory();
-
+  fetchHoaDonChiTiet();
   console.log("Data loaded successfully");
 });
-
 </script>
 

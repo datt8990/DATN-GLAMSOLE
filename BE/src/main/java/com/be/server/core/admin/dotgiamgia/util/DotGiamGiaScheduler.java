@@ -12,7 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -25,39 +26,52 @@ public class DotGiamGiaScheduler {
     private final DotGiamGiaChiTietSanPhamRepository dotGiamGiaChiTietSanPhamRepository;
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
 
-    @Scheduled(fixedDelay = 1000) // mỗi phút
+    @Scheduled(fixedDelay = 1000) // mỗi giây
     public void autoUpdatePromotionStatuses() {
         long now = System.currentTimeMillis();
-
-        LocalDate today = LocalDate.now(); // lấy ngày hiện tại
-        long epochMillisStartOfToday = today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-
 
         // 1. Cập nhật sang DANG_KICH_HOAT nếu đến thời gian bắt đầu
         List<DotGiamGia> toActivate = dotGiamGiaRepository
                 .findAllByTrangThaiAndNgayBatDauLessThanEqual(StatusPromotion.CHUA_KICH_HOAT, now);
 
         for (DotGiamGia dgg : toActivate) {
-            dgg.setTrangThai(StatusPromotion.DANG_KICH_HOAT);
-            updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.DANG_KICH_HOAT);
+            if (dgg.getNgayBatDau() <= now) {
+                dgg.setTrangThai(StatusPromotion.DANG_KICH_HOAT);
+                updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.DANG_KICH_HOAT);
+            }
         }
 
         // 2. Cập nhật sang HET_HAN_KICH_HOAT nếu đã hết hạn
         List<DotGiamGia> toExpire = dotGiamGiaRepository
-                .findAllByTrangThaiAndNgayKetThucLessThan(StatusPromotion.DANG_KICH_HOAT, epochMillisStartOfToday);
+                .findAllByTrangThaiAndNgayKetThucLessThan(StatusPromotion.DANG_KICH_HOAT, now);
 
         for (DotGiamGia dgg : toExpire) {
-            dgg.setTrangThai(StatusPromotion.HET_HAN_KICH_HOAT);
-            updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.HET_HAN_KICH_HOAT);
+            if (dgg.getNgayKetThuc() <= now) {
+                dgg.setTrangThai(StatusPromotion.HET_HAN_KICH_HOAT);
+                updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.HET_HAN_KICH_HOAT);
+            }
         }
 
         dotGiamGiaRepository.saveAll(toActivate);
         dotGiamGiaRepository.saveAll(toExpire);
 
+        // 3. Luôn cập nhật giá bán cho DANG_KICH_HOAT
+        List<DotGiamGia> activePromotions = dotGiamGiaRepository.findAllByTrangThai(StatusPromotion.DANG_KICH_HOAT);
+        for (DotGiamGia dgg : activePromotions) {
+            updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.DANG_KICH_HOAT);
+        }
+
+        // 4. Luôn cập nhật giá bán cho HET_HAN_KICH_HOAT
+        List<DotGiamGia> expiredPromotions = dotGiamGiaRepository.findAllByTrangThai(StatusPromotion.HET_HAN_KICH_HOAT);
+        for (DotGiamGia dgg : expiredPromotions) {
+            updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.HET_HAN_KICH_HOAT);
+        }
+
         if (!toActivate.isEmpty() || !toExpire.isEmpty()) {
             log.info("Đã cập nhật trạng thái {} đợt giảm giá", toActivate.size() + toExpire.size());
         }
     }
+
 
     private void updateGiaSanPhamTheoDotGiamGia(String idDotGiamGia, StatusPromotion trangThaiMoi) {
         List<DotGiamGiaChiTietSanPham> chiTietList = dotGiamGiaChiTietSanPhamRepository.findAllByDotGiamGiaId(idDotGiamGia);
@@ -72,5 +86,4 @@ public class DotGiamGiaScheduler {
             sanPhamChiTietRepository.save(spct);
         }
     }
-
 }

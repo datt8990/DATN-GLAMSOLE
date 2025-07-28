@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface LichSuTrangThaiRepository extends JpaRepository<LichSuTrangThaiHoaDon, Long> {
 
-    @Query(value = "SELECT trang_thai AS trangThai, thoi_gian AS thoiGian, note as note FROM db_datn.lich_su_trang_thai_hoa_don WHERE hoa_don_id = :hoaDonId", nativeQuery = true)
+    @Query(value = "SELECT trang_thai AS trangThai, thoi_gian AS thoiGian, note as note FROM lich_su_trang_thai_hoa_don WHERE hoa_don_id = :hoaDonId", nativeQuery = true)
     List<TrangThaiThoiGianResponse> findTrangThaiVaThoiGianByHoaDonId(@Param("hoaDonId") String hoaDonId);
 
 }

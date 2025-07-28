@@ -1,5 +1,6 @@
 package com.be.server.core.auth.controller;
 
+import com.be.server.core.auth.dto.request.ChangePasswordRequest;
 import com.be.server.core.auth.dto.request.LoginRequest;
 import com.be.server.core.auth.dto.request.RegisterRequest;
 import com.be.server.core.auth.service.AuthService;
@@ -32,10 +33,10 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest,HttpSession httpSession) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession httpSession) {
         try {
             httpSession.setAttribute("role", "USER");
-            System.out.println("tài khoản"+loginRequest.getEmail()+"/"+loginRequest.getPassword());
+            System.out.println("tài khoản" + loginRequest.getEmail() + "/" + loginRequest.getPassword());
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -44,7 +45,7 @@ public class AuthController {
             String accessToken = tokenProvider.createTokenForKhachHang(authentication);
             String refreshToken = tokenProvider.createRefreshTokenForKhachHang(authentication);
             return Helper.createResponseEntity(
-             new ResponseObject<>(new AuthTokens(accessToken, refreshToken), HttpStatus.OK, "Lấy token thành công")
+                    new ResponseObject<>(new AuthTokens(accessToken, refreshToken), HttpStatus.OK, "Lấy token thành công")
 
             );
 
@@ -81,7 +82,7 @@ public class AuthController {
     }
 
     @PostMapping("/login-admin")
-    public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest loginRequest,HttpSession httpSession) {
+    public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest loginRequest, HttpSession httpSession) {
         try {
             httpSession.setAttribute("role", "ADMIN");
             System.out.println("chua implement chuc nang này");
@@ -92,7 +93,7 @@ public class AuthController {
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             String accessToken = tokenProvider.createTokenForAdmin(authentication);
             String refreshToken = tokenProvider.createRefreshTokenForAdmin(authentication);
-            System.out.println("access token admin"+accessToken);
+            System.out.println("access token admin" + accessToken);
             return Helper.createResponseEntity(
                     new ResponseObject<>(new AuthTokens(accessToken, refreshToken), HttpStatus.OK, "Lấy token thành công")
             );
@@ -133,5 +134,32 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         return Helper.createResponseEntity(authService.register(request));
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, HttpSession session) {
+        try {
+            String email = (String) session.getAttribute("email");
+            if (email == null) {
+                return Helper.createResponseEntity(
+                        new ResponseObject<>(null, HttpStatus.UNAUTHORIZED, "Chưa đăng nhập hoặc phiên đã hết hạn")
+                );
+            }
+
+            ResponseObject<?> result = authService.changePassword(email, request);
+            return Helper.createResponseEntity(result);
+
+        } catch (IllegalArgumentException ex) {
+            return Helper.createResponseEntity(
+                    new ResponseObject<>(null, HttpStatus.BAD_REQUEST, ex.getMessage())
+            );
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Helper.createResponseEntity(
+                    new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống: " + ex.getClass().getSimpleName() + " - " + ex.getMessage())
+            );
+        }
+    }
+
 
 }

@@ -16,6 +16,7 @@ public class ThanhToanRequest {
     private String hoaDonId;
     private Double soTienKhachDua;
     private Double soTienTraLai;
+    private Double soTienGoc;
     private String ghiChu;
     private String loaiGiaoDich;
     private String nhanVienId;
