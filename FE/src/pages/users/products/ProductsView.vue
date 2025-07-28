@@ -1,297 +1,463 @@
 <template>
-    <div class="container-fluid d-flex flex-column align-items-center">
-        <!-- Breadcrumb + tiêu đề -->
-        <div class="container py-3">
-            <div class="row align-items-center">
-                <BreadCrumbUser :routes="breadcrumbRoutes" title="Danh sách sản phẩm" />
-            </div>
-        </div>
-
-        <div class="container d-flex flex-column flex-lg-row gap-4">
-            <!-- Bộ lọc  -->
-            <div class="col-12 col-lg-3">
-                <FilterBox />
-            </div>
-            <!-- Sản phẩm  -->
-            <div class="col flex-fill">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-                    <p class="fw-bold">
-                        Showing {{ sanPhamList.length }} results for:
-                        <span class="fw-normal">{{ keyword }}</span>
-                    </p>
-                    <div class="d-flex gap-3">
-                        <select class="form-select form-select-sm text-secondary border-secondary">
-                            <option value="">Sort by</option>
-                            <option value="CreatedAt">Created at</option>
-                            <option value="Price">Price</option>
-                            <option value="Rating">Rating</option>
-                            <option value="Sold">Sold</option>
-                        </select>
-                        <select class="form-select form-select-sm text-secondary border-secondary">
-                            <option value="">Ascending</option>
-                            <option value="true">Descending</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row g-3 mt-3">
-                    <div v-for="(item, index) in sanPhamList" :key="index" class="col-6 col-md-4 col-lg-3">
-                        <div class="card h-100 product-card" @click="handleClick(item)">
-                            <div class="img-wrapper position-relative">
-                                <img :src="item.imageUrl" class="card-img-top product-img" alt="product image" />
-                                <div class="hover-overlay">
-                                    <div class="mb-2">
-                                        <strong>Màu sắc:</strong>
-                                        <div class="d-flex gap-1 mt-1">
-                                            <span v-for="(color, i) in item.mauList" :key="i" class="color-dot"
-                                                :style="{ backgroundColor: color.maMau }" :title="color.tenMau"></span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <strong>Kích cỡ:</strong>
-                                        <div class="d-flex gap-2 flex-wrap mt-1">
-                                            <span class="size-box" v-for="(size, i) in item.kichCoList" :key="i">{{ size
-                                            }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card-body">
-                                <h6 class="card-title text-truncate" :title="item.tenSanPham">{{ item.tenSanPham }}</h6>
-                                <p class="card-text mb-1">Brand: {{ item.thuongHieu }}</p>
-                                <p class="card-text">Price: {{ item.giaBan.toLocaleString() }}₫</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="container-fluid d-flex flex-column align-items-center">
+    <div class="container py-3">
+      <div class="row align-items-center">
+        <BreadCrumbUser :routes="breadcrumbRoutes" title="Danh sách sản phẩm" />
+      </div>
     </div>
+
+    <div class="container d-flex flex-column flex-lg-row gap-4">
+      <div class="col-12 col-lg-3">
+        <FilterBox @filter="handleFilter" />
+      </div>
+      <div class="col flex-fill">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <input
+              v-model="keyword"
+              class="form-control form-control-sm"
+              placeholder="Tìm kiếm sản phẩm..."
+              @input="currentPage.value = 1"
+            />
+            <p class="fw-bold mb-0">
+              Showing {{ allProducts.length }} results
+              <span v-if="filtersApplied" class="text-muted small">({{ filtersApplied }})</span>
+            </p>
+          </div>
+          <div class="d-flex gap-3">
+            <select class="form-select form-select-sm text-secondary border-secondary" v-model="sortBy">
+              <option value="createdAt_desc">Hàng mới nhất</option>
+              <option value="createdAt_asc">Hàng cũ nhất</option>
+              <option value="giaBan_asc">Giá tăng dần</option>
+              <option value="giaBan_desc">Giá giảm dần</option>
+              <option value="ten_asc">Tên A-Z</option>
+              <option value="ten_desc">Tên Z-A</option>
+            </select>
+          </div>
+        </div>
+
+        <div v-if="isLoading && allProducts.length === 0" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Đang tải sản phẩm...</p>
+        </div>
+        <div v-if="error" class="alert alert-danger mt-3">
+          {{ error }}
+        </div>
+        <div v-else-if="allProducts.length === 0 && !isLoading" class="text-center py-5">
+          <p class="text-muted">Không tìm thấy sản phẩm nào.</p>
+        </div>
+
+        <div v-else class="row g-3 g-md-4">
+          <div v-for="item in allProducts" :key="item.id" class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card h-100 shadow-sm border-0 product-card" @click="handleClick(item)"
+                 @mouseenter="hoverProductId = item.id" @mouseleave="hoverProductId = null">
+              <div class="product-img-wrapper position-relative">
+                <img :src="getShowImage(item)" class="card-img-top product-img-main" alt="Ảnh sản phẩm"
+                     draggable="false" />
+              </div>
+              <div class="card-body py-2">
+                <h6 class="card-title fw-semibold text-truncate mb-2" :title="item.tenSanPham">
+                  {{ item.tenSanPham }}
+                </h6>
+                <div class="mb-1">
+                  <span class="main-price">
+                    {{ (item.giaSauGiam ?? item.giaBan)}}₫
+                  </span>
+                  <span v-if="item.dotGiamGia" class="origin-price ms-2">
+                    {{ item.giaBan }}₫
+                  </span>
+                  <span v-if="item.dotGiamGia" class="badge bg-danger ms-2" style="font-size:12px;">
+                    -{{ item.dotGiamGia.phanTramGiam }}%
+                  </span>
+                </div>
+                <div class="brand-row mb-1 text-muted">
+                  <span class="brand-label">Thương hiệu:</span>
+                  <span class="fw-medium text-dark ms-1">{{ item.thuongHieu }}</span>
+                </div>
+                <div class="d-flex flex-wrap align-items-center small text-muted mb-1">
+                  <span class="me-1">Màu:</span>
+                  <span v-for="(color, i) in item.mauSac" :key="i" class="color-dot me-1"
+                        :style="{ backgroundColor: color.maMau }" :title="color.ten"></span>
+                </div>
+                <div class="d-flex flex-wrap align-items-center small">
+                  <span class="me-1">Kích cỡ:</span>
+                  <span v-for="(size, i) in item.kichCo" :key="i" class="size-box me-1 mb-1">{{ size.ten }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="totalElements > 0" class="d-flex justify-content-center mt-4 mb-5">
+          <nav aria-label="Product page navigation">
+            <ul class="pagination">
+              <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                <a class="page-link" href="#" @click.prevent="prevPage">Trước</a>
+              </li>
+              <li class="page-item" v-for="page in totalPages" :key="page"
+                  :class="{ active: page === currentPage }">
+                <a class="page-link" href="#" @click.prevent="goToPage(page)">{{ page }}</a>
+              </li>
+              <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                <a class="page-link" href="#" @click.prevent="nextPage">Sau</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
+
 <script lang="ts" setup>
-import { ref } from 'vue'
-import FilterBox from './FilterBox.vue'
+import { onMounted, ref, computed, watch } from 'vue';
+import FilterBox from './FilterBox.vue';
+import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue';
+import { useRouter } from 'vue-router';
+import { GetDanhSachSanPhamTrangSanPham, type ParamsGetSanPhamMoi, type SanPhamMoiResponse } from '@/services/api/permitall/sanpham/pmsanpham.api';
 
-const keyword = ref<string>('Cold Weather')
-
+const keyword = ref<string>('Tất cả sản phẩm');
 const breadcrumbRoutes = [
-    { name: 'Trang chủ', path: '/' },
-    { name: 'Sản phẩm', path: '/san-pham' }
+  { name: 'Trang chủ', path: '/' },
+  { name: 'Sản phẩm', path: '/san-pham' }
 ];
 
-const sanPhamList = ref([
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
+const allProducts = ref<SanPhamMoiResponse[]>([]);
+const currentPage = ref(1);
+const pageSize = 16;
+const isLoading = ref(false);
+const totalElements = ref(0);
+const hoverProductId = ref<string | null>(null);
+const sortBy = ref<string>('createdAt_desc');
+const error = ref<string | null>(null);
 
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
-    {
-        id: 1,
-        tenSanPham: 'Sneaker Trắng Basic Nam',
-        imageUrl: 'https://tse2.mm.bing.net/th/id/OIP.sZYIBcS6g7FQJFJemXZ4PQHaHa?pid=Api&P=0&h=180',
-        thuongHieu: 'Nike',
-        giaBan: 1250000,
-        mauList: [
-            { tenMau: 'Trắng', maMau: '#ffffff' },
-            { tenMau: 'Đen', maMau: '#000000' }
-        ],
-        kichCoList: ['40', '41', '42']
-    },
+const filters = ref({
+  thuongHieu: [] as string[],
+  mauSac: [] as string[],
+  kichCo: [] as string[],
+  chatLieu: [] as string[],
+  loaiDe: [] as string[],
+  danhMuc: [] as string[],
+  giaTu: undefined,
+  giaDen: undefined
+});
 
-    {
-        id: 2,
-        tenSanPham: 'Adidas Nữ Hồng Pastel',
-        imageUrl: 'https://tse1.mm.bing.net/th/id/OIP.kHHSVIvcAzElFc54Nb0MxQHaFc?pid=Api&P=0&h=180',
-        thuongHieu: 'Adidas',
-        giaBan: 1320000,
-        mauList: [
-            { tenMau: 'Hồng', maMau: '#ffc0cb' },
-            { tenMau: 'Trắng', maMau: '#ffffff' }
-        ],
-        kichCoList: ['36', '37', '38']
-    },
-    {
-        id: 3,
-        tenSanPham: 'Boot Nam Da Nâu Cao Cổ',
-        imageUrl: 'https://vn-test-11.slatic.net/p/23248c8fb9647b30f8013baff44c8029.jpg',
-        thuongHieu: 'Dr.Martens',
-        giaBan: 1650000,
-        mauList: [
-            { tenMau: 'Nâu', maMau: '#6e4b2a' }
-        ],
-        kichCoList: ['42', '43', '44']
+const filtersApplied = computed(() => {
+  const applied: string[] = [];
+  if (filters.value.thuongHieu.length) applied.push(`Thương hiệu: ${filters.value.thuongHieu.length}`);
+  if (filters.value.chatLieu.length) applied.push(`Chất liệu: ${filters.value.chatLieu.length}`);
+  if (filters.value.loaiDe.length) applied.push(`Loại đế: ${filters.value.loaiDe.length}`);
+  if (filters.value.danhMuc.length) applied.push(`Danh mục: ${filters.value.danhMuc.length}`);
+  return applied.join(', ');
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(totalElements.value / pageSize);
+});
+
+const getShowImage = (item: SanPhamMoiResponse) => {
+  if (
+    hoverProductId.value === item.id &&
+    item.dsAnh &&
+    item.dsAnh.length > 1 &&
+    item.dsAnh[1]
+  ) {
+    return item.dsAnh[1];
+  }
+  return (item.dsAnh && item.dsAnh.length > 0)
+    ? item.dsAnh[0]
+    : item.hinhAnhDaiDien;
+};
+
+const handleFilter = (newFilters: any) => {
+  filters.value = { ...newFilters };
+  currentPage.value = 1; // Reset về trang 1 khi áp dụng bộ lọc
+  fetchProducts();
+};
+
+const fetchProducts = async () => {
+  isLoading.value = true;
+  allProducts.value = [];
+  error.value = null;
+
+  try {
+   const params = {
+      page: currentPage.value,
+      size: pageSize,
+      sortBy: sortBy.value,
+      q: keyword.value !== 'Tất cả sản phẩm' ? keyword.value : undefined,
+      // Chuyển mảng thành chuỗi phân tách bằng dấu phẩy
+      thuongHieuIds: filters.value.thuongHieu.length > 0 ? filters.value.thuongHieu.join(',') : undefined,
+      chatLieuIds: filters.value.chatLieu.length > 0 ? filters.value.chatLieu.join(',') : undefined,
+      loaiDeIds: filters.value.loaiDe.length > 0 ? filters.value.loaiDe.join(',') : undefined,
+      danhMucIds: filters.value.danhMuc.length > 0 ? filters.value.danhMuc.join(',') : undefined,
+      giaMin: filters.value.giaTu || undefined,
+      giaMax: filters.value.giaDen || undefined
+    };
+
+    console.log("Fetching products with params:", JSON.stringify(params, null, 2));
+    const res = await GetDanhSachSanPhamTrangSanPham(params); // Truyền đối tượng
+    console.log("API response:", res);
+
+    if (res.data && res.data.data) {
+      allProducts.value = res.data.data;
+      totalElements.value = res.data.totalElements || 0; // Đảm bảo giá trị hợp lệ
+    } else {
+      throw new Error('Dữ liệu trả về từ API không hợp lệ');
     }
-])
 
-import { useRouter } from 'vue-router'
-import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue'
+    // Tính totalPages nếu chưa có
+    const calculatedTotalPages = Math.ceil(totalElements.value / pageSize);
+    if (!totalPages.value && calculatedTotalPages > 0) {
+      totalPages.value = calculatedTotalPages;
+    }
 
-const router = useRouter()
+    // Kiểm tra và gọi lại nếu cần, tránh vòng lặp vô hạn
+    if (currentPage.value > totalPages.value && totalPages.value > 0 && currentPage.value !== totalPages.value) {
+      currentPage.value = totalPages.value;
+      await fetchProducts(); // Sử dụng await để đảm bảo tuần tự
+    }
+  } catch (err) {
+    console.error("Lỗi khi tải sản phẩm:", err);
+    error.value = err.message || 'Không thể tải danh sách sản phẩm. Vui lòng thử lại.';
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-const handleClick = (product: any) => {
-    console.log('Bạn đã click vào sản phẩm:', product)
-    router.push({
-        name: 'san-pham-chi-tiet',
-        params: { id: product.id }
-    })
-}
+// Chỉ theo dõi currentPage và sortBy
+watch([currentPage, sortBy], () => {
+  fetchProducts();
+});
 
+onMounted(() => {
+  fetchProducts();
+});
+
+const router = useRouter();
+
+const handleClick = (product: SanPhamMoiResponse) => {
+  router.push({
+    name: 'san-pham-chi-tiet',
+    params: { idsp: product.id }
+  });
+};
+
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value && page !== currentPage.value) {
+    currentPage.value = page;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
 </script>
 <style scoped>
+.form-control-sm {
+  max-width: 200px;
+}
+
+/* Giữ nguyên các style hiện tại */
 .img-wrapper {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    background-color: #f8f8f8;
-    position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background-color: #f8f8f8;
+  position: relative;
 }
 
 .product-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .product-card {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .hover-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 0.75rem;
-    font-size: 14px;
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-    color: #333;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.75rem;
+  font-size: 14px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+  color: #333;
 }
 
 .img-wrapper:hover .hover-overlay {
-    transform: translateY(0%);
+  transform: translateY(0%);
 }
 
 .color-dot {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1px solid #ccc;
-    display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  display: inline-block;
 }
 
 .size-box {
-    padding: 2px 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 12px;
-    background-color: #f9f9f9;
+  padding: 2px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #f9f9f9;
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.pagination {
+  padding: 0;
+  margin: 0;
+}
+
+.page-item {
+  margin: 0 5px;
+}
+
+.page-link {
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
+}
+
+.page-item.active .page-link {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.page-item.disabled .page-link {
+  color: #6c757d;
+  background-color: #fff;
+  border-color: #dee2e6;
+  pointer-events: none;
+}
+
+.product-img-wrapper {
+  width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.product-img-main {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.34s cubic-bezier(.4, 0, .2, 1), transform 0.35s cubic-bezier(.4, 0, .2, 1);
+}
+
+.product-card {
+  transition: transform 0.18s, box-shadow 0.18s;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 15px;
+}
+
+.product-card:hover {
+  transform: translateY(-4px) scale(1.035);
+  box-shadow: 0 4px 18px rgba(44, 124, 255, 0.12);
+}
+
+.main-price {
+  font-size: 1.14rem;
+  font-weight: 700;
+  color: #174b9c;
+  letter-spacing: 0.4px;
+}
+
+.origin-price {
+  font-size: 0.93rem;
+  color: #b4b4b4;
+  text-decoration: line-through;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+.badge.bg-danger {
+  vertical-align: middle;
+  background: linear-gradient(90deg, #ff4d4f 80%, #ffb14c 100%);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  border-radius: 8px 8px 8px 8px;
+}
+
+.brand-row {
+  font-size: 14px;
+}
+
+.brand-label {
+  color: #a2a2a2;
+}
+
+.color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  display: inline-block;
+}
+
+.size-box {
+  display: inline-block;
+  padding: 2px 7px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #f9f9f9;
+  margin-right: 3px;
+}
+
+.gift-big {
+  font-size: 1.7rem !important;
+}
+
+@media (max-width: 575px) {
+  .container {
+    padding-left: 2.5px !important;
+    padding-right: 2.5px !important;
+  }
+
+  .product-img-wrapper {
+    aspect-ratio: 1/1.02;
+  }
+
+  .main-price {
+    font-size: 1.01rem;
+  }
 }
 </style>
