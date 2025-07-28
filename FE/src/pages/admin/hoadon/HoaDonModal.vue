@@ -352,13 +352,13 @@
   >
     <div class="status-modal-content">
       <div class="status-selection">
-        <p class="selection-label">*Chọn mẫu tin nhắn:</p>
+        <p class="selection-label">*Nhập mẫu tin nhắn:</p>
 
         <a-radio-group
           v-model:value="selectedStatusTemplate"
           class="status-radio-group"
         >
-          <div class="radio-option">
+          <!-- <div class="radio-option">
             <a-radio value="confirmed">Đã xác nhận đơn hàng</a-radio>
           </div>
           Cinder
@@ -386,7 +386,7 @@
           </div>
           <div class="radio-option">
             <a-radio value="other">Khác</a-radio>
-          </div>
+          </div> -->
         </a-radio-group>
       </div>
 

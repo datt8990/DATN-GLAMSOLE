@@ -11,6 +11,7 @@ import com.be.server.core.permitall.chitietsanpham.service.PMSanPhamChiTietServi
 import com.be.server.entity.DotGiamGiaChiTietSanPham;
 import com.be.server.entity.SanPham;
 import com.be.server.entity.SanPhamChiTiet;
+import com.be.server.infrastructure.constant.StatusPromotion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -83,7 +84,8 @@ public class PMSanPhamChiTietServiceImpl implements PMSanPhamChiTietService {
 
             // Map đợt giảm giá nếu có
             DotGiamGiaChiTietSanPham giamGia = pmctspDotGiamGiaCTSPRepo.findFirstBySanPhamChiTiet_Id(ct.getId());
-            if (giamGia != null && giamGia.getDotGiamGia() != null) {
+            if (giamGia != null && giamGia.getDotGiamGia() != null && giamGia.getDotGiamGia().getTrangThai().equals(StatusPromotion.DANG_KICH_HOAT)
+            ) {
                 DotGiamGiaDTO dto = new DotGiamGiaDTO();
                 dto.setTenDotGiamGia(giamGia.getDotGiamGia().getTen());
                 dto.setPhanTramGiam(giamGia.getDotGiamGia().getPhanTramGiam());
