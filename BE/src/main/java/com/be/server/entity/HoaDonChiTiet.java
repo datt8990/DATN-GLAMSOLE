@@ -9,6 +9,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,9 @@ public class HoaDonChiTiet extends PrimaryEntity implements Serializable {
 
     @Column(name = "gia_ban")
     private Double gia;
+
+    @Transient // Không lưu vào database
+    private Double gia1SP;
 
     @ManyToOne
     @JoinColumn(name = "id_spct")

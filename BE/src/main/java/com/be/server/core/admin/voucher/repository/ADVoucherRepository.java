@@ -20,6 +20,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ADVoucherRepository extends VoucherRepository {
+
+    @Query("""
+    SELECT p FROM PhieuGiamGia p
+        LEFT JOIN PhieuGiamGiaChiTiet pggct ON p.id = pggct.phieuGiamGia.id 
+     WHERE p.status = 0
+     AND p.soLuongPhieu > 0
+     AND (
+     p.loaiGiam = FALSE
+     OR (p.loaiGiam = TRUE AND (pggct.khachHang.id = :id)))
+""")
+    List<PhieuGiamGia> findAvailableVouchers(@Param("id") String id);
 
     @Query(value = """
         SELECT

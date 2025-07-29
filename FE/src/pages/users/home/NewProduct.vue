@@ -35,13 +35,13 @@
             </h6>
             <div class="mb-1">
               <span class="main-price">
-                {{ (item.giaSauGiam ?? item.giaBan).toLocaleString() }}₫
+                {{ (item.giaSauGiam ?? item.giaBan) }}₫
               </span>
               <span
                 v-if="item.dotGiamGia"
                 class="origin-price ms-2"
               >
-                {{ item.dotGiamGia.giaTruoc.toLocaleString() }}₫
+                {{ item.dotGiamGia.giaTruoc }}₫
               </span>
               <span
                 v-if="item.dotGiamGia"

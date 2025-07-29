@@ -43,5 +43,20 @@ public interface ADTaoHoaDonRepository extends HoaDonRepository {
 """)
     List<PhieuGiamGia> getPhieuGiamGia(@Param("id") String id, @Param("tong") Double tong);
 
+
+    @Query(value= """
+    SELECT pgg
+    FROM PhieuGiamGia pgg
+    LEFT JOIN PhieuGiamGiaChiTiet pggct ON pgg.id = pggct.phieuGiamGia.id
+    WHERE pgg.status = 0
+    and pgg.dieuKien >= :tong
+    AND pgg.soLuongPhieu > 0
+    AND ( 
+        pgg.loaiGiam = FALSE
+        OR (pgg.loaiGiam = TRUE AND (pggct.khachHang.id = :id))
+    )
+""")
+    List<PhieuGiamGia> getPhieuGiamGiaKoDuDieuKien(@Param("id") String id, @Param("tong") Double tong);
+
     List<HoaDon> findByTrangThaiHoaDon(EntityTrangThaiHoaDon trangThaiHoaDon);
 }

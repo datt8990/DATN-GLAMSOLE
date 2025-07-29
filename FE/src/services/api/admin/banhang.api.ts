@@ -294,6 +294,16 @@ export const getMaGiamGia = async (data: ParamsPhieuGiamGia) => {
   return res.data;
 };
 
+export const getMaGiamGiaKoDu = async (data: ParamsPhieuGiamGia) => {
+  const res = (await request({
+    url: `${PREFIX_API_BAN_HANG_ADMIN}/danh-sach-phieu-giam-gia-ko_du`,
+    method: "GET",
+    params: data,
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<PhieuGiamGiaResponse>>>>;
+
+  return res.data;
+};
+
 export const suaGiaoHang = async (id: string) => {
   const res = (await request({
     url: `${PREFIX_API_BAN_HANG_ADMIN}/giao-hang/${id}`,

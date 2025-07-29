@@ -61,6 +61,8 @@ public interface ADBanHangService {
 
     ResponseObject<?> danhSachPhieuGiamGia(ChonPhieuGiamGiaRequest id);
 
+    ResponseObject<?> danhSachPhieuGiamGiaKoDuDieuKien(ChonPhieuGiamGiaRequest id);
+
     ResponseObject<?> giaoHang(String request);
 
     ResponseObject<?> huy(ADHuyRequest request);
