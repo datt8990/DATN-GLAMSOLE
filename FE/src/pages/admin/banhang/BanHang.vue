@@ -105,7 +105,7 @@
                 <template v-if="column.key === 'operation'">
                   <div class="d-flex gap-1 justify-center">
                     <a-tooltip title="Hủy sản phẩm">
-                      <a-button type="primary" @click="deleteProduc(record.id)"
+                      <a-button type="primary" @click="deleteProduc(record.id, record.idHDCT)"
                         style="background-color: #54bddb; color: white;"
                         class="p-2 d-flex justify-content-center align-items-center">
                         Hủy
@@ -121,7 +121,60 @@
           </div>
         </div>
       </div>
+      <div v-if="isDeliveryEnabled == true" class="delivery-info-section">
+        <h5 class="section-title">Thông tin người nhận</h5>
+        <div class="delivery-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="receiver-name">Tên người nhận <span class="required">*</span></label>
+              <a-input type="text" id="receiver-name" v-model:value="deliveryInfo.tenNguoiNhan" class="input-customer"
+                placeholder="Nhập tên người nhận"
+                :class="{ 'input-error': !deliveryInfo.tenNguoiNhan && isDeliveryEnabled }" />
+            </div>
 
+            <div class="form-group">
+              <label for="receiver-phone">Số điện thoại <span class="required">*</span></label>
+              <a-input type="text" id="receiver-phone" v-model:value="deliveryInfo.sdtNguoiNhan" class="input-customer"
+                placeholder="Nhập số điện thoại"
+                :class="{ 'input-error': !deliveryInfo.sdtNguoiNhan && isDeliveryEnabled }" />
+            </div>
+
+            <div class="form-group">
+              <label for="province">Tỉnh/Thành phố <span class="required">*</span></label>
+              <a-select style="width: 100%;" v-model:value="deliveryInfo.tinhThanhPho" placeholder="Chọn tỉnh/thành phố"
+                :options="provinces" @change="onProvinceChange" show-search option-filter-prop="label"
+                :class="{ 'input-error': !deliveryInfo.tinhThanhPho && isDeliveryEnabled }" />
+            </div>
+
+            <div class="form-group">
+              <label for="district">Quận/Huyện <span class="required">*</span></label>
+              <a-select style="width: 100%;" v-model:value="deliveryInfo.quanHuyen" placeholder="Chọn quận/huyện"
+                :options="districts" @change="onDistrictChange" show-search option-filter-prop="label"
+                :class="{ 'input-error': !deliveryInfo.quanHuyen && isDeliveryEnabled }" />
+            </div>
+
+            <div class="form-group">
+              <label for="ward">Phường/Xã <span class="required">*</span></label>
+              <a-select style="width: 100%;" v-model:value="deliveryInfo.phuongXa" placeholder="Chọn phường/xã"
+                :options="wards" @change="onWardChange" show-search option-filter-prop="label"
+                :class="{ 'input-error': !deliveryInfo.phuongXa && isDeliveryEnabled }" />
+            </div>
+
+            <div class="form-group">
+              <label for="address-detail">Địa chỉ cụ thể <span class="required">*</span></label>
+              <a-input type="text" id="address-detail" v-model:value="deliveryInfo.diaChiCuThe" class="input-customer"
+                placeholder="Nhập số nhà, tên đường,..."
+                :class="{ 'input-error': !deliveryInfo.diaChiCuThe && isDeliveryEnabled }" />
+            </div>
+
+            <div class="form-group" style="margin-left: 100px;">
+              <label for="note">Ghi chú</label>
+              <a-textarea style=" height: 100px; width: 700px;" id="note" v-model:value="deliveryInfo.ghiChu"
+                class="iput-customer large-note" placeholder="Nhập ghi chú (nếu có)" :rows="8" />
+            </div>
+          </div>
+        </div>
+      </div>
       <div v-if="showProductModal" class="modal-backdrop" @click.self="showProductModal = false">
         <div class="modal-content">
           <div class="card mt-4">
@@ -294,128 +347,78 @@
 
         <div class="card-body">
           <div class="card mt-4">
-            <div class="card-body">
-              <div class="card mt-4">
-                <div class="card-header">
-                  <h3>Thông tin đơn</h3>
-                  <div class="delivery-toggle-container">
-                    <label for="delivery-switch">Bán giao hàng</label>
-                    <a-switch v-model:checked="isDeliveryEnabled" @change="giaoHang(isDeliveryEnabled)"
-                      id="delivery-switch" />
-                  </div>
+            <div class="card-header">
+              <h3>Thông tin đơn</h3>
+              <div class="delivery-toggle-container">
+                <label for="delivery-switch">Bán giao hàng</label>
+                <a-switch v-model:checked="isDeliveryEnabled" @change="giaoHang(isDeliveryEnabled)"
+                  id="delivery-switch" />
+              </div>
+            </div>
+            <div class="card-body payment-section-content">
+              <!-- Các phần khác của payment-section-content giữ nguyên -->
+              <div class="discount-code-section">
+                <label for="discount-code">Mã giảm giá</label>
+                <div class="discount-input-group">
+                  <input type="text" id="discount-code" class="discount-input" v-model="selectedDiscountCode"
+                    placeholder="Chọn mã giảm giá" readonly />
+                  <button class="select-discount-button" @click="showDiscountModal = true">
+                    Chọn mã
+                  </button>
                 </div>
-                <div class="card-body payment-section-content">
-                  <div v-if="isDeliveryEnabled == true" class="delivery-info-section">
-                    <div class="delivery-form">
-                      <div class="form-group">
-                        <label for="receiver-name">Tên người nhận <span class="required">*</span></label>
-                        <div class="input-wrapper">
-                          <a-input type="text" id="receiver-name" v-model:value="deliveryInfo.tenNguoiNhan"
-                            class="input-customer" placeholder="Tên người nhận" />
-                        </div>
-                      </div>
-
-                      <div class="form-group">
-                        <label for="receiver-phone">Số điện thoại <span class="required">*</span></label>
-                        <div class="input-wrapper">
-                          <a-input type="text" id="receiver-phone" v-model:value="deliveryInfo.sdtNguoiNhan"
-                            class="input-customer" placeholder="Số điện thoại" />
-                        </div>
-                      </div>
-
-                      <div class="form-group">
-                        <label for="province">Tỉnh/Thành phố <span class="required">*</span></label>
-                        <div class="input-wrapper">
-                          <a-select style="width: 100%;" v-model:value="deliveryInfo.tinhThanhPho"
-                            placeholder="Chọn tỉnh/thành phố" :options="provinces" @change="onProvinceChange"
-                            show-search option-filter-prop="label" />
-                        </div>
-                      </div>
-
-                      <div class="form-group">
-                        <label for="district">Quận/Huyện <span class="required">*</span></label>
-                        <div class="input-wrapper">
-                          <a-select style="width: 100%;" v-model:value="deliveryInfo.quanHuyen"
-                            placeholder="Chọn quận/huyện" :options="districts" @change="onDistrictChange" show-search
-                            option-filter-prop="label" />
-                        </div>
-                      </div>
-
-                      <div class="form-group">
-                        <label for="ward">Phường/Xã <span class="required">*</span></label>
-                        <div class="input-wrapper">
-                          <a-select style="width: 100%;" v-model:value="deliveryInfo.phuongXa"
-                            placeholder="Chọn phường/xã" :options="wards" @change="onWardChange" show-search
-                            option-filter-prop="label" />
-                        </div>
-                      </div>
-
-                      <div class="form-group">
-                        <label for="address-detail">Địa chỉ cụ thể <span class="required">*</span></label>
-                        <div class="input-wrapper">
-                          <a-input type="text" id="address-detail" v-model:value="deliveryInfo.diaChiCuThe"
-                            class="input-customer" placeholder="Số nhà, tên đường,..." />
-                        </div>
-                      </div>
-
-                      <div class="form-group summary-item">
-                        <label>Phí vận chuyển:</label>
-                        <span class="shipping-fee">{{ formatCurrency(shippingFee) }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Các phần khác của payment-section-content giữ nguyên -->
-                  <div class="discount-code-section">
-                    <label for="discount-code">Mã giảm giá</label>
-                    <div class="discount-input-group">
-                      <input type="text" id="discount-code" class="discount-input" v-model="selectedDiscountCode"
-                        placeholder="Chọn mã giảm giá" readonly />
-                      <button class="select-discount-button" @click="showDiscountModal = true">
-                        Chọn mã
-                      </button>
-                    </div>
-                    <div v-if="selectedDiscount" class="discount-info">
-                      Giảm: {{ formatCurrency(giamGia) }}
-                    </div>
-                  </div>
-                  <div class="payment-summary">
-                    <div class="summary-item">
-                      <label>Tổng tiền hàng:</label>
-                      <span>{{ formatCurrency(tienHang) }}</span>
-                    </div>
-                    <div class="summary-item">
-                      <label>Giảm giá:</label>
-                      <span>{{ formatCurrency(giamGia) }}</span>
-                    </div>
-                    <div class="summary-item" v-if="isDeliveryEnabled">
-                      <label>Phí vận chuyển:</label>
-                      <span>{{ formatCurrency(shippingFee) }}</span>
-                    </div>
-                    <div class="summary-item total-amount">
-                      <label>Tổng tiền:</label>
-                      <span style="color: red;">{{ formatCurrency(tongTien) }}</span>
-                    </div>
-                  </div>
-                  <div class="form-group-payment">
-                    <label for="payment-method-selection" style="font-weight: bold;">Phương thức thanh toán</label>
-                    <div class="payment-method-options" id="payment-method-selection">
-                      <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '1' }"
-                        @click="handlePaymentMethod('1')">
-                        Chuyển khoản
-                      </button>
-                      <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '0' }"
-                        @click="handlePaymentMethod('0')">
-                        Tiền mặt
-                      </button>
-                      <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '2' }"
-                        @click="handlePaymentMethod('2')">
-                        Cả hai
-                      </button>
-                    </div>
-                  </div>
-                  <button class="btn-confirm-payment" @click="xacNhan">Xác nhận thanh toán</button>
+                <div v-if="isBestDiscountApplied" style="color: red;" class="text-green-600 text-sm mt-2">
+                  Phiếu giảm giá tốt nhất
+                </div>
+                <div class="summary-item" v-if="betterDiscountMessage">
+                  <span style="color: red;">{{ betterDiscountMessage }}</span>
+                </div>
+                <div v-if="selectedDiscount" class="discount-info">
+                  Giảm: {{ formatCurrency(giamGia) }}
                 </div>
               </div>
+              <div class="payment-summary">
+                <div class="summary-item">
+                  <label>Tổng tiền hàng:</label>
+                  <span>{{ formatCurrency(tienHang) }}</span>
+                </div>
+                <div class="summary-item">
+                  <label>Giảm giá:</label>
+                  <span>{{ formatCurrency(giamGia) }}</span>
+                </div>
+                <div class="summary-item" v-if="isDeliveryEnabled">
+                  <label>Phí vận chuyển:</label>
+                  <a-input-number v-model:value="shippingFee" :min="0" :formatter="formatCurrency"
+                    :parser="parseCurrency" class="input-shipping-fee" :disabled="isFreeShipping" />
+                  <img src="/images/ghn-logo.webp" alt="GHN Logo" class="ghn-logo" />
+                </div>
+                <div class="summary-item" v-if="isDeliveryEnabled && isFreeShipping">
+                  <label></label>
+                  <span style="color: green; font-weight: bold;">Miễn phí vận chuyển (Đơn hàng trên 5,000,000
+                    VND)</span>
+                </div>
+                <div class="summary-item total-amount">
+                  <label>Tổng tiền:</label>
+                  <span style="color: red;">{{ formatCurrency(tongTien) }}</span>
+                </div>
+              </div>
+              <div class="form-group-payment">
+                <label for="payment-method-selection" style="font-weight: bold;">Phương thức thanh toán</label>
+                <div class="payment-method-options" id="payment-method-selection">
+                  <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '1' }"
+                    @click="handlePaymentMethod('1')">
+                    Chuyển khoản
+                  </button>
+                  <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '0' }"
+                    @click="handlePaymentMethod('0')">
+                    Tiền mặt
+                  </button>
+                  <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '2' }"
+                    @click="handlePaymentMethod('2')">
+                    Cả hai
+                  </button>
+                </div>
+              </div>
+              <button class="btn-confirm-payment" @click="xacNhan">Xác nhận thanh toán</button>
             </div>
           </div>
         </div>
@@ -591,8 +594,9 @@ import {
   type ThongTinGiaoHangResponse,
   suaGiaoHang,
   huyHoaDon,
-  getCustomerAddress // Assuming this API exists to fetch customer address details
-} from '@/services/api/admin/banhang.api' // Make sure to import getCustomerAddress
+  getCustomerAddress,
+  getMaGiamGiaKoDu
+} from '@/services/api/admin/banhang.api'
 const localSearchQuery = ref('');
 const localColor = ref<string | null>(null);
 const localSize = ref<string | null>(null);
@@ -636,41 +640,41 @@ const SizeOptions = ref<{ label: string; value: string }[]>([]);
 const isBothPaymentModalVisible = ref(false)
 const amountPaid = ref(0)
 const bothPaymentLoading = ref(false)
-const soTien = ref(0) // Should be total amount of the invoice, not just amount paid
-const tienKhachThanhToan = ref(0) // Total amount paid by customer for the current invoice
+const soTien = ref(0)
+const tienKhachThanhToan = ref(0)
 const tienThieu = ref(0)
-const tongTien = ref(0) // Final total after discounts and shipping
+const tongTien = ref(0)
 const giamGia = ref(0)
-const tienHang = ref(0) // Subtotal before discount and shipping
-const idSP = ref('') // Selected product ID for quantity modal
-const idHDS = ref('') // Current active invoice ID
+const tienHang = ref(0)
+const idSP = ref('')
+const idHDS = ref('')
 const tabs = ref<Array<{ id: number, idHD: string, ma: string, soLuong: number, products: any[], loaiHoaDon: string }>>([])
 const activeTab = ref(0)
-const idPGG = ref('') // Phiếu giảm giá ID (not directly used after selectedDiscount logic)
-let nextTabId = 1 // Used for local tab ID
-const loaiHD = ref('') // Current active invoice ID
+const idPGG = ref('')
+let nextTabId = 1
+const loaiHD = ref('')
 const showDiscountModal = ref(false)
-const discountList = ref<PhieuGiamGiaResponse[]>([]) // Changed from state.discountList
+const discountList = ref<PhieuGiamGiaResponse[]>([])
 const selectedDiscount = ref<PhieuGiamGiaResponse | null>(null)
 const selectedDiscountCode = ref<string>('')
 const thuongHieuOptions = ref<{ label: string; value: string }[]>([])
 const loaiDeOptions = ref<{ label: string; value: string }[]>([])
 const danhMucOptions = ref<{ label: string; value: string }[]>([])
 const chatLieuOptions = ref<{ label: string; value: string }[]>([])
-// Delivery related state and functions
-const isDeliveryEnabled = ref(false) // Toggle for delivery option
-const showDeliveryModal = ref(false) // Not used in this template, removed for consistency
+const isDeliveryEnabled = ref(false)
+const showDeliveryModal = ref(false)
 const deliveryInfo = reactive({
   tenNguoiNhan: '',
   sdtNguoiNhan: '',
+  tinhThanhPho: null,
+  quanHuyen: null,
+  phuongXa: null,
   diaChiCuThe: '',
-  tinhThanhPho: undefined as string | undefined, // Change to string
-  quanHuyen: undefined as string | undefined,    // Change to string
-  phuongXa: undefined as string | undefined,
-  diaChiCuThe: ''
+  ghiChu: '',
 });
-const currentDeliveryInfo = ref<ThongTinGiaoHangResponse | null>(null) // To display current delivery info
+const currentDeliveryInfo = ref<ThongTinGiaoHangResponse | null>(null)
 const customerSearchQuery = ref('');
+const betterDiscountMessage = ref('');
 const deliveryInfoByInvoice = reactive<{ [key: string]: any }>({});
 // GHN specific states
 const provinces = ref<Array<{ value: string, label: string, code: string }>>([])
@@ -682,10 +686,9 @@ const districtCode = ref<number | null>(null)
 const wardCode = ref<string | null>(null)
 const FROM_DISTRICT_ID = 3440
 const FROM_WARD_CODE = '13010';
-
-// Define the API URL and Shop ID for GHN
-// IMPORTANT: Replace with your actual GHN Token and Shop ID
-const GHN_API_TOKEN = '72f634c6-58a2-11f0-8a1e-1e10d8df3c04'; // Get this from GHN dashboard
+const isBestDiscountApplied = ref(false);
+const phieuNgon = ref('')
+const GHN_API_TOKEN = '72f634c6-58a2-11f0-8a1e-1e10d8df3c04';
 const GHN_SHOP_ID = 5872469
 
 
@@ -694,23 +697,23 @@ const state = reactive({
   searchQuery: '',
   idSP: '',
   searchStatus: null as number | null,
-  isModalOpen: false, // For quantity modal
-  isModaThanhToanlOpen: false, // Unused
-  isModalChangeStatus: false, // Unused
-  selectedProductId: null as string | null, // Unused
+  isModalOpen: false,
+  isModaThanhToanlOpen: false,
+  isModalChangeStatus: false,
+  selectedProductId: null as string | null,
   khachHang: [] as KhachHangResponse[],
-  thanhToan: [], // Unused
+  thanhToan: [],
   discountList: [] as PhieuGiamGiaResponse[],
   phuongThuThanhToan: [] as PhuongThucThanhToanResponse[],
-  tongTien: null as { tongTien: number } | null, // Assuming this is the type from getTongTien
+  tongTien: null as { tongTien: number } | null,
   detailKhachHang: null as KhachHangResponse | null,
-  products: [] as SanPhamResponse[], // Used for the product selection modal, consider renaming to modalProducts for clarity
+  products: [] as SanPhamResponse[],
   gioHang: [] as SanPhamResponse[],
-  paginationParams: { page: 1, size: 10 }, // For customer/product modals pagination
-  totalItems: 0, // For customer/product modals total items
-  totalItemsKH: 0, // For customer/product modals total items
-  selectedPaymentMethod: '' as string, // Unused
-  currentPaymentMethod: '0' // '0': Tiền mặt, '1': Chuyển khoản, '2': Cả hai
+  paginationParams: { page: 1, size: 10 },
+  totalItems: 0,
+  totalItemsKH: 0,
+  selectedPaymentMethod: '' as string,
+  currentPaymentMethod: '0'
 })
 
 const debouncedFetchCustomers = debounce(async () => {
@@ -736,7 +739,7 @@ const fetchCustomers = async () => {
   }
 };
 
-const stateSP = reactive({ // For the main product list table
+const stateSP = reactive({
   searchQuery: '',
   searchStatus: null as number | null,
   selectedCategory: null as string | null,
@@ -744,39 +747,28 @@ const stateSP = reactive({ // For the main product list table
   selectedBrand: null as string | null,
   selectedSoleType: null as string | null,
 
-  isModalOpen: false, // Unused in stateSP
-  isModalChangeStatus: false, // Unused in stateSP
-  selectedProductId: null as string | null, // Unused in stateSP
+  isModalOpen: false,
+  isModalChangeStatus: false,
+  selectedProductId: null as string | null,
   products: [] as SanPhamResponse[],
   paginationParams: { page: 1, size: 10 },
   totalItems: 0
 })
 
-// --- GHN API Integration Functions ---
 
-// const fetchProvinces = async () => {
-//   try {
-//     const response = await getGHNProvinces(GHN_API_TOKEN);
-//     const data = response; // Xử lý cả trường hợp data hoặc data.data
-//     if (Array.isArray(data)) {
-//       provinces.value = data.map((item: Province) => ({
-//         value: String(item.ProvinceID), // Đảm bảo value là string cho <a-select>
-//         label: item.ProvinceName,
-//         code: String(item.ProvinceID), // Lưu mã GHN
-//       }));
-//     } else {
-//       console.error('Unexpected provinces data format:', data);
-//       throw new Error('Dữ liệu tỉnh/thành phố không hợp lệ');
-//     }
-//   } catch (error) {
-//     console.error('Failed to fetch provinces:', error);
-//     if (axios.isAxiosError(error) && error.response) {
-//       console.error('GHN API Error:', error.response.data);
-//     }
-//     toast.error('Không thể tải danh sách Tỉnh/Thành phố. Vui lòng kiểm tra kết nối hoặc token.');
-//     provinces.value = [];
-//   }
-// };
+const parseCurrency = (value: string | number) => {
+  if (!value) return 0
+  let str = String(value).replace(/[^0-9nghìntrieu]/g, '').trim().toLowerCase()
+  let number = parseInt(str.replace(/[^0-9]/g, '')) || 0
+
+  if (str.includes('nghìn')) {
+    number *= 1000
+  } else if (str.includes('triệu')) {
+    number *= 1000000
+  }
+
+  return number
+}
 
 const fetchProvinces = async () => {
   try {
@@ -913,52 +905,6 @@ const fetchSize = async () => {
   }
 };
 
-// const fetchDistricts = async (provinceId: number) => {
-//   try {
-//     const response = await getGHNDistricts(provinceId, GHN_API_TOKEN);
-//     if (response && Array.isArray(response)) {
-//       districts.value = response.map((item: District) => ({
-//         value: String(item.DistrictID),
-//         label: item.DistrictName,
-//         code: String(item.DistrictID),
-//       }));
-//       deliveryInfo.quanHuyen = undefined;
-//       deliveryInfo.phuongXa = undefined;
-//       wards.value = [];
-//       districtCode.value = null;
-//     } else {
-//       console.error('Unexpected response format for districts:', response);
-//       throw new Error('Invalid districts data format');
-//     }
-//   } catch (error) {
-//     console.error('Failed to fetch districts:', error);
-//     toast.error('Không thể tải danh sách Quận/Huyện.');
-//     districts.value = [];
-//   }
-// };
-
-// const fetchWards = async (districtId: number) => {
-//   try {
-//     const response = await getGHNWards(districtId, GHN_API_TOKEN);
-//     if (response && Array.isArray(response)) {
-//       wards.value = response.map((item: Ward) => ({
-//         value: item.WardCode,
-//         label: item.WardName,
-//         code: item.WardCode,
-//       }));
-//       deliveryInfo.phuongXa = undefined;
-//       wardCode.value = null;
-//     } else {
-//       console.error('Unexpected response format for wards:', response);
-//       throw new Error('Invalid wards data format');
-//     }
-//   } catch (error) {
-//     console.error('Failed to fetch wards:', error);
-//     toast.error('Không thể tải danh sách Phường/Xã.');
-//     wards.value = [];
-//   }
-// };
-
 const checkFromDistrictAndWard = async () => {
   try {
     const response = await getGHNDistricts(null, GHN_API_TOKEN); // Lấy tất cả quận/huyện
@@ -1077,73 +1023,23 @@ const onWardChange = async (value: string) => {
   };
 };
 
-
-// const calculateShippingFee = async () => {
-//   if (!isDeliveryEnabled.value) {
-//     shippingFee.value = 0;
-//     calculateTotalAmounts();
-//     return;
-//   }
+const isFreeShipping = ref(false);
 
 
-//   console.log("0")
-
-//   if (!provinceCode.value || !districtCode.value || !wardCode.value || !deliveryInfo.tinhThanhPho || !deliveryInfo.quanHuyen || !deliveryInfo.phuongXa || tienHang.value <= 0) {
-//     shippingFee.value = 0;
-//     calculateTotalAmounts();
-//     return;
-//   }
-
-//   console.log("0.5")
-
-//   const availableServicesRequestBody: GHNAvailableServiceRequest = {
-//     shop_id: GHN_SHOP_ID,
-//     from_district: FROM_DISTRICT_ID,
-//     to_district: districtCode.value,
-//   };
-//   const availableServicesResponse = await getAvailableServices(GHN_API_TOKEN, availableServicesRequestBody);
-
-//   console.log("0.9", availableServicesResponse)
-
-//   if (!availableServicesResponse.data || !Array.isArray(availableServicesResponse.data)) {
-//     shippingFee.value = 0;
-//     calculateTotalAmounts();
-//     return;
-//   }
-
-//   console.log("1")
-
-
-//   const selectedServiceId = availableServicesResponse.data[0].service_id;
-//   const requestBody: ShippingFeeRequest = {
-//     myRequest: {
-//       FromDistrictID: FROM_DISTRICT_ID,
-//       FromWardCode: FROM_WARD_CODE,
-//       ServiceID: selectedServiceId,
-//       ToDistrictID: districtCode.value,
-//       ToWardCode: wardCode.value,
-//       Height: 15,
-//       Length: 15,
-//       Weight: 500,
-//       Width: 15,
-//       InsuranceValue: tienHang.value,
-//       Coupon: null,
-//       PickShift: null,
-//     },
-//   };
-
-//   console.log("2")
-
-//   const response = await calculateFee(requestBody, GHN_API_TOKEN, GHN_SHOP_ID);
-
-//   console.log("3", response.data.data)
-//   if (response.data && typeof response.data.total === 'number') {
-//     shippingFee.value = response.data.total;
-//   } else {
-//     shippingFee.value = 0;
-//     toast.warn('Không thể tính phí vận chuyển.');
-//   }
-// };
+watch(tienHang, (newValue) => {
+  if (isDeliveryEnabled.value && newValue > 5000000) {
+    isFreeShipping.value = true;
+    shippingFee.value = 0;
+    toast.success('Đơn hàng trên 5,000,000 VND, miễn phí vận chuyển!');
+  } else {
+    isFreeShipping.value = false;
+    // Recalculate shipping fee if delivery is enabled and below threshold
+    if (isDeliveryEnabled.value && provinceCode.value && districtCode.value && wardCode.value) {
+      calculateShippingFee();
+    }
+  }
+  calculateTotalAmounts();
+});
 
 const calculateShippingFee = async () => {
   if (!isDeliveryEnabled.value || !idHDS.value || !provinceCode.value || !districtCode.value || !wardCode.value || tienHang.value <= 0) {
@@ -1268,6 +1164,21 @@ const fetchDiscounts = async (idHD: string) => {
       state.discountList = response.data
     }
 
+    console.log("1")
+
+    const paramsfake = {
+      idHD: idHD,
+      idKH: state.detailKhachHang?.id || '',
+      tongTien: tienHang.value,
+    };
+    const responseFake = await getMaGiamGiaKoDu(paramsfake);
+    console.log("2")
+    if (responseFake && responseFake.betterVoucher && responseFake.betterVoucher.amountNeeded !== undefined) {
+      betterDiscountMessage.value = `Mua thêm ${formatCurrency(responseFake.betterVoucher.amountNeeded)} để nhận phiếu giảm giá tốt hơn`;
+    } else {
+      betterDiscountMessage.value = '';
+    }
+
     if (state.discountList.length > 0) {
       applyBestDiscount()
     } else {
@@ -1285,13 +1196,18 @@ const applyBestDiscount = () => {
   if (state.discountList.length > 0) {
     const bestDiscount = state.discountList[0] // Assuming the first one is the best or sorted
     selectedDiscount.value = bestDiscount
-    selectedDiscountCode.value = bestDiscount.ma
+    selectedDiscountCode.value = bestDiscount.ma // Chỉ giữ mã gốc
+    phieuNgon.value = bestDiscount.ma
     giamGia.value = bestDiscount.giaTriGiamThucTe || 0
-    // toast.success(`Đã áp dụng phiếu giảm giá: ${bestDiscount.ma}`)
+    if (phieuNgon.value == bestDiscount.ma) {
+      isBestDiscountApplied.value = true
+    }
+
   } else {
     selectedDiscount.value = null
     selectedDiscountCode.value = ''
     giamGia.value = 0
+    isBestDiscountApplied.value = false // Xóa trạng thái khi không có phiếu giảm giá
   }
   calculateTotalAmounts()
   showDiscountModal.value = false
@@ -1395,6 +1311,11 @@ const selectDiscount = (discount: PhieuGiamGiaResponse) => {
   giamGia.value = discount.giaTriGiamThucTe || 0
   toast.success(`Đã chọn phiếu giảm giá: ${discount.ma}`)
   calculateTotalAmounts()
+  if (phieuNgon.value === discount.ma) {
+    isBestDiscountApplied.value = true
+  } else {
+    isBestDiscountApplied.value = false
+  }
   showDiscountModal.value = false
 }
 
@@ -1519,7 +1440,7 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
   loaiHD.value = loaiHoaDon;
   state.currentPaymentMethod = '0';
   state.phuongThuThanhToan = [];
-
+  isBestDiscountApplied.value = false
   try {
     // Reset thông tin giao hàng
     Object.assign(deliveryInfo, {
@@ -1536,6 +1457,8 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
     shippingFee.value = 0;
     isDeliveryEnabled.value = loaiHoaDon === 'GIAO_HANG';
 
+    await fetchDiscounts(hd);
+    await capNhatDanhSach();
     // Khôi phục thông tin giao hàng từ deliveryInfoByInvoice nếu có
     if (deliveryInfoByInvoice[hd] && loaiHoaDon === 'GIAO_HANG') {
       Object.assign(deliveryInfo, {
@@ -1636,8 +1559,7 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
     tienKhachThanhToan.value = totalPaid;
     tienThieu.value = (tongTien.value || 0) - tienKhachThanhToan.value;
 
-    await fetchDiscounts(hd);
-    await capNhatDanhSach();
+
   } catch (error) {
     console.error('Failed to switch invoice:', error);
     toast.error('Chuyển hóa đơn thất bại!');
@@ -1832,8 +1754,8 @@ const xacNhan = async () => {
       toast.error('Vui lòng nhập đầy đủ thông tin giao hàng!');
       return;
     }
-    if (shippingFee.value <= 0 && tienHang.value > 0) { // If shipping fee is 0 but there are items in cart
-      toast.error('Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.');
+    if (shippingFee.value < 0 && tienHang.value > 0) { // If shipping fee is 0 but there are items in cart
+      toast.error('Vui làm kiểm tra lại tiền giao hàng');
       return;
     }
   }
@@ -2126,20 +2048,21 @@ const selectKhachHang = async (getIdKH: any) => {
 };
 
 
-const deleteProduc = async (idSPS: any) => {
+const deleteProduc = async (idSPS: any, idHDCT: string) => {
   try {
     const formData = new FormData()
     formData.append('idHD', idHDS.value)
     formData.append('idSP', idSPS)
-
+    formData.append('idHDCT', idHDCT)
     await xoaSP(formData)
-
+    betterDiscountMessage.value = ''
     state.gioHang = state.gioHang.filter((item) => item.id !== idSPS)
     calculateTotalAmounts()
 
     // Gọi fetchDiscounts bất kể có khách hàng hay không
     await fetchDiscounts(idHDS.value)
-
+    const response = await GetGioHang(idHDS.value)
+    state.gioHang = response
     toast.success('Xóa sản phẩm thành công!')
     await capNhatDanhSach()
   } catch (error) {
@@ -2200,7 +2123,19 @@ const confirmQuantity = async () => {
     }
 
     state.isModalOpen = false
-    toast.success(res.message)
+    console.log(res)
+    console.log(res.message)
+
+    if (res.message.includes("thay đổi giá từ")) {
+      toast.warning(res.message);
+      setTimeout(() => {
+        toast.success("Thêm thành công");
+      }, 5000);
+      toast.success("thêm thành công")
+    } else {
+      toast.success(res.message)
+    }
+    console.log("2")
 
     const response = await GetGioHang(idHDS.value)
     state.gioHang = response
@@ -3730,12 +3665,20 @@ textarea.input-full-width {
   /* Đã có */
 }
 
-.input-customer {
+
+
+.large-note {
+  font-size: 16px;
+  padding: 12px 16px;
+  line-height: 1.6;
   width: 100%;
-  margin-top: 5px;
-  background-color: white;
-  height: 40px;
+  max-width: 600px;
+  min-width: 300px;
+  border: 1px solid #e8e8e8 !important;
 }
+
+
+
 
 .discount-input-group {
   display: flex;
@@ -3764,21 +3707,14 @@ textarea.input-full-width {
 
 .section-title {
   margin-top: 30px;
-  /* Space above each main section title */
-  font-size: 18px;
+  font-size: 10px;
   font-weight: bold;
   margin-bottom: 20px;
-  /* Space below the title */
   margin-left: 0px;
-  /* Remove left margin if section-title is directly under padding */
   color: #333;
-  /* Darker color for titles */
   display: flex;
-  /* To align icon and text */
   align-items: center;
-  /* Vertically center icon and text */
   gap: 8px;
-  /* Space between icon and text */
 }
 
 .btn-payment-option.active {
@@ -3946,6 +3882,7 @@ textarea.input-full-width {
   background: #f1f5f9;
   /* Màu nền nhạt, tông xanh pastel */
   padding: 20px;
+
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 20px;
@@ -3978,23 +3915,7 @@ textarea.input-full-width {
   position: relative;
 }
 
-.input-customer,
-.a-select {
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  padding: 10px;
-  font-size: 14px;
-  background-color: #ffffff;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
 
-.input-customer:focus,
-.a-select:focus {
-  border-color: #007bff;
-  /* Màu xanh dương khi focus */
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-  outline: none;
-}
 
 .input-customer::placeholder {
   color: #6c757d;
@@ -4108,7 +4029,7 @@ textarea.input-full-width {
 }
 
 :deep(.ant-input) {
-  border: none !important;
+
   background: transparent !important;
   padding: 10px 10px 10px 36px !important;
   font-size: 14px;
@@ -4169,6 +4090,178 @@ textarea.input-full-width {
 
   .search-box {
     width: 100%;
+  }
+}
+
+.delivery-info-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e8e8e8;
+  padding-bottom: 10px;
+}
+
+.delivery-form {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Grid layout for form fields */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.form-group .required {
+  color: #ff4d4f;
+}
+
+.input-error {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+/* Shipping fee styling */
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 0.9rem;
+}
+
+.summary-item label {
+  font-weight: 500;
+  color: #555;
+}
+
+.shipping-fee {
+  font-weight: 600;
+  color: #1890ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .delivery-info-section {
+    padding: 15px;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+}
+
+.input-shipping-fee {
+  width: 150px;
+}
+
+
+
+
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .delivery-info-section {
+    padding: 15px;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .delivery-info-section {
+    padding: 15px;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+
+  .input-shipping-fee {
+    width: 100%;
+  }
+}
+
+.payment-summary {
+  margin-top: 20px;
+}
+
+.input-customer,
+.a-select,
+.a-textarea {
+  border: 1px solid #e8e8e8 !important;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: border-color 0.3s;
+}
+
+/* Beautify shipping fee input */
+.input-shipping-fee {
+  width: 150px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-weight: bold;
+  text-align: right;
+  margin-right: 10px;
+}
+
+/* Style for GHN logo */
+.ghn-logo {
+
+  height: 20px;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .input-shipping-fee {
+    width: 100%;
+  }
+
+  .ghn-logo {
+    width: 30px;
+    height: 30px;
   }
 }
 </style>

@@ -4,6 +4,8 @@ public interface ADGioHangRespones {
 
     String getSTT();
 
+    String getIdHDCT();
+
     String getId();
 
     String getTen();

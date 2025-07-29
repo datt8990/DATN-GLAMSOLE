@@ -13,9 +13,9 @@ public interface CartDetailRepository extends JpaRepository<CartDetail,String> {
 
                         select
             cd.*  from
-            	cart_detail cd
-            join cart c on
-            	cd.id_cart = c.id
+            	gio_hang_chi_tiet cd
+            join gio_hang c on
+            	cd.id_gio_hang = c.id
             join san_pham_chi_tiet spct on
             	cd.id_san_pham_chi_tiet = spct.id
                  where c.id = :idCart

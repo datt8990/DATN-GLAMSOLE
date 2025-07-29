@@ -153,28 +153,34 @@ public class ADSanPhamChiTietServiceImpl implements ADSanPhamChiTietService {
 
         Optional<KichCo> size = adKichThuocRepository.findById(requestItem.getIdSize());
 
+
+
         KichCo kichCo = size.get();
+        System.out.println(kichCo);
         sanPhamChiTiet.setKichCo(kichCo);
 
 
         Optional<MauSac> mauSac = adMauSacRepository.findById(requestItem.getIdMau());
 
         MauSac mauSac1 = mauSac.get();
+
+        System.out.println(mauSac1);
+
         sanPhamChiTiet.setMauSac(mauSac1);
 
         sanPhamChiTiet.setStatus(EntityStatus.ACTIVE);
 
-
+        System.out.println(requestItem.getIdSP());
 
         if (requestItem.getIdSP() != null) {
 
+            String[] parts = requestItem.getIdSP().split(",");
+            String firstUUID = parts[0];
 
-
-            Optional<SanPham> thuongHieuOptional = adSanPhamRepository.findById(requestItem.getIdSP());
-
-            SanPham sanPham = thuongHieuOptional.get();
-
+            SanPham sanPham = adSanPhamRepository.findById(firstUUID).get();
+            System.out.println(sanPham);
             sanPhamChiTiet.setSanPham(sanPham);
+
 
         } else {
             if (requestItem.getCheck().equals("0")) {

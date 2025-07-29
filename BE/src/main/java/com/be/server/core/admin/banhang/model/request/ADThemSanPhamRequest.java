@@ -17,4 +17,5 @@ public class ADThemSanPhamRequest {
 
     private String soLuong;
 
+    private String idHDCT;
 }

@@ -762,6 +762,7 @@ const handleSubmit = async () => {
       if (formData.value.idSanPhamGoc) {
         formToSend.append('idSP', formData.value.idSanPhamGoc);
       }
+
       if (!formData.value.idSanPhamGoc) {
         formToSend.append('ten', formData.value.ten.trim());
         formToSend.append('moTa', descriptionContent.trim());
@@ -771,6 +772,7 @@ const handleSubmit = async () => {
         formToSend.append('idXuatXu', formData.value.idXuatXu?.trim() || '');
         formToSend.append('idDanhMuc', formData.value.idDanhMuc.trim());
       }
+
       if (props.products) {
         formToSend.append('idSP', props.products.id);
       }
