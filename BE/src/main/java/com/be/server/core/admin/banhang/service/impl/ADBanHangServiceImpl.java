@@ -139,7 +139,7 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
                 hoaDonChiTiet.setSoLuong(Integer.parseInt(request.getSoLuong()));
 
-                double gia = sanPham.getGiaBan() * Double.parseDouble(request.getSoLuong());
+                double gia = sanPham.getGiaBan();
 
                 hoaDonChiTiet.setGia(gia);
 
@@ -174,7 +174,7 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
                     hoaDonChiTiet1.setSoLuong(Integer.parseInt(request.getSoLuong()));
 
-                    double gia = sanPham.getGiaBan() * Double.parseDouble(request.getSoLuong());
+                    double gia = sanPham.getGiaBan();
 
                     hoaDonChiTiet1.setGia(gia);
 
@@ -407,21 +407,21 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
             NhanVien nhanVien = adNhanVienRepository.findById(id.getIdNV()).get();
 
-            LichSuThanhToan lichSu = new LichSuThanhToan();
-            lichSu.setHoaDon(hoaDon1);
-            lichSu.setSoTien(id.getTongTien());
-            if(id.getPhuongThucThanhToan().equals("0")) {
-                lichSu.setLoaiGiaoDich("TIEN_MAT");
-            }else if(id.getPhuongThucThanhToan().equals("1")) {
-                lichSu.setLoaiGiaoDich("CHUYEN_KHOAN");
-            }else {
-                lichSu.setLoaiGiaoDich("TIEN_MAT_CHUYEN_KHOAN");
-            }
-            lichSu.setThoiGian(LocalDateTime.now());
-            lichSu.setNhanVien(nhanVien);
-            lichSu.setMaGiaoDich(UUID.randomUUID().toString());
-
-            adLichSuThanhToanRepository.save(lichSu);
+//            LichSuThanhToan lichSu = new LichSuThanhToan();
+//            lichSu.setHoaDon(hoaDon1);
+//            lichSu.setSoTien(id.getTongTien());
+//            if(id.getPhuongThucThanhToan().equals("0")) {
+//                lichSu.setLoaiGiaoDich("TIEN_MAT");
+//            }else if(id.getPhuongThucThanhToan().equals("1")) {
+//                lichSu.setLoaiGiaoDich("CHUYEN_KHOAN");
+//            }else {
+//                lichSu.setLoaiGiaoDich("TIEN_MAT_CHUYEN_KHOAN");
+//            }
+//            lichSu.setThoiGian(LocalDateTime.now());
+//            lichSu.setNhanVien(nhanVien);
+//            lichSu.setMaGiaoDich(UUID.randomUUID().toString());
+//
+//            adLichSuThanhToanRepository.save(lichSu);
 
 
             List<String> idHDCT = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(id.getIdHD());

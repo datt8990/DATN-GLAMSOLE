@@ -241,6 +241,7 @@
         <a-button
           style="background-color: #58bddb"
           v-if="canConfirmPayment"
+          :key="hoaDon?.trangThaiHoaDon"
           type="primary"
           class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500"
           @click="openPaymentModal"
@@ -526,7 +527,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, nextTick, reactive } from "vue";
+import { ref, onMounted, computed, watch, nextTick, reactive, toRef  } from "vue";
 import { useRoute } from "vue-router";
 import {
   getHoaDonChiTiets,
@@ -840,8 +841,8 @@ const hasPaymentHistory = computed(() => {
 
 const canCancelOrder1 = computed(() => {
   return (
-    currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN ||
-    currentStatus.value === EntityTrangThaiHoaDon.CHO_GIAO
+    currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN
+    // currentStatus.value === EntityTrangThaiHoaDon.DA_XAC_NHAN
   );
 });
 
@@ -959,49 +960,62 @@ const refreshTimelineData = async () => {
 // Update the existing canConfirmPayment computed to use the new name
 // Computed property to control visibility of the button that opens payment modal
 const canConfirmPayment = computed(() => {
-  // Check if payment history is empty
-  const isPaymentHistoryEmpty = !lichSuThanhToan.value || lichSuThanhToan.value.length === 0;
+  // Force reactivity bằng cách access tất cả reactive values
+  const invoiceData = hoaDon.value;
+  const paymentHistory = lichSuThanhToan.value;
+  const statusValue = currentStatus.value;
   
-  // Get current invoice type and status - FIX: use trangThaiHoaDon instead of trangThai
-  const invoiceType = hoaDon.value?.loaiHoaDon;
-  const invoiceStatus = hoaDon.value?.trangThaiHoaDon;
-  
+  // Kiểm tra lịch sử thanh toán rỗng
+  const isPaymentHistoryEmpty = !paymentHistory || paymentHistory.length === 0;
+
+  // Lấy loại hóa đơn & trạng thái
+  const invoiceType = invoiceData?.loaiHoaDon;
+  const invoiceStatus = invoiceData?.trangThaiHoaDon;
+
   console.log('=== DEBUG canConfirmPayment ===');
   console.log('invoiceType:', invoiceType);
   console.log('invoiceStatus:', invoiceStatus);
+  console.log('invoiceStatusAsNumber:', statusValue);
   console.log('isPaymentHistoryEmpty:', isPaymentHistoryEmpty);
-  
-  // If no invoice data, don't show button
-  if (!hoaDon.value || invoiceType === undefined || invoiceStatus === undefined) {
+  console.log('paymentHistory length:', paymentHistory?.length);
+
+  // Nếu không có dữ liệu hóa đơn => ẩn nút
+  if (!invoiceData || invoiceType === undefined || invoiceStatus === undefined) {
     console.log('Missing invoice data');
     return false;
   }
-  
-  // If payment history is not empty, don't show button
+
+  // Nếu đã có lịch sử thanh toán => ẩn nút
   if (!isPaymentHistoryEmpty) {
     console.log('Payment history is not empty');
     return false;
   }
-  
-  let result = false;
-  
-  // For OFFLINE invoices: show button when status is CHO_XAC_NHAN ("0") and payment history is empty
+
+  // Logic hiển thị nút - sử dụng cả string và number comparison
   if (invoiceType === 'OFFLINE') {
-    result = invoiceStatus === "0"; // Compare with string "0"
-    console.log('OFFLINE check - invoiceStatus === "0":', result);
+    const result = invoiceStatus === "0" || statusValue === 0;
+    console.log('OFFLINE check result:', result);
+    return result;
   }
-  
-  // For GIAO_HANG and ONLINE invoices: show button when status is DANG_GIAO ("3") and payment history is empty
+
   if (invoiceType === 'GIAO_HANG' || invoiceType === 'ONLINE') {
-    result = invoiceStatus === "3"; // Compare with string "3"
-    console.log('GIAO_HANG/ONLINE check - invoiceStatus === "3":', result);
+    const result = invoiceStatus === "3" || statusValue === 3;
+    console.log('GIAO_HANG/ONLINE check result:', result);
+    return result;
   }
-  
-  console.log('Final result:', result);
-  console.log('=== END DEBUG ===');
-  
-  return result;
+
+  console.log('No matching condition');
+  return false;
 });
+
+// Giải pháp 1: Thêm watcher để force update UI
+watch([hoaDon, lichSuThanhToan, currentStatus], () => {
+  console.log('Payment button dependencies changed');
+  // Force re-evaluation
+  nextTick(() => {
+    console.log('canConfirmPayment current value:', canConfirmPayment.value);
+  });
+}, { deep: true, immediate: true });
 
 const canAddProduct = computed(() => {
   return (

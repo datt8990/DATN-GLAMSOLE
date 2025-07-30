@@ -3,6 +3,7 @@ package com.be.server.core.permitall.thanhtoan.service.Impl;
 import com.be.server.core.admin.SanPhamChiTiet.repository.ADSanPhamChiTietRepository;
 import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.banhang.repository.ADTaoHoaDonChiTietRepository;
+import com.be.server.core.admin.hoadon.repository.ADLichSuThanhToanRepository;
 import com.be.server.core.admin.khachhang.repository.ADKhachHangRepository;
 import com.be.server.core.admin.voucher.repository.ADVoucherRepository;
 import com.be.server.core.common.base.ResponseObject;
@@ -14,19 +15,14 @@ import com.be.server.core.permitall.thanhtoan.repository.PMPhieuGiamGiaThanhToan
 import com.be.server.core.permitall.thanhtoan.service.ThanhToanService;
 import com.be.server.core.vnpay.VNPayConfig;
 import com.be.server.core.vnpay.VNPayUtil;
-import com.be.server.entity.Cart;
-import com.be.server.entity.CartDetail;
-import com.be.server.entity.HoaDon;
-import com.be.server.entity.HoaDonChiTiet;
-import com.be.server.entity.KhachHang;
-import com.be.server.entity.PhieuGiamGia;
-import com.be.server.entity.SanPhamChiTiet;
+import com.be.server.entity.*;
 import com.be.server.infrastructure.constant.EntityLoaiHoaDon;
 import com.be.server.infrastructure.constant.EntityPhuongThucThanhToan;
 import com.be.server.infrastructure.constant.EntityStatus;
 import com.be.server.infrastructure.constant.EntityTrangThaiHoaDon;
 import com.be.server.repository.CartRepository;
 import com.be.server.repository.KhachHangRepository;
+import com.be.server.repository.LichSuTrangThaiHoaDonRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,11 +31,8 @@ import org.springframework.stereotype.Service;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
@@ -47,6 +40,8 @@ public class thanhtoanserviceImpl {
     public final ADSanPhamChiTietRepository adSanPhamRepository;
     public final ADTaoHoaDonChiTietRepository adTaoHoaDonChiTietRepository;
     private final PMHoaDonReposiitory pmHoaDonReposiitory;
+    private final LichSuTrangThaiHoaDonRepository lichSuTrangThaiHoaDonRepository;
+    private final ADLichSuThanhToanRepository adLichSuThanhToanRepository;
     public final ADVoucherRepository adVoucherRepository;
     public final ADKhachHangRepository adKhachHangRepository;
     public final PMPhieuGiamGiaThanhToan pmPhieuGiamGiaThanhToan;
@@ -79,7 +74,34 @@ public class thanhtoanserviceImpl {
 
         hoaDon.setPhiVanChuyen(order.getPhiShip());
 
-        hoaDon.setTrangThaiHoaDon(EntityTrangThaiHoaDon.DA_XAC_NHAN);
+        hoaDon.setTrangThaiHoaDon(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
+
+//        LichSuTrangThaiHoaDon lichSuTrangThaiHoaDon = new LichSuTrangThaiHoaDon();
+//
+//        lichSuTrangThaiHoaDon.setThoiGian(LocalDateTime.now());
+//
+//        lichSuTrangThaiHoaDon.setNote("Đơn hàng đã được đặt và chờ được xác nhận.");
+//
+//        lichSuTrangThaiHoaDon.setHoaDon(hoaDon);
+//
+//        lichSuTrangThaiHoaDon.setTrangThai(EntityTrangThaiHoaDon.DA_XAC_NHAN);
+//
+//        lichSuTrangThaiHoaDonRepository.save(lichSuTrangThaiHoaDon);
+//
+//        LichSuThanhToan lichSu = new LichSuThanhToan();
+//        lichSu.setHoaDon(hoaDon);
+//        lichSu.setSoTien(order.getTongTien());
+//        if(order.getHinhThucThanhToan() == "VNPAY") {
+//            lichSu.setLoaiGiaoDich("CHUYEN_KHOAN");
+//        }
+//        else {
+//            lichSu.setLoaiGiaoDich("TIEN_MAT");
+//        }
+//        lichSu.setThoiGian(LocalDateTime.now());
+//        lichSu.setMaGiaoDich(UUID.randomUUID().toString());
+//
+//        adLichSuThanhToanRepository.save(lichSu);
+
         System.out.println("đã chạy đến lưu hóa dơn1");
         System.out.println("MaGiamGia: " + order.getMaGiamGia());
         if (order.getMaGiamGia() != null && !order.getMaGiamGia().isEmpty() && !order.getMaGiamGia().equals("")) {
@@ -109,8 +131,6 @@ public class thanhtoanserviceImpl {
             }
 
         }
-
-
 
         pmHoaDonReposiitory.save(hoaDon);
 
