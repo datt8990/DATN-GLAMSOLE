@@ -13,6 +13,7 @@ import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaKoDuReques
 import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
 import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ThemMoiKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
@@ -96,6 +97,11 @@ public class ADBanHangController {
     @PostMapping("/them-so-luong")
     public ResponseEntity<?> getThemSL(ADXoaSanPhamRequest id) {
         return Helper.createResponseEntity(adBanHangService.ThemSoLuong(id));
+    }
+
+    @PostMapping("/them-moi-khach-hang")
+    public ResponseEntity<?> themMoiKhachHang(ThemMoiKhachHangRequest id) {
+        return Helper.createResponseEntity(adBanHangService.themMoiKhachHang(id));
     }
 
     @PostMapping("/xoa-so-luong")
