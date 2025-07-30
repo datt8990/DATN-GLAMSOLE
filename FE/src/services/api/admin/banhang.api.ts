@@ -254,6 +254,16 @@ export const thanhToanThanhCong = async (data: ParamsThanhCong) => {
   return res.data;
 };
 
+export const themMoiKhachHang = async (data: themKHResponse) => {
+  const res = (await request({
+    url: `${PREFIX_API_BAN_HANG_ADMIN}/them-moi-khach-hang`,
+    method: "POST",
+    data: data,
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<KhachHangResponse>>>>;
+
+  return res.data;
+};
+
 export const themKhachHang = async (data: themKHResponse) => {
   const res = (await request({
     url: `${PREFIX_API_BAN_HANG_ADMIN}/them-khach-hang`,
@@ -287,6 +297,16 @@ export const GetKhachHang = async (data: ParamsXoaSP) => {
 export const getMaGiamGia = async (data: ParamsPhieuGiamGia) => {
   const res = (await request({
     url: `${PREFIX_API_BAN_HANG_ADMIN}/danh-sach-phieu-giam-gia`,
+    method: "GET",
+    params: data,
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<PhieuGiamGiaResponse>>>>;
+
+  return res.data;
+};
+
+export const getMaGiamGiaKoDu = async (data: ParamsPhieuGiamGia) => {
+  const res = (await request({
+    url: `${PREFIX_API_BAN_HANG_ADMIN}/danh-sach-phieu-giam-gia-ko_du`,
     method: "GET",
     params: data,
   })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<PhieuGiamGiaResponse>>>>;

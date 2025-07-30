@@ -29,10 +29,11 @@ public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
     @Query(value = """
     SELECT 
         ROW_NUMBER() OVER (ORDER BY sp.id DESC) AS stt,
+        hdct.id as idHDCT,
         spct.id AS id,    
         sp.ten AS ten,
         hdct.soLuong as soLuong,
-        spct.giaBan as giaBan,
+        hdct.gia as giaBan,
         s.ten as kichThuoc,
         ms.mau as mau,  
         spct.anh as anh
@@ -51,16 +52,25 @@ public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
 
     @Query(value = """
     select hdct.id from HoaDonChiTiet hdct
-    where hdct.hoaDon.id = :#{#rep.idHD} and hdct.spct.id = :#{#rep.idSP}
+    where hdct.id = :#{#rep.idHDCT}
 """)
     String getHoaDonChiTiet(@Param("rep") ADXoaSanPhamRequest req);
 
     @Query(value = """
     select hdct.id from HoaDonChiTiet hdct
+    left join SanPhamChiTiet spct on spct.id = hdct.spct.id
     where hdct.hoaDon.id = :#{#rep.idHD} and hdct.spct.id = :#{#rep.idSP}
+    order by hdct.createdDate DESC
 """)
-    String checkGioHang(@Param("rep") ADThemSanPhamRequest req);
+    List<String> checkGioHang(@Param("rep") ADThemSanPhamRequest req);
 
+    @Query(value = """
+    select hdct.id from HoaDonChiTiet hdct
+    left join SanPhamChiTiet spct on spct.id = hdct.spct.id
+    where hdct.id = :#{#rep.idHDCT} 
+    order by hdct.createdDate DESC
+""")
+    String checkGioHangHuy(@Param("rep") ADThemSanPhamRequest req);
 
     @Query(value = """
         SELECT kh.id AS id, kh.ten AS ten, kh.sdt AS sdt 

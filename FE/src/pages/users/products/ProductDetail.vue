@@ -384,9 +384,9 @@ function buyNow() {
   }
   const buyItem = getCartData();
   console.log("Dữ liệu mua ngay:", buyItem);
-  alert("Chuyển đến trang thanh toán!");
+  // alert("Chuyển đến trang thanh toán!");
   // Thực tế chuyển trang như cũ
-  router.push(`/checkout?ctspId=${buyItem.idChiTietSanPham}&quantity=${buyItem.soLuongMua}`);
+  router.push(`/thanh-toan`);
 }
 </script>
 

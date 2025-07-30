@@ -13,6 +13,7 @@ import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
 import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ThemMoiKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
@@ -115,9 +116,11 @@ public class ADBanHangServiceImpl implements ADBanHangService {
     @Override
     public ResponseObject<?> createThemSanPham(ADThemSanPhamRequest request) {
 
-        String idHDCT = adTaoHoaDonChiTietRepository.checkGioHang(request);
+        List<String> idHDCT = adTaoHoaDonChiTietRepository.checkGioHang(request);
 
-        if (idHDCT == null || idHDCT.isEmpty()) {
+        System.out.println(idHDCT.size());
+
+        if (idHDCT == null || idHDCT.size() <= 0) {
             HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
 
             SanPhamChiTiet sanPham = adSanPhamRepository.findById(request.getIdSP()).get();
@@ -142,27 +145,57 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
                 adTaoHoaDonChiTietRepository.save(hoaDonChiTiet);
 
-                return new ResponseObject<>(hoaDonChiTiet, HttpStatus.CREATED, "thêm sản phẩm");
+                return new ResponseObject<>(null, HttpStatus.OK, "thêm sản phẩm thanh công");
 
             }
         } else {
 
-            HoaDonChiTiet hoaDonChiTiet = adTaoHoaDonChiTietRepository.findById(idHDCT).get();
-
-            hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + Integer.parseInt(request.getSoLuong()));
+            HoaDonChiTiet hoaDonChiTiet = adTaoHoaDonChiTietRepository.findById(idHDCT.get(0)).get();
 
             SanPhamChiTiet sanPham = adSanPhamRepository.findById(request.getIdSP()).get();
-            if (sanPham.getSoLuong() < hoaDonChiTiet.getSoLuong()) {
-                return new ResponseObject<>(null, HttpStatus.OK, "Số lượng sản phẩm thêm vào nhiều hơn số lượng trong kho");
+
+
+            double gia1 = hoaDonChiTiet.getGia();
+            double gia2 = sanPham.getGiaBan();
+            double epsilon = 0.0001;
+
+            if (Math.abs(gia1 - gia2) > epsilon) {
+
+                if (sanPham.getSoLuong() < Integer.valueOf(request.getSoLuong())) {
+                    return new ResponseObject<>(null, HttpStatus.OK, "Số lượng sản phẩm thêm vào nhiều hơn số lượng trong kho");
+                } else {
+                    HoaDonChiTiet hoaDonChiTiet1 = new HoaDonChiTiet();
+
+                    HoaDon hoaDon = adTaoHoaDonRepository.findById(request.getIdHD()).get();
+
+                    hoaDonChiTiet1.setHoaDon(hoaDon);
+
+                    hoaDonChiTiet1.setSpct(sanPham);
+
+                    hoaDonChiTiet1.setSoLuong(Integer.parseInt(request.getSoLuong()));
+
+                    double gia = sanPham.getGiaBan() * Double.parseDouble(request.getSoLuong());
+
+                    hoaDonChiTiet1.setGia(gia);
+
+                    adTaoHoaDonChiTietRepository.save(hoaDonChiTiet1);
+
+                    return new ResponseObject<>(null, HttpStatus.OK, "Sản phẩm này đang đc thay đổi giá từ " + (hoaDonChiTiet.getGia()) + "đ thành " + sanPham.getGiaBan());
+
+                }
             } else {
+                hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + Integer.parseInt(request.getSoLuong()));
 
-                adTaoHoaDonChiTietRepository.save(hoaDonChiTiet);
+                if (sanPham.getSoLuong() < hoaDonChiTiet.getSoLuong()) {
+                    return new ResponseObject<>(null, HttpStatus.OK, "Số lượng sản phẩm thêm vào nhiều hơn số lượng trong kho");
+                } else {
 
-                return new ResponseObject<>(hoaDonChiTiet, HttpStatus.CREATED, "thêm sản phẩm");
+                    adTaoHoaDonChiTietRepository.save(hoaDonChiTiet);
 
+                    return new ResponseObject<>(null, HttpStatus.OK, "thêm sản phẩm");
+
+                }
             }
-
-
         }
     }
 
@@ -228,10 +261,10 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
     @Override
     public ResponseObject<?> listKhachHang(ListKhachHangRequest listKhachHangRequest) {
-        
+
         Pageable pageable = Helper.createPageable(listKhachHangRequest, "created_date");
-        Page<ADChonKhachHangRespones> page = adTaoHoaDonChiTietRepository.getAllList(listKhachHangRequest,pageable );
-        return new ResponseObject<>( PageableObject.of(page), HttpStatus.OK, "lấy danh sách khách hàng thanh công");
+        Page<ADChonKhachHangRespones> page = adTaoHoaDonChiTietRepository.getAllList(listKhachHangRequest, pageable);
+        return new ResponseObject<>(PageableObject.of(page), HttpStatus.OK, "lấy danh sách khách hàng thanh công");
     }
 
     @Override
@@ -245,6 +278,20 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         adTaoHoaDonRepository.save(hoaDon);
 
+    }
+
+    @Override
+    public ResponseObject<?> themMoiKhachHang(ThemMoiKhachHangRequest adXoaSanPhamRequest) {
+
+        KhachHang khachHang = new KhachHang();
+
+        khachHang.setTen(adXoaSanPhamRequest.getTen());
+
+        khachHang.setSdt(adXoaSanPhamRequest.getSdt());
+
+        adKhachHangRepository.save(khachHang);
+
+        return new ResponseObject<>(khachHang, HttpStatus.OK, "thêm mới khách hàng thành công");
     }
 
     @Override
@@ -295,11 +342,7 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         Page<ADSanPhamChiTietResponse> page = adSanPhamBanHangRepository.getAllSanPhamChiTietByFilter(pageable, id);
 
-        return new ResponseObject<>(
-                PageableObject.of(page),
-                HttpStatus.OK,
-                "Lấy danh sách sản phẩm chi tiết thành công"
-        );
+        return new ResponseObject<>(PageableObject.of(page), HttpStatus.OK, "Lấy danh sách sản phẩm chi tiết thành công");
     }
 
     @Override
@@ -318,6 +361,14 @@ public class ADBanHangServiceImpl implements ADBanHangService {
             hoaDon.setDiaChi(id.getDiaChi());
 
             hoaDon.setSdt(id.getSdt());
+
+            if(id.getPhuongThucThanhToan().equals("0")) {
+                hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT);
+            }else if(id.getPhuongThucThanhToan().equals("1")) {
+                hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.CHUYEN_KHOAN);
+            }else {
+                hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT_CHUYEN_KHOAN);
+            }
 
             hoaDon.setPhiVanChuyen(id.getTienShip());
 
@@ -352,14 +403,20 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
             System.out.println("xong trạng thái");
 
-            HoaDon hoaDon1 = adTaoHoaDonRepository.findById(id.getIdHD())
-                    .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
+            HoaDon hoaDon1 = adTaoHoaDonRepository.findById(id.getIdHD()).orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
 
             NhanVien nhanVien = adNhanVienRepository.findById(id.getIdNV()).get();
 
             LichSuThanhToan lichSu = new LichSuThanhToan();
             lichSu.setHoaDon(hoaDon1);
             lichSu.setSoTien(id.getTongTien());
+            if(id.getPhuongThucThanhToan().equals("0")) {
+                lichSu.setLoaiGiaoDich("TIEN_MAT");
+            }else if(id.getPhuongThucThanhToan().equals("1")) {
+                lichSu.setLoaiGiaoDich("CHUYEN_KHOAN");
+            }else {
+                lichSu.setLoaiGiaoDich("TIEN_MAT_CHUYEN_KHOAN");
+            }
             lichSu.setThoiGian(LocalDateTime.now());
             lichSu.setNhanVien(nhanVien);
             lichSu.setMaGiaoDich(UUID.randomUUID().toString());
@@ -399,6 +456,14 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         hoaDon.setDiaChi(id.getDiaChi());
 
+        if(id.getPhuongThucThanhToan().equals("0")) {
+            hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT);
+        }else if(id.getPhuongThucThanhToan().equals("1")) {
+            hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.CHUYEN_KHOAN);
+        }else {
+            hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT_CHUYEN_KHOAN);
+        }
+
         hoaDon.setSdt(id.getSdt());
 
         hoaDon.setPhiVanChuyen(id.getTienShip());
@@ -434,8 +499,7 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         System.out.println("xong trạng thái");
 
-        HoaDon hoaDon1 = adTaoHoaDonRepository.findById(id.getIdHD())
-                .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
+        HoaDon hoaDon1 = adTaoHoaDonRepository.findById(id.getIdHD()).orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
 
         NhanVien nhanVien = adNhanVienRepository.findById(id.getIdNV()).get();
 
@@ -510,11 +574,46 @@ public class ADBanHangServiceImpl implements ADBanHangService {
         }
 
         if (phieuGiamGias.size() > 0) {
-            phieuGiamGias = phieuGiamGias.stream()
-                    .sorted(Comparator.comparing(PhieuGiamGia::getGiaTriGiamThucTe, Comparator.reverseOrder()))
-                    .collect(Collectors.toList());
+            phieuGiamGias = phieuGiamGias.stream().sorted(Comparator.comparing(PhieuGiamGia::getGiaTriGiamThucTe, Comparator.reverseOrder())).collect(Collectors.toList());
         } else {
             phieuGiamGias = new ArrayList<>();
+        }
+
+        return new ResponseObject<>(phieuGiamGias, HttpStatus.CREATED, "Lây giá trị phiếu giảm giá thành công");
+
+    }
+
+    @Override
+    public ResponseObject<?> danhSachPhieuGiamGiaKoDuDieuKien(ChonPhieuGiamGiaRequest id) {
+
+        Double tongTien = id.getIdHD();
+
+        if (tongTien == null) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Tổng tiền không được để trống");
+        }
+
+        List<PhieuGiamGia> phieuGiamGias = adTaoHoaDonRepository.getPhieuGiamGia(id.getIdKH(), id.getIdHD());
+        if (phieuGiamGias == null) {
+            phieuGiamGias = new ArrayList<>();
+        }
+        if (phieuGiamGias.size() == 0) {
+            return new ResponseObject<>(null, HttpStatus.CREATED, "Lây giá trị phiếu giảm giá thành công");
+        }
+
+
+        if (phieuGiamGias.size() > 0) {
+            phieuGiamGias.forEach(pg -> {
+                if (pg.getPhanTramGiam() != null && pg.getGiaGiam() != null) {
+                    if (pg.getKieuGiam() == true) {
+                        pg.setGiaTriGiamThucTe(tongTien * (pg.getPhanTramGiam() / 100));
+                        if (pg.getGiaTriGiamThucTe() >= pg.getGiaGiam()) {
+                            pg.setGiaTriGiamThucTe(pg.getGiaGiam());
+                        }
+                    } else {
+                        pg.setGiaTriGiamThucTe(tongTien - (tongTien - pg.getPhanTramGiam()));
+                    }
+                }
+            });
         }
 
         return new ResponseObject<>(phieuGiamGias, HttpStatus.CREATED, "Lây giá trị phiếu giảm giá thành công");

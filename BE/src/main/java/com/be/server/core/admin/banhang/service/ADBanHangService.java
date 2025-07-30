@@ -12,6 +12,7 @@ import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
 import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ThemMoiKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
@@ -47,6 +48,8 @@ public interface ADBanHangService {
 
     void themKhachHang(ADThemKhachHangRequest id);
 
+    ResponseObject<?> themMoiKhachHang(ThemMoiKhachHangRequest adXoaSanPhamRequest);
+
     ADChonKhachHangRespones getKhachHang(String id);
 
     ADThanhToanRespones getThanhToan(String id);
@@ -60,6 +63,8 @@ public interface ADBanHangService {
     ResponseObject<?> thanhToanThanhCong(ADThanhToanRequest id);
 
     ResponseObject<?> danhSachPhieuGiamGia(ChonPhieuGiamGiaRequest id);
+
+    ResponseObject<?> danhSachPhieuGiamGiaKoDuDieuKien(ChonPhieuGiamGiaRequest id);
 
     ResponseObject<?> giaoHang(String request);
 

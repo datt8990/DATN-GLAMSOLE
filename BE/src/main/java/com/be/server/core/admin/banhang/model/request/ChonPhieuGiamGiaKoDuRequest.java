@@ -9,13 +9,11 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ADXoaSanPhamRequest {
+public class ChonPhieuGiamGiaKoDuRequest {
 
-        private String idHD;
+    String idKH;
 
-        private String idSP;
+    String idHD;
 
-        private String idHDCT;
-
-
+    Double tongTien;
 }

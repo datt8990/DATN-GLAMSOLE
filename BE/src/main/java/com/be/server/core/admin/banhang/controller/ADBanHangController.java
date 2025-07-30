@@ -9,16 +9,20 @@ import com.be.server.core.admin.banhang.model.request.ADThemGioHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaKoDuRequest;
 import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
 import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ThemMoiKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADPhuongThucThanhToanRespones;
 import com.be.server.core.admin.banhang.model.response.ADThanhToanRespones;
+import com.be.server.core.admin.banhang.model.response.AvailableVouchersResponse;
 import com.be.server.core.admin.banhang.model.response.ListHoaDon;
 import com.be.server.core.admin.banhang.service.ADBanHangService;
+import com.be.server.core.admin.banhang.service.impl.PhieuGiamGiaService;
 import com.be.server.core.admin.khachhang.model.request.ADKhachHangRequest;
 import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.HoaDon;
@@ -28,6 +32,7 @@ import com.be.server.infrastructure.constant.MappingConstants;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -49,6 +54,15 @@ import java.util.List;
 public class ADBanHangController {
 
     public final ADBanHangService adBanHangService;
+
+    @Autowired
+    private PhieuGiamGiaService phieuGiamGiaService;
+
+    @GetMapping("/danh-sach-phieu-giam-gia-ko_du")
+    public ResponseEntity<AvailableVouchersResponse> getAvailableVouchers (ChonPhieuGiamGiaKoDuRequest chonPhieuGiamGiaKoDuRequest) {
+        AvailableVouchersResponse response = phieuGiamGiaService.getAvailableVouchers(chonPhieuGiamGiaKoDuRequest.getIdHD(), chonPhieuGiamGiaKoDuRequest.getIdKH(), chonPhieuGiamGiaKoDuRequest.getTongTien());
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/list-hoa-don")
     public List<ListHoaDon> getListHoaDon() {
@@ -83,6 +97,11 @@ public class ADBanHangController {
     @PostMapping("/them-so-luong")
     public ResponseEntity<?> getThemSL(ADXoaSanPhamRequest id) {
         return Helper.createResponseEntity(adBanHangService.ThemSoLuong(id));
+    }
+
+    @PostMapping("/them-moi-khach-hang")
+    public ResponseEntity<?> themMoiKhachHang(ThemMoiKhachHangRequest id) {
+        return Helper.createResponseEntity(adBanHangService.themMoiKhachHang(id));
     }
 
     @PostMapping("/xoa-so-luong")
