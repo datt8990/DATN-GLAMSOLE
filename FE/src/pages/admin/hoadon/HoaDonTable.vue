@@ -178,13 +178,13 @@ const columns: TableColumnsType = [
     width: 125,
     align: "center",
   },
-  {
-    title: "Tên Nhân Viên",
-    key: "tenNhanVien",
-    dataIndex: "tenNhanVien",
-    width: 125,
-    align: "center",
-  },
+  // {
+  //   title: "Tên Nhân Viên",
+  //   key: "tenNhanVien",
+  //   dataIndex: "tenNhanVien",
+  //   width: 125,
+  //   align: "center",
+  // },
   {
     title: "Tổng Tiền",
     key: "tongTien",

@@ -50,7 +50,7 @@ public class ADHoaDonRepositoryImpl implements ADHoaDonRepositoryCustom {
                       AND (:trangThai IS NULL OR hd.trangThaiHoaDon = :trangThai)
                       AND (:startDate IS NULL OR CAST(hd.createdDate AS BIGINTEGER) >= :startDate)
                       AND (:endDate IS NULL OR CAST(hd.createdDate AS BIGINTEGER) <= :endDate)
-                    ORDER BY hd.createdDate DESC
+                    ORDER BY hd.createdDate ASC
                 """;
 
         String countByStatusHql = """
