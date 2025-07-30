@@ -303,46 +303,46 @@
         <div class="card-body">
           <div class="card mt-4">
             <div class="card-header">
-              <h3>Khách hàng</h3>
+              <h3 style="font-size: 18px;">Khách hàng</h3>
             </div>
 
             <div v-if="state.detailKhachHang">
               <div class="form-group">
-                <label for="customer-name">Tên khách hàng <span class="required">*</span></label>
+                <label style="color: black; font-size: 15px;" for="customer-name">Tên khách hàng <span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input :value="state.detailKhachHang.ten" type="text" id="customer-name" class="input-customer"
+                  <input style=" font-size: 15px;" :value="state.detailKhachHang.ten" type="text" id="customer-name" class="input-customer"
                     placeholder="Tên khách hàng" readonly />
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="phone">Số điện thoại <span class="required">*</span></label>
+                <label   style="color: black; font-size: 15px;" for="phone">Số điện thoại <span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input :value="state.detailKhachHang.sdt" type="text" id="phone" placeholder="Số điện thoại"
+                  <input  style=" font-size: 15px;" :value="state.detailKhachHang.sdt" type="text" id="phone" placeholder="Số điện thoại"
                     class="input-customer" readonly />
                 </div>
               </div>
             </div>
             <div v-else>
               <div class="form-group">
-                <label for="customer-name">Tên khách hàng <span class="required">*</span></label>
+                <label style="color: black; font-size: 15px;" >Tên khách hàng<span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input v-model="newCustomer.ten" type="text" id="customer-name" class="input-customer"
+                  <input style=" font-size: 15px;" v-model="newCustomer.ten" type="text" id="customer-name" class="input-customer"
                     placeholder="Tên khách hàng" />
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="phone">Số điện thoại <span class="required">*</span></label>
+                <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input v-model="newCustomer.sdt" type="text" id="phone" class="input-customer"
+                  <input style=" font-size: 15px;" v-model="newCustomer.sdt" type="text" id="phone" class="input-customer"
                     placeholder="Số điện thoại" />
                 </div>
               </div>
             </div>
             <div class="button-group-customer">
-              <button class="add-button" @click="showKhachHangModal = true">Chọn khách hàng</button>
-              <button class="add-button" @click="addCustomer">Thêm khách hàng</button>
+              <button style=" font-size: 15px;" class="add-button" @click="showKhachHangModal = true">Chọn khách hàng</button>
+              <button style=" font-size: 15px;" class="add-button" @click="addCustomer">Thêm khách hàng</button>
             </div>
           </div>
         </div>
@@ -350,9 +350,9 @@
         <div class="card-body">
           <div class="card mt-4">
             <div class="card-header">
-              <h3>Thông tin đơn</h3>
+              <h3 style=" font-size: 18px;">Thông tin đơn</h3>
               <div class="delivery-toggle-container">
-                <label for="delivery-switch">Bán giao hàng</label>
+                <label for="delivery-switch" style=" font-size: 15px;">Bán giao hàng</label>
                 <a-switch v-model:checked="isDeliveryEnabled" @change="giaoHang(isDeliveryEnabled)"
                   id="delivery-switch" />
               </div>
@@ -360,7 +360,7 @@
             <div class="card-body payment-section-content">
               <!-- Các phần khác của payment-section-content giữ nguyên -->
               <div class="discount-code-section">
-                <label for="discount-code">Mã giảm giá</label>
+                <label for="discount-code" style=" font-size: 15px;">Mã giảm giá</label>
                 <div class="discount-input-group">
                   <input type="text" id="discount-code" class="discount-input" v-model="selectedDiscountCode"
                     placeholder="Chọn mã giảm giá" readonly />
@@ -3787,7 +3787,6 @@ textarea.input-full-width {
   margin-bottom: 30px;
 }
 
-/* Đảm bảo .card-body chứa được button-group-customer nếu bạn muốn nó nằm trong padding của card-body */
 .card-body {
   padding: 20px;
   /* Đã có */
@@ -4030,7 +4029,6 @@ textarea.input-full-width {
   color: #1e3a8a;
   /* Màu xanh đậm cho nhãn */
   margin-bottom: 6px;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
