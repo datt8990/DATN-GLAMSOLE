@@ -410,6 +410,13 @@ public class ADBanHangServiceImpl implements ADBanHangService {
             LichSuThanhToan lichSu = new LichSuThanhToan();
             lichSu.setHoaDon(hoaDon1);
             lichSu.setSoTien(id.getTongTien());
+            if(id.getPhuongThucThanhToan().equals("0")) {
+                lichSu.setLoaiGiaoDich("TIEN_MAT");
+            }else if(id.getPhuongThucThanhToan().equals("1")) {
+                lichSu.setLoaiGiaoDich("CHUYEN_KHOAN");
+            }else {
+                lichSu.setLoaiGiaoDich("TIEN_MAT_CHUYEN_KHOAN");
+            }
             lichSu.setThoiGian(LocalDateTime.now());
             lichSu.setNhanVien(nhanVien);
             lichSu.setMaGiaoDich(UUID.randomUUID().toString());
