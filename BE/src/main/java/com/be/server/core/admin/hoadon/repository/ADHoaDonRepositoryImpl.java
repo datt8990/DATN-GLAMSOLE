@@ -45,8 +45,10 @@ public class ADHoaDonRepositoryImpl implements ADHoaDonRepositoryCustom {
                     LEFT JOIN hd.nhanVien nv
                     WHERE (:q IS NULL OR :q = '' 
                         OR LOWER(kh.ten) LIKE LOWER(CONCAT('%', :q, '%'))
+                        OR LOWER(hd.ma) LIKE LOWER(CONCAT('%', :q, '%'))
+                        OR LOWER(hd.ten) LIKE LOWER(CONCAT('%', :q, '%'))
                         OR LOWER(kh.sdt) LIKE LOWER(CONCAT('%', :q, '%'))
-                        OR LOWER(nv.ten) LIKE LOWER(CONCAT('%', :q, '%')))
+                        OR LOWER(nv.ma) LIKE LOWER(CONCAT('%', :q, '%')))
                       AND (:trangThai IS NULL OR hd.trangThaiHoaDon = :trangThai)
                       AND (:startDate IS NULL OR CAST(hd.createdDate AS BIGINTEGER) >= :startDate)
                       AND (:endDate IS NULL OR CAST(hd.createdDate AS BIGINTEGER) <= :endDate)
