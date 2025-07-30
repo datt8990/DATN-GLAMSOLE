@@ -327,14 +327,16 @@
               <div class="form-group">
                 <label for="customer-name">Tên khách hàng <span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input type="text" id="customer-name" placeholder="Tên khách hàng" class="input-customer" readonly />
+                  <input v-model="newCustomer.ten" type="text" id="customer-name" class="input-customer"
+                    placeholder="Tên khách hàng" />
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="phone">Số điện thoại <span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input type="text" id="phone" placeholder="Số điện thoại" class="input-customer" readonly />
+                  <input v-model="newCustomer.sdt" type="text" id="phone" class="input-customer"
+                    placeholder="Số điện thoại" />
                 </div>
               </div>
             </div>
@@ -401,22 +403,19 @@
                   <span style="color: red;">{{ formatCurrency(tongTien) }}</span>
                 </div>
               </div>
-              <div class="form-group-payment">
-                <label for="payment-method-selection" style="font-weight: bold;">Phương thức thanh toán</label>
-                <div class="payment-method-options" id="payment-method-selection">
-                  <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '1' }"
-                    @click="handlePaymentMethod('1')">
-                    Chuyển khoản
-                  </button>
-                  <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '0' }"
-                    @click="handlePaymentMethod('0')">
-                    Tiền mặt
-                  </button>
-                  <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod === '2' }"
-                    @click="handlePaymentMethod('2')">
-                    Cả hai
-                  </button>
-                </div>
+              <div class="payment-method-options" id="payment-method-selection">
+                <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '1' }"
+                  @click="handlePaymentMethod('1')">
+                  Chuyển khoản
+                </button>
+                <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '0' }"
+                  @click="handlePaymentMethod('0')">
+                  Tiền mặt
+                </button>
+                <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '2' }"
+                  @click="handlePaymentMethod('2')">
+                  Cả hai
+                </button>
               </div>
               <button class="btn-confirm-payment" @click="xacNhan">Xác nhận thanh toán</button>
             </div>
@@ -595,7 +594,8 @@ import {
   suaGiaoHang,
   huyHoaDon,
   getCustomerAddress,
-  getMaGiamGiaKoDu
+  getMaGiamGiaKoDu,
+  themMoiKhachHang
 } from '@/services/api/admin/banhang.api'
 const localSearchQuery = ref('');
 const localColor = ref<string | null>(null);
@@ -1023,6 +1023,13 @@ const onWardChange = async (value: string) => {
   };
 };
 
+const newCustomer = reactive({
+  ten: '',
+  sdt: ''
+});
+
+
+
 const isFreeShipping = ref(false);
 
 
@@ -1329,11 +1336,11 @@ const handleTableChange = (pagination: any) => {
 };
 
 const closeBothPaymentModal = () => {
-  isBothPaymentModalVisible.value = false
-  amountPaid.value = 0
-  bothPaymentLoading.value = false
-}
-
+  isBothPaymentModalVisible.value = false;
+  amountPaid.value = 0;
+  bothPaymentLoading.value = false;
+  // Không đặt lại state.currentPaymentMethod
+};
 const themPTTT = async (formData: FormData) => {
   // Replace with your actual API call to add payment method
   try {
@@ -1345,42 +1352,43 @@ const themPTTT = async (formData: FormData) => {
 }
 
 const handlePaymentMethod = async (method: string) => {
-  state.currentPaymentMethod = method;
   if (!idHDS.value) {
     toast.error('Vui lòng chọn hoặc tạo hóa đơn trước khi chọn phương thức thanh toán!');
-    state.currentPaymentMethod = '0'; // Revert to cash if no invoice
     return;
   }
 
+  state.currentPaymentMethod = method;
+
   try {
-    const formData = new FormData();
-    formData.append('idHD', idHDS.value);
-
-    // Common logic for all payment types, record the payment if it's not "Cả hai"
-    if (method === '0') { // Tiền mặt
-      formData.append('tongTien', (tongTien.value - tienKhachThanhToan.value).toString()); // Amount left to pay
-      formData.append('phuongThuc', 'Tiền mặt');
-      await themPTTT(formData);
+    if (method === '0') {
       toast.success('Đã chọn phương thức thanh toán Tiền mặt.');
-    } else if (method === '1') { // Chuyển khoản (VNPay)
-      formData.append('tongTien', (tongTien.value - tienKhachThanhToan.value).toString()); // Amount left to pay
-      formData.append('phuongThuc', 'Chuyển khoản');
-      await themPTTT(formData);
+    } else if (method === '1') {
+      toast.success('Đã chọn phương thức thanh toán chuyển khoản.');
       openQrModalVNPay();
-    } else if (method === '2') { // Cả hai
-      isBothPaymentModalVisible.value = true;
-      amountPaid.value = 0; // Reset amount when opening for "Cả hai"
+    } else if (method === '2') {
+      toast.success('Đã chọn phương thức thanh toán vừa chuyển khoản vừa tiền mặt.');
+      openQrModalVNPayCaHai();
+
     }
-
-    // After updating payment method, refresh current invoice data
-    await clickkActiveTab(activeTab.value, idHDS.value, loaiHD.value);
-
   } catch (error: any) {
-    console.error('Failed to handle payment method:', error);
-    toast.error(error.message || 'Có lỗi khi chọn phương thức thanh toán!');
-    state.currentPaymentMethod = '0'; // Revert to cash on error
+    console.error('Error in handlePaymentMethod:', error);
+    toast.error('Có lỗi khi chọn phương thức thanh toán!');
   }
-}
+};
+
+// Hàm mới để cập nhật trạng thái thanh toán
+const updatePaymentStatus = async () => {
+  if (idHDS.value) {
+    const responsePTTT = await getPhuongThucThanhToan(idHDS.value);
+    state.phuongThuThanhToan = responsePTTT;
+    let totalPaid = 0;
+    state.phuongThuThanhToan.forEach((item) => {
+      totalPaid += item.tongTien;
+    });
+    tienKhachThanhToan.value = totalPaid;
+    tienThieu.value = (tongTien.value || 0) - tienKhachThanhToan.value;
+  }
+};
 
 
 const fetchHoaDon = async () => {
@@ -1438,9 +1446,8 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
   idHDS.value = hd;
   activeTab.value = id;
   loaiHD.value = loaiHoaDon;
-  state.currentPaymentMethod = '0';
-  state.phuongThuThanhToan = [];
-  isBestDiscountApplied.value = false
+  isBestDiscountApplied.value = false;
+
   try {
     // Reset thông tin giao hàng
     Object.assign(deliveryInfo, {
@@ -1459,6 +1466,7 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
 
     await fetchDiscounts(hd);
     await capNhatDanhSach();
+
     // Khôi phục thông tin giao hàng từ deliveryInfoByInvoice nếu có
     if (deliveryInfoByInvoice[hd] && loaiHoaDon === 'GIAO_HANG') {
       Object.assign(deliveryInfo, {
@@ -1474,7 +1482,6 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
       wardCode.value = deliveryInfoByInvoice[hd].wardCode;
       shippingFee.value = deliveryInfoByInvoice[hd].shippingFee;
 
-      // Tải lại danh sách quận/huyện và phường/xã nếu cần
       if (provinceCode.value && !districts.value.length) {
         await fetchDistricts(provinceCode.value);
       }
@@ -1482,7 +1489,6 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
         await fetchWards(districtCode.value);
       }
     } else if (loaiHoaDon === 'GIAO_HANG') {
-      // Lấy thông tin khách hàng từ API nếu hóa đơn là giao hàng
       const responseKH = await GeOneKhachHang(hd);
       state.detailKhachHang = responseKH.id ? responseKH : null;
 
@@ -1525,7 +1531,62 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
           }
         }
 
-        // Lưu thông tin giao hàng cục bộ
+        deliveryInfoByInvoice[hd] = {
+          tenNguoiNhan: deliveryInfo.tenNguoiNhan,
+          sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
+          diaChiCuThe: deliveryInfo.diaChiCuThe,
+          tinhThanhPho: deliveryInfo.tinhThanhPho,
+          quanHuyen: deliveryInfo.quanHuyen,
+          phuongXa: deliveryInfo.phuongXa,
+          provinceCode: provinceCode.value,
+          districtCode: districtCode.value,
+          wardCode: wardCode.value,
+          shippingFee: shippingFee.value,
+        };
+      }
+    } else {
+      const responseKH = await GeOneKhachHang(hd);
+      state.detailKhachHang = responseKH.id ? responseKH : null;
+
+      if (state.detailKhachHang) {
+        deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
+        deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
+        deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
+
+        const tinhThanhPhoId = state.detailKhachHang.tinh;
+        const quanHuyenId = state.detailKhachHang.huyen;
+        const phuongXaId = state.detailKhachHang.xa;
+
+        if (!provinces.value.length) {
+          await fetchProvinces();
+        }
+
+        if (tinhThanhPhoId) {
+          const selectedProvince = provinces.value.find(p => p.code === tinhThanhPhoId.toString());
+          if (selectedProvince) {
+            deliveryInfo.tinhThanhPho = selectedProvince.value;
+            provinceCode.value = parseInt(tinhThanhPhoId);
+            await fetchDistricts(provinceCode.value);
+          }
+        }
+
+        if (quanHuyenId && provinceCode.value) {
+          const selectedDistrict = districts.value.find(d => d.code === quanHuyenId.toString());
+          if (selectedDistrict) {
+            deliveryInfo.quanHuyen = selectedDistrict.value;
+            districtCode.value = parseInt(quanHuyenId);
+            await fetchWards(districtCode.value);
+          }
+        }
+
+        if (phuongXaId && districtCode.value) {
+          const selectedWard = wards.value.find(w => w.code === phuongXaId);
+          if (selectedWard) {
+            deliveryInfo.phuongXa = selectedWard.value;
+            wardCode.value = phuongXaId;
+          }
+        }
+
         deliveryInfoByInvoice[hd] = {
           tenNguoiNhan: deliveryInfo.tenNguoiNhan,
           sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
@@ -1544,8 +1605,9 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
     const response = await GetGioHang(hd);
     state.gioHang = response;
 
-    const responsePTTT = await getPhuongThucThanhToan(hd);
-    state.phuongThuThanhToan = responsePTTT;
+
+    state.currentPaymentMethod = '0';
+
 
     calculateTotalAmounts();
     if (isDeliveryEnabled.value && provinceCode.value && districtCode.value && wardCode.value) {
@@ -1558,8 +1620,6 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
     });
     tienKhachThanhToan.value = totalPaid;
     tienThieu.value = (tongTien.value || 0) - tienKhachThanhToan.value;
-
-
   } catch (error) {
     console.error('Failed to switch invoice:', error);
     toast.error('Chuyển hóa đơn thất bại!');
@@ -1580,7 +1640,6 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
     calculateTotalAmounts();
   }
 };
-
 // Watch for changes in isDeliveryEnabled to clear/set delivery info
 watch(isDeliveryEnabled, async (newValue) => {
   if (!newValue) {
@@ -1772,10 +1831,12 @@ const xacNhan = async () => {
     formData.append('sdt', deliveryInfo.sdtNguoiNhan);
     formData.append('diaChi', deliveryInfo.diaChiCuThe);
     formData.append('tienShip', shippingFee.value.toString());
-
+    formData.append('phuongThucThanhToan', state.currentPaymentMethod);
     if (selectedDiscount.value?.id) {
       formData.append('idPGG', selectedDiscount.value.id)
     }
+
+    console.log(state.currentPaymentMethod)
 
     // Append delivery status and info if enabled
     formData.append('isDeliveryEnabled', isDeliveryEnabled.value.toString())
@@ -1783,7 +1844,13 @@ const xacNhan = async () => {
 
     const res = await thanhToanThanhCong(formData)
 
-    toast.success('Thanh toán thành công!')
+    if (isDeliveryEnabled.value == true) {
+      toast.success('Giao hàng thành công!')
+    } else {
+      toast.success('Thanh toán thành công!')
+    }
+
+
 
     await fetchProducts()
     await capNhatDanhSach()
@@ -2199,9 +2266,19 @@ const capNhatDanhSach = async () => {
 const isQrVNpayModalVisible = ref(false)
 const qrVnPayLoading = ref(false) // Unused
 
+const openQrModalVNPayCaHai = () => {
+
+  isBothPaymentModalVisible.value = true;
+  amountPaid.value = 0;
+
+};
+
+
 const openQrModalVNPay = () => {
-  isQrVNpayModalVisible.value = true
-}
+
+  isQrVNpayModalVisible.value = true;
+
+};
 
 const closeQrModalVnPay = () => {
   isQrVNpayModalVisible.value = false
@@ -2283,10 +2360,61 @@ const stopQrScanning = () => {
 
 }
 
+const addCustomerLoading = ref(false);
+
 // Function to add a new customer (Not implemented in the template, but good to have a placeholder)
-const addCustomer = () => {
-  toast.info('Chức năng thêm khách hàng mới đang được phát triển!');
-  // Here you would typically open a modal for new customer creation
+const addCustomer = async () => {
+  try {
+    // Kiểm tra dữ liệu đầu vào
+    if (!newCustomer.ten || !newCustomer.sdt) {
+      toast.error('Vui lòng nhập đầy đủ tên và số điện thoại!');
+      return;
+    }
+
+    // Kiểm tra định dạng số điện thoại (10 chữ số)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(newCustomer.sdt)) {
+      toast.error('Số điện thoại phải là 10 chữ số!');
+      return;
+    }
+
+    if (!idHDS.value) {
+      toast.error('Vui lòng chọn hoặc tạo hóa đơn trước khi thêm khách hàng!');
+      return;
+    }
+
+    addCustomerLoading.value = true;
+
+    // Gọi API để thêm khách hàng mới
+    const formData = new FormData();
+    formData.append('ten', newCustomer.ten);
+    formData.append('sdt', newCustomer.sdt);
+
+    // Giả định API `themKhachHang` trả về ID của khách hàng vừa thêm
+    const response = await themMoiKhachHang(formData);
+    const newCustomerId = response.data.id; // Giả định API trả về ID khách hàng
+
+    // Tự động chọn khách hàng vừa thêm cho hóa đơn
+    const selectFormData = new FormData();
+    selectFormData.append('idHD', idHDS.value);
+    selectFormData.append('idKH', newCustomerId);
+    await themKhachHang(selectFormData); // Gọi lại API để gán khách hàng vào hóa đơn
+
+    // Cập nhật thông tin khách hàng hiển thị
+    const responseKH = await GeOneKhachHang(idHDS.value);
+    state.detailKhachHang = responseKH.id ? responseKH : null;
+
+    // Reset input sau khi thêm thành công
+    newCustomer.ten = '';
+    newCustomer.sdt = '';
+
+    toast.success('Thêm và chọn khách hàng thành công!');
+  } catch (error) {
+    console.error('Failed to add customer:', error);
+    toast.error('Thêm khách hàng thất bại!');
+  } finally {
+    addCustomerLoading.value = false;
+  }
 }
 
 
@@ -3717,14 +3845,14 @@ textarea.input-full-width {
   gap: 8px;
 }
 
-.btn-payment-option.active {
+/* .btn-payment-option.active {
   background-color: #54bddb;
   border-color: #54bddb;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-weight: bold;
-  /* In đậm khi chọn */
-}
+
+} */
 
 .modal-backdrop {
   position: fixed;

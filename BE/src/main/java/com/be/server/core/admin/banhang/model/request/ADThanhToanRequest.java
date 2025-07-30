@@ -28,4 +28,6 @@ public class ADThanhToanRequest {
     private Double tongTien;
 
     private Double tienShip;
+
+    private String phuongThucThanhToan;
 }

@@ -254,6 +254,16 @@ export const thanhToanThanhCong = async (data: ParamsThanhCong) => {
   return res.data;
 };
 
+export const themMoiKhachHang = async (data: themKHResponse) => {
+  const res = (await request({
+    url: `${PREFIX_API_BAN_HANG_ADMIN}/them-moi-khach-hang`,
+    method: "POST",
+    data: data,
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<KhachHangResponse>>>>;
+
+  return res.data;
+};
+
 export const themKhachHang = async (data: themKHResponse) => {
   const res = (await request({
     url: `${PREFIX_API_BAN_HANG_ADMIN}/them-khach-hang`,

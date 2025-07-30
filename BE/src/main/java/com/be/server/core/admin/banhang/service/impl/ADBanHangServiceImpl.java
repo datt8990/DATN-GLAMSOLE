@@ -13,6 +13,7 @@ import com.be.server.core.admin.banhang.model.request.ADXoaSanPhamRequest;
 import com.be.server.core.admin.banhang.model.request.ChonPhieuGiamGiaRequest;
 import com.be.server.core.admin.banhang.model.request.ListKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.ListSanPhamRequest;
+import com.be.server.core.admin.banhang.model.request.ThemMoiKhachHangRequest;
 import com.be.server.core.admin.banhang.model.request.giaoHangRequest;
 import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
@@ -280,6 +281,20 @@ public class ADBanHangServiceImpl implements ADBanHangService {
     }
 
     @Override
+    public ResponseObject<?> themMoiKhachHang(ThemMoiKhachHangRequest adXoaSanPhamRequest) {
+
+        KhachHang khachHang = new KhachHang();
+
+        khachHang.setTen(adXoaSanPhamRequest.getTen());
+
+        khachHang.setSdt(adXoaSanPhamRequest.getSdt());
+
+        adKhachHangRepository.save(khachHang);
+
+        return new ResponseObject<>(khachHang, HttpStatus.OK, "thêm mới khách hàng thành công");
+    }
+
+    @Override
     public ADChonKhachHangRespones getKhachHang(String id) {
 
         return adTaoHoaDonChiTietRepository.getKhachHang(id);
@@ -346,6 +361,14 @@ public class ADBanHangServiceImpl implements ADBanHangService {
             hoaDon.setDiaChi(id.getDiaChi());
 
             hoaDon.setSdt(id.getSdt());
+
+            if(id.getPhuongThucThanhToan().equals("0")) {
+                hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT);
+            }else if(id.getPhuongThucThanhToan().equals("1")) {
+                hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.CHUYEN_KHOAN);
+            }else {
+                hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT_CHUYEN_KHOAN);
+            }
 
             hoaDon.setPhiVanChuyen(id.getTienShip());
 
@@ -425,6 +448,14 @@ public class ADBanHangServiceImpl implements ADBanHangService {
         hoaDon.setTen(id.getTen());
 
         hoaDon.setDiaChi(id.getDiaChi());
+
+        if(id.getPhuongThucThanhToan().equals("0")) {
+            hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT);
+        }else if(id.getPhuongThucThanhToan().equals("1")) {
+            hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.CHUYEN_KHOAN);
+        }else {
+            hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT_CHUYEN_KHOAN);
+        }
 
         hoaDon.setSdt(id.getSdt());
 
