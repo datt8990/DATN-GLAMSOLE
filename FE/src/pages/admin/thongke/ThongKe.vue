@@ -9,7 +9,7 @@
 
     <!-- Cards thống kê -->
     <div class="stats-cards">
-      <div class="stats-card">
+      <div class="stats-card" style="background-color: #e6e6fa;">
         <div class="stats-content">
           <div class="stats-title">Doanh số tháng này</div>
           <div class="stats-value">
@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <div class="stats-card">
+      <div class="stats-card" style="background-color: #f0fff0;">
         <div class="stats-content">
           <div class="stats-title">Doanh số hôm nay</div>
           <div class="stats-value">
@@ -39,7 +39,7 @@
         </div>
       </div>
 
-      <div class="stats-card">
+      <div class="stats-card" style="background-color: #e0ebeb;">
         <div class="stats-content">
           <div class="stats-title">Hàng bán được tháng này</div>
           <div class="stats-value">{{ doanhThuData.hangBanDuocThangNay }}</div>
@@ -344,6 +344,9 @@ const updateChart = () => {
         title: {
           display: true,
           text: "Đơn hàng hoàn thành theo ngày",
+          font: {
+          size: 15, // Further increased font size for the title
+        },
         },
         legend: {
           display: true,
