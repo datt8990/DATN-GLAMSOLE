@@ -308,40 +308,44 @@
 
             <div v-if="state.detailKhachHang">
               <div class="form-group">
-                <label style="color: black; font-size: 15px;" for="customer-name">Tên khách hàng <span class="required">*</span></label>
+                <label style="color: black; font-size: 15px;" for="customer-name">Tên khách hàng <span
+                    class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input style=" font-size: 15px;" :value="state.detailKhachHang.ten" type="text" id="customer-name" class="input-customer"
-                    placeholder="Tên khách hàng" readonly />
+                  <input style=" font-size: 15px;" :value="state.detailKhachHang.ten" type="text" id="customer-name"
+                    class="input-customer" placeholder="Tên khách hàng" readonly />
                 </div>
               </div>
 
               <div class="form-group">
-                <label   style="color: black; font-size: 15px;" for="phone">Số điện thoại <span class="required">*</span></label>
+                <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span
+                    class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input  style=" font-size: 15px;" :value="state.detailKhachHang.sdt" type="text" id="phone" placeholder="Số điện thoại"
-                    class="input-customer" readonly />
+                  <input style=" font-size: 15px;" :value="state.detailKhachHang.sdt" type="text" id="phone"
+                    placeholder="Số điện thoại" class="input-customer" readonly />
                 </div>
               </div>
             </div>
             <div v-else>
               <div class="form-group">
-                <label style="color: black; font-size: 15px;" >Tên khách hàng<span class="required">*</span></label>
+                <label style="color: black; font-size: 15px;">Tên khách hàng<span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input style=" font-size: 15px;" v-model="newCustomer.ten" type="text" id="customer-name" class="input-customer"
-                    placeholder="Tên khách hàng" />
+                  <input style=" font-size: 15px;" v-model="newCustomer.ten" type="text" id="customer-name"
+                    class="input-customer" placeholder="Tên khách hàng" />
                 </div>
               </div>
 
               <div class="form-group">
-                <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span class="required">*</span></label>
+                <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span
+                    class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input style=" font-size: 15px;" v-model="newCustomer.sdt" type="text" id="phone" class="input-customer"
-                    placeholder="Số điện thoại" />
+                  <input style=" font-size: 15px;" v-model="newCustomer.sdt" type="text" id="phone"
+                    class="input-customer" placeholder="Số điện thoại" />
                 </div>
               </div>
             </div>
             <div class="button-group-customer">
-              <button style=" font-size: 15px;" class="add-button" @click="showKhachHangModal = true">Chọn khách hàng</button>
+              <button style=" font-size: 15px;" class="add-button" @click="showKhachHangModal = true">Chọn khách
+                hàng</button>
               <button style=" font-size: 15px;" class="add-button" @click="addCustomer">Thêm khách hàng</button>
             </div>
           </div>
@@ -1033,24 +1037,26 @@ const newCustomer = reactive({
 const isFreeShipping = ref(false);
 
 
-watch(tienHang, (newValue) => {
-  if (isDeliveryEnabled.value && newValue > 5000000) {
-    isFreeShipping.value = true;
-    shippingFee.value = 0;
-    toast.success('Đơn hàng trên 5,000,000 VND, miễn phí vận chuyển!');
-  } else {
-    isFreeShipping.value = false;
-    // Recalculate shipping fee if delivery is enabled and below threshold
-    if (isDeliveryEnabled.value && provinceCode.value && districtCode.value && wardCode.value) {
-      calculateShippingFee();
-    }
-  }
+watch(tienHang, () => {
   calculateTotalAmounts();
+  if (isDeliveryEnabled.value && provinceCode.value && districtCode.value && wardCode.value) {
+    calculateShippingFee();
+  }
 });
 
 const calculateShippingFee = async () => {
   if (!isDeliveryEnabled.value || !idHDS.value || !provinceCode.value || !districtCode.value || !wardCode.value || tienHang.value <= 0) {
     shippingFee.value = 0;
+    isFreeShipping.value = false;
+    calculateTotalAmounts();
+    return;
+  }
+
+  // Kiểm tra miễn phí vận chuyển trước
+  if (tienHang.value > 5000000) {
+    isFreeShipping.value = true;
+    shippingFee.value = 0;
+    toast.success('Đơn hàng trên 5,000,000 VND, miễn phí vận chuyển!');
     calculateTotalAmounts();
     return;
   }
@@ -1065,6 +1071,7 @@ const calculateShippingFee = async () => {
 
     if (!availableServicesResponse.data || !availableServicesResponse.data.length) {
       shippingFee.value = 0;
+      isFreeShipping.value = false;
       toast.warn('Không tìm thấy dịch vụ vận chuyển phù hợp.');
       calculateTotalAmounts();
       return;
@@ -1090,10 +1097,12 @@ const calculateShippingFee = async () => {
 
     const response = await calculateFee(requestBody, GHN_API_TOKEN, GHN_SHOP_ID);
     shippingFee.value = response.data.total || 0;
+    isFreeShipping.value = false;
     calculateTotalAmounts();
   } catch (error) {
     console.error('Failed to calculate shipping fee:', error);
     shippingFee.value = 0;
+    isFreeShipping.value = false;
     toast.error('Không thể tính phí vận chuyển.');
     calculateTotalAmounts();
   }
@@ -1221,6 +1230,7 @@ const applyBestDiscount = () => {
 }
 
 const giaoHang = async (isDeliveryEnableds: boolean) => {
+  isDeliveryEnabled.value = isDeliveryEnableds;
 
   if (isDeliveryEnabled.value && state.detailKhachHang) {
     deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
@@ -1261,6 +1271,7 @@ const giaoHang = async (isDeliveryEnableds: boolean) => {
       }
     }
 
+    // Kiểm tra miễn phí vận chuyển và tính phí
     await calculateShippingFee();
 
     // Lưu thông tin giao hàng cục bộ
@@ -1289,6 +1300,7 @@ const giaoHang = async (isDeliveryEnableds: boolean) => {
     districtCode.value = null;
     wardCode.value = null;
     shippingFee.value = 0;
+    isFreeShipping.value = false;
     calculateTotalAmounts();
 
     // Lưu trạng thái không giao hàng
@@ -1305,11 +1317,9 @@ const giaoHang = async (isDeliveryEnableds: boolean) => {
       shippingFee: 0,
     };
   }
-  await suaGiaoHang(idHDS.value)
 
+  await suaGiaoHang(idHDS.value);
   await capNhatDanhSach();
-
-
 };
 
 const selectDiscount = (discount: PhieuGiamGiaResponse) => {
@@ -1488,6 +1498,9 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
       if (districtCode.value && !wards.value.length) {
         await fetchWards(districtCode.value);
       }
+
+      // Kiểm tra miễn phí vận chuyển
+      await calculateShippingFee();
     } else if (loaiHoaDon === 'GIAO_HANG') {
       const responseKH = await GeOneKhachHang(hd);
       state.detailKhachHang = responseKH.id ? responseKH : null;
@@ -1543,6 +1556,9 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
           wardCode: wardCode.value,
           shippingFee: shippingFee.value,
         };
+
+        // Kiểm tra miễn phí vận chuyển
+        await calculateShippingFee();
       }
     } else {
       const responseKH = await GeOneKhachHang(hd);
@@ -1552,74 +1568,16 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
         deliveryInfo.tenNguoiNhan = state.detailKhachHang.ten || '';
         deliveryInfo.sdtNguoiNhan = state.detailKhachHang.sdt || '';
         deliveryInfo.diaChiCuThe = state.detailKhachHang.diaChi || '';
-
-        const tinhThanhPhoId = state.detailKhachHang.tinh;
-        const quanHuyenId = state.detailKhachHang.huyen;
-        const phuongXaId = state.detailKhachHang.xa;
-
-        if (!provinces.value.length) {
-          await fetchProvinces();
-        }
-
-        if (tinhThanhPhoId) {
-          const selectedProvince = provinces.value.find(p => p.code === tinhThanhPhoId.toString());
-          if (selectedProvince) {
-            deliveryInfo.tinhThanhPho = selectedProvince.value;
-            provinceCode.value = parseInt(tinhThanhPhoId);
-            await fetchDistricts(provinceCode.value);
-          }
-        }
-
-        if (quanHuyenId && provinceCode.value) {
-          const selectedDistrict = districts.value.find(d => d.code === quanHuyenId.toString());
-          if (selectedDistrict) {
-            deliveryInfo.quanHuyen = selectedDistrict.value;
-            districtCode.value = parseInt(quanHuyenId);
-            await fetchWards(districtCode.value);
-          }
-        }
-
-        if (phuongXaId && districtCode.value) {
-          const selectedWard = wards.value.find(w => w.code === phuongXaId);
-          if (selectedWard) {
-            deliveryInfo.phuongXa = selectedWard.value;
-            wardCode.value = phuongXaId;
-          }
-        }
-
-        deliveryInfoByInvoice[hd] = {
-          tenNguoiNhan: deliveryInfo.tenNguoiNhan,
-          sdtNguoiNhan: deliveryInfo.sdtNguoiNhan,
-          diaChiCuThe: deliveryInfo.diaChiCuThe,
-          tinhThanhPho: deliveryInfo.tinhThanhPho,
-          quanHuyen: deliveryInfo.quanHuyen,
-          phuongXa: deliveryInfo.phuongXa,
-          provinceCode: provinceCode.value,
-          districtCode: districtCode.value,
-          wardCode: wardCode.value,
-          shippingFee: shippingFee.value,
-        };
       }
     }
 
     const response = await GetGioHang(hd);
     state.gioHang = response;
-
-
     state.currentPaymentMethod = '0';
-
-
     calculateTotalAmounts();
-    if (isDeliveryEnabled.value && provinceCode.value && districtCode.value && wardCode.value) {
-      await calculateShippingFee();
-    }
 
-    let totalPaid = 0;
-    state.phuongThuThanhToan.forEach((item) => {
-      totalPaid += item.tongTien;
-    });
-    tienKhachThanhToan.value = totalPaid;
-    tienThieu.value = (tongTien.value || 0) - tienKhachThanhToan.value;
+    // Cập nhật trạng thái thanh toán
+    await updatePaymentStatus();
   } catch (error) {
     console.error('Failed to switch invoice:', error);
     toast.error('Chuyển hóa đơn thất bại!');
@@ -1637,6 +1595,7 @@ const clickkActiveTab = async (id: number, hd: string, loaiHoaDon: string) => {
     districtCode.value = null;
     wardCode.value = null;
     shippingFee.value = 0;
+    isFreeShipping.value = false;
     calculateTotalAmounts();
   }
 };
@@ -1935,6 +1894,8 @@ watch(
 );
 
 const openProductSelectionModal = async () => {
+
+  console.log()
   if (!idHDS.value) {
     toast.error('Vui lòng tạo hoặc chọn hóa đơn trước khi chọn sản phẩm!')
     return
@@ -1945,47 +1906,64 @@ const openProductSelectionModal = async () => {
 
 // Hàm tạo hóa đơn
 async function createInvoice() {
-  // alert(idNV.userId)
   if (tabs.value.length >= 10) {
-    toast.warning('Chỉ được tạo tối đa 10 hóa đơn!', { autoClose: 3000 })
-    return
+    toast.warning('Chỉ được tạo tối đa 10 hóa đơn!', { autoClose: 3000 });
+    return;
   }
-  console.log(idNV.value)
-  try {
-    const formData = new FormData()
-    formData.append('idNV', idNV.userId)
-    const newInvoice = await getCreateHoaDon(formData)
-    tabs.value.push({
-      id: nextTabId++,
-      idHD: newInvoice.id,
-      products: [],
-      ma: newInvoice.ma,
-      soLuong: 0
-    })
-    activeTab.value = tabs.value[tabs.value.length - 1].id
-    idHDS.value = newInvoice.id
-    state.gioHang = []
-    state.detailKhachHang = null
-    resetDiscount()
-    calculateTotalAmounts()
 
-    // Clear delivery info for new invoice
-    isDeliveryEnabled.value = false
-    currentDeliveryInfo.value = null
-    Object.assign(deliveryInfo, { tenNguoiNhan: '', sdtNguoiNhan: '', diaChiGiaoHang: '', tinhThanhPho: undefined, quanHuyen: undefined, phuongXa: undefined, diaChiCuThe: '' });
-    shippingFee.value = 0;
+  try {
+    const formData = new FormData();
+    formData.append('idNV', idNV.userId);
+    const newInvoice = await getCreateHoaDon(formData);
+
+    // Thêm hóa đơn mới vào tabs
+    const newTabId = nextTabId++;
+    tabs.value.push({
+      id: newTabId,
+      idHD: newInvoice.id,
+      ma: newInvoice.ma,
+      soLuong: 0,
+      loaiHoaDon: newInvoice.loaiHoaDon || 'OFFLINE', // Mặc định là tại quầy nếu không có loaiHoaDon
+      products: [],
+    });
+    idHDS.value = newInvoice.data.id;
+    activeTab.value = newTabId;
+    loaiHD.value = newInvoice.loaiHoaDon || 'OFFLINE';
+
+    console.log(idHDS.value)
+    // Tự động knewInvoice.idích hoạt hóa đơn vừa tạo
+
+    // Reset trạng thái cho hóa đơn mới
+    state.gioHang = [];
+    state.detailKhachHang = null;
+    resetDiscount();
+    isDeliveryEnabled.value = false;
+    currentDeliveryInfo.value = null;
+    Object.assign(deliveryInfo, {
+      tenNguoiNhan: '',
+      sdtNguoiNhan: '',
+      diaChiCuThe: '',
+      tinhThanhPho: undefined,
+      quanHuyen: undefined,
+      phuongXa: undefined,
+    });
     provinceCode.value = null;
     districtCode.value = null;
     wardCode.value = null;
+    shippingFee.value = 0;
+    isFreeShipping.value = false;
+    state.currentPaymentMethod = '0'; // Reset về Tiền mặt
+    tienHang.value = 0;
+    tongTien.value = 0;
+    tienKhachThanhToan.value = 0;
+    tienThieu.value = 0;
 
-    // Gọi fetchDiscounts cho hóa đơn mới
-    await fetchDiscounts(idHDS.value)
-
-    await capNhatDanhSach()
-    toast.success('Tạo hóa đơn thành công!')
+    // Cập nhật danh sách và các thông tin liên quan
+    await clickkActiveTab(newTabId, newInvoice.data.id, newInvoice.data.loaiHoaDon || 'OFFLINE');
+    toast.success('Tạo hóa đơn thành công!');
   } catch (error) {
-    console.error('Failed to create invoice:', error)
-    toast.error('Tạo hóa đơn thất bại!')
+    console.error('Failed to create invoice:', error);
+    toast.error('Tạo hóa đơn thất bại!');
   }
 }
 
