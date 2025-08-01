@@ -27,7 +27,7 @@ import java.util.Optional;
 public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
 
     @Query(value = """
-    SELECT 
+   SELECT 
         ROW_NUMBER() OVER (ORDER BY sp.id DESC) AS stt,
         hdct.id as idHDCT,
         spct.id AS id,    

@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ADXoaSanPhamRequest {
 
-        private String idHD;
 
         private String idSP;
 
