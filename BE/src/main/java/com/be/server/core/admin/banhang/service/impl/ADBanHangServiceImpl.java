@@ -221,6 +221,34 @@ public class ADBanHangServiceImpl implements ADBanHangService {
     @Override
     public ResponseObject<?> ThemSoLuong(ADXoaSanPhamRequest adXoaSanPhamRequest) {
 
+        HoaDonChiTiet hoaDonChiTiet1 = adTaoHoaDonChiTietRepository.findById(adXoaSanPhamRequest.getIdHDCT()).get();
+
+        SanPhamChiTiet sanPham1 = adSanPhamRepository.findById(adXoaSanPhamRequest.getIdSP()).get();
+
+        double gia1 = hoaDonChiTiet1.getGia();
+        double gia2 = sanPham1.getGiaBan();
+        double epsilon = 0.0001;
+
+        if (Math.abs(gia1 - gia2) > epsilon) {
+
+//            HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
+//
+//            HoaDon hoaDon = adTaoHoaDonRepository.findById(adXoaSanPhamRequest.getIdHD()).get();
+//
+//            hoaDonChiTiet.setHoaDon(hoaDon);
+//
+//            hoaDonChiTiet.setSpct(sanPham1);
+//
+//            hoaDonChiTiet.setGia(sanPham1.getGiaBan());
+//
+//            hoaDonChiTiet.setSoLuong(1);
+//
+//            hoaDonChiTiet.setStatus(EntityStatus.ACTIVE);
+//
+//            adTaoHoaDonChiTietRepository.save(hoaDonChiTiet);
+
+            return new ResponseObject<>(null, HttpStatus.OK, "Sản phẩm này đang đc thay đổi giá từ " + (hoaDonChiTiet1.getGia()) + "đ thành " + sanPham1.getGiaBan());
+        }
 
         SanPhamChiTiet sanPham = adSanPhamRepository.findById(adXoaSanPhamRequest.getIdSP()).get();
 //
@@ -362,11 +390,11 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
             hoaDon.setSdt(id.getSdt());
 
-            if(id.getPhuongThucThanhToan().equals("0")) {
+            if (id.getPhuongThucThanhToan().equals("0")) {
                 hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT);
-            }else if(id.getPhuongThucThanhToan().equals("1")) {
+            } else if (id.getPhuongThucThanhToan().equals("1")) {
                 hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.CHUYEN_KHOAN);
-            }else {
+            } else {
                 hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT_CHUYEN_KHOAN);
             }
 
@@ -456,11 +484,11 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         hoaDon.setDiaChi(id.getDiaChi());
 
-        if(id.getPhuongThucThanhToan().equals("0")) {
+        if (id.getPhuongThucThanhToan().equals("0")) {
             hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT);
-        }else if(id.getPhuongThucThanhToan().equals("1")) {
+        } else if (id.getPhuongThucThanhToan().equals("1")) {
             hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.CHUYEN_KHOAN);
-        }else {
+        } else {
             hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT_CHUYEN_KHOAN);
         }
 

@@ -73,8 +73,10 @@
               </div>
               <div class="fw-semibold">
                 {{
-                  ((item.discountPrice < item.originalPrice ? item.discountPrice : item.originalPrice) * item.quantity) |
-                  localeString }}đ </div>
+                  ((item.discountPrice < item.originalPrice ? item.discountPrice : item.originalPrice) * item.quantity)
+                    .toLocaleString("vi-VN")
+                }}₫
+              </div>
             </li>
           </ul>
 
@@ -86,17 +88,22 @@
           <div class="border-top pt-3">
             <div class="d-flex justify-content-between mb-2">
               <span class="fw-semibold">Tạm tính:</span>
-              <span class="fw-semibold">{{ tongTien.toLocaleString() }}đ</span>
+              <span class="fw-semibold">{{ tongTien.toLocaleString("vi-VN") }}₫</span>
             </div>
 
             <div class="d-flex justify-content-between mb-2">
               <span class="fw-semibold">Phí vận chuyển:</span>
-              <span class="fw-semibold text-success">{{ phiShip.toLocaleString() }}đ</span>
+              <span class="fw-semibold text-success">{{ phiShip.toLocaleString("vi-VN") }}₫</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="fw-semibold">Giảm giá:</span>
+              <span class="fw-semibold text-success">{{ giamGia.toLocaleString("vi-VN") }}₫</span>
             </div>
 
             <div class="d-flex justify-content-between border-top pt-2 mt-2">
               <span class="fw-bold">Tổng cộng:</span>
-              <span class="fw-bold text-danger">{{ tongCong.toLocaleString() }}đ</span>
+              <span class="fw-bold text-danger">{{ tongCong.toLocaleString("vi-VN") }}₫</span>
             </div>
           </div>
         </div>
@@ -135,13 +142,10 @@ import {
   Ward,
   ShippingFeeRequest,
   GHNAvailableServiceRequest,
-} from "@/services/api/ghn.api"; // Adjust the import path to where your GHN API functions are defined
-
-import axios from "axios";
-import type KhachHang from "@/pages/admin/khachhang/KhachHang.vue";
+} from "@/services/api/ghn.api";
 import { localStorageAction } from "@/utils/storage";
-import { USER_INFO_STORAGE_KEY } from "@/constants/storageKey";
-import { getPGG, ThanhToan } from "@/services/api/permitall/thanhtoan/thanhtoan.api";
+import { USER_INFO_STORAGE_KEY, CHECKOUT_STORAGE_KEY } from "@/constants/storageKey";
+import { getPGG, ThanhToan, createCartDetail } from "@/services/api/permitall/thanhtoan/thanhtoan.api";
 
 const breadcrumbRoutes = [
   { name: "Trang chủ", path: "/" },
@@ -164,6 +168,8 @@ interface CartItem {
   height?: number;
   length?: number;
   width?: number;
+  idChiTietSanPham?: string; // Thêm để tương thích với giỏ hàng tạm
+  soLuongTrongKho?: number; // Thêm để kiểm tra tồn kho
 }
 
 const formRef = ref();
@@ -184,7 +190,7 @@ const GHN_TOKEN = "72f634c6-58a2-11f0-8a1e-1e10d8df3c04"; // Replace with your G
 const SHOP_ID = 5872469; // Replace with your GHN Shop ID
 const FROM_DISTRICT_ID = 3440; // Replace with your shop's district ID
 const FROM_WARD_CODE = "13010"; // Replace with your shop's ward code
-const idKH = localStorageAction.get(USER_INFO_STORAGE_KEY) || null
+const idKH = localStorageAction.get(USER_INFO_STORAGE_KEY) || null;
 
 // Reactive state for GHN data
 const provinces = ref<Province[]>([]);
@@ -232,8 +238,11 @@ const tongTien = computed(() =>
   listSanPham.value.reduce((sum, sp) => sum + getPrice(sp) * sp.quantity, 0)
 );
 
-const tongCong = computed(() => tongTien.value + phiShip.value - giamGia.value <= 0 ? 0 : tongTien.value + phiShip.value - giamGia.value);
-const tongTienTruocGiam = computed(() => tongTien.value + phiShip.value <= 0 ? 0 : tongTien.value + phiShip.value);
+const tongTienTruocGiam = computed(() => tongTien.value + phiShip.value);
+const tongCong = computed(() =>
+  Math.max(tongTien.value + phiShip.value - giamGia.value, 0)
+);
+
 // Validation rules
 const rules = {
   hoTen: [{ required: true, message: "Vui lòng nhập họ tên", trigger: "blur" }],
@@ -244,7 +253,7 @@ const rules = {
   diaChi: [{ required: true, message: "Nhập địa chỉ cụ thể", trigger: "blur" }],
 };
 
-// Fetch provinces on mount
+// Fetch provinces and load checkout items
 onMounted(async () => {
   try {
     loadingProvinces.value = true;
@@ -255,12 +264,15 @@ onMounted(async () => {
     loadingProvinces.value = false;
   }
 
-  const storedItems = localStorage.getItem("checkoutItems");
+  // Load checkout items from localStorage
+  const storedItems = localStorageAction.get(CHECKOUT_STORAGE_KEY);
   if (storedItems) {
-    listSanPham.value = JSON.parse(storedItems);
-    console.log("Dữ liệu sản phẩm đã nhận từ Local Storage:", listSanPham.value);
+    listSanPham.value = storedItems;
+    console.log("Dữ liệu sản phẩm từ CHECKOUT_STORAGE_KEY:", listSanPham.value);
   } else {
-    console.warn("Không tìm thấy dữ liệu sản phẩm trong Local Storage.");
+    console.warn("Không tìm thấy dữ liệu sản phẩm trong CHECKOUT_STORAGE_KEY.");
+    message.warning("Không có sản phẩm để thanh toán. Vui lòng quay lại giỏ hàng!");
+    router.push("/gio-hang");
   }
 });
 
@@ -341,7 +353,7 @@ const calculateShippingFee = async () => {
 
     const feeResponse = await calculateFee(feeRequest, GHN_TOKEN, SHOP_ID);
     phiShip.value = feeResponse.data.total;
-    message.success(`Phí vận chuyển: ${phiShip.value.toLocaleString()}đ`);
+    message.success(`Phí vận chuyển: ${phiShip.value.toLocaleString("vi-VN")}₫`);
   } catch (error) {
     message.error("Không thể tính phí vận chuyển!");
     phiShip.value = 30000;
@@ -354,72 +366,51 @@ watch(() => form.value.phuong, calculateShippingFee);
 // Apply discount
 const handleApplyDiscount = async () => {
   const ma = form.value.maGiamGia?.trim();
-
-
   if (!ma) {
     message.warning("⚠️ Vui lòng nhập mã giảm giá");
     return;
   }
 
-
   const feeRequest = {
-    idKH: idKH != null ? idKH.userId : "khách lẻ",
+    idKH: idKH?.userId || "khách lẻ",
     maPGG: ma,
     TongTien: tongTienTruocGiam.value,
   };
 
-  const found = await getPGG(feeRequest);
+  try {
+    const found = await getPGG(feeRequest);
+    const data = found.data;
 
-  const data = found.data
-
-  console.log(data)
-
-  const initialListSanPham = JSON.parse(JSON.stringify(listSanPham.value));
-  listSanPham.value = initialListSanPham;
-
-  if (!found) {
-    giamGia.value = 0;
-    message.error("❌ Mã giảm giá không hợp lệ!");
-    return;
-  }
-
-  if (found.message == "Phiếu giảm giá không tồn tại") {
-    message.warning(found.message);
-    return
-  }
-
-  if (found.message == "Phiếu giảm giá không áp dụng cho tài khoản này") {
-    message.warning(found.message);
-    return
-  }
-
-  if (found.message.startsWith("Đơn")) {
-    message.warning(found.message);
-    return
-  }
-
-
-  console.log(data.kieuGiam)
-  if (data.kieuGiam == false) {
-    giamGia.value = data.giaGiam;
-    message.success(`✅ Giảm ${data.giaGiam.toLocaleString()}đ cho đơn hàng!`);
-  } else if (data.kieuGiam == true) {
-
-    giamGia.value = (tongTienTruocGiam.value / data.phanTramGiam);
-
-    console.log(giamGia.value)
-
-    if (giamGia.value > data.dieuKien) {
-      giamGia.value = data.dieuKien
+    if (!found || found.message === "Phiếu giảm giá không tồn tại") {
+      giamGia.value = 0;
+      message.error("❌ Mã giảm giá không hợp lệ!");
+      return;
     }
 
-    message.success(`✅ Giảm ${giamGia.value.toLocaleString()}đ cho đơn hàng!`);
+    if (found.message === "Phiếu giảm giá không áp dụng cho tài khoản này") {
+      message.warning(found.message);
+      return;
+    }
+
+    if (found.message.startsWith("Đơn")) {
+      message.warning(found.message);
+      return;
+    }
+
+    if (data.kieuGiam === false) {
+      giamGia.value = data.giaGiam;
+      message.success(`✅ Giảm ${data.giaGiam.toLocaleString("vi-VN")}₫ cho đơn hàng!`);
+    } else if (data.kieuGiam === true) {
+      giamGia.value = Math.min((tongTienTruocGiam.value * data.phanTramGiam) / 100, data.dieuKien);
+      message.success(`✅ Giảm ${giamGia.value.toLocaleString("vi-VN")}₫ cho đơn hàng!`);
+    }
+  } catch (error) {
+    console.error("Lỗi khi áp dụng mã giảm giá:", error);
+    message.error("❌ Có lỗi khi áp dụng mã giảm giá!");
   }
 };
 
 const router = useRouter();
-// ... (your existing imports and component setup)
-
 
 const handleCheckout = async () => {
   try {
@@ -429,8 +420,6 @@ const handleCheckout = async () => {
     const selectedProvince = provinces.value.find((p) => p.ProvinceID === form.value.tinh);
     const selectedDistrict = districts.value.find((d) => d.DistrictID === form.value.huyen);
     const selectedWard = wards.value.find((w) => w.WardCode === form.value.phuong);
-
-    console.log(idKH);
 
     const ListSP = listSanPham.value.map(item => ({
       id: item.idSP.toString(),
@@ -449,28 +438,28 @@ const handleCheckout = async () => {
       giamGia: giamGia.value,
       tongCong: tongCong.value,
       sanPham: ListSP,
-      KhachHang: idKH != null ? idKH.userId : "khách lẻ",
+      KhachHang: idKH?.userId || "khách lẻ",
     };
+
     console.log("Dữ liệu gửi đi:", JSON.stringify(orderData, null, 2));
+
+    const response = await ThanhToan(orderData);
+
+    if (response.message && response.message.includes("số lượng sản phẩm không đủ")) {
+      message.error(response.message);
+      return;
+    }
+
     if (form.value.thanhToan === "VNPAY") {
-
-      // 1. Call your backend API to create the VNPAY payment
-      const response = await ThanhToan(orderData); // Assuming ThanhToan now returns the VNPAY URL
-
-      // if (response.data == null) {
-      //   message.error("số lượng sản phẩm không đủ")
-      // }
-
       if (response && response.paymentUrl) {
-        // 2. Redirect the user to the VNPAY payment URL
         window.location.href = response.paymentUrl;
+        localStorageAction.remove(CHECKOUT_STORAGE_KEY); // Xóa ngay sau khi chuyển hướng VNPAY
       } else {
-        message.error("❌ Không thể tạo liên kết thanh toán VNPAY. Vui lòng thử lại!"); 
+        message.error("❌ Không thể tạo liên kết thanh toán VNPAY. Vui lòng thử lại!");
       }
     } else {
-      // Handle COD (Cash on Delivery)
-      await ThanhToan(orderData); // This call would be for saving COD order
       message.success("✅ Đặt hàng thành công!");
+      localStorageAction.remove(CHECKOUT_STORAGE_KEY); // Xóa sau khi COD thành công
       router.push({ name: "thanh-toan-thanh-cong" });
     }
   } catch (err) {
