@@ -314,49 +314,85 @@ function getCartData() {
 
 const idUser = localStorageAction.get(USER_INFO_STORAGE_KEY);
 
+const CART_STORAGE_KEY = "temp_cart";
+
 async function addToCart() {
   if (errValidate.value.cart) {
-    alert(errValidate.value.cart);
+    toast.error(errValidate.value.cart);
     return;
   }
-
-  console.log("userid", idUser.userId);
 
   const cartItem = getCartData();
 
-  console.log(cartItem)
-  // **Added checks for required data and user login**
-  if (!idUser.userId) {
-    alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
-    return;
-  }
+  // Kiểm tra dữ liệu cần thiết
   if (!cartItem.idChiTietSanPham || !cartItem.giaBan || !cartItem.soLuongMua) {
-    alert("Không thể thêm sản phẩm vào giỏ hàng. Thiếu thông tin sản phẩm.");
+    toast.error("Không thể thêm sản phẩm vào giỏ hàng. Thiếu thông tin sản phẩm.");
     return;
   }
 
-  try {
-    // **Construct the data object expected by createCartDetail**
-    const dataToSend = {
-      idKhachHang: idUser.userId,
-      idSPCT: cartItem.idChiTietSanPham,
-      price: cartItem.giaBan.toString(), // Convert to string as per requestCartDetail interface
-      quantity: cartItem.soLuongMua.toString(), // Convert to string as per requestCartDetail interface
-    };
+  // Kiểm tra trạng thái đăng nhập
+  const idUser = localStorageAction.get(USER_INFO_STORAGE_KEY);
 
-    console.log("Dữ liệu gửi đến API createCartDetail:", dataToSend);
+  if (idUser?.userId) {
+    // Người dùng đã đăng nhập -> Gọi API để thêm vào giỏ hàng
+    try {
+      const dataToSend = {
+        idKhachHang: idUser.userId,
+        idSPCT: cartItem.idChiTietSanPham,
+        price: cartItem.giaBan.toString(),
+        quantity: cartItem.soLuongMua.toString(),
+      };
 
-    const res = await createCartDetail(dataToSend);
+      console.log("Dữ liệu gửi đến API createCartDetail:", dataToSend);
 
-    if(res.message == 'Số lượng sản phẩm trong giỏ hàng đã vượt quá số lượng sản phẩm'){
-         toast.warning(res.message);
-         return
+      const res = await createCartDetail(dataToSend);
+
+      if (res.message === "Số lượng sản phẩm trong giỏ hàng đã vượt quá số lượng sản phẩm") {
+        toast.warning(res.message);
+        return;
+      }
+
+      toast.success(res.message);
+    } catch (error: any) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      toast.error("Có lỗi xảy ra khi thêm vào giỏ hàng.");
     }
+  } else {
+    // Người dùng chưa đăng nhập -> Lưu vào localStorage
+    try {
+      // Lấy giỏ hàng tạm từ localStorage (nếu có)
+      let tempCart = localStorageAction.get(CART_STORAGE_KEY) || [];
 
-    toast.success(res.message);
-  } catch (error: any) {
-    // Added type 'any' to 'error' for better TypeScript handling
-    console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      // Đảm bảo tempCart là mảng
+      if (!Array.isArray(tempCart)) {
+        tempCart = [];
+      }
+
+      // Kiểm tra xem sản phẩm đã có trong giỏ hàng tạm chưa
+      const existingItemIndex = tempCart.findIndex(
+        (item: any) => item.idChiTietSanPham === cartItem.idChiTietSanPham
+      );
+
+      if (existingItemIndex !== -1) {
+        // Nếu sản phẩm đã có, cập nhật số lượng
+        tempCart[existingItemIndex].soLuongMua += cartItem.soLuongMua;
+        // Kiểm tra số lượng tồn kho
+        if (tempCart[existingItemIndex].soLuongMua > cartItem.soLuongTrongKho) {
+          toast.warning("Số lượng vượt quá tồn kho!");
+          return;
+        }
+      } else {
+        // Nếu sản phẩm chưa có, thêm mới
+        tempCart.push(cartItem);
+      }
+
+      // Lưu lại giỏ hàng tạm vào localStorage
+      localStorageAction.set(CART_STORAGE_KEY, tempCart);
+      toast.success("Đã thêm sản phẩm vào giỏ hàng!");
+    } catch (error) {
+      console.error("Lỗi khi lưu giỏ hàng tạm:", error);
+      toast.error("Có lỗi xảy ra khi thêm vào giỏ hàng tạm.");
+    }
   }
 }
 

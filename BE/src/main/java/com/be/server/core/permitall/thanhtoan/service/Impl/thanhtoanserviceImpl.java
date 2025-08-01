@@ -177,18 +177,18 @@ public class thanhtoanserviceImpl {
                 adSanPhamRepository.save(sanPhamChiTiet);
                 System.out.println("2");
                 System.out.println(order.getKhachHang());
-                KhachHang khachHang1  =  adKhachHangRepository.findById(order.getKhachHang()).get();
-                System.out.println(khachHang1);
-                System.out.println("3");
 
-                String idCart = cartRepository.findByIdKH(khachHang1.getId());
-                Cart cart = cartRepository.findById(idCart).get();
-                System.out.println("4");
-                String  idGHCT = pmChiTietGioHangRepository.getIDGioHang(sanPhamChiTiet.getId() , cart.getId());
-                System.out.println("5");
-                CartDetail cartDetail = pmChiTietGioHangRepository.findById(idGHCT).get();
-                System.out.println("6");
-                pmChiTietGioHangRepository.deleteById(cartDetail.getId());
+
+                if (!order.getKhachHang().equals("khách lẻ")) {
+                    System.out.println("đã chạy đênns hóa dơn chi tiết 2");
+                    KhachHang khachHang1  =  adKhachHangRepository.findById(order.getKhachHang()).get();
+                    String idCart = cartRepository.findByIdKH(khachHang1.getId());
+                    Cart cart = cartRepository.findById(idCart).get();
+                    String  idGHCT = pmChiTietGioHangRepository.getIDGioHang(sanPhamChiTiet.getId() , cart.getId());
+                    CartDetail cartDetail = pmChiTietGioHangRepository.findById(idGHCT).get();
+                    pmChiTietGioHangRepository.deleteById(cartDetail.getId());
+                }
+
                 System.out.println("đã chạy đênns hóa dơn chi tiết 2");
             }
 

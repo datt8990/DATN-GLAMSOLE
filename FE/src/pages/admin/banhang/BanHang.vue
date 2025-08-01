@@ -1763,7 +1763,13 @@ const increaseQuantity = async (idHDCT: any, idSPS: any) => {
     const formData = new FormData();
     formData.append('idSP', idSPS);
     formData.append('idHDCT', idHDCT);
+    formData.append('idHD', idHDS.value);
     const res = await themSL(formData);
+
+    if (res.message.includes("thay đổi giá từ")) {
+      toast.warning(res.message);
+      return;
+    }
 
     if (res.message === 'Số lượng sản phẩm thêm vào nhiều hơn số lượng trong kho') {
       toast.error(res.message);

@@ -15,6 +15,6 @@ public class ADXoaSanPhamRequest {
         private String idSP;
 
         private String idHDCT;
-
+        private String idHD;
 
 }
