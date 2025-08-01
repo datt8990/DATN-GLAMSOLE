@@ -223,11 +223,11 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
 
         SanPhamChiTiet sanPham = adSanPhamRepository.findById(adXoaSanPhamRequest.getIdSP()).get();
+//
+//
+//        String idHDCT = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(adXoaSanPhamRequest);
 
-
-        String idHDCT = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(adXoaSanPhamRequest);
-
-        HoaDonChiTiet hoaDonChiTiet = adTaoHoaDonChiTietRepository.findById(idHDCT).get();
+        HoaDonChiTiet hoaDonChiTiet = adTaoHoaDonChiTietRepository.findById(adXoaSanPhamRequest.getIdHDCT()).get();
 
         hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + 1);
 
@@ -243,10 +243,10 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
     @Override
     public void xoaSoLuong(ADXoaSanPhamRequest adXoaSanPhamRequest) {
+//
+//        String idHDCT = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(adXoaSanPhamRequest);
 
-        String idHDCT = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(adXoaSanPhamRequest);
-
-        HoaDonChiTiet hoaDonChiTiet = adTaoHoaDonChiTietRepository.findById(idHDCT).get();
+        HoaDonChiTiet hoaDonChiTiet = adTaoHoaDonChiTietRepository.findById(adXoaSanPhamRequest.getIdHDCT()).get();
 
         hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() - 1);
 
