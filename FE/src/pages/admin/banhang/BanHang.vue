@@ -2013,13 +2013,13 @@ async function createInvoice() {
     const formData = new FormData();
     formData.append('idNV', idNV.userId);
     const newInvoice = await getCreateHoaDon(formData);
-
+    console.log("hóa đơn mới",newInvoice)
     // Thêm hóa đơn mới vào tabs
     const newTabId = nextTabId++;
     tabs.value.push({
       id: newTabId,
-      idHD: newInvoice.id,
-      ma: newInvoice.ma,
+      idHD: newInvoice.data.id,
+      ma: newInvoice.data.ma,
       soLuong: 0,
       loaiHoaDon: newInvoice.loaiHoaDon || 'OFFLINE', // Mặc định là tại quầy nếu không có loaiHoaDon
       products: [],
