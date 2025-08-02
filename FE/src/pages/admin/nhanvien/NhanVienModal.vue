@@ -8,7 +8,8 @@
     </div>
     <DivCustom label="Thêm nhân viên" customClasses="mt-5">
       <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-        <a-button style=" margin-left: 900px; color: white; background-color: #54bddb; width: 150px;" @click="openQrModal">Quét
+        <a-button style=" margin-left: 900px; color: white; background-color: #54bddb; width: 150px;" @click="openQrModal">   <QrcodeOutlined
+           /> Quét
           QR</a-button>
         <a-row gutter={16}>
 
@@ -139,6 +140,7 @@ import axios from 'axios';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useRoute, useRouter } from 'vue-router';
 import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
+import { QrcodeOutlined } from '@ant-design/icons-vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -541,6 +543,30 @@ const closeModal = () => {
   border-radius: 50%;
 }
 
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important; /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; /* Đổ bóng màu xanh đậm */
+}
+
+/* Style cho a-input-number khi hover, focus, và focused */
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Style cho a-date-picker khi hover, focus, và focused */
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused), /* Khi DatePicker đã mở và focus vào */
+:deep(.ant-picker-focused .ant-picker-input > input), /* Đảm bảo input bên trong cũng bị ảnh hưởng */
+:deep(.ant-picker:focus-within) /* Dùng cho các component phức tạp có nhiều phần tử con */
+{
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
 
 a-image .avatar-upload {
   /* width:  300px;

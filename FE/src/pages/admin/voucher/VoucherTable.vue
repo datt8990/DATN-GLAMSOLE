@@ -6,15 +6,15 @@
             </div>
 
             <div>
-                <a-tooltip title="Thêm chất liệu">
+                <a-tooltip title="Thêm phiếu giảm giá">
                     <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
                         class="d-flex justify-content-center align-items-center px-4">
-                        <PlusCircleOutlined /> Thêm mới chất liệu
+                        <PlusCircleOutlined /> Thêm mới phiếu giảm giá
                     </a-button>
                 </a-tooltip>
             </div>
         </div>
-        <div class="min-h-[300px] ">
+        <div class="min-h-[300px]">
             <a-table :columns="columns" :data-source="products" :pagination="{
                 current: paginationParams.page,
                 pageSize: paginationParams.size,
@@ -29,25 +29,16 @@
                         </a-tag>
                     </template>
 
-          
-
                     <template v-if="column.key === 'phanTramGiam'">
-
-
-                        {{ record.kieuGiam == true ? record.phanTramGiam + '%' : formatCurrencyVND(record.phanTramGiam)
-                        }}
-
-
+                        {{ record.kieuGiam == true ? record.phanTramGiam + '%' : formatCurrencyVND(record.phanTramGiam) }}
                     </template>
-
-             
 
                     <div v-if="column.key === 'stt'">
                         {{ products.indexOf(record) + 1 }}
                     </div>
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
-                            <a-tooltip title="Chỉnh sửa sản phẩm">
+                            <a-tooltip title="Chỉnh sửa phiếu giảm giá">
                                 <a-button style="background-color: #54bddb;" type="primary"
                                     @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
@@ -56,18 +47,13 @@
                             </a-tooltip>
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #54bddb;" type="primary"
+                                <a-button style="background-color: #9b6dc7;" type="primary"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <RedoOutlined />
                                 </a-button>
                             </a-popconfirm>
                         </div>
                     </template>
-                    <!-- <template v-if="column.key === 'operation'">
-                        <div class="flex gap-1 justify-center">
-
-                        </div>
-                    </template> -->
                 </template>
             </a-table>
         </div>
@@ -75,15 +61,13 @@
 </template>
 
 <script setup lang="ts">
-//   import DivCustom from '@/components/custom/Div/DivCustom.vue'
 import DivCustom from '@/components/custom/Div/DivCustomTable.vue'
 import { EditOutlined, PlusCircleOutlined, RedoOutlined } from '@ant-design/icons-vue'
 import type { TableColumnsType } from 'ant-design-vue'
-import { defineEmits, defineProps, h, reactive } from 'vue'
+import { defineEmits, defineProps } from 'vue'
 import { modifyStatusSize } from '@/services/api/admin/voucher.api'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
-import type { KhachHangResponse } from '@/services/api/admin/khachhang.api'
 
 defineProps<{
     paginationParams: { page: number; size: number }
@@ -99,12 +83,39 @@ const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
     { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 100, align: 'center' },
     { title: 'Tên', key: 'ten', dataIndex: 'ten', width: 100, align: 'center' },
-    { title: 'điều kiện giảm giá', key: 'dieuKien', dataIndex: 'dieuKien', width: 100, align: 'center', customRender: ({ text }) => formatCurrencyVND(text) },
-    { title: 'giá trị giảm giá', key: 'phanTramGiam', dataIndex: 'phanTramGiam', width: 100, align: 'center' },
-    { title: 'số lượng', key: 'soLuongPhieu', dataIndex: 'soLuongPhieu', width: 100, align: 'center' },
-    { title: 'Ngày Bắt Đầu', key: 'ngayBatDau', dataIndex: 'ngayBatDau', width: 100, align: 'center' },
-    { title: 'Ngày Kết Thúc', key: 'ngayKetThuc', dataIndex: 'ngayKetThuc', width: 100, align: 'center' },
-    { title: 'trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
+    { 
+        title: 'Điều kiện giảm giá', 
+        key: 'dieuKien', 
+        dataIndex: 'dieuKien', 
+        width: 100, 
+        align: 'center', 
+        customRender: ({ text }) => formatCurrencyVND(text) 
+    },
+    { 
+        title: 'Giá trị giảm giá', 
+        key: 'phanTramGiam', 
+        dataIndex: 'phanTramGiam', 
+        width: 100, 
+        align: 'center' 
+    },
+    { title: 'Số lượng', key: 'soLuongPhieu', dataIndex: 'soLuongPhieu', width: 100, align: 'center' },
+    { 
+        title: 'Ngày bắt đầu', 
+        key: 'ngayBatDau', 
+        dataIndex: 'ngayBatDau', 
+        width: 100, 
+        align: 'center',
+        customRender: ({ text }) => formatDate(text)
+    },
+    { 
+        title: 'Ngày kết thúc', 
+        key: 'ngayKetThuc', 
+        dataIndex: 'ngayKetThuc', 
+        width: 100, 
+        align: 'center',
+        customRender: ({ text }) => formatDate(text)
+    },
+    { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',
         key: 'operation',
@@ -123,39 +134,43 @@ const handleAddClick = () => {
     });
 }
 
-
 const formatCurrencyVND = (amount: number) => {
     if (typeof amount !== 'number') {
-        return amount; // Trả về nguyên bản nếu không phải số
+        return amount;
     }
     return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
-        minimumFractionDigits: 0, // Không hiển thị số thập phân
-        maximumFractionDigits: 0, // Không hiển thị số thập phân
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
     }).format(amount);
 };
+
+const formatDate = (date: string | Date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+};
+
 const handleChangeStatusClick = async (id: string) => {
     try {
         const res = await modifyStatusSize(id);
         emit('changeStatus');
-
         toast.success(res.message);
-
     } catch (error) {
         console.log(error);
-
         if (error?.response?.data?.message) {
             toast.error(error?.response?.data?.message);
         }
     }
-
 }
 
 const handleViewClick = (id: string) => {
-
     router.push({
-
         name: 'them-phieu-giam-gia-admin',
         query: { id: id }
     });

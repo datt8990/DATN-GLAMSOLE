@@ -616,6 +616,31 @@ a-image .avatar-upload {
   gap: 8px;
 }
 
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important; /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; /* Đổ bóng màu xanh đậm */
+}
+
+/* Style cho a-input-number khi hover, focus, và focused */
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Style cho a-date-picker khi hover, focus, và focused */
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused), /* Khi DatePicker đã mở và focus vào */
+:deep(.ant-picker-focused .ant-picker-input > input), /* Đảm bảo input bên trong cũng bị ảnh hưởng */
+:deep(.ant-picker:focus-within) /* Dùng cho các component phức tạp có nhiều phần tử con */
+{
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
 }
