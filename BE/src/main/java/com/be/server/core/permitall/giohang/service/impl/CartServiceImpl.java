@@ -77,13 +77,15 @@ public class CartServiceImpl implements CartService {
         } else {
             newCart = cart.get();
         }
+        System.out.println( "1");
 
         SanPhamChiTiet sanPhamChiTiet = findBySPCT(req.getIdSPCT());
-
+        System.out.println( "2");
         if (sanPhamChiTiet.getSoLuong() < Integer.valueOf(req.getQuantity())) {
             return new ResponseObject<>().success("Số lượng sản phẩm không đủ");
         }
-
+        System.out.println( "3");
+        System.out.println(cartRepository.checkChungSp(newCart.getId(), sanPhamChiTiet.getId()));
         if(cartRepository.checkChungSp(newCart.getId(), sanPhamChiTiet.getId()) == null){
             CartDetail cartItems = new CartDetail();
             cartItems.setPrice(Double.parseDouble(req.getPrice()));
@@ -98,11 +100,12 @@ public class CartServiceImpl implements CartService {
                 log.info("Đã chạy vào đấy");
                 log.error(e.toString());
             }
-
+            System.out.println( "4");
             return new ResponseObject<>().success("Thêm thành công");
         }else {
 
-            String idCD = cartDetailRepository.getCart(newCart.getId());
+            String idCD = cartDetailRepository.getCart(newCart.getId(),sanPhamChiTiet.getId());
+            System.out.println("idCD"+idCD);
             CartDetail cartItems = cartDetailRepository.findById(idCD).get();
             cartItems.setPrice(cartItems.getPrice() + Integer.parseInt(req.getPrice()));
             cartItems.setQuantity(cartItems.getQuantity() + Integer.parseInt(req.getQuantity()));
@@ -119,7 +122,7 @@ public class CartServiceImpl implements CartService {
                 log.info("Đã chạy vào đấy");
                 log.error(e.toString());
             }
-
+            System.out.println( "4");
             return new ResponseObject<>().success("Thêm thành công");
 
         }

@@ -1,7 +1,6 @@
 <template>
   <div class="jp-top-banner w-100">
-    <img src="https://bizweb.dktcdn.net/100/347/092/themes/708609/assets/banner.jpg?1753792346461"
-      alt="Banner quảng cáo" class="jp-top-banner-img" />
+    <img src="https://bizweb.dktcdn.net/100/347/092/themes/708609/assets/banner.jpg?1753792346461" alt="Banner quảng cáo" class="jp-top-banner-img" />
   </div>
 
   <header class="jp-header">
@@ -13,84 +12,46 @@
       </button>
       <!-- Logo -->
       <a href="/" class="d-flex align-items-center jp-logo-area ps-4" style="min-width:100px;">
-        <img src="/images/logo.jpg" alt="Logo" class="jp-logo-img me-3"
-          style="height:48px;width:48px;object-fit:cover;">
+        <img src="/images/logo.jpg" alt="Logo" class="jp-logo-img me-3" style="height:48px;width:48px;object-fit:cover;">
         <div class="position-relative d-none d-md-inline-block" style="display: inline-block;">
-          <span class="fw-bold text-uppercase"
-            style="font-size:1.7rem; letter-spacing:0.04em; color:#D32F2F; text-shadow: 1px 1px 6px #ccc; display:inline-block; padding-bottom:10px;">
+          <span class="fw-bold text-uppercase" style="font-size:1.7rem; letter-spacing:0.04em; color:#D32F2F; text-shadow: 1px 1px 6px #ccc; display:inline-block; padding-bottom:10px;">
             GLAME SOLE
-            <!-- Gạch đỏ tuyệt đối dưới chữ, căn đều theo text -->
-            <span style="
-        position:absolute;
-        left:0; 
-        right:0; 
-        bottom:0;
-        height:5px;
-        background:#D32F2F;
-        border-radius:3px;
-        width:100%;
-        display:block;
-        content:'';
-      "></span>
+            <span style="position:absolute; left:0; right:0; bottom:0; height:5px; background:#D32F2F; border-radius:3px; width:100%; display:block; content:'';"></span>
           </span>
         </div>
       </a>
-
-
-
 
       <!-- Nút tìm kiếm chỉ hiển thị trên mobile -->
       <button class="jp-icon-round d-lg-none" @click="showMobileSearch = !showMobileSearch">
         <SearchOutlined />
       </button>
       <!-- Search Desktop với màu #EA2F38 -->
-      <form class="d-none d-lg-flex align-items-center flex-grow-1" @submit.prevent="onSearch"
-        style="max-width:600px; width:100%;">
+      <form class="d-none d-lg-flex align-items-center flex-grow-1" @submit.prevent="onSearch" style="max-width:600px; width:100%;">
         <div class="input-group w-100">
-          <input type="text" class="form-control" placeholder="Tìm kiếm..." v-model="keyword"
-            style="height:44px; font-size:1.08rem; border-radius:24px 0 0 24px; outline:none; box-shadow:none; border:1.5px solid #EA2F38;"
-            @focus="e => { e.target.style.outline = 'none'; e.target.style.boxShadow = 'none'; }" />
-          <button class="d-flex align-items-center justify-content-center" type="submit"
-            style="background:#EA2F38; border:none; border-radius:0 24px 24px 0; width:48px; height:44px; outline:none; box-shadow:none;"
-            @focus="e => { e.target.style.outline = 'none'; e.target.style.boxShadow = 'none'; }">
+          <input type="text" class="form-control" placeholder="Tìm kiếm..." v-model="keyword" style="height:44px; font-size:1.08rem; border-radius:24px 0 0 24px; outline:none; box-shadow:none; border:1.5px solid #EA2F38;" @focus="e => { e.target.style.outline = 'none'; e.target.style.boxShadow = 'none'; }" />
+          <button class="d-flex align-items-center justify-content-center" type="submit" style="background:#EA2F38; border:none; border-radius:0 24px 24px 0; width:48px; height:44px; outline:none; box-shadow:none;" @focus="e => { e.target.style.outline = 'none'; e.target.style.boxShadow = 'none'; }">
             <SearchOutlined style="font-size:1.27rem; color:#fff;" />
           </button>
         </div>
       </form>
 
-
       <!-- Hotline + ICONS -->
       <div class="jp-top-right">
-        <div class="d-none d-lg-flex align-items-center bg-white border rounded-pill ps-3"
-          style="border-color:#EA2F38; gap:12px; min-width:0;">
+        <div class="d-none d-lg-flex align-items-center bg-white border rounded-pill ps-3" style="border-color:#EA2F38; gap:12px; min-width:0;">
           <div class="d-flex flex-column justify-content-center align-items-center" style="line-height:1.18;">
-            <span style="color:#EA2F38; font-size:1rem; font-weight:500; letter-spacing:0.06em;">
-              Tư vấn bán hàng
-            </span>
-            <span style="font-size:1.11rem; color:#333; margin-top:2px; letter-spacing:0.03em; font-weight:600;">
-              Gọi ngay 0366994511
-            </span>
-
+            <span style="color:#EA2F38; font-size:1rem; font-weight:500; letter-spacing:0.06em;">Tư vấn bán hàng</span>
+            <span style="font-size:1.11rem; color:#333; margin-top:2px; letter-spacing:0.03em; font-weight:600;">Gọi ngay 0366994511</span>
           </div>
-
-
-          <button class="rounded-circle d-flex align-items-center justify-content-center p-0 ms-2"
-            style="width:44px; height:44px; background:#EA2F38; border:none;" @click="callHotline"
-            aria-label="Gọi điện">
+          <button class="rounded-circle d-flex align-items-center justify-content-center p-0 ms-2" style="width:44px; height:44px; background:#EA2F38; border:none;" @click="callHotline" aria-label="Gọi điện">
             <PhoneOutlined style="font-size:1.22rem; color:#fff;" />
           </button>
         </div>
 
         <!-- Account dropdown -->
         <div class="jp-account-wrap" ref="accountRef">
-          <button class="border rounded-circle d-flex align-items-center justify-content-center p-0 ms-2"
-            style="width:44px; height:44px; background:#EA2F38; border-color:#EA2F38;" @click="toggleDropdown"
-            :aria-expanded="showDropdown">
+          <button class="border rounded-circle d-flex align-items-center justify-content-center p-0 ms-2" style="width:44px; height:44px; background:#EA2F38; border-color:#EA2F38;" @click="toggleDropdown" :aria-expanded="showDropdown">
             <UserOutlined style="font-size:1.5rem; color:#fff;" />
           </button>
-
-
-          <!-- Dropdown giữ nguyên, không có màu đỏ -->
           <transition name="fade">
             <div v-if="showDropdown" class="jp-account-dropdown">
               <template v-if="isLogin">
@@ -112,32 +73,13 @@
             </div>
           </transition>
         </div>
-        <button class="rounded-circle d-flex align-items-center justify-content-center position-relative p-0 ms-2"
-          style="width:44px; height:44px; background:#EA2F38; border:none;" @click="goToCart" aria-label="Giỏ hàng">
+        <button class="rounded-circle d-flex align-items-center justify-content-center position-relative p-0 ms-2" style="width:44px; height:44px; background:#EA2F38; border:none;" @click="goToCart" aria-label="Giỏ hàng">
           <ShoppingCartOutlined style="font-size:1.28rem; color:#fff;" />
-          <span v-if="cartItemCount > 0" class="position-absolute badge rounded-pill shadow" style="
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size:0.78rem;
-      font-weight:600;
-      min-width:20px;
-      height:20px;
-      padding:0 5px;
-      background:#e53935;
-      color:#fff;
-      border:2px solid #e53935;
-      right: -9px;
-      top: -8px;
-      box-shadow:0 2px 8px #e539354d;
-      z-index:1;
-    ">
+          <span v-if="cartItemCount > 0" class="position-absolute badge rounded-pill shadow" style="display: flex; align-items: center; justify-content: center; font-size:0.78rem; font-weight:600; min-width:20px; height:20px; padding:0 5px; background:#e53935; color:#fff; border:2px solid #e53935; right: -9px; top: -8px; box-shadow:0 2px 8px #e539354d; z-index:1;">
             {{ cartItemCount }}
           </span>
         </button>
-
       </div>
-
     </div>
 
     <!-- Search mobile -->
@@ -156,20 +98,13 @@
       <ul class="jp-menu-list">
         <!-- Trang chủ fix cứng, luôn luôn ở đầu -->
         <li class="jp-menu-item" key="menu-trang-chu">
-          <a href="/" class="jp-menu-link">
-            TRANG CHỦ
-          </a>
+          <a href="/" class="jp-menu-link">TRANG CHỦ</a>
         </li>
         <!-- Các mục thương hiệu duyệt bình thường -->
         <li v-for="item in menuItems" :key="item.id" class="jp-menu-item">
-          <a href="#" class="jp-menu-link" @click.prevent="onMenuClick(item.id)">
-            {{ item.ten }}
-          </a>
+          <a href="#" class="jp-menu-link" @click.prevent="onMenuClick(item.id)">{{ item.ten }}</a>
         </li>
       </ul>
-
-
-
     </nav>
 
     <!-- SIDEMENU MOBILE -->
@@ -189,7 +124,6 @@
                 <div class="jp-account-name">{{ userLogin.fullName }}</div>
                 <div class="jp-account-email">{{ userLogin.email }}</div>
               </div>
-
             </div>
           </template>
           <button class="jp-close-btn" @click="closeSideMenu">✕</button>
@@ -197,38 +131,65 @@
         <ul class="jp-side-menu-list">
           <!-- Trang chủ fix cứng trên đầu -->
           <li class="jp-side-menu-item" key="side-menu-trang-chu">
-            <a href="/" class="jp-side-menu-link">
-              TRANG CHỦ
-            </a>
+            <a href="/" class="jp-side-menu-link">TRANG CHỦ</a>
           </li>
           <!-- Duyệt các thương hiệu khác -->
           <li v-for="item in menuItems" :key="item.id" class="jp-side-menu-item">
-            <a href="#" class="jp-side-menu-link" @click.prevent="() => { onMenuClick(item.id); closeSideMenu(); }">
-              {{ item.ten }}
-            </a>
+            <a href="#" class="jp-side-menu-link" @click.prevent="() => { onMenuClick(item.id); closeSideMenu(); }">{{ item.ten }}</a>
           </li>
         </ul>
-
       </aside>
     </transition>
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import {
-  SearchOutlined,
-  ShoppingCartOutlined,
-  UserOutlined,
-  PhoneOutlined,
-  DownOutlined,
-} from '@ant-design/icons-vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
+import { SearchOutlined, ShoppingCartOutlined, UserOutlined, PhoneOutlined } from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { router } from '@/routes/router'
 import { useRoute } from 'vue-router'
 import { GetThuongHieus } from '@/services/api/admin/thuonghieu.api'
+import { localStorageAction } from '@/utils/storage'
+import { USER_INFO_STORAGE_KEY, CART_STORAGE_KEY } from '@/constants/storageKey'
+import { getAllCart, type requestCart } from '@/services/api/permitall/cart/cart'
+import { toast } from 'vue3-toastify'
+
+// Hàm gửi sự kiện tùy chỉnh khi giỏ hàng thay đổi
+const dispatchCartUpdate = () => {
+  window.dispatchEvent(new Event('cartUpdated'))
+}
+
+// Lấy giỏ hàng từ server khi đã đăng nhập
+const fetchCartFromServer = async () => {
+  if (!idUser?.userId) return
+  const param: requestCart = { idUser: idUser.userId }
+  try {
+    const res = await getAllCart(param)
+    // Đếm số lượng sản phẩm duy nhất dựa trên idSPCT
+    console.log(res)
+    const uniqueItems = new Set(res.data.map((item) => item.idSPCT))
+    cartItemCount.value = res.data.length
+    console.log('Unique items from server:', uniqueItems.size) // Debug
+  } catch (error) {
+    console.error('Lỗi khi lấy giỏ hàng từ server:', error)
+    toast.error('Không thể tải số lượng giỏ hàng.')
+    cartItemCount.value = 0
+  }
+}
+
+// Lấy giỏ hàng tạm từ localStorage khi chưa đăng nhập
+const fetchCartFromLocalStorage = () => {
+  const tempCart = localStorageAction.get(CART_STORAGE_KEY) || []
+  if (!Array.isArray(tempCart)) return
+  // Đếm số lượng sản phẩm duy nhất dựa trên idChiTietSanPham
+  const uniqueItems = new Set(tempCart.map((item: any) => item.idChiTietSanPham))
+  console.log(uniqueItems)
+  cartItemCount.value = uniqueItems.size
+  console.log('Unique items from local:', uniqueItems.size) // Debug
+}
 const keyword = ref('')
-const cartItemCount = ref(2)
+const cartItemCount = ref(0) // Khởi tạo số lượng là 0
 const showMobileSearch = ref(false)
 const showSideMenu = ref(false)
 const isMenuSticky = ref(false)
@@ -239,43 +200,72 @@ const authStore = useAuthStore()
 const userLogin = computed(() => authStore.user || {})
 const isLogin = computed(() => !!userLogin.value && !!userLogin.value.fullName)
 const menuItems = ref([])
+const idUser = localStorageAction.get(USER_INFO_STORAGE_KEY)
 
+// Cập nhật số lượng giỏ hàng khi trạng thái đăng nhập thay đổi
+watch(isLogin, (newValue) => {
+  if (newValue) {
+    fetchCartFromServer()
+  } else {
+    fetchCartFromLocalStorage()
+  }
+})
+
+// Theo dõi sự kiện thay đổi giỏ hàng
+const handleCartUpdate = () => {
+  if (isLogin.value) {
+    fetchCartFromServer()
+  } else {
+    fetchCartFromLocalStorage()
+  }
+}
+
+// Lấy danh sách thương hiệu
 const fetchCategory = async () => {
   try {
-    const payload = {
-      page: 1,
-      size: 100000
-    }
-    const res = await GetThuongHieus(payload);
-    menuItems.value = res.data.data;
-    console.log(menuItems.value)
+    const payload = { page: 1, size: 100000 }
+    const res = await GetThuongHieus(payload)
+    menuItems.value = res.data.data
   } catch (error) {
-    console.error('Lỗi lấy thương hiệu:', error);
-    menuItems.value = [];
+    console.error('Lỗi lấy thương hiệu:', error)
+    menuItems.value = []
   }
 }
 
 onMounted(() => {
   fetchCategory()
+  // Khởi tạo số lượng giỏ hàng dựa trên trạng thái đăng nhập
+  if (isLogin.value) {
+    fetchCartFromServer()
+  } else {
+    fetchCartFromLocalStorage()
+  }
+  // Lắng nghe sự kiện thay đổi giỏ hàng
+  window.addEventListener('cartUpdated', handleCartUpdate)
+  window.addEventListener('storage', handleCartUpdate) // Theo dõi thay đổi localStorage
+  window.addEventListener('scroll', handleScroll)
+  document.addEventListener('click', handleClickOutside)
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('cartUpdated', handleCartUpdate)
+  window.removeEventListener('storage', handleCartUpdate)
+  window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', handleClickOutside)
+})
+
 const route = useRoute()
 const onMenuClick = (idThuongHieu: string) => {
   router.push({
     path: '/san-pham',
-    query: {
-      ...route.query,
-      idThuongHieu: idThuongHieu
-    }
+    query: { ...route.query, idThuongHieu }
   })
 }
 
 const onSearch = () => {
   router.push({
     path: '/san-pham',
-    query: {
-      ...route.query,
-      keyword: keyword.value
-    }
+    query: { ...route.query, keyword: keyword.value }
   })
 }
 
@@ -287,35 +277,35 @@ const logout = () => {
   authStore.logout()
   showDropdown.value = false
   showSideMenu.value = false
-  setTimeout(() => { window.location.reload() }, 300)
+  // Sau khi đăng xuất, cập nhật lại số lượng từ localStorage
+  setTimeout(() => {
+    fetchCartFromLocalStorage()
+    window.location.reload()
+  }, 300)
 }
+
 // Sticky menu khi scroll
 const handleScroll = () => {
   if (!menuBar.value) return
   isMenuSticky.value = window.scrollY > 110
 }
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-  document.addEventListener('click', handleClickOutside)
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleScroll)
-  document.removeEventListener('click', handleClickOutside)
-})
+
 const toggleDropdown = (e?: Event) => {
   if (e) e.preventDefault()
   showDropdown.value = !showDropdown.value
 }
+
 const handleClickOutside = (event: MouseEvent) => {
   if (accountRef.value && !accountRef.value.contains(event.target as Node)) {
     showDropdown.value = false
   }
 }
+
 const toggleSideMenu = () => { showSideMenu.value = !showSideMenu.value }
 const closeSideMenu = () => { showSideMenu.value = false }
 </script>
-
 <style scoped>
+/* Giữ nguyên CSS hiện tại */
 .jp-header {
   width: 100%;
   background: #fff;
@@ -323,7 +313,6 @@ const closeSideMenu = () => { showSideMenu.value = false }
   position: relative;
   z-index: 100;
 }
-
 .jp-top {
   display: flex;
   align-items: center;
