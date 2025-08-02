@@ -58,15 +58,17 @@
                             </a-tooltip>
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-tooltip title="Đổi trạng thái sản phẩm">
-                                    <a-button style="background-color: #54bddb;" type="primary"
+
+                                <a-tooltip title="thay đổi trạng thái sản phẩm">
+                                    <a-button style="background-color: #9b6dc7;" type="primary"
+
                                         class="p-2 d-flex justify-content-center align-items-center">
                                         <RedoOutlined />
                                     </a-button>
                                 </a-tooltip>
                             </a-popconfirm>
                             <a-tooltip title="Chi tiết sản phẩm">
-                                <a-button style="background-color: #54bddb;" type="primary"
+                                <a-button style="background-color: #dd9bb1;" type="primary"
                                     @click="handleClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <SearchOutlined />

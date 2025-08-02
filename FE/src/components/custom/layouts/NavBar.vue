@@ -198,7 +198,14 @@ const accountRef = ref<HTMLElement | null>(null)
 const showDropdown = ref(false)
 const authStore = useAuthStore()
 const userLogin = computed(() => authStore.user || {})
-const isLogin = computed(() => !!userLogin.value && !!userLogin.value.fullName)
+
+const user = localStorageAction.get(USER_INFO_STORAGE_KEY)
+const isLogin = computed(() =>
+  !!userLogin.value &&
+  !!userLogin.value.fullName &&
+  user.role === 'USERS'
+)
+
 const menuItems = ref([])
 const idUser = localStorageAction.get(USER_INFO_STORAGE_KEY)
 
