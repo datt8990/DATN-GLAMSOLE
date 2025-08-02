@@ -129,7 +129,7 @@ const menuGroups = ref([
 <style scoped>
 .sidebar {
   background-color: #ffffff;
-  width: 300px;
+  /* width: 300px; */
   height: 100vh;
   display: flex;
   flex-direction: column;

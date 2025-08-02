@@ -32,4 +32,22 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
                 AND (dgg.id IS NULL OR dgg.status != 0)
             """)
     List<SanPhamChiTiet> detailSPCTByDot(String idSP);
+
+    @Query(value = """
+            SELECT
+                spct
+            FROM
+                SanPhamChiTiet spct
+            JOIN
+                SanPham sp ON sp.id = spct.sanPham.id
+            LEFT JOIN
+                DotGiamGiaChiTietSanPham dggctsp ON dggctsp.sanPhamChiTiet.id = spct.id
+            LEFT JOIN
+                DotGiamGia dgg ON dgg.id = dggctsp.dotGiamGia.id
+            WHERE
+                sp.id = :idSP
+                AND spct.status = 0
+                AND dgg.trangThai != 'DANG_KICH_HOAT'
+            """)
+    List<SanPhamChiTiet> detailSPCTByDot1(String idSP);
 }

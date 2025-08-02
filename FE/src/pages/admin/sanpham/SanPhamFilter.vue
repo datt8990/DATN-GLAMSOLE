@@ -1,7 +1,6 @@
 <template>
   <DivCustom>
     <div class="filter-container">
-
       <div class="filter-item">
         <label for="search-query" class="filter-label">Tìm kiếm sản phẩm</label>
         <a-input
@@ -74,7 +73,7 @@
         />
       </div>
 
-      <div class="filter-item reset-button-group">
+      <div class="filter-item reset-button-group" style="margin-left: auto">
         <a-tooltip title="Làm mới bộ lọc">
           <a-button
             style="background-color: dimgrey; color: white"
@@ -91,136 +90,144 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits, onMounted } from 'vue'
-import DivCustom from '@/components/custom/Div/DivCustom.vue'
-import { ReloadOutlined } from '@ant-design/icons-vue'
+import { ref, watch, defineProps, defineEmits, onMounted } from "vue";
+import DivCustom from "@/components/custom/Div/DivCustom.vue";
+import { ReloadOutlined } from "@ant-design/icons-vue";
 import {
   GetListChatLieu,
   GetListDanhMuc,
   GetListLoaiDe,
-  GetListThuongHieu
-} from '@/services/api/admin/sanpham.api'
+  GetListThuongHieu,
+} from "@/services/api/admin/sanpham.api";
 
 // Define props for initial search values and emits for updates
 const props = defineProps<{
-  searchQuery: string
-  searchStatus: number | null
-  selectedCategory: string | null
-  selectedMaterial: string | null
-  selectedBrand: string | null
-  selectedSoleType: string | null
-}>()
+  searchQuery: string;
+  searchStatus: number | null;
+  selectedCategory: string | null;
+  selectedMaterial: string | null;
+  selectedBrand: string | null;
+  selectedSoleType: string | null;
+}>();
 
 const emit = defineEmits([
-  'update:searchQuery',
-  'update:searchStatus',
-  'update:selectedCategory',
-  'update:selectedMaterial',
-  'update:selectedBrand',
-  'update:selectedSoleType'
-])
+  "update:searchQuery",
+  "update:searchStatus",
+  "update:selectedCategory",
+  "update:selectedMaterial",
+  "update:selectedBrand",
+  "update:selectedSoleType",
+]);
 
 // Local refs to hold the filter values, initialized from props
-const localSearchQuery = ref(props.searchQuery)
-const localSearchStatus = ref(props.searchStatus)
-const localSelectedCategory = ref(props.selectedCategory)
-const localSelectedMaterial = ref(props.selectedMaterial)
-const localSelectedBrand = ref(props.selectedBrand)
-const localSelectedSoleType = ref(props.selectedSoleType)
+const localSearchQuery = ref(props.searchQuery);
+const localSearchStatus = ref(props.searchStatus);
+const localSelectedCategory = ref(props.selectedCategory);
+const localSelectedMaterial = ref(props.selectedMaterial);
+const localSelectedBrand = ref(props.selectedBrand);
+const localSelectedSoleType = ref(props.selectedSoleType);
 
 // Refs for dropdown options
-const thuongHieuOptions = ref<{ label: string; value: string }[]>([])
-const loaiDeOptions = ref<{ label: string; value: string }[]>([])
-const danhMucOptions = ref<{ label: string; value: string }[]>([])
-const chatLieuOptions = ref<{ label: string; value: string }[]>([])
+const thuongHieuOptions = ref<{ label: string; value: string }[]>([]);
+const loaiDeOptions = ref<{ label: string; value: string }[]>([]);
+const danhMucOptions = ref<{ label: string; value: string }[]>([]);
+const chatLieuOptions = ref<{ label: string; value: string }[]>([]);
 
 // Watchers to emit updates to parent component when local values change
-watch([localSearchQuery, localSearchStatus, localSelectedCategory, localSelectedMaterial, localSelectedBrand, localSelectedSoleType],
+watch(
+  [
+    localSearchQuery,
+    localSearchStatus,
+    localSelectedCategory,
+    localSelectedMaterial,
+    localSelectedBrand,
+    localSelectedSoleType,
+  ],
   ([newQuery, newStatus, newCategory, newMaterial, newBrand, newSoleType]) => {
-    emit('update:searchQuery', newQuery)
-    emit('update:searchStatus', newStatus)
-    emit('update:selectedCategory', newCategory)
-    emit('update:selectedMaterial', newMaterial)
-    emit('update:selectedBrand', newBrand)
-    emit('update:selectedSoleType', newSoleType)
+    emit("update:searchQuery", newQuery);
+    emit("update:searchStatus", newStatus);
+    emit("update:selectedCategory", newCategory);
+    emit("update:selectedMaterial", newMaterial);
+    emit("update:selectedBrand", newBrand);
+    emit("update:selectedSoleType", newSoleType);
   }
-)
+);
 
 // --- API Calls to fetch dropdown data ---
 
 const fetchThuongHieu = async () => {
   try {
-    const response = await GetListThuongHieu()
+    const response = await GetListThuongHieu();
     thuongHieuOptions.value = response.data.map((item: any) => ({
       label: item.ten,
-      value: item.id
-    }))
+      value: item.id,
+    }));
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách thương hiệu:', error)
+    console.error("Lỗi khi lấy danh sách thương hiệu:", error);
   }
-}
+};
 
 const fetchChatLieu = async () => {
   try {
-    const response = await GetListChatLieu()
+    const response = await GetListChatLieu();
     chatLieuOptions.value = response.data.map((item: any) => ({
       label: item.ten,
-      value: item.id
-    }))
+      value: item.id,
+    }));
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách chất liệu:', error)
+    console.error("Lỗi khi lấy danh sách chất liệu:", error);
   }
-}
+};
 
 const fetchDanhMuc = async () => {
   try {
-    const response = await GetListDanhMuc()
+    const response = await GetListDanhMuc();
     danhMucOptions.value = response.data.map((item: any) => ({
       label: item.ten,
-      value: item.id
-    }))
+      value: item.id,
+    }));
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách danh mục:', error)
+    console.error("Lỗi khi lấy danh sách danh mục:", error);
   }
-}
+};
 
 const fetchLoaiDe = async () => {
   try {
-    const response = await GetListLoaiDe()
+    const response = await GetListLoaiDe();
     loaiDeOptions.value = response.data.map((item: any) => ({
       label: item.ten,
-      value: item.id
-    }))
+      value: item.id,
+    }));
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách loại đế:', error)
+    console.error("Lỗi khi lấy danh sách loại đế:", error);
   }
-}
+};
 
 // Function to reset all filters
 const resetFilters = () => {
-  localSearchQuery.value = ''
-  localSearchStatus.value = null
-  localSelectedCategory.value = null
-  localSelectedMaterial.value = null
-  localSelectedBrand.value = null
-  localSelectedSoleType.value = null
+  localSearchQuery.value = "";
+  localSearchStatus.value = null;
+  localSelectedCategory.value = null;
+  localSelectedMaterial.value = null;
+  localSelectedBrand.value = null;
+  localSelectedSoleType.value = null;
 
   // Also emit updates for immediate effect in parent
-  emit('update:searchQuery', '')
-  emit('update:searchStatus', null)
-  emit('update:selectedCategory', null)
-  emit('update:selectedMaterial', null)
-  emit('update:selectedBrand', null)
-  emit('update:selectedSoleType', null)
-}
+  emit("update:searchQuery", "");
+  emit("update:searchStatus", null);
+  emit("update:selectedCategory", null);
+  emit("update:selectedMaterial", null);
+  emit("update:selectedBrand", null);
+  emit("update:selectedSoleType", null);
+};
 
 // Fetch data when the component is mounted
 onMounted(() => {
-  fetchDanhMuc()
-  fetchThuongHieu()
-  fetchLoaiDe()
-  fetchChatLieu()
-})
+  fetchDanhMuc();
+  fetchThuongHieu();
+  fetchLoaiDe();
+  fetchChatLieu();
+});
 </script>
 
 <style scoped lang="scss">
@@ -240,7 +247,8 @@ onMounted(() => {
 }
 
 .filter-label {
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: bold;
   margin-bottom: 5px; /* Space between label and input/select */
   color: #555;
   white-space: nowrap;
@@ -270,12 +278,12 @@ onMounted(() => {
   line-height: 32px !important; // Ensure text is vertically centered
 }
 :deep(.ant-select-selection-item) {
-    line-height: 30px !important; // Adjust for content inside select
+  line-height: 30px !important; // Adjust for content inside select
 }
 
 /* Global body font (if this style is actually in this component, it should be moved to a global stylesheet) */
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 :deep(.ant-input:focus),

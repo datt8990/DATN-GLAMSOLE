@@ -102,7 +102,9 @@ function handleChildClick(index) {
   position: relative;
   background-color: transparent;
   border: none;
+  /* Cố định width và box-sizing */
   width: 100%;
+  box-sizing: border-box;
   text-align: left;
 }
 
@@ -185,5 +187,18 @@ function handleChildClick(index) {
 .dropdown-container {
   width: 100%;
   position: relative;
+}
+
+/* Đảm bảo container có width cố định */
+.sidebar-item {
+  width: 100%;
+}
+
+/* Đảm bảo tất cả nav-link có cùng width */
+.nav-link,
+.nav-dropdown {
+  width: 100% !important;
+  max-width: 100%;
+  min-width: 0;
 }
 </style>

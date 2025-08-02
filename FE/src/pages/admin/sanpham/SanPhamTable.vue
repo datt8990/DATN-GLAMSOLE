@@ -25,7 +25,7 @@
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'status'">
                         <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
-                            {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
+                            {{ record.status == 'ACTIVE' ? 'Đang kinh doanh' : 'Ngừng kinh doanh' }}
                         </a-tag>
                     </template>
 
@@ -58,8 +58,10 @@
                             </a-tooltip>
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+
                                 <a-tooltip title="thay đổi trạng thái sản phẩm">
                                     <a-button style="background-color: #9b6dc7;" type="primary"
+
                                         class="p-2 d-flex justify-content-center align-items-center">
                                         <RedoOutlined />
                                     </a-button>

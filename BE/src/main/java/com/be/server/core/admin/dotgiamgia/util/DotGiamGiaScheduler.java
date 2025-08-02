@@ -56,16 +56,16 @@ public class DotGiamGiaScheduler {
         dotGiamGiaRepository.saveAll(toExpire);
 
         // 3. Luôn cập nhật giá bán cho DANG_KICH_HOAT
-        List<DotGiamGia> activePromotions = dotGiamGiaRepository.findAllByTrangThai(StatusPromotion.DANG_KICH_HOAT);
-        for (DotGiamGia dgg : activePromotions) {
-            updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.DANG_KICH_HOAT);
-        }
-
-        // 4. Luôn cập nhật giá bán cho HET_HAN_KICH_HOAT
-        List<DotGiamGia> expiredPromotions = dotGiamGiaRepository.findAllByTrangThai(StatusPromotion.HET_HAN_KICH_HOAT);
-        for (DotGiamGia dgg : expiredPromotions) {
-            updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.HET_HAN_KICH_HOAT);
-        }
+//        List<DotGiamGia> activePromotions = dotGiamGiaRepository.findAllByTrangThai(StatusPromotion.DANG_KICH_HOAT);
+//        for (DotGiamGia dgg : activePromotions) {
+//            updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.DANG_KICH_HOAT);
+//        }
+//
+//        // 4. Luôn cập nhật giá bán cho HET_HAN_KICH_HOAT
+//        List<DotGiamGia> expiredPromotions = dotGiamGiaRepository.findAllByTrangThai(StatusPromotion.HET_HAN_KICH_HOAT);
+//        for (DotGiamGia dgg : expiredPromotions) {
+//            updateGiaSanPhamTheoDotGiamGia(dgg.getId(), StatusPromotion.HET_HAN_KICH_HOAT);
+//        }
 
         if (!toActivate.isEmpty() || !toExpire.isEmpty()) {
             log.info("Đã cập nhật trạng thái {} đợt giảm giá", toActivate.size() + toExpire.size());

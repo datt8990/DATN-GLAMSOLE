@@ -499,12 +499,4 @@ onUnmounted(() => closeQRScanner());
   border-color: #58bddb !important;
   box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.1) !important;
 }
-
-.reset-button:hover {
-  background-color: #58bddb !important;
-  border-color: #58bddb !important;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(88, 189, 219, 0.2) !important;
-  transition: all 0.3s ease;
-}
 </style>

@@ -540,7 +540,7 @@ import {
   type HoaDonResponse,
   type ParamsGetHoaDonCT,
 } from "@/services/api/admin/hoadon.api";
-import { message } from "ant-design-vue";
+import { toast } from 'vue3-toastify';
 import type { TableColumnsType } from "ant-design-vue";
 import BreadcrumbDefault from "@/components/ui/Breadcrumbs/BreadcrumbDefault.vue";
 import "./HoaDon.css";
@@ -657,7 +657,7 @@ const canShowPrintButton = computed(() => {
 // 3. Thêm hàm xử lý in PDF
 const handlePrintPDF = async () => {
   if (!hoaDon.value?.maHoaDon) {
-    message.error("Không tìm thấy mã hóa đơn");
+    toast.error("Không tìm thấy mã hóa đơn");
     return;
   }
 
@@ -681,10 +681,10 @@ const handlePrintPDF = async () => {
       throw new Error("Loại hóa đơn không hợp lệ");
     }
 
-    message.success("Tải PDF thành công");
+    toast.success("Tải PDF thành công");
   } catch (error) {
     console.error("Lỗi khi in PDF:", error);
-    message.error("Có lỗi xảy ra khi in PDF: " + (error as Error).message);
+    toast.error("Có lỗi xảy ra khi in PDF: " + (error as Error).message);
   } finally {
     printLoading.value = false;
   }
@@ -715,7 +715,7 @@ const downloadPDF = (blob: Blob, fileName: string) => {
     }, 100);
   } catch (error) {
     console.error("Lỗi khi download PDF:", error);
-    message.error("Có lỗi xảy ra khi tải file PDF");
+    toast.error("Có lỗi xảy ra khi tải file PDF");
   }
 };
 
@@ -733,7 +733,7 @@ const printButtonText = computed(() => {
 
 const handleViewPDF = async () => {
   if (!hoaDon.value?.maHoaDon) {
-    message.error("Không tìm thấy mã hóa đơn");
+    toast.error("Không tìm thấy mã hóa đơn");
     return;
   }
 
@@ -765,10 +765,10 @@ const handleViewPDF = async () => {
       });
     }
 
-    message.success("Mở PDF thành công");
+    toast.success("Mở PDF thành công");
   } catch (error) {
     console.error("Lỗi khi mở PDF:", error);
-    message.error("Có lỗi xảy ra khi mở PDF: " + (error as Error).message);
+    toast.error("Có lỗi xảy ra khi mở PDF: " + (error as Error).message);
   } finally {
     printLoading.value = false;
   }
@@ -783,7 +783,7 @@ const confirmStatusChange = async () => {
     pendingStatusChange.value === "HOAN_THANH" &&
     !hasPaymentHistory.value
   ) {
-    message.error("Vui lòng xác nhận thanh toán trước khi hoàn thành đơn hàng");
+    toast.error("Vui lòng xác nhận thanh toán trước khi hoàn thành đơn hàng");
     return;
   }
 
@@ -809,7 +809,7 @@ const confirmStatusChange = async () => {
         trangThaiHoaDon: pendingStatusChange.value,
       };
 
-      message.success("Cập nhật trạng thái thành công");
+      toast.success("Cập nhật trạng thái thành công");
 
       // Refresh timeline data
       const idHoaDon = route.params.id as string;
@@ -824,10 +824,10 @@ const confirmStatusChange = async () => {
 
       closeStatusModal();
     } else {
-      message.error("Cập nhật trạng thái thất bại");
+      toast.error("Cập nhật trạng thái thất bại");
     }
   } catch (error) {
-    message.error(
+    toast.error(
       "Có lỗi xảy ra khi cập nhật trạng thái: " + (error as Error).message
     );
   } finally {
@@ -873,12 +873,12 @@ const closePaymentModal = () => {
 
 const confirmPayment = async () => {
   if (!canConfirmPaymentButton.value) {
-    message.warning("Vui lòng nhập đầy đủ thông tin thanh toán");
+    toast.warning("Vui lòng nhập đầy đủ thông tin thanh toán");
     return;
   }
 
   if (changeAmount.value < 0) {
-    message.warning("Số tiền khách đưa không đủ");
+    toast.warning("Số tiền khách đưa không đủ");
     return;
   }
 
@@ -907,7 +907,7 @@ const confirmPayment = async () => {
     const response = await thanhToan(paymentData);
 
     if (response.success) {
-      message.success("Xác nhận thanh toán thành công");
+      toast.success("Xác nhận thanh toán thành công");
 
       // Cập nhật trạng thái đơn hàng
 
@@ -921,11 +921,11 @@ const confirmPayment = async () => {
 
       closePaymentModal();
     } else {
-      message.error("Xác nhận thanh toán thất bại");
+      toast.error("Xác nhận thanh toán thất bại");
     }
   } catch (error) {
     console.error("Lỗi xác nhận thanh toán:", error);
-    message.error("Có lỗi xảy ra khi xác nhận thanh toán");
+    toast.error("Có lỗi xảy ra khi xác nhận thanh toán");
   } finally {
     paymentLoading.value = false;
   }
@@ -1261,7 +1261,7 @@ const handleConfirmOrderClick = () => {
         currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN)) &&
     !hasPaymentHistory.value
   ) {
-    message.warning(
+    toast.warning(
       "Vui lòng xác nhận thanh toán trước khi hoàn thành đơn hàng"
     );
     return;
@@ -1420,7 +1420,7 @@ const fetchHoaDonChiTiet = async () => {
   const maHoaDon = route.params.maHoaDon as string;
 
   if (!maHoaDon) {
-    message.error("Không tìm thấy mã hóa đơn");
+    toast.error("Không tìm thấy mã hóa đơn");
     return;
   }
 
@@ -1435,7 +1435,7 @@ const fetchHoaDonChiTiet = async () => {
     state.totalItems = res.data?.totalElements || 0;
   } catch (error) {
     console.error("Lỗi khi tải chi tiết hóa đơn:", error);
-    message.error("Không thể tải dữ liệu sản phẩm");
+    toast.error("Không thể tải dữ liệu sản phẩm");
   }
 };
 
@@ -1480,7 +1480,7 @@ onMounted(async () => {
   try {
     if (!idHoaDon) {
       console.error("idHoaDon is missing from route params");
-      message.error("Không tìm thấy ID hóa đơn");
+      toast.error("Không tìm thấy ID hóa đơn");
       return;
     }
 
@@ -1506,7 +1506,7 @@ onMounted(async () => {
     // Gọi API lấy chi tiết hóa đơn
     if (!maHoaDon) {
       console.error("maHoaDon is missing from route params");
-      message.error("Không tìm thấy mã hóa đơn");
+      toast.error("Không tìm thấy mã hóa đơn");
       return;
     }
 
@@ -1563,11 +1563,11 @@ onMounted(async () => {
       forceUpdateUI();
     } else {
       console.error("getHoaDonChiTiets returned empty or invalid data:", res);
-      message.error("Không thể tải dữ liệu hóa đơn");
+      toast.error("Không thể tải dữ liệu hóa đơn");
     }
   } catch (error) {
     console.error("Lỗi khi tải dữ liệu:", error);
-    message.error("Có lỗi xảy ra khi tải dữ liệu: " + (error as Error).message);
+    toast.error("Có lỗi xảy ra khi tải dữ liệu: " + (error as Error).message);
   }
   await loadPaymentHistory();
   fetchHoaDonChiTiet();

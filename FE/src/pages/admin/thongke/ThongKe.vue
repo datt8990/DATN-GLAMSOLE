@@ -11,7 +11,7 @@
     <div class="stats-cards">
       <div class="stats-card" style="background-color: #e6e6fa;">
         <div class="stats-content">
-          <div class="stats-title">Doanh số tháng này</div>
+          <div class="stats-title">Doanh số tháng</div>
           <div class="stats-value">
             {{ formatCurrency(doanhThuData.doanhSoThangNay) }}
           </div>
@@ -39,9 +39,9 @@
         </div>
       </div>
 
-      <div class="stats-card" style="background-color: #e0ebeb;">
+      <div class="stats-card" style="background-color: #d6f2fa;">
         <div class="stats-content">
-          <div class="stats-title">Hàng bán được tháng này</div>
+          <div class="stats-title">Số lượng sản phẩm bán trong tháng</div>
           <div class="stats-value">{{ doanhThuData.hangBanDuocThangNay }}</div>
           <div class="stats-subtitle">sản phẩm</div>
         </div>
@@ -345,12 +345,15 @@ const updateChart = () => {
           display: true,
           text: "Đơn hàng hoàn thành theo ngày",
           font: {
-          size: 15, // Further increased font size for the title
+          size: 15,
         },
         },
         legend: {
           display: true,
           position: "top",
+          font: {
+          size: 15,
+        },
         },
       },
       scales: {
@@ -492,13 +495,13 @@ onMounted(async () => {
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   --border-radius: 12px;
   --transition: all 0.3s ease;
-  font-family: "Inter", sans-serif;
+  --ant-font-family: 'Roboto', sans-serif;
 }
 
 *,
 *::before,
 *::after {
-  font-family: inherit;
+  font-family: 'Roboto', sans-serif;
   box-sizing: border-box;
 }
 
