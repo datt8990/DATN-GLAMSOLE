@@ -162,7 +162,7 @@ import BreadCrumbUser from "@/components/ui/Breadcrumbs/BreadCrumbUser.vue";
 import { GetSanPhamChiTietById } from "@/services/api/permitall/sanphamchitiet/pmsanphamchitiet.api";
 import { createCartDetail } from "@/services/api/permitall/cart/cart";
 import { localStorageAction } from "@/utils/storage";
-import { USER_INFO_STORAGE_KEY, CHECKOUT_STORAGE_KEY } from "@/constants/storageKey";
+import { USER_INFO_STORAGE_KEY, CHECKOUT_STORAGE_KEY,CART_STORAGE_KEY  } from "@/constants/storageKey";
 import { toast } from "vue3-toastify";
 
 const router = useRouter();
@@ -290,7 +290,6 @@ function handleChooseSize(size: any) {
 
 function getCartData() {
   return {
-    // Thông tin sản phẩm gốc
     idSanPham: product.value?.id,
     tenSanPham: product.value?.tenSanPham,
     moTa: product.value?.moTa,
@@ -300,14 +299,12 @@ function getCartData() {
     chatLieu: product.value?.chatLieu,
     danhMuc: product.value?.danhMuc,
     loaiDe: product.value?.loaiDe,
-    // Thông tin biến thể (variant)
     idChiTietSanPham: currentVariant.value?.id,
     mauSac: currentVariant.value?.mauSac,
     kichCo: currentVariant.value?.kichCo,
     giaBan: currentVariant.value?.giaBan,
     soLuongTrongKho: currentVariant.value?.soLuong,
     dotGiamGia: currentVariant.value?.dotGiamGia,
-    // Số lượng muốn mua
     soLuongMua: cart.value.quantity,
   };
 }
@@ -329,8 +326,6 @@ async function addToCart() {
   }
 
   // Kiểm tra trạng thái đăng nhập
-  const idUser = localStorageAction.get(USER_INFO_STORAGE_KEY);
-
   if (idUser?.userId) {
     // Người dùng đã đăng nhập -> Gọi API để thêm vào giỏ hàng
     try {
@@ -351,6 +346,8 @@ async function addToCart() {
       }
 
       toast.success(res.message);
+      // Gửi sự kiện cập nhật giỏ hàng
+      dispatchCartUpdate();
     } catch (error: any) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
       toast.error("Có lỗi xảy ra khi thêm vào giỏ hàng.");
@@ -358,40 +355,41 @@ async function addToCart() {
   } else {
     // Người dùng chưa đăng nhập -> Lưu vào localStorage
     try {
-      // Lấy giỏ hàng tạm từ localStorage (nếu có)
       let tempCart = localStorageAction.get(CART_STORAGE_KEY) || [];
 
-      // Đảm bảo tempCart là mảng
       if (!Array.isArray(tempCart)) {
         tempCart = [];
       }
 
-      // Kiểm tra xem sản phẩm đã có trong giỏ hàng tạm chưa
       const existingItemIndex = tempCart.findIndex(
         (item: any) => item.idChiTietSanPham === cartItem.idChiTietSanPham
       );
 
       if (existingItemIndex !== -1) {
-        // Nếu sản phẩm đã có, cập nhật số lượng
         tempCart[existingItemIndex].soLuongMua += cartItem.soLuongMua;
-        // Kiểm tra số lượng tồn kho
         if (tempCart[existingItemIndex].soLuongMua > cartItem.soLuongTrongKho) {
           toast.warning("Số lượng vượt quá tồn kho!");
           return;
         }
       } else {
-        // Nếu sản phẩm chưa có, thêm mới
         tempCart.push(cartItem);
       }
 
       // Lưu lại giỏ hàng tạm vào localStorage
       localStorageAction.set(CART_STORAGE_KEY, tempCart);
       toast.success("Đã thêm sản phẩm vào giỏ hàng!");
+      // Gửi sự kiện cập nhật giỏ hàng
+      dispatchCartUpdate();
     } catch (error) {
       console.error("Lỗi khi lưu giỏ hàng tạm:", error);
       toast.error("Có lỗi xảy ra khi thêm vào giỏ hàng tạm.");
     }
   }
+}
+
+// Hàm gửi sự kiện tùy chỉnh
+const dispatchCartUpdate = () => {
+  window.dispatchEvent(new Event('cartUpdated'));
 }
 
 function buyNow() {
@@ -402,26 +400,37 @@ function buyNow() {
 
   const buyItem = getCartData();
 
+  // Kiểm tra dữ liệu trước khi lưu
+  if (!buyItem.idChiTietSanPham || !buyItem.tenSanPham || !buyItem.soLuongMua) {
+    toast.error("Dữ liệu sản phẩm không hợp lệ. Vui lòng thử lại!");
+    return;
+  }
+
   // Chuẩn bị dữ liệu để lưu vào CHECKOUT_STORAGE_KEY
   const checkoutItem = {
-    id: `buy_${buyItem.idChiTietSanPham}`, // Tạo ID tạm để tránh trùng
+    id: buyItem.idChiTietSanPham, // Sử dụng idChiTietSanPham làm ID duy nhất
     name: buyItem.tenSanPham,
     originalPrice: buyItem.giaBan,
     discountPrice: buyItem.dotGiamGia?.giaSau || buyItem.giaBan,
     quantity: buyItem.soLuongMua,
     imageUrl: buyItem.hinhAnh,
-    color: buyItem.mauSac.tenMauSac,
-    size: buyItem.kichCo.tenKichCo,
+    color: buyItem.mauSac?.tenMauSac || "Không xác định",
+    size: buyItem.kichCo?.tenKichCo || "Không xác định",
     idSP: buyItem.idChiTietSanPham,
     soLuongTrongKho: buyItem.soLuongTrongKho,
   };
 
-  // Lưu vào CHECKOUT_STORAGE_KEY
-  localStorageAction.set(CHECKOUT_STORAGE_KEY, [checkoutItem]); // Lưu dưới dạng mảng
-  console.log("Dữ liệu gửi đến trang thanh toán:", [checkoutItem]);
+  try {
+    // Lưu vào CHECKOUT_STORAGE_KEY
+    localStorageAction.set(CHECKOUT_STORAGE_KEY, [checkoutItem]);
+    console.log("Dữ liệu gửi đến trang thanh toán:", [checkoutItem]);
 
-  // Chuyển hướng đến trang thanh toán
-  router.push("/thanh-toan");
+    // Chuyển hướng sau khi lưu thành công
+    router.push("/thanh-toan");
+  } catch (error) {
+    console.error("Lỗi khi lưu dữ liệu thanh toán:", error);
+    toast.error("Có lỗi xảy ra khi chuẩn bị thanh toán. Vui lòng thử lại!");
+  }
 }
 </script>
 
