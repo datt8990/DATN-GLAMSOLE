@@ -290,56 +290,8 @@ const formatDate = (timestamp: number) => {
   gap: 1px;
   padding: 4px 12px;
   border-radius: 4px;
-  width: 100%; // Ensure it fills the tab like a button
-
-  &:hover {
-    &[data-key="null"] {
-      background-color: #f0e68c; // Light khaki for "Tất cả"
-    }
-    &[data-key="CHO_XAC_NHAN"] {
-      background-color: #ffdab9; // Peach puff for "Chờ xác nhận"
-    }
-    &[data-key="DA_XAC_NHAN"] {
-      background-color: #98fb98; // Pale green for "Đã xác nhận"
-    }
-    &[data-key="CHO_GIAO"] {
-      background-color: #b0e0e6; // Powder blue for "Chờ giao"
-    }
-    &[data-key="DANG_GIAO"] {
-      background-color: #dda0dd; // Plum for "Đang giao"
-    }
-    &[data-key="HOAN_THANH"] {
-      background-color: #90ee90; // Light green for "Hoàn thành"
-    }
-    &[data-key="DA_HUY"] {
-      background-color: #ffb6c1; // Light pink for "Đã hủy"
-    }
+  width: 100%;
   }
-
-  &.ant-tabs-tab-active {
-    &[data-key="null"] {
-      background-color: #f0e68c; // Light khaki for "Tất cả" when active
-    }
-    &[data-key="CHO_XAC_NHAN"] {
-      background-color: #ffdab9; // Peach puff for "Chờ xác nhận" when active
-    }
-    &[data-key="DA_XAC_NHAN"] {
-      background-color: #98fb98; // Pale green for "Đã xác nhận" when active
-    }
-    &[data-key="CHO_GIAO"] {
-      background-color: #b0e0e6; // Powder blue for "Chờ giao" when active
-    }
-    &[data-key="DANG_GIAO"] {
-      background-color: #dda0dd; // Plum for "Đang giao" when active
-    }
-    &[data-key="HOAN_THANH"] {
-      background-color: #90ee90; // Light green for "Hoàn thành" when active
-    }
-    &[data-key="DA_HUY"] {
-      background-color: #ffb6c1; // Light pink for "Đã hủy" when active
-    }
-  }
-}
 
 :deep(.ant-tabs-tab) {
   padding: 0; // Remove default padding to let tab-item control the size
