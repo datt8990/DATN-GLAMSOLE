@@ -185,7 +185,7 @@ const handleChangeStatus = async () => {
 }
 
 .breadcrumb-section {
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   background-color: #fff;
   padding: 15px 20px;
   border-radius: 8px;
@@ -193,10 +193,8 @@ const handleChangeStatus = async () => {
 }
 
 .section-title {
-  margin-top: 30px;
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 20px;
   margin-left: 0px;
   color: #333;
   display: flex;

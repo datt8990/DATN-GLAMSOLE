@@ -120,6 +120,7 @@
             </a-table>
           </div>
           <div class="empty-cart" v-else>
+            
             <p>Không có sản phẩm nào trong giỏ hàng</p>
           </div>
         </div>
@@ -151,14 +152,14 @@
 
             <div class="form-group">
               <label for="district">Quận/Huyện <span class="required">*</span></label>
-              <a-select style="width: 100%;" v-model:value="deliveryInfo.quanHuyen" placeholder="Chọn quận/huyện"
+              <a-select style="width: 100%;  height: 32px;" v-model:value="deliveryInfo.quanHuyen" placeholder="Chọn quận/huyện"
                 :options="districts" @change="onDistrictChange" show-search option-filter-prop="label"
                 :class="{ 'input-error': !deliveryInfo.quanHuyen && isDeliveryEnabled }" />
             </div>
 
             <div class="form-group">
               <label for="ward">Phường/Xã <span class="required">*</span></label>
-              <a-select style="width: 100%;" v-model:value="deliveryInfo.phuongXa" placeholder="Chọn phường/xã"
+              <a-select style="width: 100%; height: 32px;" v-model:value="deliveryInfo.phuongXa" placeholder="Chọn phường/xã"
                 :options="wards" @change="onWardChange" show-search option-filter-prop="label"
                 :class="{ 'input-error': !deliveryInfo.phuongXa && isDeliveryEnabled }" />
             </div>
@@ -301,16 +302,16 @@
     </div>
 
     <div class="right-column">
-      <div class="card">
 
-        <div class="card-body">
-          <div class="card mt-4">
+
+        <div class="card-body" style="margin-top: 80px;">
+          <div class="card mt-4" >
             <div class="card-header">
               <h3 style="font-size: 18px;">Khách hàng</h3>
             </div>
 
             <div v-if="state.detailKhachHang">
-              <div class="form-group">
+              <div class="form-group1">
                 <label style="color: black; font-size: 15px;" for="customer-name">Tên khách hàng <span
                     class="required">*</span></label>
                 <div class="input-wrapper">
@@ -319,7 +320,7 @@
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group1">
                 <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span
                     class="required">*</span></label>
                 <div class="input-wrapper">
@@ -329,7 +330,7 @@
               </div>
             </div>
             <div v-else>
-              <div class="form-group">
+              <div class="form-group1">
                 <label style="color: black; font-size: 15px;">Tên khách hàng<span class="required">*</span></label>
                 <div class="input-wrapper">
                   <input style=" font-size: 15px;" v-model="newCustomer.ten" type="text" id="customer-name"
@@ -337,7 +338,7 @@
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group1">
                 <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span
                     class="required">*</span></label>
                 <div class="input-wrapper">
@@ -355,9 +356,9 @@
         </div>
 
         <div class="card-body">
-          <div class="card mt-4">
+          <div class="card mt-4" >
             <div class="card-header">
-              <h3 style=" font-size: 18px;">Thông tin đơn</h3>
+              <h3 style=" font-size: 18px;">Thông tin đơn hàng</h3>
               <div class="delivery-toggle-container">
                 <label for="delivery-switch" style=" font-size: 15px;">Bán giao hàng</label>
                 <a-switch v-model:checked="isDeliveryEnabled" @change="giaoHang(isDeliveryEnabled)"
@@ -379,7 +380,7 @@
                   Phiếu giảm giá tốt nhất
                 </div>
                 <div class="summary-item" v-if="betterDiscountMessage">
-                  <span style="color: red;">{{ betterDiscountMessage }}</span>
+                  <span style="color: red; margin-left: 10px;">{{ betterDiscountMessage }}</span>
                 </div>
                 <div v-if="selectedDiscount" class="discount-info">
                   Giảm: {{ formatCurrency(giamGia) }}
@@ -431,7 +432,7 @@
             </div>
           </div>
         </div>
-      </div>
+
     </div>
 
     <div v-if="showKhachHangModal" class="modal-backdrop" @click.self="showKhachHangModal = false">
@@ -2554,6 +2555,8 @@ onMounted(async () => {
   color: #333;
 }
 
+
+
 /* Top Header */
 .top-header {
   background-color: #fff;
@@ -2869,11 +2872,13 @@ textarea.input-full-width {
 .summary-item label {
   font-weight: normal;
   color: #555;
+  margin-left: 10px;
 }
 
 .summary-item span {
   font-weight: bold;
   color: #333;
+  margin-right: 10px;
 }
 
 .total-amount {
@@ -3342,9 +3347,10 @@ textarea.input-full-width {
 }
 
 .select-discount-button {
-  background-color: #f0f0f0;
+  background-color: #54bddb;
   border: none;
   padding: 8px 12px;
+  color: white;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -3871,16 +3877,23 @@ textarea.input-full-width {
   /* Bỏ margin-top ở đây vì đã có trên button-group-customer */
 }
 
-.form-group {
-  width: 300px;
+.form-group1 {
+  width: 400px;
   display: block;
   justify-self: center;
   margin-top: 10px;
   margin-bottom: 30px;
 }
 
+.form-group {
+  width: 300px;
+  display: block;
+  justify-self: center;
+  margin-top: 10px;
+}
+
 .card-body {
-  padding: 20px;
+ 
   /* Đã có */
 }
 
@@ -3901,7 +3914,7 @@ textarea.input-full-width {
 
 .discount-input-group {
   display: flex;
-  border: 1px solid #ddd;
+
   border-radius: 4px;
   overflow: hidden;
 }
@@ -4137,6 +4150,8 @@ textarea.input-full-width {
 
 .input-customer::placeholder {
   color: #6c757d;
+  height: 32px;
+  
   /* Màu xám nhạt cho placeholder */
 }
 
@@ -4223,7 +4238,7 @@ textarea.input-full-width {
 .filter-label {
   font-size: 14px;
   font-weight: 600;
-  color: #1e3a8a;
+  color: black;
   margin-bottom: 8px;
 }
 
@@ -4360,10 +4375,7 @@ textarea.input-full-width {
   color: #ff4d4f;
 }
 
-.input-error {
-  border-color: #ff4d4f !important;
-  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
-}
+
 
 /* Shipping fee styling */
 .summary-item {
@@ -4481,5 +4493,38 @@ textarea.input-full-width {
     width: 30px;
     height: 30px;
   }
+}
+
+
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important; /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; /* Đổ bóng màu xanh đậm */
+}
+
+:deep(.ant-select:hover),
+:deep(.ant-select:focus),
+:deep(.ant-select-focused) {
+  border-color: #58bddb !important; /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; /* Đổ bóng màu xanh đậm */
+}
+
+/* Style cho a-input-number khi hover, focus, và focused */
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Style cho a-date-picker khi hover, focus, và focused */
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused), /* Khi DatePicker đã mở và focus vào */
+:deep(.ant-picker-focused .ant-picker-input > input), /* Đảm bảo input bên trong cũng bị ảnh hưởng */
+:deep(.ant-picker:focus-within) /* Dùng cho các component phức tạp có nhiều phần tử con */
+{
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
 }
 </style>

@@ -5,95 +5,92 @@
       { path: '/admin/them-phieu-giam-gia', name: pathName },
     ]" />
   </div>
-  <DivCustom label="Thêm Phiếu giảm giá" customClasses="mt-5">
-    <a-row gutter="{16}">
+
+    <a-row :gutter="24">
       <a-col :span="8">
-        <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-          <a-form-item label="Tên phiếu giảm giá" name="ten" :label-col="{ span: 24 }" :rules="rules.name">
-            <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập tên phiếu giảm giá"
-              style="border-radius: 4px" />
-          </a-form-item>
+        <div class="form-container"> 
+          <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
+            <a-form-item label="Tên phiếu giảm giá" name="ten" :label-col="{ span: 24 }" :rules="rules.name">
+              <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập tên phiếu giảm giá"
+                style="border-radius: 4px" />
+            </a-form-item>
 
-          <a-form-item label="Điều kiện giảm giá" name="dieuKien" :label-col="{ span: 24 }" :rules="rules.dieuKien">
-            <a-input-number v-if="product" v-model:value="product.dieuKien" placeholder="Nhập Điều kiện giảm giá"
-              style="border-radius: 4px; width: 100%" />
-          </a-form-item>
+            <a-form-item label="Điều kiện giảm giá" name="dieuKien" :label-col="{ span: 24 }" :rules="rules.dieuKien">
+              <a-input-number v-if="product" v-model:value="product.dieuKien" placeholder="Nhập điều kiện giảm giá"
+                style="border-radius: 4px; width: 100%" />
+            </a-form-item>
 
-          <a-form-item label="Giá trị giảm tối đa" name="giaGiam" :label-col="{ span: 24 }" :rules="rules.giaGiam">
-            <a-input-number v-if="product" v-model:value="product.giaGiam" placeholder="Nhập Giá trị giảm tối đa"
-              style="border-radius: 4px; width: 100%" />
-          </a-form-item>
+            <a-form-item label="Giá trị giảm tối đa" name="giaGiam" :label-col="{ span: 24 }" :rules="rules.giaGiam">
+              <a-input-number v-if="product" v-model:value="product.giaGiam" placeholder="Nhập giá trị giảm tối đa"
+                style="border-radius: 4px; width: 100%" />
+            </a-form-item>
 
-          <a-form-item v-if="product && product.kieuGiam === true" label="Phần trăm giảm giá" name="phanTramGiam"
-            :label-col="{ span: 24 }" :rules="rules.phanTramGiam">
-            <a-input-number v-model:value="product.phanTramGiam" style="width: 100%; border-radius: 4px" min="0"
-              max="100" placeholder="Nhập phần trăm giảm giá" />
-          </a-form-item>
+            <a-form-item v-if="product && product.kieuGiam === true" label="Phần trăm giảm giá" name="phanTramGiam"
+              :label-col="{ span: 24 }" :rules="rules.phanTramGiam">
+              <a-input-number v-model:value="product.phanTramGiam" style="width: 100%; border-radius: 4px" min="0"
+                max="100" placeholder="Nhập phần trăm giảm giá" />
+            </a-form-item>
 
-          <a-form-item label="Kiểu giảm giá" name="kieuGiam" :label-col="{ span: 24 }">
-            <a-radio-group v-model:value="product.kieuGiam">
-              <a-radio :value="true">Phần trăm</a-radio>
-              <a-radio :value="false">Tiền</a-radio>
-            </a-radio-group>
-          </a-form-item>
+            <a-form-item label="Kiểu giảm giá" name="kieuGiam" :label-col="{ span: 24 }">
+              <a-radio-group v-model:value="product.kieuGiam">
+                <a-radio :value="true">Phần trăm</a-radio>
+                <a-radio :value="false">Tiền</a-radio>
+              </a-radio-group>
+            </a-form-item>
 
-          <a-form-item label="Số lượng" name="soLuongPhieu" :label-col="{ span: 24 }" :rules="rules.soLuongPhieu">
-            <a-input-number v-if="product" v-model:value="product.soLuongPhieu" placeholder="Nhập Số lượng"
-              style="border-radius: 4px; width: 100%" :disabled="product.loaiGiam === true" />
-          </a-form-item>
+            <a-form-item label="Số lượng" name="soLuongPhieu" :label-col="{ span: 24 }" :rules="rules.soLuongPhieu">
+              <a-input-number v-if="product" v-model:value="product.soLuongPhieu" placeholder="Nhập Số lượng"
+                style="border-radius: 4px; width: 100%" :disabled="product.loaiGiam === true" />
+            </a-form-item>
 
-          <a-form-item label="Ngày bắt đầu" name="ngayBatDau" :rules="rules.ngayBatDau" :label-col="{ span: 24 }">
-            <a-date-picker v-model:value="product.ngayBatDau" format="YYYY-MM-DD" style="width: 100%" />
-          </a-form-item>
+            <a-form-item label="Ngày bắt đầu" name="ngayBatDau" :rules="rules.ngayBatDau" :label-col="{ span: 24 }">
+              <a-date-picker v-model:value="product.ngayBatDau" format="YYYY-MM-DD" style="width: 100%" />
+            </a-form-item>
 
-          <a-form-item label="Ngày kết thúc" name="ngayKetThuc" :rules="rules.ngayKetThuc" :label-col="{ span: 24 }">
-            <a-date-picker v-model:value="product.ngayKetThuc" format="YYYY-MM-DD" style="width: 100%" />
-          </a-form-item>
-          <a-form-item label="Loại giảm giá" name="loaiGiam" :label-col="{ span: 24 }">
-            <a-radio-group v-model:value="product.loaiGiam">
-              <a-radio :value="false">Công khai</a-radio>
-              <a-radio :value="true">Cá nhân</a-radio>
-            </a-radio-group>
-          </a-form-item>
-        </a-form>
+            <a-form-item label="Ngày kết thúc" name="ngayKetThuc" :rules="rules.ngayKetThuc" :label-col="{ span: 24 }">
+              <a-date-picker v-model:value="product.ngayKetThuc" format="YYYY-MM-DD" style="width: 100%" />
+            </a-form-item>
+            <a-form-item label="Loại giảm giá" name="loaiGiam" :label-col="{ span: 24 }">
+              <a-radio-group v-model:value="product.loaiGiam">
+                <a-radio :value="false">Công khai</a-radio>
+                <a-radio :value="true">Cá nhân</a-radio>
+              </a-radio-group>
+            </a-form-item>
+          </a-form>
+        </div>
       </a-col>
 
-      <a-col v-if="product && product.loaiGiam === true" :span="16">
-        <div class="min-h-[360px]">
-          <div class="d-flex align-items-center gap-2" style="width: 700px; margin-left: 60px; margin-top: 40px">
-            <a-input v-model:value="state.searchQuery" placeholder="Nhập mã/tên/sdt/địa chỉ để tìm kiếm..."
-              style="width: 800px" />
+      <a-col :span="16">
+        <div class="table-container">
+          <h6 class="fw-semibold mb-3">Danh sách khách hàng</h6>
+          <div class="flex items-center gap-3 mb-4" style="margin-bottom: 10px;">
+            <a-input v-model:value="state.searchQuery" style="width: 600px; margin-right: 10px ;"
+              placeholder="Nhập mã/tên/sô điện thoại/địa chỉ để tìm kiếm..."
+              class="w-full rounded-md border-gray-300 focus:border-blue-500" />
             <a-tooltip title="Làm mới bộ lọc">
-              <a-button @click="resetFilters" class="d-flex align-items-center">
-                <ReloadOutlined />
+              <a-button @click="resetFilters" class="flex items-center justify-center bg-gray-100 hover:bg-gray-200">
+                <ReloadOutlined class="text-gray-600" />
               </a-button>
             </a-tooltip>
           </div>
+
           <a-table :columns="columns" :data-source="state.products" :pagination="{
             current: state.paginationParams.page,
             pageSize: state.paginationParams.size,
             total: state.totalItems,
             showSizeChanger: true,
             pageSizeOptions: ['10', '20', '30', '40', '50'],
-          }" :scroll="{ y: 240 }" style="margin-top: 10px">
+          }" :scroll="{ y: 558 }" class="bg-white rounded-md">
             <template #bodyCell="{ column, record }">
-              <div v-if="column.key === 'select'">
-                {{
-                  console.log(
-                    "Record ID from table:",
-                    record.id,
-                    " | Selected IDs:",
-                    state.selectedRows,
-                    " | Match:",
-                    state.selectedRows.includes(record.id)
-                  )
-                }}
-                <a-checkbox :checked="state.selectedRows.includes(record.id)"
-                  @change="onCheckboxChange(record.id, $event.target.checked)" />
-              </div>
-              <div v-if="column.key === 'stt'">
+              <template v-if="column.key === 'select'">
+                <a-checkbox 
+                  :checked="state.selectedRows.includes(record.id)"
+                  @change="onCheckboxChange(record.id, $event.target.checked)"
+                  :disabled="!product.loaiGiam" />
+              </template>
+              <template v-if="column.key === 'stt'">
                 {{ state.products.indexOf(record) + 1 }}
-              </div>
+              </template>
             </template>
           </a-table>
         </div>
@@ -107,15 +104,14 @@
         margin-top: 30px;
         margin-right: 50px;
       ">
-      <a-button style="background-color: aqua; width: 150px; margin-right: 700px" @click="closeModal">Quay
+      <a-button style="background-color: #58bddb; color: white; width: 150px; margin-right: 700px" @click="closeModal">Quay
         lại</a-button>
-      <a-button style="background-color: aqua; margin-right: 30px; width: 180px" html-type="submit"
+      <a-button style="background-color: #58bddb; color: white; margin-right: 30px; width: 180px" html-type="submit"
         @click="handleSubmit">{{
           label }}</a-button>
     </a-form-item>
-  </DivCustom>
-</template>
 
+</template>
 <script setup lang="ts">
 import {
   ref,
@@ -386,15 +382,15 @@ const columns: TableColumnsType = [
     align: "center",
   },
   { title: "STT", key: "stt", dataIndex: "stt", width: 150, align: "center" },
-  { title: "Mã KH", key: "ma", dataIndex: "ma", width: 150, align: "center" },
+  { title: "Mã khách hàng", key: "ma", dataIndex: "ma", width: 150, align: "center" },
   {
-    title: "Tên KH",
+    title: "Tên khách hàng",
     key: "ten",
     dataIndex: "ten",
     width: 150,
     align: "center",
   },
-  { title: "SDT", key: "sdt", dataIndex: "sdt", width: 150, align: "center" },
+  { title: "Số điện thoại", key: "sdt", dataIndex: "sdt", width: 150, align: "center" },
   {
     title: "Email",
     key: "email",
@@ -521,7 +517,6 @@ const onCheckboxChange = (id: string, checked: boolean) => {
   console.log("Current selected rows:", state.selectedRows);
 };
 
-
 const handleSubmit = async () => {
   try {
     await productForm.value.validate();
@@ -532,7 +527,6 @@ const handleSubmit = async () => {
     formData.append("ten", product?.value.ten?.trim() || "");
 
     console.log("Submitting product data:", product.value?.kieuGiam);
-
 
     formData.append(
       "soLuongPhieu",
@@ -555,7 +549,6 @@ const handleSubmit = async () => {
       formData.append("LoiPhanNay", product.value.phanTramGiam.toString());
       formData.append("giaGiam", product.value.giaGiam.toString());
     } else {
-
       formData.append("giaGiam", product.value.giaGiam.toString());
       formData.append("LoiPhanNay", product.value.giaGiam.toString()); // Đặt phanTramGiam về 0 khi dùng tiền
     }
@@ -645,7 +638,7 @@ onMounted(() => {
 }
 
 .breadcrumb-section {
-  margin-bottom: 25px;
+
   /* Space below the breadcrumb and above the first section */
   background-color: #fff;
   /* White background for the breadcrumb box */
@@ -680,5 +673,75 @@ onMounted(() => {
    Scoped styles prevent them from affecting the entire app. */
 body {
   font-family: "Roboto", sans-serif;
+}
+
+.form-container,
+.table-container {
+  padding: 20px;
+
+  /* Màu xanh Ant Design */
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.form-container,
+.table-container {
+  padding: 20px;
+  
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(10, 10, 10, 0.1);
+  background-color: #fff;
+}
+
+.table-container {
+  margin-top: 0px; /* Bỏ margin-top nếu dùng a-col */
+}
+
+/* Thêm style cho tiêu đề nếu muốn tùy chỉnh thêm */
+.table-container h5 {
+  margin-bottom: 16px; /* Khoảng cách dưới tiêu đề */
+  font-size: 1.25rem; /* Tăng kích thước font */
+  color: #333; /* Màu chữ */
+}
+
+.text-decoration-line-through {
+  text-decoration: line-through;
+}
+
+.table-container {
+  margin-top: 0px;
+  /* Bỏ margin-top nếu dùng a-col */
+}
+
+/* Style cho a-input khi hover, focus, và focused */
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important; /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; /* Đổ bóng màu xanh đậm */
+}
+
+/* Style cho a-input-number khi hover, focus, và focused */
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Style cho a-date-picker khi hover, focus, và focused */
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused), /* Khi DatePicker đã mở và focus vào */
+:deep(.ant-picker-focused .ant-picker-input > input), /* Đảm bảo input bên trong cũng bị ảnh hưởng */
+:deep(.ant-picker:focus-within) /* Dùng cho các component phức tạp có nhiều phần tử con */
+{
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Các style khác của bạn */
+.text-decoration-line-through {
+  text-decoration: line-through;
 }
 </style>

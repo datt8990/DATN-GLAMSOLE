@@ -1,3 +1,4 @@
+```vue
 <template>
   <DivCustom label="Bộ lọc">
     <div class="container-fluid">
@@ -21,7 +22,7 @@
         </div>
 
         <div class="col-md-4 col-sm-6 mb-3 filter-item">
-          <label for="kieu-giam-select" class="filter-label">Kiểu giảm:</label>
+          <label for="kieu-giam-select" class="filter-label">Kiểu giảm giá:</label>
           <a-select v-model:value="localKieuGiamFilter" class="select-input" allow-clear style="width: 100%"
             placeholder="Chọn kiểu giảm">
             <a-select-option :value="0">Phần trăm</a-select-option>
@@ -30,14 +31,14 @@
         </div>
 
         <div class="col-md-4 col-sm-12 mb-3 filter-item">
-          <span class="text-sm text-gray-600 mb-1">Chọn khoảng thời gian</span>
+          <label for="kieu-giam-select" class="filter-label">Chọn khoảng thời gian</label>
           <a-range-picker v-model:value="localDateRange" format="DD/MM/YYYY" :allowClear="true" style="width: 100%;"
             placeholder="Chọn khoảng thời gian" />
         </div>
       </div>
 
       <div class="row">
-        <div class="col-12 mt-3 d-flex justify-content-start">
+        <div class="col-12 mt-3 d-flex justify-content-end">
           <a-tooltip title="Làm mới bộ lọc">
             <a-button style="background-color: dimgrey; color: white" @click="resetFilters"
               class="reset-button filter-control-button">
@@ -53,7 +54,7 @@
 
 <script setup lang="ts">
 import { ref, watch, defineProps, defineEmits, computed } from 'vue';
-import DivCustom from '@/components/custom/Div/DivCustom.vue'; // Ensure this path is correct
+import DivCustom from '@/components/custom/Div/DivCustom.vue';
 import { ReloadOutlined } from '@ant-design/icons-vue';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
@@ -115,14 +116,12 @@ const resetFilters = () => {
   localDateRange.value = null;
 
   emit('update:searchQuery', '');
-  emit('update:kieuGiam', null); // Corrected typo back to 'kieuGiam'
+  emit('update:kieuGiam', null);
   emit('update:status', null);
   emit('update:startDate', null);
   emit('update:endDate', null);
 };
 </script>
-
----
 
 <style scoped lang="scss">
 /* Basic Bootstrap-like grid system for responsiveness */
@@ -153,14 +152,14 @@ const resetFilters = () => {
   max-width: 100%;
 }
 
-@media (min-width: 576px) { // Small devices (tablets, 576px and up)
+@media (min-width: 576px) {
   .col-sm-6 {
     flex: 0 0 50%;
     max-width: 50%;
   }
 }
 
-@media (min-width: 768px) { // Medium devices (desktops, 768px and up)
+@media (min-width: 768px) {
   .col-md-4 {
     flex: 0 0 33.333333%;
     max-width: 33.333333%;
@@ -168,7 +167,7 @@ const resetFilters = () => {
 }
 
 .mb-3 {
-  margin-bottom: 1rem !important; // Use !important to ensure it overrides defaults if needed
+  margin-bottom: 1rem !important;
 }
 
 .mt-3 {
@@ -225,8 +224,8 @@ const resetFilters = () => {
   align-items: center;
 }
 
-.justify-content-start {
-  justify-content: flex-start; /* Align the reset button to the left */
+.justify-content-end {
+  justify-content: flex-end;
 }
 
 .gap-2 {
@@ -239,5 +238,43 @@ const resetFilters = () => {
 
 body {
   font-family: 'Roboto', sans-serif;
+}
+
+/* Style cho a-input khi hover, focus, và focused */
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Style cho a-input-number khi hover, focus, và focused */
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Style cho a-date-picker khi hover, focus, và focused */
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused),
+:deep(.ant-picker-focused .ant-picker-input > input),
+:deep(.ant-picker:focus-within) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Style cho a-select khi hover, focus, và focused */
+:deep(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-select-focused:not(.ant-select-disabled) .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Đảm bảo mũi tên của select cũng có màu phù hợp */
+:deep(.ant-select:not(.ant-select-disabled) .ant-select-arrow) {
+  color: #58bddb !important;
 }
 </style>
