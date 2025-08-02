@@ -82,7 +82,7 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
 
     @Override
     public List<SanPhamChiTiet> getSanPhamByDot(String id) {
-        return sanPhamChiTietRepository.detailSPCTByDot(id);
+        return sanPhamChiTietRepository.detailSPCTByDot1(id);
     }
 
     @Override
@@ -282,9 +282,9 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
         if (start.isAfter(currentDateTime)) {
             return StatusPromotion.CHUA_KICH_HOAT;
         } else if (end.isBefore(currentDateTime)) {
-            return StatusPromotion.HET_HAN_KICH_HOAT;
-        } else {
             return StatusPromotion.DANG_KICH_HOAT;
+        } else {
+            return StatusPromotion.CHUA_KICH_HOAT;
         }
     }
 

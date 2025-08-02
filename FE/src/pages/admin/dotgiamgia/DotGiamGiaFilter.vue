@@ -8,7 +8,7 @@
         </label>
         <a-input 
           v-model:value="localFilters.ma" 
-          placeholder="Tìm kiếm"
+          placeholder="Nhập mã/tên đợt"
           style="width: 100%;"
         />
       </div>
@@ -17,7 +17,7 @@
         <label class="form-label">Từ ngày:</label>
         <a-date-picker 
           v-model:value="localFilters.ngayBatDau"
-          placeholder="Tìm kiếm"
+          placeholder="Chọn ngày bắt đầu"
           style="width: 100%;"
           format="DD/MM/YYYY"
           :inputReadOnly="true"
@@ -28,7 +28,7 @@
         <label class="form-label">Đến ngày:</label>
         <a-date-picker 
           v-model:value="localFilters.ngayKetThuc"
-          placeholder="Tìm kiếm"
+          placeholder="Chọn ngày kết thúc"
           style="width: 100%;"
           format="DD/MM/YYYY"
           :inputReadOnly="true"
@@ -42,7 +42,7 @@
         <label class="form-label">Giá trị giảm:</label>
         <a-input 
           v-model:value="localFilters.phanTramGiam" 
-          placeholder="Tìm kiếm"
+          placeholder="Nhập giá trị giảm"
           style="width: 100%;"
         />
       </div>
@@ -62,8 +62,8 @@
     <div class="d-flex justify-content-center gap-2 mt-3 col-md-4 mb-3 align-self-end">
       <a-tooltip title="Làm mới bộ lọc">
         <a-button @click="resetFilters" class="d-flex align-items-center"
-        style="background-color: #54bddb; border-color: #54bddb; color: white;">
-          Làm mới
+        style="background-color: dimgrey; border-color: dimgrey; color: white;">
+          Làm mới bộ lọc
           <ReloadOutlined />
         </a-button>
       </a-tooltip>
@@ -162,12 +162,14 @@ const resetFilters = () => {
 
 <style scoped>
 .promotion-icon {
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .form-label {
   font-weight: 500;
   margin-bottom: 0.5rem;
+  font-size: 15px;
+  font-weight: bold;
   color: #333;
 }
 

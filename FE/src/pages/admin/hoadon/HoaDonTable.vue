@@ -87,8 +87,13 @@
   </a-tag>
 </template>
 
+
           <template v-if="column.key === 'stt'">
             {{ products.indexOf(record) + 1 }}
+          </template>
+
+          <template v-if="column.key === 'tenKhachHang'">
+            {{ record.tenKhachHang != null ? record.tenKhachHang : 'Khách lẻ'}}
           </template>
 
           <template v-if="column.key === 'tongTien'">

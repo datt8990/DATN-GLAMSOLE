@@ -78,7 +78,7 @@
               cancel-text="Hủy"
               style="background-color: #54bddb; border-color: #54bddb"
             >
-              Thêm
+              Thêm mới đợt giảm giá
             </a-button>
           </a-popconfirm>
         </div>
@@ -155,20 +155,14 @@
               <div class="col-span-2 text-center">
                 {{ product.thuongHieu }}
               </div>
-              <div
-                style="color: green"
-                class="col-span-4 text-center"
-                :class="
-                  product.status === 'ACTIVE'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-red-500 text-red-600'
-                "
-              >
-                {{
-                  product.status === "ACTIVE"
-                    ? "Đang kinh doanh"
-                    : "Ngừng kinh doanh"
-                }}
+              <div class="col-span-4 text-center">
+                <a-tag :color="product.status == 'ACTIVE' ? 'green' : 'red'">
+                  {{
+                    product.status == "ACTIVE"
+                      ? "Đang kinh doanh"
+                      : "Ngừng kinh doanh"
+                  }}
+                </a-tag>
               </div>
             </div>
           </div>
@@ -1055,7 +1049,7 @@ onMounted(() => {
 }
 
 .text-sm {
-  font-size: 0.875rem;
+  font-size: 15px;
   line-height: 1.25rem;
 }
 

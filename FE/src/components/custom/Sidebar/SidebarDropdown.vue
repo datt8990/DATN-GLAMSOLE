@@ -71,7 +71,6 @@ const isActive = (item) => {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-
 /* Dot chỉ hiển thị khi hover hoặc active */
 .dropdown-link::before {
   content: "";

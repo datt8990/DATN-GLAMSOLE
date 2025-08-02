@@ -51,13 +51,18 @@
 
           <template v-if="column.key === 'operation'">
             <div class="d-flex gap-1 justify-center w-100">
-              <a-tooltip title="Cập nhật đợt giảm giá">
-                <a-button type="primary" @click="handleViewClick(record.id)"
+              <template v-if="record.trangThai !== 'HET_HAN_KICH_HOAT'">
+                <a-tooltip title="Cập nhật đợt giảm giá">
+                  <a-button
+                  type="primary"
+                  @click="handleViewClick(record.id)"
                   class="p-2 d-flex justify-content-center align-items-center"
-                  style="background-color: #54bddb; border-color: #096dd9; color: white;">
+                  style="background-color: #54bddb; border-color: #096dd9; color: white;"
+                  >
                   <EditOutlined style="font-size: 18px;" />
-                </a-button>
-              </a-tooltip>
+                  </a-button>
+                </a-tooltip>
+              </template>
             </div>
           </template>
         </template>
@@ -85,12 +90,12 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 const columns: TableColumnsType = [
   { title: 'STT', key: 'stt', dataIndex: 'stt', width: 70, align: 'center' },
   { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 100, align: 'center' },
-  { title: 'Tên Đợt', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
-  { title: 'Giá Trị Giảm', key: 'phanTramGiam', dataIndex: 'phanTramGiam', width: 90, align: 'center' },
-  { title: 'Ngày Bắt Đầu', key: 'ngayBatDau', dataIndex: 'ngayBatDau', width: 150, align: 'center' },
-  { title: 'Ngày Kết Thúc', key: 'ngayKetThuc', dataIndex: 'ngayKetThuc', width: 150, align: 'center' },
-  { title: 'Trạng Thái', key: 'trangThai', dataIndex: 'trangThai', width: 130, align: 'center' },
-  { title: 'Hành Động', key: 'operation', width: 100, align: 'center' }
+  { title: 'Tên đợt', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+  { title: 'Giá trị giảm', key: 'phanTramGiam', dataIndex: 'phanTramGiam', width: 90, align: 'center' },
+  { title: 'Ngày bắt đầu', key: 'ngayBatDau', dataIndex: 'ngayBatDau', width: 150, align: 'center' },
+  { title: 'Ngày kết thúc', key: 'ngayKetThuc', dataIndex: 'ngayKetThuc', width: 150, align: 'center' },
+  { title: 'Trạng thái', key: 'trangThai', dataIndex: 'trangThai', width: 130, align: 'center' },
+  { title: 'Hành động', key: 'operation', width: 100, align: 'center' }
 ]
 
 const handlePageChange = (pagination: any) => {
