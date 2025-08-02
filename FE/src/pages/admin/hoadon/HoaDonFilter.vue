@@ -36,16 +36,14 @@
 
       <!-- Nút làm mới -->
       <div class="filter-item reset-button-group">
-        <a-tooltip title="Làm mới bộ lọc">
           <a-button
-            style="background-color: dimgrey; color: white"
+            style="background-color: dimgrey; color: white; box-shadow: gray 1px 2px 2px;"
             @click="resetFilters"
             class="reset-button"
           >
             Đặt lại bộ lọc
             <ReloadOutlined />
           </a-button>
-        </a-tooltip>
       </div>
     </div>
 
