@@ -25,13 +25,23 @@ public class ADLoaiDeServiceImpl implements ADLoaiDeService {
     private final ADLoaiDeRepository adLoaiDeRepository;
 
     @Override
-    public ResponseObject<?> getAll(ADLoaiDeSearchRequest id) {
-        Pageable pageable = Helper.createPageable(id, "created_date");
+    public ResponseObject<?> getAll(ADLoaiDeSearchRequest request) {
+        Pageable pageable = Helper.createPageable(request, "created_date");
         Page<LoaiDe> page;
-        if (id.getQ() == null || id.getQ().isEmpty()) {
+        if ((request.getQ() == null || request.getQ().isEmpty()) && (request.getStatus() == null)) {
             page = adLoaiDeRepository.findAll(pageable);
         } else {
-            page = adLoaiDeRepository.findByMaContainingOrTenContaining(id.getQ(), id.getQ(), pageable);
+
+            if (request.getStatus() != null) {
+                if (request.getStatus() == 1) {
+                    request.setEntityStatus(EntityStatus.ACTIVE);
+                } else {
+                    request.setEntityStatus(EntityStatus.INACTIVE);
+                }
+            }
+
+            page = adLoaiDeRepository.getAllKhachHang(pageable,request.getQ(), request.getEntityStatus());
+
         }
 
         return new ResponseObject<>(

@@ -100,7 +100,7 @@
               </a-col>
 
               <a-col :span="8">
-                <a-form-item style="width: 250px; margin-left: 15px;" label="Xã/phường/Thị trấn" name="xaPhuong"
+                <a-form-item style="width: 250px; margin-left: 15px;" label="Xã/Phường/Thị trấn" name="xaPhuong"
                   :label-col="{ span: 24 }">
                   <a-select v-model:value="product.xa" placeholder="Chọn xã/phường/thị trấn"
                     @change="handleCommuneChange" :options="phuongXaOptions" label-in-value
@@ -140,10 +140,10 @@ import axios from 'axios';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useRoute, useRouter } from 'vue-router';
 import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
-import { getGHNProvinces, getGHNDistricts, getGHNWards } from '@/services/api/ghn.api'; // Import từ module của bạn
+import { getGHNProvinces, getGHNDistricts, getGHNWards } from '@/services/api/ghn.api';
 
 // Token GHN (thay bằng token thực tế từ GHN)
-const GHN_TOKEN = '72f634c6-58a2-11f0-8a1e-1e10d8df3c04'; // Thay bằng token thực tế
+const GHN_TOKEN = '72f634c6-58a2-11f0-8a1e-1e10d8df3c04';
 
 const route = useRoute();
 const router = useRouter();
@@ -185,7 +185,6 @@ const qrData = ref('');
 
 let html5QrCode: Html5Qrcode;
 
-// Initialize product with fields for storing codes
 const product = ref<KhachHangResponse>({
   id: '',
   ten: '',
@@ -195,12 +194,11 @@ const product = ref<KhachHangResponse>({
   ma: '',
   cccd: '',
   gioiTinh: true,
-  tinh: '', // Store ProvinceID
-  huyen: '', // Store DistrictID
-  xa: '', // Store WardCode
+  tinh: '',
+  huyen: '',
+  xa: '',
 });
 
-// Computed properties for a-select options
 const tinhThanhOptions = computed(() => {
   return tinhThanh.value.map(item => ({ value: item.ProvinceID.toString(), label: item.ProvinceName }));
 });
@@ -213,7 +211,84 @@ const phuongXaOptions = computed(() => {
   return phuongXa.value.map(item => ({ value: item.WardCode, label: item.WardName }));
 });
 
-// Handle province change
+// Hàm kiểm tra tên khách hàng
+const validateName = (_: any, value: any) => {
+  // Convert the value to a string if it's an array
+  const name = Array.isArray(value) ? value.join(' ') : value;
+
+  if (!name) {
+    return Promise.reject('Tên không được để trống!');
+  }
+
+  // Check for minimum character length (e.g., at least 2 characters)
+  const minLength = 2; // You can adjust this value
+  if (name.length < minLength) {
+    return Promise.reject(`Tên phải có ít nhất ${minLength} ký tự!`);
+  }
+
+  // Check that the name only contains letters and spaces, no numbers or special characters
+  const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+  if (!nameRegex.test(name)) {
+    return Promise.reject('Tên chỉ được chứa chữ cái và dấu cách, không chứa số hoặc ký tự đặc biệt!');
+  }
+
+  return Promise.resolve();
+};
+
+// Hàm kiểm tra ngày sinh
+const validateNgaySinh = (_: any, value: any) => {
+  if (!value) {
+    return Promise.reject('Ngày sinh không được để trống!');
+  }
+  const today = dayjs();
+  if (dayjs(value).isSame(today, 'day') || dayjs(value).isAfter(today)) {
+    return Promise.reject('Ngày sinh không được là ngày hiện tại hoặc trong tương lai!');
+  }
+  return Promise.resolve();
+};
+
+// Cập nhật rules với các quy tắc mới
+const rules = {
+  name: [
+    { required: true, validator: validateName, trigger: 'blur' }
+  ],
+  avatar: [
+    { required: true, message: 'Ảnh đại diện không được để trống!', trigger: 'change' }
+  ],
+  cccd: [
+    { required: true, message: 'Mã định danh không được để trống!', trigger: 'blur' },
+    { pattern: /^[0-9]{9,12}$/, message: 'Mã định danh phải là số và có độ dài từ 9 đến 12 ký tự!', trigger: 'blur' },
+  ],
+  ngaySinh: [
+    { required: true, validator: validateNgaySinh, trigger: 'change' }
+  ],
+  sdt: [
+    { required: true, message: 'Số điện thoại không được để trống!', trigger: 'blur' },
+    { pattern: /^[0-9]{10}$/, message: 'Số điện thoại phải là 10 chữ số!', trigger: 'blur' },
+  ],
+  gioiTinh: [
+    { required: true, message: 'Giới tính không được để trống!', trigger: 'change' }
+  ],
+  email: [
+    { required: true, message: 'Email không được để trống!', trigger: 'blur' },
+    { type: 'email', message: 'Email không hợp lệ!', trigger: 'blur' },
+    { pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/, message: 'Email phải có đuôi @gmail.com!', trigger: 'blur' }
+  ],
+  diaChi: [
+    { required: true, message: 'Địa chỉ không được để trống!', trigger: 'blur' }
+  ],
+  tinhThanhPho: [
+    { required: true, message: 'Tỉnh/thành phố không được để trống!', trigger: 'change' }
+  ],
+  quanHuyen: [
+    { required: true, message: 'Quận/huyện không được để trống!', trigger: 'change' }
+  ],
+  xaPhuong: [
+    { required: true, message: 'Xã/phường/thị trấn không được để trống!', trigger: 'change' }
+  ]
+};
+
+// Các hàm khác giữ nguyên
 const handleProvinceChange = (value: { value: string; label: string }) => {
   product.value.tinh = value.value;
   product.value.huyen = '';
@@ -225,7 +300,6 @@ const handleProvinceChange = (value: { value: string; label: string }) => {
   }
 };
 
-// Handle district change
 const handleDistrictChange = (value: { value: string; label: string }) => {
   product.value.huyen = value.value;
   product.value.xa = '';
@@ -235,7 +309,6 @@ const handleDistrictChange = (value: { value: string; label: string }) => {
   }
 };
 
-// Handle commune change
 const handleCommuneChange = (value: { value: string; label: string }) => {
   product.value.xa = value.value;
 };
@@ -302,7 +375,6 @@ const stopQrScanning = () => {
   }
 };
 
-// Fetch data from GHN
 const fetchGHNProvinces = async () => {
   try {
     const provinces = await getGHNProvinces(GHN_TOKEN);
@@ -334,27 +406,6 @@ const fetchGHNWards = async (districtId: number) => {
     console.error('Lỗi khi lấy danh sách phường/xã:', error);
     toast.error('Không lấy được danh sách phường/xã.');
   }
-};
-
-const rules = {
-  name: [{ required: true, message: 'Tên không được để trống!', trigger: 'blur' }],
-  avatar: [{ required: true, message: 'Ảnh đại diện không được để trống!', trigger: 'blur' }],
-  cccd: [
-    { required: true, message: 'Mã định danh không được để trống!', trigger: 'blur' },
-    { pattern: /^[0-9]{9,12}$/, message: 'Mã định danh phải là số và có độ dài từ 9 đến 12 ký tự!', trigger: 'blur' },
-  ],
-  ngaySinh: [{ required: true, message: 'Ngày sinh không được để trống!', trigger: 'blur' }],
-  sdt: [
-    { required: true, message: 'Số điện thoại không được để trống!', trigger: 'blur' },
-    { pattern: /^[0-9]{10}$/, message: 'Số điện thoại phải là 10 chữ số!', trigger: 'blur' },
-  ],
-  gioiTinh: [{ required: true, message: 'Giới tính không được để trống!', trigger: 'blur' }],
-  email: [
-    { required: true, message: 'Email không được để trống!', trigger: 'blur' },
-    { type: 'email', message: 'Email không hợp lệ!', trigger: 'blur' },
-    { pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/, message: 'Email phải có đuôi @gmail.com!', trigger: 'blur' }
-  ],
-  diaChi: [{ required: true, message: 'Địa chỉ không được để trống!', trigger: 'blur' }],
 };
 
 const fetchProductDetails = async (id: string) => {
@@ -468,6 +519,17 @@ const handleSubmit = async () => {
     }
 
     const res = await modifyKhachHang(formData);
+
+    if (res.message == 'số điện thoạt đã tồn tại') {
+      toast.error(res.message)
+      return
+    }
+
+    if (res.message == 'mã định danh đã tồn tại') {
+      toast.error(res.message)
+      return
+    }
+
 
     nextTick(() => {
       sessionStorage.setItem('appToastMessage', JSON.stringify({
@@ -619,8 +681,10 @@ a-image .avatar-upload {
 :deep(.ant-input:hover),
 :deep(.ant-input:focus),
 :deep(.ant-input-focused) {
-  border-color: #58bddb !important; /* Màu xanh đậm hơn */
-  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; /* Đổ bóng màu xanh đậm */
+  border-color: #58bddb !important;
+  /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng màu xanh đậm */
 }
 
 /* Style cho a-input-number khi hover, focus, và focused */
@@ -633,15 +697,71 @@ a-image .avatar-upload {
 
 /* Style cho a-date-picker khi hover, focus, và focused */
 :deep(.ant-picker:hover),
-:deep(.ant-picker-focused), /* Khi DatePicker đã mở và focus vào */
-:deep(.ant-picker-focused .ant-picker-input > input), /* Đảm bảo input bên trong cũng bị ảnh hưởng */
-:deep(.ant-picker:focus-within) /* Dùng cho các component phức tạp có nhiều phần tử con */
-{
+:deep(.ant-picker-focused),
+/* Khi DatePicker đã mở và focus vào */
+:deep(.ant-picker-focused .ant-picker-input > input),
+/* Đảm bảo input bên trong cũng bị ảnh hưởng */
+:deep(.ant-picker:focus-within)
+
+/* Dùng cho các component phức tạp có nhiều phần tử con */
+  {
   border-color: #58bddb !important;
   box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
 }
 
 body {
   font-family: 'Roboto', sans-serif;
+}
+
+:deep(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+:deep(.ant-select-focused:not(.ant-select-disabled) .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng màu xanh đậm */
+}
+
+/* Đảm bảo hiệu ứng khi focus hoặc mở dropdown */
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng màu xanh đậm */
+}
+
+/* Style cho option khi hover trong dropdown */
+:deep(.ant-select-item-option-active) {
+  background-color: #e6f7ff !important;
+  /* Nền xanh nhạt khi hover trên option */
+}
+
+/* Đảm bảo các combobox trong form không bị ảnh hưởng bởi style khác */
+:deep(.ant-select-selector) {
+  border-radius: 4px !important;
+  /* Giữ đồng nhất với các input */
+}
+
+/* Style cho a-button khi hover */
+:deep(.ant-btn:hover),
+:deep(.ant-btn:focus) {
+  background-color: #4aa8c6 !important;
+  /* Màu xanh đậm hơn khi hover */
+  border-color: #4aa8c6 !important;
+  color: white !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng xanh */
+}
+
+/* Style cho a-radio khi hover */
+:deep(.ant-radio-wrapper:hover .ant-radio-inner) {
+  border-color: #58bddb !important;
+  /* Viền xanh khi hover */
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio .ant-radio-inner::after) {
+  background-color: #58bddb !important;
+  /* Điểm chọn xanh khi hover */
 }
 </style>

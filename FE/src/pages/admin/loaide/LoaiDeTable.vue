@@ -1,19 +1,19 @@
 <template>
     <DivCustom label="Danh sách loại đế" customClasses="mt-5">
-                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                    {{ products.length }} loại đế
-                </div>
-
-                <div>
-                    <a-tooltip title="Thêm kích thước">
-                        <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
-                            class="d-flex justify-content-center align-items-center px-4">
-                            <PlusCircleOutlined /> Thêm mới kích thước
-                        </a-button>
-                    </a-tooltip>
-                </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
+                {{ products.length }} loại đế
             </div>
+
+            <div>
+                <a-tooltip title="Thêm loại đế">
+                    <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
+                        class="d-flex justify-content-center align-items-center px-4 add-customer-btn">
+                        <PlusCircleOutlined /> Thêm mới loại đế
+                    </a-button>
+                </a-tooltip>
+            </div>
+        </div>
 
         <div class="min-h-[360px] ">
             <a-table :columns="columns" :data-source="products" :pagination="{
@@ -25,27 +25,31 @@
             }" :scroll="{ y: 240 }" @change="handlePageChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'status'">
-                            <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
-                                {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
-                            </a-tag>    
+                        <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
+                            {{ record.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động' }}
+                        </a-tag>
                     </template>
                     <div v-if="column.key === 'stt'">
                         {{ products.indexOf(record) + 1 }}
                     </div>
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
-                            <a-tooltip title="Chỉnh sửa kích thước">
-                                <a-button type="primary" style="background-color: #54bddb;" @click="handleViewClick(record.id)"
-                                    class="p-2 d-flex justify-content-center align-items-center">
+                            <a-tooltip title="Chỉnh sửa loại đế">
+                                <a-button type="primary" style="background-color: #54bddb;"
+                                    @click="handleViewClick(record.id)"
+                                    class="p-2 d-flex justify-content-center align-items-center add-customer-btn">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
-                                @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #9b6dc7;" type="primary" class="p-2 d-flex justify-content-center align-items-center">
-                                    <RedoOutlined />
-                                </a-button>
-                            </a-popconfirm>
+                            <a-tooltip title="Thay đổi trạng loại đế">
+                                <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
+                                    @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+                                    <a-button style="background-color: #9b6dc7;" type="primary"
+                                        class="p-2 d-flex justify-content-center align-items-center add-customer-btn1">
+                                        <RedoOutlined />
+                                    </a-button>
+                                </a-popconfirm>
+                            </a-tooltip>
                         </div>
                     </template>
                     <!-- <template v-if="column.key === 'operation'">
@@ -81,8 +85,8 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
-    { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
-    { title: 'Tên', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+    { title: 'Mã loại đế', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
+    { title: 'Tên loại đế', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',
@@ -124,9 +128,8 @@ const handleViewClick = (id: string) => {
 }
 </script>
 <style scoped lang="scss">
-
-body{
-      font-family: 'Roboto', sans-serif;
+body {
+    font-family: 'Roboto', sans-serif;
 }
 
 .color {
@@ -145,5 +148,35 @@ body{
     justify-content: center;
     align-items: center;
     /* Ensures vertical alignment as well */
-}    
+}
+
+.color {
+    border-radius: 50%;
+}
+
+.center-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-customer-btn {
+    transition: all 0.3s ease;
+}
+
+.add-customer-btn:hover {
+    background-color: #3aa8c1 !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.add-customer-btn1 {
+    transition: all 0.3s ease;
+}
+
+.add-customer-btn1:hover {
+    background-color: #bc33ce !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
 </style>

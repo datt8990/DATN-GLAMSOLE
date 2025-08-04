@@ -2,17 +2,17 @@
   <a-modal :open="open" :title="props.title" width="400px">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
-        <a-button type="primary">Xác nhận</a-button>
+        <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
       </a-popconfirm>
       <a-button @click="closeModal">Huỷ</a-button>
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="tên thương hiệu" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="Tên thương hiệu" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"
-          placeholder="Nhập thương hiệu"
+          placeholder="Nhập tên thương hiệu"
           style="border-radius: 4px;"
         />
       </a-form-item>
@@ -100,3 +100,69 @@ const handleSubmit = async () => {
 
 const closeModal = () => emit('close');
 </script>
+<style lang="css" scoped>
+
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused),
+:deep(.ant-picker-focused .ant-picker-input > input),
+:deep(.ant-picker:focus-within) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+:deep(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+:deep(.ant-select-focused:not(.ant-select-disabled) .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-select-item-option-active) {
+  background-color: #e6f7ff !important;
+}
+
+:deep(.ant-select-selector) {
+  border-radius: 4px !important;
+}
+
+:deep(.ant-btn:hover),
+:deep(.ant-btn:focus) {
+  background-color: #4aa8c6 !important;
+  border-color: #4aa8c6 !important;
+  color: white !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio-inner) {
+  border-color: #58bddb !important;
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio .ant-radio-inner::after) {
+  background-color: #58bddb !important;
+}
+
+</style>

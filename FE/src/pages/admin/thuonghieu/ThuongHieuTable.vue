@@ -1,7 +1,7 @@
 <template>
     <DivCustom label="Danh sách thương hiệu" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-           <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
+            <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
                 {{ products.length }} kích thước
             </div>
 
@@ -35,17 +35,21 @@
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center">
                             <a-tooltip title="Chỉnh sửa thương hiệu">
-                                <a-button style="background-color: #54bddb;" type="primary" @click="handleViewClick(record.id)"
+                                <a-button style="background-color: #54bddb;" type="primary"
+                                    @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
-                                @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #9b6dc7;" type="primary" class="p-2 d-flex justify-content-center align-items-center">
-                                    <RedoOutlined />
-                                </a-button>
-                            </a-popconfirm>
+                            <a-tooltip title="thay đổi trạng thái">
+                                <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
+                                    @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+                                    <a-button style="background-color: #9b6dc7;" type="primary"
+                                        class="p-2 d-flex justify-content-center align-items-center">
+                                        <RedoOutlined />
+                                    </a-button>
+                                </a-popconfirm>
+                            </a-tooltip>
                         </div>
                     </template>
                     <!-- <template v-if="column.key === 'operation'">
@@ -81,8 +85,8 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
-    { title: 'Mã size', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
-    { title: 'Tên size', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+    { title: 'Mã thương hiệu', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
+    { title: 'Tên thương hiệu', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',
@@ -125,9 +129,8 @@ const handleViewClick = (id: string) => {
 </script>
 
 <style scoped lang="scss">
-
-body{
-      font-family: 'Roboto', sans-serif;
+body {
+    font-family: 'Roboto', sans-serif;
 }
 
 .color {
@@ -146,5 +149,5 @@ body{
     justify-content: center;
     align-items: center;
     /* Ensures vertical alignment as well */
-}    
+}
 </style>

@@ -1,15 +1,15 @@
 <template>
     <DivCustom label="Danh sách danh mục" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-               <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
+            <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
                 {{ products.length }} danh mục
             </div>
 
             <div>
-                <a-tooltip title="Thêm kích thước">
+                <a-tooltip title="Thêm danh mục">
                     <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
                         class="d-flex justify-content-center align-items-center px-4">
-                        <PlusCircleOutlined /> Thêm mới kích thước
+                        <PlusCircleOutlined /> Thêm mới danh mục
                     </a-button>
                 </a-tooltip>
             </div>
@@ -40,13 +40,15 @@
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
-                                @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #9b6dc7;" type="primary"
-                                    class="p-2 d-flex justify-content-center align-items-center">
-                                    <RedoOutlined />
-                                </a-button>
-                            </a-popconfirm>
+                            <a-tooltip title="Chỉnh sửa danh mục">
+                                <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
+                                    @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+                                    <a-button style="background-color: #9b6dc7;" type="primary"
+                                        class="p-2 d-flex justify-content-center align-items-center">
+                                        <RedoOutlined />
+                                    </a-button>
+                                </a-popconfirm>
+                            </a-tooltip>
                         </div>
                     </template>
                     <!-- <template v-if="column.key === 'operation'">
@@ -82,8 +84,8 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
-    { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
-    { title: 'Tên', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+    { title: 'Mã danh mục ', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
+    { title: 'Tên danh mục', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',
