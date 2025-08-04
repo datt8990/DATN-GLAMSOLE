@@ -97,7 +97,7 @@
       <!-- Buttons for status update -->
       <div class="mt-4 flex gap-2 justify-center">
         <a-button
-          style="background-color: #58bddb"
+          style="background-color: #58bddb; box-shadow: gray 1px 2px 2px"
           v-if="canConfirmOrder"
           type="primary"
           :disabled="isConfirmOrderDisabled"
@@ -114,7 +114,7 @@
           Hoàn thành đơn hàng
         </a-button> -->
         <a-button
-          style="background-color: #58bddb; margin-left: 5px"
+          style="background-color: #58bddb; margin-left: 5px; box-shadow: gray 1px 2px 2px;"
           v-if="canCancelOrder1"
           type="primary"
           danger
@@ -134,6 +134,43 @@
           <div class="order-info-column">
             <div class="order-info-row">
               <span class="label">Trạng thái:</span>
+              <!-- <a-tag style="margin-left: auto;"
+              :color="
+                displayStatus === 'Chờ xác nhận'
+                  ? 'orange'
+                  : displayStatus === 'Đã xác nhận'
+                  ? 'gold'
+                  : displayStatus === 'Chờ giao'
+                  ? 'blue'
+                  : displayStatus === 'Đang giao'
+                  ? 'cyan'
+                  : displayStatus === 'Xác nhận thanh toán'
+                  ? 'purple'
+                  : displayStatus === 'Hoàn thành'
+                  ? 'green'
+                  : displayStatus === 'Đã hủy'
+                  ? 'red'
+                  : 'default'
+              "
+            >
+              {{
+                displayStatus === "Chờ xác nhận"
+                  ? "Chờ xác nhận"
+                  : displayStatus === "Đã xác nhận"
+                  ? "Đã xác nhận"
+                  : displayStatus === "Chờ giao"
+                  ? "Chờ giao"
+                  : displayStatus === "Đang giao"
+                  ? "Đang giao"
+                  : displayStatus === "Xác nhận thanh toán"
+                  ? "Xác nhận thanh toán"
+                  : displayStatus === "Hoàn thành"
+                  ? "Hoàn thành"
+                  : displayStatus === "Đã hủy"
+                  ? "Đã hủy"
+                  : "Không rõ"
+              }}
+            </a-tag> -->
               <span class="value status">{{ displayStatus }}</span>
             </div>
             <div class="order-info-row">
@@ -239,7 +276,7 @@
     <a-card title="LỊCH SỬ THANH TOÁN" bordered class="order-info-card">
       <div class="flex justify-end mb-4">
         <a-button
-          style="background-color: #58bddb"
+          style="background-color: #58bddb; box-shadow: gray 1px 2px 2px;"
           v-if="canConfirmPayment"
           :key="hoaDon?.trangThaiHoaDon"
           type="primary"

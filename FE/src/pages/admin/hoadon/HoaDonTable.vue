@@ -294,6 +294,19 @@ const formatDate = (timestamp: number) => {
   }
 
 :deep(.ant-tabs-tab) {
-  padding: 0; // Remove default padding to let tab-item control the size
+  padding: 0;
+}
+
+:deep(.ant-tabs-tab-active) {
+  background-color: #e6faff !important; 
+  border-radius: 6px 6px 0 0;
+}
+
+:deep(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+  color: #58bddb !important;
+}
+
+:deep(.ant-tabs-ink-bar) {
+  background-color: #58bddb !important;
 }
 </style>
