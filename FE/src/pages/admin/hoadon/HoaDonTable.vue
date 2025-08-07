@@ -87,7 +87,6 @@
   </a-tag>
 </template>
 
-
           <template v-if="column.key === 'stt'">
             {{ products.indexOf(record) + 1 }}
           </template>
@@ -105,12 +104,12 @@
           </template>
 
           <template v-if="column.key === 'operation'">
-            <div class="d-flex gap-1 justify-center w-100">
+            <div class="d-flex justify-content-center w-100 h-100">
               <a-tooltip title="Chi tiết hóa đơn">
                 <a-button
                   type="primary"
-                   @click="handleViewClick(record.maHoaDon, record.id)"
-                  class="p-2 d-flex justify-content-center align-items-center"
+                  @click="handleViewClick(record.maHoaDon, record.id)"
+                  class="p-2 d-flex justify-content-center align-items-center detail-btn"
                   style="
                     background-color: #54bddb;
                     border-color: #54bddb;
@@ -147,37 +146,37 @@ const emit = defineEmits(["page-change", "add", "view", "changeStatus","tab-chan
 
 
 const columns: TableColumnsType = [
-  { title: "STT", key: "stt", dataIndex: "stt", width: 60, align: "center" },
+  { title: "Stt", key: "stt", dataIndex: "stt", width: 60, align: "center" },
   {
-    title: "Mã Hóa Đơn",
+    title: "Mã hóa đơn",
     key: "maHoaDon",
     dataIndex: "maHoaDon",
     width: 115,
     align: "center",
   },
   {
-    title: "Tên Khách Hàng",
+    title: "Tên khách hàng",
     key: "tenKhachHang",
     dataIndex: "tenKhachHang",
     width: 135,
     align: "center",
   },
   {
-    title: "SDT Khách Hàng",
+    title: "SĐT khách hàng",
     key: "sdtKhachHang",
     dataIndex: "sdtKhachHang",
     width: 138,
     align: "center",
   },
   {
-    title: "Loại Hóa Đơn",
+    title: "Loại hóa đơn",
     key: "loaiHD",
     dataIndex: "loaiHoaDon",
     width: 119,
     align: "center",
   },
   {
-    title: "Mã Nhân Viên",
+    title: "Mã nhân viên",
     key: "maNhanVien",
     dataIndex: "maNhanVien",
     width: 125,
@@ -191,14 +190,14 @@ const columns: TableColumnsType = [
   //   align: "center",
   // },
   {
-    title: "Tổng Tiền",
+    title: "Tổng tiền",
     key: "tongTien",
     dataIndex: "tongTien",
     width: 120,
     align: "center",
   },
   {
-    title: "Ngày Tạo",
+    title: "Ngày tạo",
     key: "ngayTao",
     dataIndex: "createdDate",
     width: 115,
@@ -308,5 +307,14 @@ const formatDate = (timestamp: number) => {
 
 :deep(.ant-tabs-ink-bar) {
   background-color: #58bddb !important;
+}
+
+.detail-btn {
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.detail-btn:hover {
+  background-color: #3fa3b9 !important;
+  transform: scale(1.05);
 }
 </style>

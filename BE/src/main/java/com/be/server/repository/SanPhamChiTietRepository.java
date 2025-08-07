@@ -47,7 +47,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             WHERE
                 sp.id = :idSP
                 AND spct.status = 0
-                AND dgg.trangThai != 'DANG_KICH_HOAT'
+                AND (dgg.trangThai IS NULL OR dgg.trangThai != 'DANG_KICH_HOAT')
             """)
     List<SanPhamChiTiet> detailSPCTByDot1(String idSP);
 }

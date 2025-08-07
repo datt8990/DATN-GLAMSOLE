@@ -60,6 +60,7 @@
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
+                            <a-tooltip title="Thay đổi trạng thái">
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
                                 <a-button style="background-color: #9b6dc7;" type="primary"
@@ -67,6 +68,7 @@
                                     <RedoOutlined />
                                 </a-button>
                             </a-popconfirm>
+                            </a-tooltip>
                         </div>
                     </template>
                 </template>
@@ -97,8 +99,8 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
-    { title: 'Mã Nhân Viên', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
-    { title: 'Tên Nhân viên', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+    { title: 'Mã nhân viên', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
+    { title: 'Tên nhân viên', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Email', key: 'email', dataIndex: 'email', width: 150, align: 'center' },
     { title: 'Số điện thoại', key: 'sdt', dataIndex: 'sdt', width: 150, align: 'center' },
     { title: 'Ngày tham gia', key: 'createdDate', dataIndex: 'createdDate', width: 150, align: 'center' },
@@ -157,4 +159,23 @@ const handleViewClick = (id: string) => {
     justify-content: center;
     align-items: center;
 }
+
+:deep(.ant-btn) {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.00);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+}
+
+:deep(.ant-btn-primary) {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.00);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+}
+
 </style>

@@ -59,6 +59,16 @@ public class ADNhanVienServiceImpl implements ADNhanVienService {
 
     @Override
     public ResponseObject<?> modifyMNhanVien(ADNhanVienRequest request) {
+        if (request.getCccd() != null && checkDuplicateField("cccd", request.getCccd(), request.getId())) {
+            throw new RuntimeException("Mã định danh (CCCD) đã tồn tại!");
+        }
+        if (request.getSdt() != null && checkDuplicateField("sdt", request.getSdt(), request.getId())) {
+            throw new RuntimeException("Số điện thoại đã tồn tại!");
+        }
+        if (request.getEmail() != null && checkDuplicateField("email", request.getEmail(), request.getId())) {
+            throw new RuntimeException("Email đã tồn tại!");
+        }
+
         if (request.getId() != null && StringUtils.hasLength(request.getId())) {
             Optional<NhanVien> exsitingMemberOpt = adNhanVienRepository.findById(request.getId());
 
@@ -190,5 +200,15 @@ public class ADNhanVienServiceImpl implements ADNhanVienService {
         return nemberOptional
                 .map(product -> ResponseObject.successForward(HttpStatus.OK, "Đổi trạng thái thành công"))
                 .orElseGet(() -> ResponseObject.successForward(HttpStatus.NOT_FOUND, "Không tìm nhân viên "));
+    }
+
+    @Override
+    public boolean checkDuplicateField(String field, String value, String excludeId) {
+        return switch (field.toLowerCase()) {
+            case "cccd" -> adNhanVienRepository.existsByCccdAndIdNot(value, excludeId);
+            case "sdt" -> adNhanVienRepository.existsBySdtAndIdNot(value, excludeId);
+            case "email" -> adNhanVienRepository.existsByEmailAndIdNot(value, excludeId);
+            default -> throw new IllegalArgumentException("Trường không hợp lệ: " + field);
+        };
     }
 }

@@ -24,9 +24,9 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                     mau_sac.ten_mau_sac AS mauSac,
                     kich_co.ten_kich_co AS size,
                     hdct.so_luong AS soLuong,
-                    spct.gia_ban AS giaBan,
+                    hdct.gia_ban AS giaBan,
                     (
-                        SELECT SUM(hdsub.so_luong * spctsub.gia_ban)
+                        SELECT SUM(hdsub.so_luong * hdsub.gia_ban)
                         FROM hoa_don_chi_tiet hdsub
                         JOIN san_pham_chi_tiet spctsub ON spctsub.id = hdsub.id_spct
                         WHERE hdsub.id_hoa_don = hd.id
@@ -43,7 +43,7 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                     pgg.ten_phieu_giam_gia AS tenVoucher,
                     pgg.gia_giam_toi_da AS giaTriVoucher,
                     hd.tong_tien_sau_giam AS tongTienSauGiam,
-                    hdct.gia_ban AS tongTien
+                    (hdct.gia_ban * hdct.so_luong ) AS tongTien
                 FROM hoa_don_chi_tiet hdct
                 LEFT JOIN hoa_don hd ON hdct.id_hoa_don = hd.id
                 LEFT JOIN phieu_giam_gia pgg ON hd.id_voucher = pgg.id
