@@ -1,14 +1,15 @@
-<template> 
+<template>
     <DivCustom label="Danh sách khách hàng" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-               <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
+            <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
                 {{ products.length }} khách hàng
             </div>
-   
+
             <div>
                 <a-tooltip title="Thêm khách hàng">
-                    <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
-                        class="d-flex justify-content-center align-items-center px-4">
+                    <a-button style="background-color: #54bddb;" type="primary"
+                        class="add-customer-btn px-4 d-flex justify-content-center align-items-center"
+                        @click="handleAddClick">
                         <PlusCircleOutlined /> Thêm mới khách hàng
                     </a-button>
                 </a-tooltip>
@@ -50,17 +51,19 @@
                             <a-tooltip title="Chỉnh sửa khách hàng">
                                 <a-button style="background-color: #54bddb;" type="primary"
                                     @click="handleViewClick(record.id)"
-                                    class="p-2 d-flex justify-content-center align-items-center">
+                                    class="p-2 d-flex justify-content-center align-items-center add-customer-btn ">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
-                                @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #9b6dc7;" type="primary"
-                                    class="p-2 d-flex justify-content-center align-items-center">
-                                    <RedoOutlined />
-                                </a-button>
-                            </a-popconfirm>
+                            <a-tooltip title="thay đổi trạng thái khách hàng">
+                                <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
+                                    @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+                                    <a-button style="background-color: #9b6dc7;" type="primary"
+                                        class="p-2 d-flex justify-content-center align-items-center add-customer-btn1 ">
+                                        <RedoOutlined />
+                                    </a-button>
+                                </a-popconfirm>
+                            </a-tooltip>
                         </div>
                     </template>
                 </template>
@@ -91,9 +94,9 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 150, align: 'center' },
-    { title: 'Mã KH', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
-    { title: 'Tên KH', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
-    { title: 'SDT', key: 'sdt', dataIndex: 'sdt', width: 150, align: 'center' },
+    { title: 'Mã khách hàng', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
+    { title: 'Tên khách hàng', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+    { title: 'Số điện thoại', key: 'sdt', dataIndex: 'sdt', width: 150, align: 'center' },
     { title: 'Ngày tham gia', key: 'createdDate', dataIndex: 'createdDate', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
@@ -155,5 +158,25 @@ const handleViewClick = (id: string) => {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.add-customer-btn {
+    transition: all 0.3s ease;
+}
+
+.add-customer-btn:hover {
+    background-color: #3aa8c1 !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.add-customer-btn1 {
+    transition: all 0.3s ease;
+}
+
+.add-customer-btn1:hover {
+    background-color: #bc33ce !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 </style>

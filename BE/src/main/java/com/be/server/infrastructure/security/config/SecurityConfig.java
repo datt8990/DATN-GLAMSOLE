@@ -114,6 +114,7 @@ public class SecurityConfig {
                 auth -> auth.requestMatchers(
                                 "/auth/**",
                                 Helper.appendWildcard(MappingConstants.API_AUTH_PREFIX),
+                                Helper.appendWildcard(MappingConstants.API_PERMITALL_PREFIX),
                                 "/oauth2/**"
                         )
                         .permitAll()
@@ -122,7 +123,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 auth -> auth
                         .requestMatchers(Helper.appendWildcard(MappingConstants.API_ADMIN_PREFIX)).hasAnyAuthority(Role.ADMIN.name())
-//                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_ADMIN_PREFIX)).permitAll()
+//                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_PERMITALL_PREFIX)).permitAll()
 
         );
 

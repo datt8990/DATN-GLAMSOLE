@@ -23,7 +23,7 @@
         <a-form-item name="ten" :label-col="{ span: 24 }">
           <template #label>
             <span style="color: red;">* </span>
-            <span>Tên Sản Phẩm</span>
+            <span>Tên sản phẩm</span>
           </template>
           <a-auto-complete v-model:value="formData.ten" :options="filteredProductNames"
             @search="handleProductNameSearch" @select="handleProductNameSelect"
@@ -210,7 +210,7 @@
   </a-modal>
 
   <a-modal v-model:open="isSizeModalVisible" title="Chọn kích thước" width="400px" @cancel="handleCloseSizeModal">
-    <a-button class="input-button-model" @click="handleAddSizeClick">+ Thêm Kích thước</a-button>
+    <a-button class="input-button-model" @click="handleAddSizeClick">+ Thêm kích thước</a-button>
     <div class="color-picker">
       <a-button v-for="(size, index) in SizeOptions" :key="index" class="size-color-btn" @click="handleSelectSize(size)"
         :class="{ 'selected-option-border': selectedSizes.some(s => s.value === size.value) }">

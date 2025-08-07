@@ -8,7 +8,7 @@
             <div>
                 <a-tooltip title="Thêm phiếu giảm giá">
                     <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
-                        class="d-flex justify-content-center align-items-center px-4">
+                        class="d-flex justify-content-center align-items-center px-4 add-customer-btn">
                         <PlusCircleOutlined /> Thêm mới phiếu giảm giá
                     </a-button>
                 </a-tooltip>
@@ -30,7 +30,8 @@
                     </template>
 
                     <template v-if="column.key === 'phanTramGiam'">
-                        {{ record.kieuGiam == true ? record.phanTramGiam + '%' : formatCurrencyVND(record.phanTramGiam) }}
+                        {{ record.kieuGiam == true ? record.phanTramGiam + '%' : formatCurrencyVND(record.phanTramGiam)
+                        }}
                     </template>
 
                     <div v-if="column.key === 'stt'">
@@ -41,17 +42,19 @@
                             <a-tooltip title="Chỉnh sửa phiếu giảm giá">
                                 <a-button style="background-color: #54bddb;" type="primary"
                                     @click="handleViewClick(record.id)"
-                                    class="p-2 d-flex justify-content-center align-items-center">
+                                    class="p-2 d-flex justify-content-center align-items-center add-customer-btn">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
-                                @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #9b6dc7;" type="primary"
-                                    class="p-2 d-flex justify-content-center align-items-center">
-                                    <RedoOutlined />
-                                </a-button>
-                            </a-popconfirm>
+                            <a-tooltip title="Thay đổi trạng thái phiếu giảm giá">
+                                <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
+                                    @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+                                    <a-button style="background-color: #9b6dc7;" type="primary"
+                                        class="p-2 d-flex justify-content-center align-items-center add-customer-btn1">
+                                        <RedoOutlined />
+                                    </a-button>
+                                </a-popconfirm>
+                            </a-tooltip>
                         </div>
                     </template>
                 </template>
@@ -81,37 +84,37 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 80, align: 'center' },
-    { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 100, align: 'center' },
-    { title: 'Tên', key: 'ten', dataIndex: 'ten', width: 100, align: 'center' },
-    { 
-        title: 'Điều kiện giảm giá', 
-        key: 'dieuKien', 
-        dataIndex: 'dieuKien', 
-        width: 100, 
-        align: 'center', 
-        customRender: ({ text }) => formatCurrencyVND(text) 
+    { title: 'Mã phiếu giảm giá', key: 'ma', dataIndex: 'ma', width: 100, align: 'center' },
+    { title: 'Tên phiếu giảm giá', key: 'ten', dataIndex: 'ten', width: 100, align: 'center' },
+    {
+        title: 'Điều kiện giảm giá',
+        key: 'dieuKien',
+        dataIndex: 'dieuKien',
+        width: 100,
+        align: 'center',
+        customRender: ({ text }) => formatCurrencyVND(text)
     },
-    { 
-        title: 'Giá trị giảm giá', 
-        key: 'phanTramGiam', 
-        dataIndex: 'phanTramGiam', 
-        width: 100, 
-        align: 'center' 
+    {
+        title: 'Giá trị giảm giá',
+        key: 'phanTramGiam',
+        dataIndex: 'phanTramGiam',
+        width: 100,
+        align: 'center'
     },
     { title: 'Số lượng', key: 'soLuongPhieu', dataIndex: 'soLuongPhieu', width: 100, align: 'center' },
-    { 
-        title: 'Ngày bắt đầu', 
-        key: 'ngayBatDau', 
-        dataIndex: 'ngayBatDau', 
-        width: 100, 
+    {
+        title: 'Ngày bắt đầu',
+        key: 'ngayBatDau',
+        dataIndex: 'ngayBatDau',
+        width: 100,
         align: 'center',
         customRender: ({ text }) => formatDate(text)
     },
-    { 
-        title: 'Ngày kết thúc', 
-        key: 'ngayKetThuc', 
-        dataIndex: 'ngayKetThuc', 
-        width: 100, 
+    {
+        title: 'Ngày kết thúc',
+        key: 'ngayKetThuc',
+        dataIndex: 'ngayKetThuc',
+        width: 100,
         align: 'center',
         customRender: ({ text }) => formatDate(text)
     },
@@ -186,5 +189,25 @@ const handleViewClick = (id: string) => {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.add-customer-btn {
+    transition: all 0.3s ease;
+}
+
+.add-customer-btn:hover {
+    background-color: #3aa8c1 !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.add-customer-btn1 {
+    transition: all 0.3s ease;
+}
+
+.add-customer-btn1:hover {
+    background-color: #bc33ce !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 </style>

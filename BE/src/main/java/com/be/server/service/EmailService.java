@@ -7,11 +7,13 @@ import java.util.Properties;
 
 public class EmailService {
 
+
     public static void sendEmail(String to, String subject, String content) {
-        // Cấu hình các thuộc tính của email
-        String host = "smtp.gmail.com";  // Ví dụ sử dụng Gmail SMTP server
-        String from = "shopglamsole@gmail.com";  // Địa chỉ email của bạn
-        String password = "etem eirl ebtj jxln";  // Mật khẩu email của bạn
+
+        String host = "smtp.gmail.com";
+        String from = "shopglamsole@gmail.com";
+        // Replace with your newly generated App Password!
+        String password = "ehsh dojk nqcr vapx";
 
         Properties properties = new Properties();
         properties.put("mail.smtp.host", host);
@@ -19,7 +21,6 @@ public class EmailService {
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
 
-        // Khởi tạo session để gửi email
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -28,7 +29,7 @@ public class EmailService {
         });
 
         try {
-            // Tạo email
+
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
@@ -37,10 +38,14 @@ public class EmailService {
 
             // Gửi email
             Transport.send(message);
+            System.out.println("Email sent successfully!"); // Add a success message
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error sending email: " + e.getMessage()); // Print more specific error
+            e.printStackTrace(); // Print stack trace for detailed debugging
+            throw new RuntimeException("Failed to send email", e); // Re-throw with a more descriptive message
         }
     }
-
 }
+
+

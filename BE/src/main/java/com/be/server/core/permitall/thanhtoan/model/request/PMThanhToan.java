@@ -24,6 +24,8 @@ public class PMThanhToan {
 
     private String ghiChu;
 
+    private String email;
+
     private String maGiamGia;
 
     private String hinhThucThanhToan;

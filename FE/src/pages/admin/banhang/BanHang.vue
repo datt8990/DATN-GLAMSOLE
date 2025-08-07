@@ -120,7 +120,7 @@
             </a-table>
           </div>
           <div class="empty-cart" v-else>
-            
+
             <p>Không có sản phẩm nào trong giỏ hàng</p>
           </div>
         </div>
@@ -152,16 +152,16 @@
 
             <div class="form-group">
               <label for="district">Quận/Huyện <span class="required">*</span></label>
-              <a-select style="width: 100%;  height: 32px;" v-model:value="deliveryInfo.quanHuyen" placeholder="Chọn quận/huyện"
-                :options="districts" @change="onDistrictChange" show-search option-filter-prop="label"
-                :class="{ 'input-error': !deliveryInfo.quanHuyen && isDeliveryEnabled }" />
+              <a-select style="width: 100%;  height: 32px;" v-model:value="deliveryInfo.quanHuyen"
+                placeholder="Chọn quận/huyện" :options="districts" @change="onDistrictChange" show-search
+                option-filter-prop="label" :class="{ 'input-error': !deliveryInfo.quanHuyen && isDeliveryEnabled }" />
             </div>
 
             <div class="form-group">
               <label for="ward">Phường/Xã <span class="required">*</span></label>
-              <a-select style="width: 100%; height: 32px;" v-model:value="deliveryInfo.phuongXa" placeholder="Chọn phường/xã"
-                :options="wards" @change="onWardChange" show-search option-filter-prop="label"
-                :class="{ 'input-error': !deliveryInfo.phuongXa && isDeliveryEnabled }" />
+              <a-select style="width: 100%; height: 32px;" v-model:value="deliveryInfo.phuongXa"
+                placeholder="Chọn phường/xã" :options="wards" @change="onWardChange" show-search
+                option-filter-prop="label" :class="{ 'input-error': !deliveryInfo.phuongXa && isDeliveryEnabled }" />
             </div>
 
             <div class="form-group">
@@ -304,134 +304,135 @@
     <div class="right-column">
 
 
-        <div class="card-body" style="margin-top: 80px;">
-          <div class="card mt-4" >
-            <div class="card-header">
-              <h3 style="font-size: 18px;">Khách hàng</h3>
+      <div class="card-body" style="margin-top: 80px;">
+        <div class="card mt-4">
+          <div class="card-header">
+            <h3 style="font-size: 18px;">Khách hàng</h3>
+          </div>
+
+          <div v-if="state.detailKhachHang">
+            <div class="form-group1">
+              <label style="color: black; font-size: 15px;" for="customer-name">Tên khách hàng <span
+                  class="required">*</span></label>
+              <div class="input-wrapper">
+                <input style=" font-size: 15px;" :value="state.detailKhachHang.ten" type="text" id="customer-name"
+                  class="input-customer" placeholder="Tên khách hàng" readonly />
+              </div>
             </div>
 
-            <div v-if="state.detailKhachHang">
-              <div class="form-group1">
-                <label style="color: black; font-size: 15px;" for="customer-name">Tên khách hàng <span
-                    class="required">*</span></label>
-                <div class="input-wrapper">
-                  <input style=" font-size: 15px;" :value="state.detailKhachHang.ten" type="text" id="customer-name"
-                    class="input-customer" placeholder="Tên khách hàng" readonly />
-                </div>
+            <div class="form-group1">
+              <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span
+                  class="required">*</span></label>
+              <div class="input-wrapper">
+                <input style=" font-size: 15px;" :value="state.detailKhachHang.sdt" type="text" id="phone"
+                  placeholder="Số điện thoại" class="input-customer" readonly />
               </div>
-
-              <div class="form-group1">
-                <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span
-                    class="required">*</span></label>
-                <div class="input-wrapper">
-                  <input style=" font-size: 15px;" :value="state.detailKhachHang.sdt" type="text" id="phone"
-                    placeholder="Số điện thoại" class="input-customer" readonly />
-                </div>
-              </div>
-            </div>
-            <div v-else>
-              <div class="form-group1">
-                <label style="color: black; font-size: 15px;">Tên khách hàng<span class="required">*</span></label>
-                <div class="input-wrapper">
-                  <input style=" font-size: 15px;" v-model="newCustomer.ten" type="text" id="customer-name"
-                    class="input-customer" placeholder="Tên khách hàng" />
-                </div>
-              </div>
-
-              <div class="form-group1">
-                <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span
-                    class="required">*</span></label>
-                <div class="input-wrapper">
-                  <input style=" font-size: 15px;" v-model="newCustomer.sdt" type="text" id="phone"
-                    class="input-customer" placeholder="Số điện thoại" />
-                </div>
-              </div>
-            </div>
-            <div class="button-group-customer">
-              <button style=" font-size: 15px;" class="add-button" @click="showKhachHangModal = true">Chọn khách
-                hàng</button>
-              <button style=" font-size: 15px;" class="add-button" @click="addCustomer">Thêm khách hàng</button>
             </div>
           </div>
-        </div>
-
-        <div class="card-body">
-          <div class="card mt-4" >
-            <div class="card-header">
-              <h3 style=" font-size: 18px;">Thông tin đơn hàng</h3>
-              <div class="delivery-toggle-container">
-                <label for="delivery-switch" style=" font-size: 15px;">Bán giao hàng</label>
-                <a-switch v-model:checked="isDeliveryEnabled" @change="giaoHang(isDeliveryEnabled)"
-                  id="delivery-switch" />
+          <div v-else>
+            <div class="form-group1">
+              <label style="color: black; font-size: 15px;">Tên khách hàng<span class="required">*</span></label>
+              <div class="input-wrapper">
+                <input style=" font-size: 15px;" v-model="newCustomer.ten" type="text" id="customer-name"
+                  class="input-customer" placeholder="Tên khách hàng" />
               </div>
             </div>
-            <div class="card-body payment-section-content">
-              <!-- Các phần khác của payment-section-content giữ nguyên -->
-              <div class="discount-code-section">
-                <label for="discount-code" style=" font-size: 15px;">Mã giảm giá</label>
-                <div class="discount-input-group">
-                  <input type="text" id="discount-code" class="discount-input" v-model="selectedDiscountCode"
-                    placeholder="Chọn mã giảm giá" readonly />
-                  <button class="select-discount-button" @click="showDiscountModal = true">
-                    Chọn mã
-                  </button>
-                </div>
-                <div v-if="isBestDiscountApplied" style="color: red;" class="text-green-600 text-sm mt-2">
-                  Phiếu giảm giá tốt nhất
-                </div>
-                <div class="summary-item" v-if="betterDiscountMessage">
-                  <span style="color: red; margin-left: 10px;">{{ betterDiscountMessage }}</span>
-                </div>
-                <div v-if="selectedDiscount" class="discount-info">
-                  Giảm: {{ formatCurrency(giamGia) }}
-                </div>
+
+            <div class="form-group1">
+              <label style="color: black; font-size: 15px;" for="phone">Số điện thoại <span
+                  class="required">*</span></label>
+              <div class="input-wrapper">
+                <input style=" font-size: 15px;" v-model="newCustomer.sdt" type="text" id="phone" class="input-customer"
+                  placeholder="Số điện thoại" />
               </div>
-              <div class="payment-summary">
-                <div class="summary-item">
-                  <label>Tổng tiền hàng:</label>
-                  <span>{{ formatCurrency(tienHang) }}</span>
-                </div>
-                <div class="summary-item">
-                  <label>Giảm giá:</label>
-                  <span>{{ formatCurrency(giamGia) }}</span>
-                </div>
-                <div class="summary-item" v-if="isDeliveryEnabled">
-                  <label>Phí vận chuyển:</label>
-                  <a-input-number v-model:value="shippingFee" :min="0" :formatter="formatCurrency"
-                    :parser="parseCurrency" class="input-shipping-fee" :disabled="isFreeShipping" />
-                  <img src="/images/ghn-logo.webp" alt="GHN Logo" class="ghn-logo" />
-                </div>
-                <div class="summary-item" v-if="isDeliveryEnabled && isFreeShipping">
-                  <label></label>
-                  <span style="color: green; font-weight: bold;">Miễn phí vận chuyển (Đơn hàng trên 5,000,000
-                    VND)</span>
-                </div>
-                <div class="summary-item total-amount">
-                  <label>Tổng tiền:</label>
-                  <span style="color: red;">{{ formatCurrency(tongTien) }}</span>
-                </div>
-              </div>
-              <div class="payment-method-options" id="payment-method-selection">
-                <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '1' }"
-                  @click="handlePaymentMethod('1')">
-                  Chuyển khoản
-                </button>
-                <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '0' }"
-                  @click="handlePaymentMethod('0')">
-                  Tiền mặt
-                </button>
-                <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '2' }"
-                  @click="handlePaymentMethod('2')">
-                  Cả hai
-                </button>
-              </div>
-              <a-popconfirm title="Bạn có chắc chắn muốn xác nhận thanh toán hóa đơn này?" ok-text="Đồng ý"
-                cancel-text="Hủy" style="background-color: #54bddb;" @confirm="xacNhan" @cancel="() => { }">
-                <button class="btn-confirm-payment">Xác nhận thanh toán</button>
-              </a-popconfirm>
             </div>
           </div>
+          <div class="button-group-customer">
+            <button style=" font-size: 15px;" class="add-button" @click="showKhachHangModal = true">Chọn khách
+              hàng</button>
+            <button style=" font-size: 15px;" class="add-button" @click="addCustomer">Thêm khách hàng</button>
+          </div>
         </div>
+      </div>
+
+      <div class="card-body">
+        <div class="card mt-4">
+          <div class="card-header">
+            <h3 style=" font-size: 18px;">Thông tin đơn hàng</h3>
+            <div class="delivery-toggle-container">
+              <label for="delivery-switch" style=" font-size: 15px;">Bán giao hàng</label>
+              <a-switch v-model:checked="isDeliveryEnabled" @change="giaoHang(isDeliveryEnabled)"
+                id="delivery-switch" />
+            </div>
+          </div>
+          <div class="card-body payment-section-content">
+            <!-- Các phần khác của payment-section-content giữ nguyên -->
+            <div class="discount-code-section">
+              <label for="discount-code" style=" font-size: 15px;">Mã giảm giá</label>
+              <div class="discount-input-group">
+                <input type="text" id="discount-code" class="discount-input" v-model="selectedDiscountCode"
+                  placeholder="Chọn mã giảm giá" readonly />
+                <button class="select-discount-button" @click="showDiscountModal = true">
+                  Chọn mã
+                </button>
+              </div>
+              <div v-if="isBestDiscountApplied" style="color: red;" class="text-green-600 text-sm mt-2">
+                Phiếu giảm giá tốt nhất
+              </div>
+              <div class="summary-item" v-if="betterDiscountMessage">
+                <span style="color: red; margin-left: 10px;">{{ betterDiscountMessage }}</span>
+              </div>
+              <div v-if="selectedDiscount" class="discount-info">
+                Giảm: {{ formatCurrency(giamGia) }}
+              </div>
+            </div>
+            <div class="payment-summary">
+              <div class="summary-item">
+                <label>Tổng tiền hàng:</label>
+                <span>{{ formatCurrency(tienHang) }}</span>
+              </div>
+              <div class="summary-item">
+                <label>Giảm giá:</label>
+                <span>{{ formatCurrency(giamGia) }}</span>
+              </div>
+              <div class="summary-item" v-if="isDeliveryEnabled">
+                <label>Phí vận chuyển:</label>
+                <a-input-number v-model:value="shippingFee" :min="0" :formatter="formatCurrency" :parser="parseCurrency"
+                  class="input-shipping-fee" :disabled="isFreeShipping" />
+                <img src="/images/ghn-logo.webp" alt="GHN Logo" class="ghn-logo" />
+              </div>
+              <div class="summary-item" v-if="isDeliveryEnabled && isFreeShipping">
+                <label></label>
+                <span style="color: green; font-weight: bold;">Miễn phí vận chuyển (Đơn hàng trên 5,000,000
+                  VND)</span>
+              </div>
+              <div class="summary-item total-amount">
+                <label>Tổng tiền:</label>
+                <span style="color: red;">{{ formatCurrency(tongTien) }}</span>
+              </div>
+            </div>
+            <div class="payment-method-options" id="payment-method-selection">
+              <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '1' }"
+                @click="handlePaymentMethod('1')">
+                Chuyển khoản
+              </button>
+              <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '0' }"
+                @click="handlePaymentMethod('0')">
+                Tiền mặt
+              </button>
+              <button class="btn btn-payment-option" :class="{ 'active': state.currentPaymentMethod == '2' }"
+                @click="handlePaymentMethod('2')">
+                Cả hai
+              </button>
+            </div>
+            <a-popconfirm title="Bạn có chắc chắn muốn xác nhận thanh toán hóa đơn này?" ok-text="Đồng ý"
+              cancel-text="Hủy" style="background-color: #54bddb;" @confirm="xacNhan" @cancel="() => { }">
+              <button v-if="isDeliveryEnabled == false" class="btn-confirm-payment">Xác nhận thanh toán</button>
+              <button v-else="isDeliveryEnabled == true " class="btn-confirm-payment">Xác nhận giao hàng</button>
+            </a-popconfirm>
+          </div>
+        </div>
+      </div>
 
     </div>
 
@@ -2014,7 +2015,7 @@ async function createInvoice() {
     const formData = new FormData();
     formData.append('idNV', idNV.userId);
     const newInvoice = await getCreateHoaDon(formData);
-    console.log("hóa đơn mới",newInvoice)
+    console.log("hóa đơn mới", newInvoice)
     // Thêm hóa đơn mới vào tabs
     const newTabId = nextTabId++;
     tabs.value.push({
@@ -3893,7 +3894,7 @@ textarea.input-full-width {
 }
 
 .card-body {
- 
+
   /* Đã có */
 }
 
@@ -4151,7 +4152,7 @@ textarea.input-full-width {
 .input-customer::placeholder {
   color: #6c757d;
   height: 32px;
-  
+
   /* Màu xám nhạt cho placeholder */
 }
 
@@ -4499,15 +4500,19 @@ textarea.input-full-width {
 :deep(.ant-input:hover),
 :deep(.ant-input:focus),
 :deep(.ant-input-focused) {
-  border-color: #58bddb !important; /* Màu xanh đậm hơn */
-  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; /* Đổ bóng màu xanh đậm */
+  border-color: #58bddb !important;
+  /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng màu xanh đậm */
 }
 
 :deep(.ant-select:hover),
 :deep(.ant-select:focus),
 :deep(.ant-select-focused) {
-  border-color: #58bddb !important; /* Màu xanh đậm hơn */
-  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; /* Đổ bóng màu xanh đậm */
+  border-color: #58bddb !important;
+  /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng màu xanh đậm */
 }
 
 /* Style cho a-input-number khi hover, focus, và focused */
@@ -4520,10 +4525,14 @@ textarea.input-full-width {
 
 /* Style cho a-date-picker khi hover, focus, và focused */
 :deep(.ant-picker:hover),
-:deep(.ant-picker-focused), /* Khi DatePicker đã mở và focus vào */
-:deep(.ant-picker-focused .ant-picker-input > input), /* Đảm bảo input bên trong cũng bị ảnh hưởng */
-:deep(.ant-picker:focus-within) /* Dùng cho các component phức tạp có nhiều phần tử con */
-{
+:deep(.ant-picker-focused),
+/* Khi DatePicker đã mở và focus vào */
+:deep(.ant-picker-focused .ant-picker-input > input),
+/* Đảm bảo input bên trong cũng bị ảnh hưởng */
+:deep(.ant-picker:focus-within)
+
+/* Dùng cho các component phức tạp có nhiều phần tử con */
+  {
   border-color: #58bddb !important;
   box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
 }

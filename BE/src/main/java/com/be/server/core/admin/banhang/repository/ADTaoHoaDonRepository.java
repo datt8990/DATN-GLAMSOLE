@@ -21,7 +21,7 @@ public interface ADTaoHoaDonRepository extends HoaDonRepository {
             hd.loaiHoaDon as loaiHoaDon
      from HoaDon hd 
     left join HoaDonChiTiet hdct on hd.id = hdct.hoaDon.id
-    where hd.trangThaiHoaDon = 0 and hd.loaiHoaDon = 0
+    where hd.trangThaiHoaDon = 0 and (hd.loaiHoaDon = 0 or hd.loaiHoaDon = 1) 
     GROUP BY hd.id,hd.ma
     ORDER BY hd.id ASC
     

@@ -132,4 +132,68 @@ const resetFilters = () => {
 body {
   font-family: 'Roboto', sans-serif;
 }
+
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused),
+:deep(.ant-picker-focused .ant-picker-input > input),
+:deep(.ant-picker:focus-within) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+:deep(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+:deep(.ant-select-focused:not(.ant-select-disabled) .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-select-item-option-active) {
+  background-color: #e6f7ff !important;
+}
+
+:deep(.ant-select-selector) {
+  border-radius: 4px !important;
+}
+
+:deep(.ant-btn:hover),
+:deep(.ant-btn:focus) {
+  background-color: #4aa8c6 !important;
+  border-color: #4aa8c6 !important;
+  color: white !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio-inner) {
+  border-color: #58bddb !important;
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio .ant-radio-inner::after) {
+  background-color: #58bddb !important;
+}
 </style>
+

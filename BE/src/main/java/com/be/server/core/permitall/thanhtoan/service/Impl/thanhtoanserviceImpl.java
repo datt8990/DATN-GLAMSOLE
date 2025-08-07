@@ -23,6 +23,7 @@ import com.be.server.infrastructure.constant.EntityTrangThaiHoaDon;
 import com.be.server.repository.CartRepository;
 import com.be.server.repository.KhachHangRepository;
 import com.be.server.repository.LichSuTrangThaiHoaDonRepository;
+import com.be.server.service.EmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @AllArgsConstructor
 @Service
@@ -102,23 +104,21 @@ public class thanhtoanserviceImpl {
 //
 //        adLichSuThanhToanRepository.save(lichSu);
 
-        System.out.println("đã chạy đến lưu hóa dơn1");
-        System.out.println("MaGiamGia: " + order.getMaGiamGia());
         if (order.getMaGiamGia() != null && !order.getMaGiamGia().isEmpty() && !order.getMaGiamGia().equals("")) {
-            System.out.println("pgg" + order.getMaGiamGia());
+
             String idPGG = pmPhieuGiamGiaThanhToan.getPGG(order.getMaGiamGia());
 
             if (idPGG == null) {
                 PhieuGiamGia phieuGiamGia = adVoucherRepository.findById(idPGG).get();
-                System.out.println("đã chạy đến lưu hóa đơn14");
+
                 phieuGiamGia.setSoLuongPhieu(phieuGiamGia.getSoLuongPhieu() - 1);
-                System.out.println("đã chạy đến lưu hóa đơn16");
+
                 pmPhieuGiamGiaThanhToan.save(phieuGiamGia);
 
                 hoaDon.setVoucher(phieuGiamGia);
             }
         }
-        System.out.println("đã chạy đến lưu hóa dơn1");
+
         if (order.getKhachHang() != null) {
 
             if (order.getKhachHang().equals("khách lẻ")) {
@@ -134,32 +134,29 @@ public class thanhtoanserviceImpl {
 
         pmHoaDonReposiitory.save(hoaDon);
 
-        System.out.println("đã chạy đến lưu hóa dơn1");
 
-        System.out.println("sp" + order.getSanPham());
         if (order.getSanPham() != null) {
-            System.out.println("sp");
+
             for (int i = 0; i < order.getSanPham().size(); i++) {
 
                 ADThemSanPhamRequest request = new ADThemSanPhamRequest();
 
                 request.setIdHD(hoaDon.getId());
-                System.out.println("1");
+
                 request.setIdSP(order.getSanPham().get(i).getId());
-                System.out.println("2");
+
                 HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
-                System.out.println("3");
+
                 hoaDonChiTiet.setHoaDon(hoaDon);
-                System.out.println("4");
-                System.out.println(order.getSanPham().get(i).getId());
+
                 SanPhamChiTiet sanPhamChiTiet = adSanPhamRepository.findById(order.getSanPham().get(i).getId()).get();
-                System.out.println(sanPhamChiTiet.getId());
+
                 hoaDonChiTiet.setSpct(sanPhamChiTiet);
-                System.out.println("6");
+
                 hoaDonChiTiet.setStatus(EntityStatus.ACTIVE);
-                System.out.println("7");
+
                 hoaDonChiTiet.setSoLuong(order.getSanPham().get(i).getQuantity());
-                System.out.println("8");
+
                 System.out.println(hoaDonChiTiet);
                 hoaDonChiTiet.setGia(sanPhamChiTiet.getGiaBan()*order.getSanPham().get(i).getQuantity());
                 adTaoHoaDonChiTietRepository.save(hoaDonChiTiet);
@@ -167,43 +164,50 @@ public class thanhtoanserviceImpl {
                 System.out.println(sanPhamChiTiet.getSoLuong());
                 System.out.println(order.getSanPham().get(i).getQuantity());
                 if (sanPhamChiTiet.getSoLuong() < order.getSanPham().get(i).getQuantity()) {
-                    System.out.println("00");
+
                     return null;
                 }
 
-                System.out.println("0");
+
                 sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - order.getSanPham().get(i).getQuantity());
-                System.out.println("1");
+
                 adSanPhamRepository.save(sanPhamChiTiet);
-                System.out.println("2");
+
                 System.out.println(order.getKhachHang());
 
 
                 if (!order.getKhachHang().equals("khách lẻ")) {
-                    System.out.println("đã chạy đênns hóa dơn chi tiết 2");
+
                     KhachHang khachHang1  =  adKhachHangRepository.findById(order.getKhachHang()).get();
                     String idCart = cartRepository.findByIdKH(khachHang1.getId());
-                    System.out.println("đã chạy đênns hóa dơn chi tiết 3");
+
                     Cart cart = cartRepository.findById(idCart).get();
-                    System.out.println("đã chạy đênns hóa dơn chi tiết 4");
-                    System.out.println("đã chạy đênns hóa dơn chi tiết 5"+sanPhamChiTiet.getId() + cart.getId());
+
                     String  idGHCT = pmChiTietGioHangRepository.getIDGioHang(sanPhamChiTiet.getId() , cart.getId());
-                    System.out.println("đã chạy đênns hóa dơn chi tiết 5"+idGHCT);
+
                     if(idGHCT != null){
                         CartDetail cartDetail = pmChiTietGioHangRepository.findById(idGHCT).get();
-                        System.out.println("đã chạy đênns hóa dơn chi tiết 6");
+
                         pmChiTietGioHangRepository.deleteById(cartDetail.getId());
                     }
 
                 }
 
-                System.out.println("đã chạy đênns hóa dơn chi tiết 2");
             }
 
 
         }
 
-        System.out.println("đã chạy đến lưu hóa dơn2");
+        String email = order.getEmail();
+        System.out.println(email);
+        String subject = "Thanh toán đơn hàng thành công";
+        String content = "Chào " + order.getHoTen() + "\n" +
+                "Đơn hàng với mã hóa đơn " + hoaDon.getMa() + " đã được thanh toán thành công" +"\n" +
+                "Trân trọng cảm ơn";
+
+        CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
+
+
 
         return hoaDon;
     }

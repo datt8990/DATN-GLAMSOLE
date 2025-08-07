@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="breadcrumb-section">
       <BreadcrumbDefault
-        :pageTitle="'Quản Lý loại đế'"
+        :pageTitle="'Quản lý loại đế'"
         :routes="[
           { path: '/admin/sizes', name: 'Quản lý loại đế' }
         ]"
@@ -69,7 +69,7 @@ const state = reactive({
 
 
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật kích thước' : 'Thêm kích thước'
+  return state.selectedProductId ? 'Cập nhật loại đế' : 'Thêm loại đế'
 })
 
 const updateSearchQuery = (newQuery: string) => {
