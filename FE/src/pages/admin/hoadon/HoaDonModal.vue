@@ -115,6 +115,7 @@
         </a-button> -->
         <a-button
           style="background-color: #58bddb; margin-left: 5px; box-shadow: gray 1px 2px 2px;"
+          class="confirm-payment-btn"
           v-if="canCancelOrder1"
           type="primary"
           danger
@@ -186,11 +187,11 @@
               <span class="value status">
                 {{
                   hoaDon?.loaiHoaDon === "OFFLINE"
-                    ? "Mua tại cửa hàng"
+                    ? "OFFLINE"
                     : hoaDon?.loaiHoaDon === "GIAO_HANG"
                     ? "Giao hàng"
                     : hoaDon?.loaiHoaDon === "ONLINE"
-                    ? "Mua online"
+                    ? "ONLINE"
                     : "Chưa rõ"
                 }}
               </span>
@@ -280,7 +281,7 @@
           v-if="canConfirmPayment"
           :key="hoaDon?.trangThaiHoaDon"
           type="primary"
-          class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500"
+          class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500 confirm-payment-btn"
           @click="openPaymentModal"
         >
           Xác nhận thanh toán
@@ -382,7 +383,7 @@
   </div>
   <a-modal
     v-model:open="showStatusModal"
-    title="Nhập ghi chú"
+    title="Ghi chú trạng thái đơn hàng"
     :footer="null"
     :width="400"
     :maskClosable="false"
@@ -390,7 +391,7 @@
   >
     <div class="status-modal-content">
       <div class="status-selection">
-        <p class="selection-label">*Nhập mẫu tin nhắn:</p>
+        <p class="selection-label">*Nội dung ghi chú:</p>
 
         <a-radio-group
           v-model:value="selectedStatusTemplate"
@@ -439,14 +440,18 @@
 
       <div class="modal-actions">
         <a-button @click="closeStatusModal" class="cancel-btn"> Hủy </a-button>
+        <a-popconfirm
+            title="Bạn có chắc chắn muốn lưu thay đổi?"
+            @confirm="confirmStatusChange"
+          >
         <a-button
           type="primary"
-          @click="confirmStatusChange"
           :loading="statusUpdateLoading"
           class="confirm-btn"
         >
           Xác nhận
         </a-button>
+        </a-popconfirm>
       </div>
     </div>
   </a-modal>
@@ -549,15 +554,19 @@
       <!-- Buttons -->
       <div class="payment-actions">
         <a-button @click="closePaymentModal" class="cancel-btn"> Hủy </a-button>
+        <a-popconfirm
+            title="Bạn có chắc chắn muốn lưu thay đổi?"
+            @confirm="confirmPayment"
+          >
         <a-button
           type="primary"
-          @click="confirmPayment"
           :loading="paymentLoading"
           :disabled="!canConfirmPayment"
           class="confirm-payment-btn"
         >
           Thanh toán
         </a-button>
+        </a-popconfirm>
       </div>
     </div>
   </a-modal>
@@ -824,6 +833,16 @@ const confirmStatusChange = async () => {
     return;
   }
 
+  if(statusNote.value.length == 0){
+    toast.warning("Vui lòng nhập nội dung ghi chú");
+    return;
+  }
+
+  if(statusNote.value.length > 255){
+    toast.warning("Nội dung vượt quá 255 ký tự");
+    return;
+  }
+
   statusUpdateLoading.value = true;
 
   try {
@@ -919,9 +938,12 @@ const confirmPayment = async () => {
     return;
   }
 
-  const soTienGoc = (hoaDon.value?.thanhTien || 0) + 
-                      (hoaDon.value?.phiVanChuyen || 0) + 
-                      (hoaDon.value?.giaTriPGG || 0);
+  if (paymentNote.value.length >  255) {
+    toast.warning("Ghi chú không được vượt quá 255 ký tự");
+    return;
+  }
+
+  const soTienGoc = hoaDon.value?.thanhTien || 0
 
   paymentLoading.value = true;
 

@@ -132,7 +132,8 @@ public class ADHoaDonServiceImpl implements ADHoaDonService {
 
         LichSuThanhToan lichSu = new LichSuThanhToan();
         lichSu.setHoaDon(hoaDon);
-        lichSu.setSoTien(request.getSoTienKhachDua());
+        Double soTien = request.getSoTienKhachDua() - request.getSoTienTraLai();
+        lichSu.setSoTien(soTien);
         lichSu.setThoiGian(LocalDateTime.now());
         lichSu.setGhiChu(request.getGhiChu());
         lichSu.setLoaiGiaoDich(request.getLoaiGiaoDich());
@@ -141,7 +142,7 @@ public class ADHoaDonServiceImpl implements ADHoaDonService {
 
         adLichSuThanhToanRepository.save(lichSu);
 
-        hoaDon.setTongTienSauGiam(request.getSoTienKhachDua());
+        hoaDon.setTongTienSauGiam(soTien);
         hoaDon.setTongTien(request.getSoTienGoc());
         hoaDon.setTrangThaiHoaDon(request.getTrangThai());
 
