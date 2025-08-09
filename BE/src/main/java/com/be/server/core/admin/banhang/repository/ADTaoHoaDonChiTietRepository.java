@@ -138,4 +138,12 @@ public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
     WHERE hd.id = :id
     """)
     String getSanPhamChiTiet(@Param("id") String id);
+
+    @Query(value = """
+    SELECT lstt.id 
+    FROM HoaDonChiTiet hd 
+    LEFT JOIN SanPhamChiTiet lstt ON lstt.id = hd.spct.id 
+    WHERE hd.id = :id
+    """)
+    List<String> getListSanPhamChiTiet(@Param("id") String id);
 }

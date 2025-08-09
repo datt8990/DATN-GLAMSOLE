@@ -146,7 +146,7 @@ const emit = defineEmits(["page-change", "add", "view", "changeStatus","tab-chan
 
 
 const columns: TableColumnsType = [
-  { title: "Stt", key: "stt", dataIndex: "stt", width: 60, align: "center" },
+  { title: "STT", key: "stt", dataIndex: "stt", width: 60, align: "center" },
   {
     title: "Mã hóa đơn",
     key: "maHoaDon",

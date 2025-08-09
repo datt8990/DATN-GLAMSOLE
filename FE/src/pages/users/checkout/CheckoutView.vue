@@ -44,12 +44,21 @@
                     :disabled="!form.huyen" :loading="loadingWards" />
                 </a-form-item>
               </div>
+              <div class="col-sm-4">
+
+                <img src="/images/ghn-logo.webp" alt="Giỏ hàng nhanh"
+                  style="width: 100px; height: 90px; margin-left: 20px ; object-fit: contain;" class="me-1" />
+              </div>
 
               <div class="col-12">
                 <a-form-item label="Địa chỉ cụ thể" name="diaChi">
                   <a-input v-model:value="form.diaChi" placeholder="Số nhà, tên đường..." />
                 </a-form-item>
+
               </div>
+
+
+
 
               <div class="col-12">
                 <a-form-item label="Ghi chú">
@@ -78,9 +87,7 @@
               <div class="fw-semibold">
                 {{
                   ((item.discountPrice < item.originalPrice ? item.discountPrice : item.originalPrice) * item.quantity)
-                    .toLocaleString("vi-VN")
-                }}₫
-              </div>
+                    .toLocaleString("vi-VN") }}₫ </div>
             </li>
           </ul>
 
@@ -129,17 +136,11 @@
     </div>
   </div>
 
-  <a-modal
-    v-model:open="showConfirmModal"
-    title="Xác nhận đặt hàng"
-    @ok="handleConfirmOk"
-    @cancel="handleConfirmCancel"
-    :confirm-loading="loadingCheckout"
-    ok-text="Xác nhận"
-    cancel-text="Hủy"
-  >
+  <a-modal v-model:open="showConfirmModal" title="Xác nhận đặt hàng" @ok="handleConfirmOk" @cancel="handleConfirmCancel"
+    :confirm-loading="loadingCheckout" ok-text="Xác nhận" cancel-text="Hủy">
     <p>Bạn có chắc chắn muốn đặt đơn hàng này với tổng cộng là **{{ tongCong.toLocaleString("vi-VN") }}₫** không?</p>
-    <p>Phương thức thanh toán: **{{ form.thanhToan === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 'Thanh toán VnPay' }}**</p>
+    <p>Phương thức thanh toán: **{{ form.thanhToan === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 'Thanh toán VnPay'
+      }}**</p>
     <p class="text-danger mt-3">Vui lòng kiểm tra lại thông tin nhận hàng và đơn hàng trước khi xác nhận.</p>
   </a-modal>
 </template>

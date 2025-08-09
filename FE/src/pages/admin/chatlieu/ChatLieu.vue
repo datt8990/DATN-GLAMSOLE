@@ -47,7 +47,7 @@ const state = reactive({
 
 
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật kích thước' : 'Thêm kích thước'
+  return state.selectedProductId ? 'Cập nhật chất liệu' : 'Thêm chất liệu'
 })
 
 const updateSearchQuery = (newQuery: string) => {
