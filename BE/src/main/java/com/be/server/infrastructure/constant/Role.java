@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public enum Role {
 
     ADMIN("ADMIN"),
-
+    STAFF("STAFF"),
     USERS("USERS");
 
     private final String nameInVietnamese;
@@ -19,14 +19,14 @@ public enum Role {
         this.nameInVietnamese = nameInVietnamese;
     }
 
-    // lấy tất cả vai trò mảng ["ADMIN", "QUAN_LY", "THANH_VIEN"]
+    // lấy tất cả vai trò mảng ["ADMIN", "STAFF", "USERS"]
     public static List<String> getAllRoles() {
         return Arrays.stream(Role.values())
                 .map(Enum::name)
                 .collect(Collectors.toList());
     }
 
-    // lấy tất cả vai trò  chuỗi "ADMIN, QUAN_LY, THANH_VIEN"
+    // lấy tất cả vai trò chuỗi "ADMIN, STAFF, USERS"
     public static String getAllRolesString() {
         return Arrays.stream(Role.values())
                 .map(Enum::name)

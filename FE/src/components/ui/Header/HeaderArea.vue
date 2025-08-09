@@ -31,13 +31,14 @@ const closeDropdown = () => {
   showDropdown.value = false
 }
 
-const logout = () => {
-  authStore.logout() // Assuming you have a logout method in your auth store
-  closeDropdown()
+const logout = async () => {
+  authStore.logout();
+  
+  router.push('/admin/login'); 
+  closeDropdown();
 }
 
 const goToLogin = () => {
-  // Bạn có thể sử dụng RouterLink hoặc this.$router.push() để chuyển hướng đến trang đăng nhập.
   this.$router.push('/login/admin');
 }
 </script>
@@ -88,7 +89,9 @@ const goToLogin = () => {
         <div v-show="showDropdown && userLogin" class="account-dropdown-menu shadow-sm">
           <a href="#" class="dropdown-entry border-top" @click.prevent="logout">
             <LoginOutlined class="me-2 icon-thin" />
-            <span class="text">Đăng xuất</span>
+             <RouterLink to="/admin/login">
+            Đăng xuất
+          </RouterLink>
           </a>
         </div>
       </div>

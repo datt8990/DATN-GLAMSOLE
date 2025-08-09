@@ -50,7 +50,6 @@ request.interceptors.response.use(
       !originalRequest._retry &&
       !isLoginPage
     ) {
-      
       originalRequest._retry = true;
 
       const refreshToken = localStorageAction.get(REFRESH_TOKEN_STORAGE_KEY);

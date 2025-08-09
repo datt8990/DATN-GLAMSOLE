@@ -4,10 +4,7 @@ import com.be.server.entity.base.PrimaryEntity;
 import com.be.server.infrastructure.constant.EntityRole;
 import com.be.server.infrastructure.listener.CreateMauSacEntityListener;
 import com.be.server.infrastructure.listener.CreateNhanVIenEntityListener;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,4 +66,9 @@ public class NhanVien extends PrimaryEntity implements Serializable {
 
     @Column(name = "mat_khau")
     private String matKhau;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
 }

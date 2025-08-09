@@ -120,12 +120,11 @@ public class SecurityConfig {
                         .permitAll()
         );
 
-        http.authorizeHttpRequests(
-                auth -> auth
-                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_ADMIN_PREFIX)).hasAnyAuthority(Role.ADMIN.name())
-//                        .requestMatchers(Helper.appendWildcard(MappingConstants.API_PERMITALL_PREFIX)).permitAll()
-
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(Helper.appendWildcard(MappingConstants.API_ADMIN_PREFIX))
+                .hasAnyAuthority(Role.ADMIN.name(), Role.STAFF.name())
         );
+
 
         http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         http.oauth2Login(

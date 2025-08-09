@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { useSidebarStore } from "@/stores/sidebar";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import SidebarItem from "./SidebarItem.vue";
 import { ROUTES_CONSTANTS } from "@/constants/path";
+import { localStorageAction } from "@/utils/storage";
+import { USER_INFO_STORAGE_KEY } from "@/constants/storageKey";
+import { ROLES } from "@/constants/roles";
 
 const sidebarStore = useSidebarStore();
 
-const menuGroups = ref([
+
+
+const menuGroupsAdmin  = ref([
   {
     menuItems: [
       {
@@ -97,6 +102,84 @@ const menuGroups = ref([
     ],
   },
 ]);
+
+const menuGroupsSTaff = ref([
+  {
+    menuItems: [
+    
+      {
+        label: "Bán hàng",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>`,
+        routeName: ROUTES_CONSTANTS.ADMIN.children.BAN_HANG.name,
+      },
+      {
+        label: "Quản lý hóa đơn",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>`,
+        routeName: ROUTES_CONSTANTS.ADMIN.children.HOA_DON.name,
+      },
+      {
+        label: "Quản lý sản phẩm",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>`,
+        children: [
+          {
+            label: "Sản phẩm",
+            routeName: ROUTES_CONSTANTS.ADMIN.children.SAN_PHAM.name,
+          },
+          {
+            label: "Màu sắc",
+            routeName: ROUTES_CONSTANTS.ADMIN.children.MAUSAC.name,
+          },
+          {
+            label: "Chất liệu",
+            routeName: ROUTES_CONSTANTS.ADMIN.children.CHAT_LIEU.name,
+          },
+          {
+            label: "Loại đế",
+            routeName: ROUTES_CONSTANTS.ADMIN.children.LOAI_DE.name,
+          },
+          {
+            label: "Danh mục",
+            routeName: ROUTES_CONSTANTS.ADMIN.children.LOAI_GIAY.name,
+          },
+          {
+            label: "Kích thước",
+            routeName: ROUTES_CONSTANTS.ADMIN.children.SIZE.name,
+          },
+          {
+            label: "Thương hiệu",
+            routeName: ROUTES_CONSTANTS.ADMIN.children.THUONG_HIEU.name,
+          },
+        ],
+      },
+      {
+        label: "Quản lý khách hàng",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>`,
+        routeName: ROUTES_CONSTANTS.ADMIN.children.KHACH_HANG.name,
+      },
+    
+    ],
+  },
+]);
+
+const userLogin = localStorageAction.get(USER_INFO_STORAGE_KEY);
+const menuGroup = computed(() => {
+  if (userLogin?.role === ROLES.ADMIN) {
+    return menuGroupsAdmin.value; 
+  } else if (userLogin?.role === ROLES.STAFF) {
+    return menuGroupsSTaff.value;  
+  } else {
+    return []; 
+  }
+});
+
 </script>
 
 <template>
@@ -113,16 +196,23 @@ const menuGroups = ref([
       </div>
     </div>
 
-    <nav class="menu" aria-label="Menu điều hướng chính">
-      <template v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
-        <div>
-          <ul class="list-unstyled" role="menu">
-            <SidebarItem v-for="(menuItem, index) in menuGroup.menuItems" :item="menuItem" :key="index" :index="index"
-              class="nav-link" role="menuitem" />
-          </ul>
-        </div>
-      </template>
-    </nav>
+ <nav class="menu" aria-label="Menu điều hướng chính">
+  <template v-for="(menuGroup, groupIndex) in menuGroup" :key="groupIndex">
+    <div>
+      <ul class="list-unstyled" role="menu">
+        <SidebarItem 
+          v-for="(menuItem, index) in menuGroup.menuItems" 
+          :item="menuItem" 
+          :key="index" 
+          :index="index" 
+          class="nav-link" 
+          role="menuitem" 
+        />
+      </ul>
+    </div>
+  </template>
+</nav>
+
   </aside>
 </template>
 

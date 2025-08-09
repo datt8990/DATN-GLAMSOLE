@@ -84,7 +84,10 @@ public class TokenProvider {
             return null;
         }
 
-        return buildTokenAdmin(userOpt.get(), ACCESS_TOKEN_EXPIRATION, Role.ADMIN.name());
+        NhanVien nhanVien = userOpt.get();
+        String roleCode = nhanVien.getRole() != null ? nhanVien.getRole().getCode() : Role.STAFF.name();
+        return buildTokenAdmin(nhanVien, ACCESS_TOKEN_EXPIRATION, roleCode);
+
 
     }
 
@@ -98,7 +101,9 @@ public class TokenProvider {
             return null;
         }
 
-        return buildTokenAdmin(userOpt.get(), REFRESH_TOKEN_EXPIRATION,  Role.ADMIN.name());
+        NhanVien nhanVien = userOpt.get();
+        String roleCode = nhanVien.getRole() != null ? nhanVien.getRole().getCode() : Role.STAFF.name();
+        return buildTokenAdmin(nhanVien, REFRESH_TOKEN_EXPIRATION, roleCode);
     }
 
     // ===== BUILD TOKEN =====

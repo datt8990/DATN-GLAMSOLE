@@ -56,15 +56,15 @@ export const ROUTES_CONSTANTS = {
       },
     }
   },
-
+ LOGIN: {
+        path: '/admin/login',
+        name: 'login-admin'
+      },
   ADMIN: {
     path: '/admin',
     name: 'admin',
     children: {
-      LOGIN: {
-        path: 'login',
-        name: 'login-admin'
-      },
+     
       MAUSAC: {
         path: 'mau-sac',
         name: 'mau-sac-admin'
