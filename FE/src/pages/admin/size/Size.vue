@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="breadcrumb-section">
       <BreadcrumbDefault
-        :pageTitle="'Quản Lý Kích Thước'"
+        :pageTitle="'Quản lý Kích Thước'"
         :routes="[
           { path: '/admin/sizes', name: 'Quản lý kích thước' }
         ]"

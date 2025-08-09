@@ -2,20 +2,15 @@ package com.be.server.core.admin.nhanvien.controller;
 
 import com.be.server.core.admin.nhanvien.model.request.ADNhanVienRequest;
 import com.be.server.core.admin.nhanvien.model.request.ADNhanVienSearchRequest;
+import com.be.server.core.admin.nhanvien.model.request.CheckDuplicateRequest;
+import com.be.server.core.admin.nhanvien.model.request.CheckDuplicateResponse;
 import com.be.server.core.admin.nhanvien.service.ADNhanVienService;
 import com.be.server.infrastructure.constant.MappingConstants;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,5 +42,16 @@ public class ADNhanVienController {
     public ResponseEntity<?> changeStatus(@PathVariable("id") String id) {
         return Helper.createResponseEntity(service.changeNhanVienStatus(id));
     }
+
+    @PostMapping("/check-duplicate")
+    public ResponseEntity checkDuplicate(@RequestBody CheckDuplicateRequest request) {
+        boolean exists = service.checkDuplicateField(
+                request.getField(),
+                request.getValue(),
+                request.getExcludeId()
+        );
+        return ResponseEntity.ok(new CheckDuplicateResponse(exists));
+    }
 }
+
 

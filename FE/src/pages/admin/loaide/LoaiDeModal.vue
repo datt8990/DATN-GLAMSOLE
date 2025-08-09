@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="open" :title="props.title" width="400px">
+  <a-modal :open="open" @cancel="closeModal" :title="props.title" width="400px">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
         <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
@@ -8,11 +8,11 @@
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="tên loại đế" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="Tên loại đế" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"
-          placeholder="Nhập loại đé"
+          placeholder="Nhập loại đế"
           style="border-radius: 4px;"
         />
       </a-form-item>
@@ -30,9 +30,23 @@ const emit = defineEmits(['close', 'success']);
 
 const product = ref<SizeResponse>({ ten: '', mau: '#000000', ma: '', id: '' });
 const productForm = ref();
-
 const rules = {
-  ten: [{ required: true, message: 'Kích thước không được để trống!', trigger: 'blur' }],
+  ten: [
+    { required: true, message: 'Loại đế không được để trống!', trigger: 'blur' },
+    { min: 2, message: 'Tên loại đế phải có ít nhất 2 ký tự!', trigger: 'blur' },
+    {
+      validator: async (_rule: any, value: string) => {
+        if (value && /\d/.test(value)) {
+          return Promise.reject('Tên loại đế không được chứa số!');
+        }
+        if (value && /[^a-zA-Z\s]/.test(value)) {
+          return Promise.reject('Tên loại đế không được chứa ký tự đặc biệt!');
+        }
+        return Promise.resolve();
+      },
+      trigger: 'blur'
+    }
+  ],
 };
 
 const generateCode = () => {
@@ -86,12 +100,11 @@ const handleSubmit = async () => {
     const res = await modifySize(formData);
     closeModal();
     emit('success');
-       if (res.message == 'loại để này đã tồn tại') {
+    if (res.message == 'loại đế này đã tồn tại') {
       toast.error(res.message);
     } else {
       toast.success(res.message);
     }
-
   } catch (error) {
     if (error?.response?.data?.message) {
       toast.error(error?.response?.data?.message);
@@ -101,3 +114,68 @@ const handleSubmit = async () => {
 
 const closeModal = () => emit('close');
 </script>
+
+<style lang="css" scoped>
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused),
+:deep(.ant-picker-focused .ant-picker-input > input),
+:deep(.ant-picker:focus-within) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+:deep(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+:deep(.ant-select-focused:not(.ant-select-disabled) .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-select-item-option-active) {
+  background-color: #e6f7ff !important;
+}
+
+:deep(.ant-select-selector) {
+  border-radius: 4px !important;
+}
+
+:deep(.ant-btn:hover),
+:deep(.ant-btn:focus) {
+  background-color: #4aa8c6 !important;
+  border-color: #4aa8c6 !important;
+  color: white !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio-inner) {
+  border-color: #58bddb !important;
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio .ant-radio-inner::after) {
+  background-color: #58bddb !important;
+}
+</style>

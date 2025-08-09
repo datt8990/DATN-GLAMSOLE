@@ -21,7 +21,7 @@ public interface ADTaoHoaDonRepository extends HoaDonRepository {
             hd.loaiHoaDon as loaiHoaDon
      from HoaDon hd 
     left join HoaDonChiTiet hdct on hd.id = hdct.hoaDon.id
-    where hd.trangThaiHoaDon = 0 and hd.loaiHoaDon = 0
+    where hd.trangThaiHoaDon = 0 and (hd.loaiHoaDon = 0 or hd.loaiHoaDon = 1) 
     GROUP BY hd.id,hd.ma
     ORDER BY hd.id ASC
     
@@ -57,6 +57,16 @@ public interface ADTaoHoaDonRepository extends HoaDonRepository {
     )
 """)
     List<PhieuGiamGia> getPhieuGiamGiaKoDuDieuKien(@Param("id") String id, @Param("tong") Double tong);
+
+    @Query(value= """
+    SELECT pgg.id
+    FROM HoaDonChiTiet pgg
+    LEFT JOIN PhieuGiamGiaChiTiet pggct ON pgg.id = pggct.phieuGiamGia.id
+    WHERE pgg.hoaDon.id = :id
+
+
+""")
+    List<String> getHDCT(@Param("id") String id);
 
     List<HoaDon> findByTrangThaiHoaDon(EntityTrangThaiHoaDon trangThaiHoaDon);
 }

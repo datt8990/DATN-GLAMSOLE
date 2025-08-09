@@ -77,7 +77,19 @@ const resetFilters = () => {
 .search-input {
   width: 700px;
   min-width: 200px;
-  height: 32px !important; /* Fixed height for input */
+  height: 32px !important;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    border-color: #58bddb;
+  }
+
+  &:focus-within {
+    border-color: #58bddb;
+    box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2);
+  }
 }
 
 .reset-button {
@@ -127,9 +139,10 @@ const resetFilters = () => {
   }
 
   :deep(.ant-select-focused .ant-select-selector) {
-    border-color: #58bddb !important; /* Focus effect */
-    box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important; /* Focus shadow */
+  border-color: #58bddb !important; /* Focus effect */
+  box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important; /* Focus shadow */
   }
+  
 }
 
 .search-input-group {
@@ -137,6 +150,11 @@ const resetFilters = () => {
   .ant-select {
     height: 32px; /* Ensure consistent height */
   }
+}
+
+:deep(.ant-select.ant-select-focused .ant-select-selector) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
 }
 
 body {

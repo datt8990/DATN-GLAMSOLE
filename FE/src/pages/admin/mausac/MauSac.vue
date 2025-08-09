@@ -1,8 +1,8 @@
 <template>
   <div class="page-container">
     <div class="breadcrumb-section">
-      <BreadcrumbDefault :pageTitle="'Quản Lý máu sắc'" :routes="[
-        { path: '/admin/mau-sac', name: 'Quản lý máu sắc' }
+      <BreadcrumbDefault :pageTitle="'Quản lý màu sắc'" :routes="[
+        { path: '/admin/mau-sac', name: 'Quản lý màu sắc' }
       ]" />
     </div>
     <p class="section-title">
@@ -11,7 +11,7 @@
     <ProductFilter :searchQuery="state.searchQuery" :searchStatus="state.searchStatus"
       @update:searchQuery="updateSearchQuery" @update:searchStatus="updateSearchStatus" />
     <p class="section-title">
-      <UnorderedListOutlined /> Danh sách máu sắc
+      <UnorderedListOutlined /> Danh sách màu sắc
     </p>
     <ProductTable :products="state.products" :paginationParams="state.paginationParams" :totalItems="state.totalItems"
       @add="openAddModal" @view="openViewModal" @page-change="handlePageChange" @change-status="handleChangeStatus" />
@@ -47,7 +47,7 @@ const state = reactive({
 
 
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'
+  return state.selectedProductId ? 'Cập nhật màu sắc' : 'Thêm màu sắc'
 })
 
 const updateSearchQuery = (newQuery: string) => {

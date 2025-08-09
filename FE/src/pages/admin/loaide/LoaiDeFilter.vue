@@ -21,7 +21,7 @@
             <ReloadOutlined />
           </a-button>
         </a-tooltip>
-      </div>
+      </div> 
     </div> 
   </DivCustom>
 </template>

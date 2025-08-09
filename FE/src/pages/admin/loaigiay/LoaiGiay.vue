@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="breadcrumb-section">
       <BreadcrumbDefault
-        :pageTitle="'Quản Lý danh mục'"
+        :pageTitle="'Quản lý danh mục'"
         :routes="[
           { path: '/admin/loai-giay', name: 'Quản lý danh mục' }
         ]"

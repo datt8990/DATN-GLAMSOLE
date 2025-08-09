@@ -7,7 +7,7 @@
         <div class="search-input-container">
           <a-input
             v-model:value="localSearchQuery"
-            placeholder="Nhập mã hóa đơn, tên hóa đơn, tên khách hàng, sdt, mã nhân viên..."
+            placeholder="Nhập mã hóa đơn, tên khách hàng, sdt, mã nhân viên..."
             style="width: 500px"
           />
           <a-tooltip title="Quét mã QR hóa đơn">

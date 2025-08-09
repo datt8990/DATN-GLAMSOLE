@@ -27,17 +27,26 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class ADKhachHangServiceImpl implements ADKhachHangService {
 
-    public final ADKhachHangRepository adKhachHangRepository ;
+    public final ADKhachHangRepository adKhachHangRepository;
     private final CloudinaryUtils cloudinaryUtils;
 
     @Override
     public ResponseObject<?> getAllKhachHang(ADKhachHangSearchRequest request) {
         Pageable pageable = Helper.createPageable(request, "created_date");
         Page<KhachHang> page;
-        if (request.getQ() == null || request.getQ().isEmpty()) {
+        if ((request.getQ() == null || request.getQ().isEmpty()) && (request.getStatus() == null)) {
             page = adKhachHangRepository.findAll(pageable);
         } else {
-            page = adKhachHangRepository.findByMaContainingOrTenContainingOrSdtContainingOrDiaChiContaining(request.getQ(), request.getQ(), request.getQ(), request.getQ(), pageable);
+
+            if (request.getStatus() != null) {
+                if (request.getStatus() == 1) {
+                    request.setEntityStatus(EntityStatus.ACTIVE);
+                } else {
+                    request.setEntityStatus(EntityStatus.INACTIVE);
+                }
+            }
+
+            page = adKhachHangRepository.getAllKhachHang(pageable, request.getQ(), request.getEntityStatus());
         }
 
         return new ResponseObject<>(
@@ -58,11 +67,26 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
     @Override
     public ResponseObject<?> modifyKhachHang(ADKhachHangRequest request) {
         if (request.getId() != null && StringUtils.hasLength(request.getId())) {
-            Optional<KhachHang> exsitingMemberOpt = adKhachHangRepository.findById(request.getId());
+            KhachHang exsitingMemberOpt = adKhachHangRepository.findById(request.getId()).get();
 
-            if (exsitingMemberOpt.isPresent()) {
+            if (exsitingMemberOpt != null) {
 
-                KhachHang khachHang = exsitingMemberOpt.get();
+                String existingBySdt = adKhachHangRepository.checkSDTKhachHang(request.getSdt());
+                if (existingBySdt != null) {
+                    if (!existingBySdt.equals(exsitingMemberOpt.getId())) {
+                        return new ResponseObject<>(null, HttpStatus.OK, "số điện thoại đã tồn tại");
+                    }
+                }
+
+                String existingByCccd = adKhachHangRepository.checkCCCDKhachHang(request.getCccd());
+                if (existingByCccd != null) {
+                    if (!existingByCccd.equals(exsitingMemberOpt.getId())) {
+                        return new ResponseObject<>(null, HttpStatus.OK, "mã định danh đã tồn tại");
+                    }
+                }
+
+
+                KhachHang khachHang = exsitingMemberOpt;
 
                 khachHang.setMa(request.getCode());
 
@@ -106,6 +130,14 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
         }
 
 
+        if(adKhachHangRepository.checkSDTKhachHang(request.getSdt()) != null) {
+            return new ResponseObject<>(null, HttpStatus.OK, "số điện thoạt đã tồn tại");
+        }
+
+        if(adKhachHangRepository.checkCCCDKhachHang(request.getCccd()) != null) {
+            return new ResponseObject<>(null, HttpStatus.OK, "mã định danh đã tồn tại");
+        }
+
         KhachHang khachHang = new KhachHang();
 
         khachHang.setMa(request.getCode());
@@ -132,7 +164,7 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
 
         khachHang.setGioiTimh(request.getGioiTinh());
 
-        if(request.getAvatar() != null){
+        if (request.getAvatar() != null) {
             try {
                 byte[] imageData = request.getAvatar().getBytes();
                 CompletableFuture.runAsync(() -> {

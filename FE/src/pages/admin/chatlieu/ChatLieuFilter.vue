@@ -11,7 +11,7 @@
         <a-select class="select-input" v-model:value="localSearchStatus" allow-clear style="width: 180px" size="small"
           placeholder="Chọn trạng thái">
           <a-select-option :value="1">Hoạt động</a-select-option>
-          <a-select-option :value="0">Ngừng hoạt động</a-select-option>
+          <a-select-option :value="0">Không hoạt động</a-select-option>
         </a-select>
       </div>
       <div class="filter-item reset-button-group">

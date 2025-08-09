@@ -67,7 +67,7 @@
             />
           </div>
 
-          <a-popconfirm
+          <!-- <a-popconfirm
             title="Bạn có chắc chắn muốn lưu thay đổi?"
             @confirm="handleSubmit"
           >
@@ -80,7 +80,7 @@
             >
               Thêm mới đợt giảm giá
             </a-button>
-          </a-popconfirm>
+          </a-popconfirm> -->
         </div>
       </div>
 
@@ -256,7 +256,7 @@
                 type="default"
                 class="mr-2 text-white"
               >
-                Reset
+                Reset bộ lọc
               </a-button>
             </div>
           </div>
@@ -349,6 +349,20 @@
             />
           </div>
         </div>
+        <a-popconfirm
+            title="Bạn có chắc chắn muốn lưu thay đổi?"
+            @confirm="handleSubmit"
+          >
+            <a-button
+              type="primary"
+              size="large"
+              ok-text="Đồng ý"
+              cancel-text="Hủy"
+              style="background-color: #54bddb; border-color: #54bddb;margin-top: 2%;"
+            >
+              Thêm mới đợt giảm giá
+            </a-button>
+          </a-popconfirm>
       </div>
     </div>
   </div>

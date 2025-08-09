@@ -12,7 +12,9 @@ export interface ThuongHieuResponse {
 export interface ParamsGetThuongHieu extends PaginationParams {
 }
 
-export const GetAllThuongHieuTrangChu = async (params: ParamsGetThuongHieu) => {
+
+export const GetAllThuongHieusTrangChu = async (params: ParamsGetThuongHieu) => {
+
   const res = (await request({
     url: `${PREFIX_API_THUONGHIEU_PERMITALL}`,
     method: 'GET',

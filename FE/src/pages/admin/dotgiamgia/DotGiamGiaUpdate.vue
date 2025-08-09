@@ -68,17 +68,7 @@
           </div>
 
           <div class="pt-4 flex gap-3">
-            <a-button
-              type="primary"
-              size="large"
-              @click="handleSubmit"
-              class="flex-1"
-              :loading="submitting"
-              style="background-color: #54bddb; border-color: #54bddb"
-            >
-              Cập nhật
-            </a-button>
-            <a-button size="large" @click="handleCancel" class="flex-1"> Hủy </a-button>
+            <a-button size="large" style="background-color: #54bddb; border-color: #54bddb; color: white;" @click="handleCancel" class="flex-1"> Hủy </a-button>
           </div>
         </div>
       </div>
@@ -331,6 +321,20 @@
             />
           </div>
         </div>
+        <a-popconfirm
+            title="Bạn có chắc chắn muốn lưu thay đổi?"
+            @confirm="handleSubmit"
+          >
+            <a-button
+              type="primary"
+              size="large"
+              class="flex-1"
+              :loading="submitting"
+              style="background-color: #54bddb; border-color: #54bddb; margin-top: 2%;"
+            >
+              Cập nhật đợt giảm giá
+            </a-button>
+            </a-popconfirm>
       </div>
     </div>
   </div>

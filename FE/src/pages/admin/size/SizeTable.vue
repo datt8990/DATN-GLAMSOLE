@@ -1,25 +1,25 @@
 <template>
     <DivCustom label="" customClasses="mt-5">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                    {{ products.length }} kích thước
-                </div>
-
-                <div>
-                    <a-tooltip title="Thêm kích thước">
-                        <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
-                            class="d-flex justify-content-center align-items-center px-4">
-                            <PlusCircleOutlined /> Thêm mới kích thước
-                        </a-button>
-                    </a-tooltip>
-                </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
+                {{ products.length }} kích thước
             </div>
+
+            <div>
+                <a-tooltip title="Thêm kích thước">
+                    <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
+                        class="d-flex justify-content-center align-items-center px-4">
+                        <PlusCircleOutlined /> Thêm mới kích thước
+                    </a-button>
+                </a-tooltip>
+            </div>
+        </div>
 
         <div class="min-h-[400px]">
             <a-table :columns="columns" :data-source="products" :pagination="{
                 current: paginationParams.page,
                 pageSize: paginationParams.size,
-                total: totalItems, 
+                total: totalItems,
                 showSizeChanger: true,
                 pageSizeOptions: ['10', '20', '30', '40', '50']
             }" :scroll="{ y: 300 }" @change="handlePageChange">
@@ -41,13 +41,15 @@
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
-                                @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button type="primary" style="background-color: #9b6dc7;"
-                                    class="p-2 d-flex justify-content-center align-items-center">
-                                    <RedoOutlined />
-                                </a-button>
-                            </a-popconfirm>
+                            <a-tooltip title="Thay đổi trạng thái kích thước">
+                                <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
+                                    @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+                                    <a-button type="primary" style="background-color: #9b6dc7;"
+                                        class="p-2 d-flex justify-content-center align-items-center">
+                                        <RedoOutlined />
+                                    </a-button>
+                                </a-popconfirm>
+                            </a-tooltip>
                         </div>
                     </template>
                 </template>
@@ -77,8 +79,8 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
-    { title: 'Mã', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
-    { title: 'Tên size', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+    { title: 'Mã kích thước', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
+    { title: 'Tên kích thước', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',
@@ -117,9 +119,8 @@ const handleViewClick = (id: string) => {
 </script>
 
 <style scoped lang="scss">
-
-body{
-      font-family: 'Roboto', sans-serif;
+body {
+    font-family: 'Roboto', sans-serif;
 }
 
 .color {
@@ -138,5 +139,5 @@ body{
     justify-content: center;
     align-items: center;
     /* Ensures vertical alignment as well */
-}    
+}
 </style>

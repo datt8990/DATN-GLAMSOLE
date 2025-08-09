@@ -21,8 +21,12 @@
                   <a-input v-model:value="form.soDienThoai" placeholder="0123 456 789" />
                 </a-form-item>
               </div>
-
-              <div class="col-sm-4">
+              <div class="col-sm-6">
+                <a-form-item label="Email" name="email">
+                  <a-input v-model:value="form.email" placeholder="example@domain.com" />
+                </a-form-item>
+              </div>
+              <div class="col-sm-6">
                 <a-form-item label="Tỉnh / TP" name="tinh">
                   <a-select v-model:value="form.tinh" placeholder="Chọn tỉnh" :options="provinceOptions"
                     @change="handleProvinceChange" :loading="loadingProvinces" />
@@ -40,12 +44,21 @@
                     :disabled="!form.huyen" :loading="loadingWards" />
                 </a-form-item>
               </div>
+              <div class="col-sm-4">
+
+                <img src="/images/ghn-logo.webp" alt="Giỏ hàng nhanh"
+                  style="width: 100px; height: 90px; margin-left: 20px ; object-fit: contain;" class="me-1" />
+              </div>
 
               <div class="col-12">
                 <a-form-item label="Địa chỉ cụ thể" name="diaChi">
                   <a-input v-model:value="form.diaChi" placeholder="Số nhà, tên đường..." />
                 </a-form-item>
+
               </div>
+
+
+
 
               <div class="col-12">
                 <a-form-item label="Ghi chú">
@@ -74,9 +87,7 @@
               <div class="fw-semibold">
                 {{
                   ((item.discountPrice < item.originalPrice ? item.discountPrice : item.originalPrice) * item.quantity)
-                    .toLocaleString("vi-VN")
-                }}₫
-              </div>
+                    .toLocaleString("vi-VN") }}₫ </div>
             </li>
           </ul>
 
@@ -116,7 +127,7 @@
             <a-radio value="VNPAY">Thanh toán VnPay</a-radio>
           </a-radio-group>
 
-          <a-button type="primary" block class="mt-4" style="height: 52px; font-size: 1.15rem" @click="handleCheckout"
+          <a-button type="primary" block class="mt-4" style="height: 52px; font-size: 1.15rem" @click="confirmCheckout"
             :loading="loadingCheckout">
             ĐẶT HÀNG
           </a-button>
@@ -124,6 +135,14 @@
       </div>
     </div>
   </div>
+
+  <a-modal v-model:open="showConfirmModal" title="Xác nhận đặt hàng" @ok="handleConfirmOk" @cancel="handleConfirmCancel"
+    :confirm-loading="loadingCheckout" ok-text="Xác nhận" cancel-text="Hủy">
+    <p>Bạn có chắc chắn muốn đặt đơn hàng này với tổng cộng là **{{ tongCong.toLocaleString("vi-VN") }}₫** không?</p>
+    <p>Phương thức thanh toán: **{{ form.thanhToan === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 'Thanh toán VnPay'
+      }}**</p>
+    <p class="text-danger mt-3">Vui lòng kiểm tra lại thông tin nhận hàng và đơn hàng trước khi xác nhận.</p>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -147,12 +166,6 @@ import { localStorageAction } from "@/utils/storage";
 import { USER_INFO_STORAGE_KEY, CHECKOUT_STORAGE_KEY } from "@/constants/storageKey";
 import { getPGG, ThanhToan, createCartDetail } from "@/services/api/permitall/thanhtoan/thanhtoan.api";
 
-const breadcrumbRoutes = [
-  { name: "Trang chủ", path: "/" },
-  { name: "Giỏ hàng", path: "/gio-hang" },
-  { name: "Thanh toán", path: "/thanh-toan" },
-];
-
 // Interface definitions
 interface CartItem {
   id: string;
@@ -168,14 +181,21 @@ interface CartItem {
   height?: number;
   length?: number;
   width?: number;
-  idChiTietSanPham?: string; // Thêm để tương thích với giỏ hàng tạm
-  soLuongTrongKho?: number; // Thêm để kiểm tra tồn kho
+  idChiTietSanPham?: string;
+  soLuongTrongKho?: number;
 }
+
+const breadcrumbRoutes = [
+  { name: "Trang chủ", path: "/" },
+  { name: "Giỏ hàng", path: "/gio-hang" },
+  { name: "Thanh toán", path: "/thanh-toan" },
+];
 
 const formRef = ref();
 const form = ref({
   hoTen: "",
   soDienThoai: "",
+  email: "",
   tinh: null as number | null,
   huyen: null as number | null,
   phuong: null as string | null,
@@ -186,11 +206,19 @@ const form = ref({
 });
 
 // GHN configuration
-const GHN_TOKEN = "72f634c6-58a2-11f0-8a1e-1e10d8df3c04"; // Replace with your GHN API token
-const SHOP_ID = 5872469; // Replace with your GHN Shop ID
-const FROM_DISTRICT_ID = 3440; // Replace with your shop's district ID
-const FROM_WARD_CODE = "13010"; // Replace with your shop's ward code
+const GHN_TOKEN = "72f634c6-58a2-11f0-8a1e-1e10d8df3c04";
+const SHOP_ID = 5872469;
+const FROM_DISTRICT_ID = 3440;
+const FROM_WARD_CODE = "13010";
 const idKH = localStorageAction.get(USER_INFO_STORAGE_KEY) || null;
+
+// VNPAY Configuration
+const VNPAY_CONFIG = {
+  vnp_TmnCode: "YOUR_TMN_CODE",
+  vnp_HashSecret: "YOUR_HASH_SECRET",
+  vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.aspx",
+  vnp_ReturnUrl: "http://localhost:5173/thanh-toan-thanh-cong",
+};
 
 // Reactive state for GHN data
 const provinces = ref<Province[]>([]);
@@ -202,6 +230,7 @@ const loadingDistricts = ref(false);
 const loadingWards = ref(false);
 const selectedServiceId = ref<number | null>(null);
 const loadingCheckout = ref(false);
+const showConfirmModal = ref(false);
 
 // Computed options for select components
 const provinceOptions = computed(() =>
@@ -247,6 +276,10 @@ const tongCong = computed(() =>
 const rules = {
   hoTen: [{ required: true, message: "Vui lòng nhập họ tên", trigger: "blur" }],
   soDienThoai: [{ required: true, message: "Vui lòng nhập số điện thoại", trigger: "blur" }],
+  email: [
+    { required: true, message: "Vui lòng nhập email", trigger: "blur" },
+    { type: "email", message: "Email không hợp lệ", trigger: "blur" }
+  ],
   tinh: [{ required: true, message: "Chọn tỉnh", trigger: "change" }],
   huyen: [{ required: true, message: "Chọn huyện", trigger: "change" }],
   phuong: [{ required: true, message: "Chọn phường", trigger: "change" }],
@@ -406,16 +439,40 @@ const handleApplyDiscount = async () => {
     }
   } catch (error) {
     console.error("Lỗi khi áp dụng mã giảm giá:", error);
+    giamGia.value = 0;
     message.error("❌ Có lỗi khi áp dụng mã giảm giá!");
   }
 };
 
 const router = useRouter();
 
-const handleCheckout = async () => {
+// Function to open the confirmation modal
+const confirmCheckout = async () => {
+  try {
+    // Validate form before opening modal
+    await formRef.value.validate();
+    showConfirmModal.value = true;
+  } catch (err) {
+    message.error("Vui lòng điền đầy đủ và chính xác thông tin nhận hàng!");
+    console.error("Validation failed:", err);
+  }
+};
+
+// Function to handle confirmation (OK button in modal)
+const handleConfirmOk = async () => {
+  showConfirmModal.value = false;
+  await performCheckout();
+};
+
+// Function to handle modal cancellation (Cancel button or close icon)
+const handleConfirmCancel = () => {
+  showConfirmModal.value = false;
+};
+
+// Original handleCheckout logic, now renamed and called after confirmation
+const performCheckout = async () => {
   try {
     loadingCheckout.value = true;
-    await formRef.value.validate();
 
     const selectedProvince = provinces.value.find((p) => p.ProvinceID === form.value.tinh);
     const selectedDistrict = districts.value.find((d) => d.DistrictID === form.value.huyen);
@@ -429,6 +486,7 @@ const handleCheckout = async () => {
     const orderData = {
       hoTen: form.value.hoTen,
       soDienThoai: form.value.soDienThoai,
+      email: form.value.email,
       diaChi: `${form.value.diaChi}, ${selectedWard?.WardName}, ${selectedDistrict?.DistrictName}, ${selectedProvince?.ProvinceName}`,
       ghiChu: form.value.ghiChu,
       maGiamGia: form.value.maGiamGia,
@@ -439,6 +497,8 @@ const handleCheckout = async () => {
       tongCong: tongCong.value,
       sanPham: ListSP,
       KhachHang: idKH?.userId || "khách lẻ",
+      vnp_TmnCode: VNPAY_CONFIG.vnp_TmnCode,
+      vnp_ReturnUrl: VNPAY_CONFIG.vnp_ReturnUrl,
     };
 
     console.log("Dữ liệu gửi đi:", JSON.stringify(orderData, null, 2));
@@ -453,17 +513,17 @@ const handleCheckout = async () => {
     if (form.value.thanhToan === "VNPAY") {
       if (response && response.paymentUrl) {
         window.location.href = response.paymentUrl;
-        localStorageAction.remove(CHECKOUT_STORAGE_KEY); // Xóa ngay sau khi chuyển hướng VNPAY
+        localStorageAction.remove(CHECKOUT_STORAGE_KEY);
       } else {
         message.error("❌ Không thể tạo liên kết thanh toán VNPAY. Vui lòng thử lại!");
       }
     } else {
       message.success("✅ Đặt hàng thành công!");
-      localStorageAction.remove(CHECKOUT_STORAGE_KEY); // Xóa sau khi COD thành công
+      localStorageAction.remove(CHECKOUT_STORAGE_KEY);
       router.push({ name: "thanh-toan-thanh-cong" });
     }
   } catch (err) {
-    message.error("❌ Vui lòng kiểm tra lại thông tin và thử lại!");
+    message.error("❌ Có lỗi xảy ra trong quá trình đặt hàng. Vui lòng thử lại!");
     console.error("Lỗi khi xử lý thanh toán:", err);
   } finally {
     loadingCheckout.value = false;

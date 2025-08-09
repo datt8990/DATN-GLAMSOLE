@@ -154,7 +154,8 @@ import { localStorageAction } from '@/utils/storage'
 import { USER_INFO_STORAGE_KEY, CART_STORAGE_KEY } from '@/constants/storageKey'
 import { getAllCart, type requestCart } from '@/services/api/permitall/cart/cart'
 import { toast } from 'vue3-toastify'
-import { GetAllThuongHieuTrangChu } from '@/services/api/permitall/thuonghieu/pmthuonghieu.api'
+
+import { GetAllThuongHieusTrangChu } from '@/services/api/permitall/thuonghieu/pmthuonghieu.api'
 
 // Hàm gửi sự kiện tùy chỉnh khi giỏ hàng thay đổi
 const dispatchCartUpdate = () => {
@@ -232,7 +233,9 @@ const handleCartUpdate = () => {
 const fetchCategory = async () => {
   try {
     const payload = { page: 1, size: 100000 }
-    const res = await GetAllThuongHieuTrangChu(payload)
+
+
+    const res = await GetAllThuongHieusTrangChu(payload)
     menuItems.value = res.data.data
   } catch (error) {
     console.error('Lỗi lấy thương hiệu:', error)
