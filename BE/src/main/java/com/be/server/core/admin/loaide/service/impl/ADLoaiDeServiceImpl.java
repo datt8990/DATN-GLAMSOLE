@@ -79,7 +79,7 @@ public class ADLoaiDeServiceImpl implements ADLoaiDeService {
 
                 adLoaiDeRepository.save(loaiGiay);
 
-                return new ResponseObject<>(loaiGiay, HttpStatus.OK, "Cập nhật loại giày thành công");
+                return new ResponseObject<>(loaiGiay, HttpStatus.OK, "Cập nhật loại đế thành công");
             }
         }
 
@@ -94,7 +94,7 @@ public class ADLoaiDeServiceImpl implements ADLoaiDeService {
 
         adLoaiDeRepository.save(loaiGiay);
 
-        return new ResponseObject<>(loaiGiay, HttpStatus.CREATED, "Tạo loại giày thành công");
+        return new ResponseObject<>(loaiGiay, HttpStatus.CREATED, "Tạo loại đế thành công");
     }
 
     @Override

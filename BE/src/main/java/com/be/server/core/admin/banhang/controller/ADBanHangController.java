@@ -146,8 +146,8 @@ public class ADBanHangController {
     }
 
     @PostMapping("/thanh-toan-thanh-cong")
-    public void thanhToanThanhCong(ADThanhToanRequest id) {
-        adBanHangService.thanhToanThanhCong(id);
+    public ResponseEntity<?>  thanhToanThanhCong(ADThanhToanRequest id) {
+        return Helper.createResponseEntity(adBanHangService.thanhToanThanhCong(id));
     }
 
     @GetMapping("/danh-sach-phieu-giam-gia")

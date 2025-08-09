@@ -86,10 +86,10 @@ const handleSubmit = async () => {
     const res = await modifySize(formData);
     closeModal();
     emit('success');
-     if (res.message == 'loại giày này đã tồn tại') {
+     if (res.message == 'Danh mục này đã tồn tại') {
       toast.error(res.message);
     } else {
-      toast.warning(res.message);
+      toast.success(res.message);
     }
   } catch (error) {
     if (error?.response?.data?.message) {

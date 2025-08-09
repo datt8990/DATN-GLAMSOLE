@@ -38,15 +38,15 @@ public class ADLoaiGiayServiceImpl implements ADLoaiGiayService {
         return new ResponseObject<>(
                 PageableObject.of(page),
                 HttpStatus.OK,
-                "Lấy danh sách loại giày thành công"
+                "Lấy danh sách danh mục thành công"
         );
     }
 
     @Override
     public ResponseObject<?> getById(String id) {
         return adLoaiGiayRepository.findById(id)
-                .map(technology -> new ResponseObject<>(technology, HttpStatus.OK, "Lấy loại giày thành công"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy loại giày"));
+                .map(technology -> new ResponseObject<>(technology, HttpStatus.OK, "Lấy danh mục thành công"))
+                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy danh mục"));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ADLoaiGiayServiceImpl implements ADLoaiGiayService {
 
                 adLoaiGiayRepository.save(loaiGiay);
 
-                return new ResponseObject<>(loaiGiay, HttpStatus.OK, "Cập nhật loại giày thành công");
+                return new ResponseObject<>(loaiGiay, HttpStatus.OK, "Cập nhật danh mục thành công");
             }
         }
 
@@ -86,7 +86,7 @@ public class ADLoaiGiayServiceImpl implements ADLoaiGiayService {
 
         adLoaiGiayRepository.save(loaiGiay);
 
-        return new ResponseObject<>(loaiGiay, HttpStatus.CREATED, "Tạo loại giày thành công");
+        return new ResponseObject<>(loaiGiay, HttpStatus.CREATED, "Tạo danh mục thành công");
     }
 
     @Override
@@ -100,6 +100,6 @@ public class ADLoaiGiayServiceImpl implements ADLoaiGiayService {
 
         return nemberOptional
                 .map(product -> ResponseObject.successForward(HttpStatus.OK, "Đổi trạng thái thành công"))
-                .orElseGet(() -> ResponseObject.successForward(HttpStatus.NOT_FOUND, "Không tìm loại giày"));
+                .orElseGet(() -> ResponseObject.successForward(HttpStatus.NOT_FOUND, "Không tìm danh mục"));
     }
 }

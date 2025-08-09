@@ -231,7 +231,7 @@
                     placeholder="Chọn loại đế" v-model:value="localSelectedSoleType" />
                 </div>
 
-                <div class="filter-item reset-button-group">
+                <div class="filter-item reset-button-group" style="margin-top: 27px;">
                   <a-tooltip title="Làm mới bộ lọc">
                     <a-button style="background-color: dimgrey; color: white" @click="resetFilters"
                       class="reset-button filter-control-button">
@@ -1729,7 +1729,7 @@ const columnsGiohang: TableColumnsType = [
   { title: 'STT', key: 'stt', dataIndex: 'stt', width: 60, align: 'center' },
   { title: 'Ảnh', key: 'anh', dataIndex: 'anh', width: 90, align: 'center' },
   { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 90, align: 'center' },
-  { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 100, align: 'center' },
+  { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 120, align: 'center' },
   { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 110, align: 'center' },
   { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 80, align: 'center' },
   { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 80, align: 'center' },
@@ -1898,13 +1898,19 @@ const xacNhan = async () => {
 
     const res = await thanhToanThanhCong(formData)
 
+    if (res.message != null) {
+      if (res.message.startsWith("Số")) {
+        console.log(res.message)
+        toast.error(res.message);
+        return;
+      }
+    }
+
     if (isDeliveryEnabled.value == true) {
       toast.success('Giao hàng thành công!')
     } else {
       toast.success('Thanh toán thành công!')
     }
-
-
 
     await fetchProducts()
     await capNhatDanhSach()
@@ -2446,7 +2452,7 @@ const addCustomer = async () => {
   try {
     // Kiểm tra dữ liệu đầu vào
     if (!newCustomer.ten || !newCustomer.sdt) {
-      toast.error('Vui lòng nhập đầy đủ tên và số điện thoại!');
+
       return;
     }
 
@@ -2737,6 +2743,7 @@ onMounted(async () => {
   background-color: #f0f0f0;
   border: 1px solid #d9d9d9;
   padding: 4px 8px;
+  width: 50px;
   cursor: pointer;
   font-weight: bold;
 }
@@ -3811,6 +3818,8 @@ textarea.input-full-width {
   background-color: #f2f2f2;
 }
 
+
+
 .add-button {
   width: 100%;
   padding: 12px;
@@ -3858,6 +3867,7 @@ textarea.input-full-width {
   margin-top: 16px;
   /* Giữ khoảng cách trên như ban đầu của add-button */
   padding: 0 20px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
   /* Thêm padding ngang và dưới để căn chỉnh với body card */
   /* Nếu bạn muốn button-group-customer nằm trong card-body, hãy di chuyển nó vào trong đó */
   /* Hiện tại tôi đang giả định nó nằm ngay sau div đóng của detailKhachHang/v-else */
@@ -4296,11 +4306,13 @@ textarea.input-full-width {
 }
 
 .reset-button-group {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
   display: flex;
   align-items: flex-end;
 }
 
 .reset-button {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
   width: 100%;
   height: 40px;
   border-radius: 8px;
@@ -4511,7 +4523,7 @@ textarea.input-full-width {
 :deep(.ant-select-focused) {
   border-color: #58bddb !important;
   /* Màu xanh đậm hơn */
-  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important; */
   /* Đổ bóng màu xanh đậm */
 }
 
@@ -4535,5 +4547,13 @@ textarea.input-full-width {
   {
   border-color: #58bddb !important;
   box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+:deep(.ant-btn) {
+  background-color: #4aa8c6 !important;
+  /* Màu xanh đậm hơn khi hover */
+  border-color: #4aa8c6 !important;
+  color: white !important;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 1); /* Subtle shadow */
+  /* Đổ bóng xanh */
 }
 </style>
