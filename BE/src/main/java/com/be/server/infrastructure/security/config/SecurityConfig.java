@@ -114,6 +114,7 @@ public class SecurityConfig {
                 auth -> auth.requestMatchers(
                                 "/auth/**",
                                 Helper.appendWildcard(MappingConstants.API_AUTH_PREFIX),
+                                Helper.appendWildcard(MappingConstants.API_PERMITALL_PREFIX),
                                 "/oauth2/**"
                         )
                         .permitAll()

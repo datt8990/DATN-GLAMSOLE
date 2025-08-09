@@ -23,13 +23,11 @@ request.interceptors.request.use((config) => {
   }
   return config
 })
-
-// Danh sách tất cả path login bạn dùng trên FE
 const LOGIN_PATHS = [
   ROUTES_CONSTANTS.USERS.children.LOGIN.path,
   // Thêm các path login khác nếu có
   ROUTES_CONSTANTS.ADMIN.children.LOGIN?.path,     // Nếu có
-  ROUTES_CONSTANTS.USERS.children.LOGIN?.path, // Nếu có
+  ROUTES_CONSTANTS.USERS.children.LOGIN?.path, 
   '/login',                               
   '/admin/login',
   '/dang-nhap'
@@ -44,13 +42,15 @@ request.interceptors.response.use(
 
     // Hàm kiểm tra có phải trang login không
     const isLoginPage = LOGIN_PATHS.includes(window.location.pathname);
-
+    
+    // alert(error.response.status)
     if (
       error.response &&
       error.response.status === 401 &&
       !originalRequest._retry &&
       !isLoginPage
     ) {
+      
       originalRequest._retry = true;
 
       const refreshToken = localStorageAction.get(REFRESH_TOKEN_STORAGE_KEY);
