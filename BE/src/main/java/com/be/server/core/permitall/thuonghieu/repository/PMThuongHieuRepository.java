@@ -11,7 +11,7 @@ import java.util.List;
 public interface PMThuongHieuRepository extends ThuongHieuRepository {
 
     @Query("""
-    SELECT th.id AS idThuongHieu, th.ma AS maThuongHieu, th.ten AS tenThuongHieu
+    SELECT th.id AS id, th.ma AS ma, th.ten AS ten
     FROM ThuongHieu th 
     WHERE th.status = 0
     order by th.createdDate desc

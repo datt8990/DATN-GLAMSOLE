@@ -32,6 +32,13 @@ export const routes: RouteRecordRaw[] = [
 
       },
       {
+        path: ROUTES_CONSTANTS.USERS.children.DONMUA.path,
+        name: ROUTES_CONSTANTS.USERS.children.DONMUA.name,
+
+        component: () => import("@/pages/users/orderhistory/OrderHistory.vue"),
+
+      },
+      {
         path: ROUTES_CONSTANTS.USERS.children.SANPHAM.path,
         name: ROUTES_CONSTANTS.USERS.children.SANPHAM.name,
         component: () => import("@/pages/users/products/ProductsView.vue"),

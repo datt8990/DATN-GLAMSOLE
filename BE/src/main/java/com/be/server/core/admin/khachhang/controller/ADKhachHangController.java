@@ -36,6 +36,12 @@ public class ADKhachHangController {
         return Helper.createResponseEntity(service.modifyKhachHang(request));
     }
 
+    @PutMapping
+    public ResponseEntity<?> updateKhachHang(@ModelAttribute ADKhachHangRequest request) {
+
+        return Helper.createResponseEntity(service.updateKhachHang(request));
+    }
+
     @PutMapping("/{id}/change-status")
     public ResponseEntity<?> changeStatus(@PathVariable("id") String id) {
         return Helper.createResponseEntity(service.changeKhachHangStatus(id));

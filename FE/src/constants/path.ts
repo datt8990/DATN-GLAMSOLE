@@ -34,6 +34,10 @@ export const ROUTES_CONSTANTS = {
         path: 'gio-hang',
         name: 'gio-hang'
       },
+      DONMUA: {
+        path: 'don-mua',
+        name: 'don-mua'
+      },
       THONGTINCANHAN: {
         path: 'thong-tin-ca-nhan',
         name: 'thong-tin-ca-nhan'

@@ -12,6 +12,8 @@ import java.util.List;
 public interface ADHoaDonRepositoryCustom {
     HoaDonPageResponse getAllHoaDonResponse(ADHoaDonSearchRequest request, Pageable pageable);
 
+    HoaDonPageResponse getAllHoaDonResponse1(ADHoaDonSearchRequest request, Pageable pageable);
+
     List<ADHoaDonChiTietResponseDetail> getAllHoaDonChiTietResponse(String maHoaDon);
 
     HoaDon updateTrangThaiHoaDon(String maHoaDon, EntityTrangThaiHoaDon TrangThai);

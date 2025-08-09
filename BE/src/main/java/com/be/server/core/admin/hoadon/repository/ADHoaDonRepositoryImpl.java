@@ -116,6 +116,70 @@ public class ADHoaDonRepositoryImpl implements ADHoaDonRepositoryCustom {
         return new HoaDonPageResponse(pageResult, countByStatusMap);
     }
 
+    @Override
+    public HoaDonPageResponse getAllHoaDonResponse1(ADHoaDonSearchRequest request, Pageable pageable) {
+        String hql = """
+        SELECT new com.be.server.core.admin.hoadon.model.response.ADHoaDonResponse(
+                        hd.id,
+                        hd.ma,
+                        kh.ten,
+                        kh.sdt,
+                        nv.ma,
+                        nv.ten,
+                        hd.tongTienSauGiam,
+                        hd.loaiHoaDon,
+                        hd.createdDate,
+                        hd.trangThaiHoaDon
+                    )
+                    FROM HoaDon hd
+                    LEFT JOIN hd.khachHang kh
+                    LEFT JOIN hd.nhanVien nv
+                    WHERE (:q IS NULL OR :q = '' OR LOWER(kh.id) LIKE LOWER(CONCAT('%', :q, '%')))
+                    ORDER BY hd.createdDate ASC
+                """;
+
+        String countByStatusHql = """
+                    SELECT hd.trangThaiHoaDon, COUNT(hd)
+                    FROM HoaDon hd
+                    LEFT JOIN hd.khachHang kh
+                    LEFT JOIN hd.nhanVien nv
+                    WHERE (:q IS NULL OR :q = '' OR LOWER(kh.id) LIKE LOWER(CONCAT('%', :q, '%')))
+                    GROUP BY hd.trangThaiHoaDon
+                """;
+
+        String totalCountHql = """
+                    SELECT COUNT(hd)
+                    FROM HoaDon hd
+                    LEFT JOIN hd.khachHang kh
+                    LEFT JOIN hd.nhanVien nv
+                    WHERE (:q IS NULL OR :q = '' OR LOWER(kh.id) LIKE LOWER(CONCAT('%', :q, '%')))
+                """;
+
+        List<Object[]> countByStatusList = entityManager.createQuery(countByStatusHql)
+                .setParameter("q", request.getQ() == null ? "" : request.getQ().trim())
+                .getResultList();
+
+        Map<EntityTrangThaiHoaDon, Long> countByStatusMap = new HashMap<>();
+        for (Object[] row : countByStatusList) {
+            EntityTrangThaiHoaDon status = (EntityTrangThaiHoaDon) row[0];
+            Long count = (Long) row[1];
+            countByStatusMap.put(status, count);
+        }
+
+        Long totalRecords = (Long) entityManager.createQuery(totalCountHql)
+                .setParameter("q", request.getQ() == null ? "" : request.getQ().trim())
+                .getSingleResult();
+
+        List<ADHoaDonResponse> hoaDonResponses = entityManager.createQuery(hql, ADHoaDonResponse.class)
+                .setParameter("q", request.getQ() == null ? "" : request.getQ().trim())
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Page<ADHoaDonResponse> pageResult = new PageImpl<>(hoaDonResponses, pageable, totalRecords);
+        return new HoaDonPageResponse(pageResult, countByStatusMap);
+    }
+
 
     @Override
     public List<ADHoaDonChiTietResponseDetail> getAllHoaDonChiTietResponse(String maHoaDon) {

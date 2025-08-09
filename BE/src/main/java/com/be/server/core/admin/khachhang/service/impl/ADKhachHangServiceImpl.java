@@ -71,21 +71,6 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
 
             if (exsitingMemberOpt != null) {
 
-                String existingBySdt = adKhachHangRepository.checkSDTKhachHang(request.getSdt());
-                if (existingBySdt != null) {
-                    if (!existingBySdt.equals(exsitingMemberOpt.getId())) {
-                        return new ResponseObject<>(null, HttpStatus.OK, "số điện thoại đã tồn tại");
-                    }
-                }
-
-                String existingByCccd = adKhachHangRepository.checkCCCDKhachHang(request.getCccd());
-                if (existingByCccd != null) {
-                    if (!existingByCccd.equals(exsitingMemberOpt.getId())) {
-                        return new ResponseObject<>(null, HttpStatus.OK, "mã định danh đã tồn tại");
-                    }
-                }
-
-
                 KhachHang khachHang = exsitingMemberOpt;
 
                 khachHang.setMa(request.getCode());
@@ -127,15 +112,6 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
 
                 return new ResponseObject<>(khachHang, HttpStatus.OK, "Cập nhật khách hàng thành công");
             }
-        }
-
-
-        if(adKhachHangRepository.checkSDTKhachHang(request.getSdt()) != null) {
-            return new ResponseObject<>(null, HttpStatus.OK, "số điện thoạt đã tồn tại");
-        }
-
-        if(adKhachHangRepository.checkCCCDKhachHang(request.getCccd()) != null) {
-            return new ResponseObject<>(null, HttpStatus.OK, "mã định danh đã tồn tại");
         }
 
         KhachHang khachHang = new KhachHang();
@@ -183,6 +159,58 @@ public class ADKhachHangServiceImpl implements ADKhachHangService {
         adKhachHangRepository.save(khachHang);
 
         return new ResponseObject<>(khachHang, HttpStatus.CREATED, "Tạo khách hàng thành công");
+    }
+
+    @Override
+    public ResponseObject<?> updateKhachHang(ADKhachHangRequest request) {
+        if (request.getId() != null && StringUtils.hasLength(request.getId())) {
+            KhachHang exsitingMemberOpt = adKhachHangRepository.findById(request.getId()).get();
+
+            if (exsitingMemberOpt != null) {
+
+                KhachHang khachHang = exsitingMemberOpt;
+
+                khachHang.setMa(request.getCode());
+
+                khachHang.setTen(request.getTen());
+
+                khachHang.setEmail(request.getEmail());
+
+                khachHang.setSdt(request.getSdt());
+
+                khachHang.setDiaChi(request.getDiaChi());
+
+                khachHang.setXa(request.getXa());
+
+                khachHang.setHuyen(request.getHuyen());
+
+                khachHang.setTinh(request.getTinh());
+
+                khachHang.setCccd(request.getCccd());
+
+                khachHang.setNgaySinh(request.getNgaySinh());
+
+                khachHang.setGioiTimh(request.getGioiTinh());
+
+                if (request.getAvatar() != null) {
+                    try {
+                        byte[] imageData = request.getAvatar().getBytes();
+                        CompletableFuture.runAsync(() -> {
+                            String imgPath = cloudinaryUtils.uploadImage(imageData, request.getId());
+                            khachHang.setAvatar(imgPath);
+                            adKhachHangRepository.save(khachHang);
+                        });
+                    } catch (IOException e) {
+                        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi đọc file ảnh: " + e.getMessage());
+                    }
+                }
+
+                adKhachHangRepository.save(khachHang);
+
+                return new ResponseObject<>(khachHang, HttpStatus.OK, "Cập nhật khách hàng thành công");
+            }
+        }
+        return null;
     }
 
     @Override
