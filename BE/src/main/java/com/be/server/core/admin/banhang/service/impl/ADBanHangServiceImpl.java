@@ -376,7 +376,30 @@ public class ADBanHangServiceImpl implements ADBanHangService {
     @Override
     public ResponseObject<?> thanhToanThanhCong(ADThanhToanRequest id) {
 
+        List<String> idHDCTS = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(id.getIdHD());
+
+        for (int i = 0; i < idHDCTS.size(); i++) {
+            HoaDonChiTiet hoaDonChiTiet = adTaoHoaDonChiTietRepository.findById(idHDCTS.get(i)).get();
+
+            String idSPCT = adTaoHoaDonChiTietRepository.getSanPhamChiTiet(idHDCTS.get(i));
+
+            SanPhamChiTiet sanPhamChiTiet = adSanPhamBanHangRepository.findById(idSPCT).get();
+
+            if(sanPhamChiTiet.getSoLuong() < hoaDonChiTiet.getSoLuong()){
+
+                return new ResponseObject<>(null, HttpStatus.OK, "Số lượng sản phẩm không đủ");
+
+            }
+
+            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - hoaDonChiTiet.getSoLuong());
+
+            adSanPhamBanHangRepository.save(sanPhamChiTiet);
+
+        }
+
         HoaDon hoaDon = adTaoHoaDonRepository.findById(id.getIdHD()).get();
+
+        List<String> idSHDCT = adTaoHoaDonRepository.getHDCT(id.getIdHD());
 
 
         if (hoaDon.getLoaiHoaDon() == EntityLoaiHoaDon.GIAO_HANG) {
@@ -541,25 +564,7 @@ public class ADBanHangServiceImpl implements ADBanHangService {
         adLichSuThanhToanRepository.save(lichSu);
 
 
-        List<String> idHDCT = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(id.getIdHD());
 
-        System.out.println("hdct" + idHDCT);
-
-        for (int i = 0; i < idHDCT.size(); i++) {
-            System.out.println("hdct" + idHDCT.get(i));
-            HoaDonChiTiet hoaDonChiTiet = adTaoHoaDonChiTietRepository.findById(idHDCT.get(i)).get();
-
-            String idSPCT = adTaoHoaDonChiTietRepository.getSanPhamChiTiet(idHDCT.get(i));
-
-            System.out.println("spct" + idSPCT);
-
-            SanPhamChiTiet sanPhamChiTiet = adSanPhamBanHangRepository.findById(idSPCT).get();
-
-            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - hoaDonChiTiet.getSoLuong());
-
-            System.out.println(sanPhamChiTiet.getSoLuong());
-            adSanPhamBanHangRepository.save(sanPhamChiTiet);
-        }
 
 
         return new ResponseObject<>(null, HttpStatus.CREATED, "Thanh toán thành công");

@@ -681,10 +681,34 @@ const handleAddColorClick = () => { emit('addColor'); };
 
 // --- SUBMIT LOGIC (updated for validation) ---
 const check = ref(0);
+import DOMPurify from 'dompurify';
+
+const cleanDescription = (html: string) => {
+  const cleaned = DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a'],
+    KEEP_CONTENT: true,
+  });
+
+  return cleaned
+    // Xóa <p><br> hoặc <p><br/> 
+    .replace(/<p>\s*<br\s*\/?>\s*<\/p>/gi, '') 
+    // Xóa <p></p> rỗng
+    .replace(/<p>\s*<\/p>/gi, '')              
+    // Xóa <p> mở đơn lẻ
+    .replace(/<p>/gi, '')                      
+    // Xóa </p> đóng đơn lẻ
+    .replace(/<\/p>/gi, '')                    
+    .trim();
+};
+
 
 const handleSubmit = async () => {
+
   const descriptionContent = formData.value.moTa;
-  console.log("Nội dung mô tả từ editor:", descriptionContent);
+  console.log("Nội dung mô tả từ editor trước khi làm sạch:", descriptionContent);
+
+  // Làm sạch mô tả trước khi kiểm tra và gửi
+  const cleanedDescription = cleanDescription(descriptionContent);
   try {
     // --- Frontend Validations ---
     if (!formData.value.ten || formData.value.ten.trim() === '') {
@@ -692,10 +716,6 @@ const handleSubmit = async () => {
       return;
     }
     // CẬP NHẬT: Kiểm tra nội dung rỗng của Quill
-    if (!descriptionContent || descriptionContent.trim() === '' || descriptionContent === '<p><br></p>') {
-      toast.warning("Vui lòng nhập mô tả sản phẩm.");
-      return;
-    }
     if (!formData.value.idDanhMuc || formData.value.idDanhMuc.trim() === '') {
       toast.warning("Vui lòng chọn danh mục.");
       return;
@@ -765,7 +785,7 @@ const handleSubmit = async () => {
 
       if (!formData.value.idSanPhamGoc) {
         formToSend.append('ten', formData.value.ten.trim());
-        formToSend.append('moTa', descriptionContent.trim());
+        formToSend.append('moTa', cleanedDescription.trim());
         formToSend.append('idThuongHieu', formData.value.idThuongHieu.trim());
         formToSend.append('idChatLieu', formData.value.idChatLieu.trim());
         formToSend.append('idLoaiDe', formData.value.idLoaiDe.trim());
