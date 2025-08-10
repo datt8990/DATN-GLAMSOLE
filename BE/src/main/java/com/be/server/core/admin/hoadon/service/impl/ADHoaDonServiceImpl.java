@@ -83,6 +83,24 @@ public class ADHoaDonServiceImpl implements ADHoaDonService {
     }
 
     @Override
+    public ResponseObject<?> getAllHoaDonCT1(ADHoaDonDetailRequest request) {
+        try {
+            List<ADHoaDonChiTietResponseDetail> page = adHoaDonChiTietRepository.getAllHoaDonChiTietResponse2(request.getMaHoaDon());
+            return new ResponseObject<>(
+                    page,
+                    HttpStatus.OK,
+                    "Lấy danh sách chi tiết hóa đơn thành công"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Lỗi khi lấy chi tiết hóa đơn: " + e.getMessage()
+            );
+        }
+    }
+
+    @Override
     public ResponseObject<?> changeStatus(ADChangeStatusRequest adChangeStatusRequest) {
         HoaDon hoaDon = adHoaDonRepository.updateTrangThaiHoaDon(adChangeStatusRequest.getMaHoaDon(), adChangeStatusRequest.getStatus());
 

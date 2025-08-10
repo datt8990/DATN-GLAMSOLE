@@ -12,6 +12,8 @@ public interface ADKhachHangService {
 
     ResponseObject<?> modifyKhachHang(ADKhachHangRequest request);
 
+    ResponseObject<?> updateKhachHang(ADKhachHangRequest request);
+
     ResponseObject<?> changeKhachHangStatus(String id);
 
 

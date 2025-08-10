@@ -24,7 +24,8 @@ public class PhieuGiamGiaScheduler {
     public void updateVoucherStatus() {
         logger.info("Bắt đầu cập nhật trạng thái phiếu giảm giá...");
 
-        Date currentDate = new Date();
+        Date currentDate = truncateTime(new Date());
+
         List<PhieuGiamGia> vouchers = voucherRepository.findAll();
 
         for (PhieuGiamGia voucher : vouchers) {
@@ -47,28 +48,29 @@ public class PhieuGiamGiaScheduler {
     }
 
     private EntityStatus determineStatus(PhieuGiamGia voucher, Date currentDate) {
-        Date ngayBatDau = voucher.getNgayBatDau();
-        Date ngayKetThuc = voucher.getNgayKetThuc();
+        Date ngayBatDau = truncateTime(voucher.getNgayBatDau());
+        Date ngayKetThuc = truncateTime(voucher.getNgayKetThuc());
 
         if (ngayBatDau == null || ngayKetThuc == null) {
             return EntityStatus.INACTIVE;
         }
 
-        long currentDateTruncated = truncateTime(currentDate);
-        long ngayBatDauTruncated = truncateTime(ngayBatDau);
-        long ngayKetThucTruncated = truncateTime(ngayKetThuc);
-
-        if (currentDateTruncated >= ngayBatDauTruncated && currentDateTruncated <= ngayKetThucTruncated) {
+        if (!currentDate.before(ngayBatDau) && !currentDate.after(ngayKetThuc)) {
             return EntityStatus.ACTIVE;
-        } else {
+        }
+
+        if (currentDate.after(ngayKetThuc)) {
             return EntityStatus.INACTIVE;
         }
+
+        return EntityStatus.INACTIVE;
     }
 
-    private long truncateTime(Date date) {
-        if (date == null) {
-            return 0;
-        }
-        return new java.sql.Date(date.getTime()).getTime();
+    private Date truncateTime(Date date) {
+        if (date == null) return null;
+
+        return java.sql.Date.valueOf(date.toInstant()
+                .atZone(java.time.ZoneId.systemDefault())
+                .toLocalDate());
     }
 }

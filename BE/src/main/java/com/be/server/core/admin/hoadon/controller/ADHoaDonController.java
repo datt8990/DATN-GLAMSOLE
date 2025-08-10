@@ -35,7 +35,7 @@ public class ADHoaDonController {
     private final PDFDeliveryService pdfDeliveryService;
 
     @GetMapping
-    public ResponseEntity<?> test(ADHoaDonSearchRequest request) {
+    public ResponseEntity<?> getAll(ADHoaDonSearchRequest request) {
         return Helper.createResponseEntity(service.getAllHoaDon(request));
     }
 
