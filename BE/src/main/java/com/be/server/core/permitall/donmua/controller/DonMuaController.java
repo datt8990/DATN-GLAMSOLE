@@ -3,6 +3,7 @@ package com.be.server.core.permitall.donmua.controller;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonDetailRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
 import com.be.server.core.admin.hoadon.service.ADHoaDonService;
+import com.be.server.core.permitall.donmua.model.request.UpdateDeliveryDTO;
 import com.be.server.core.permitall.donmua.service.DonMuaService;
 import com.be.server.infrastructure.constant.MappingConstants;
 import com.be.server.utils.Helper;
@@ -25,6 +26,11 @@ public class DonMuaController {
     @GetMapping
     public ResponseEntity<?> getAll(ADHoaDonSearchRequest request) {
         return Helper.createResponseEntity(service.getAllHoaDon(request));
+    }
+
+    @PostMapping("/sua-thong-tin")
+    public ResponseEntity<?> suaThongTin(@ModelAttribute UpdateDeliveryDTO request) {
+        return Helper.createResponseEntity(service.suaThongTin(request));
     }
 
     @GetMapping("/all")

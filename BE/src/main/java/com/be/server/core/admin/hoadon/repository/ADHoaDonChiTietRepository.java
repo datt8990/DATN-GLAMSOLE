@@ -82,10 +82,10 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                         JOIN san_pham_chi_tiet spctsub ON spctsub.id = hdsub.id_spct
                         WHERE hdsub.id_hoa_don = hd.id
                     ) AS thanhTien,
-                    kh.ten_khach_hang AS tenKhachHang,
-                    kh.so_dien_thoai AS sdtKH,
+                    hd.ten_khach_hang AS tenKhachHang,
+                    hd.so_dien_thoai_khach_hang AS sdtKH,
                     kh.email AS email,
-                    kh.dia_chi AS diaChi,
+                    hd.dia_chi_giao_hang AS diaChi,
                     hd.loai_hoa_don AS loaiHoaDon,
                     hd.trang_thai_hoa_don AS trangThaiHoaDon,
                     hd.created_date AS ngayTao,
