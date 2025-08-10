@@ -14,7 +14,7 @@ export interface ParamsGetThuongHieu extends PaginationParams {
 
 export const GetAllThuongHieusTrangChu = async (params: ParamsGetThuongHieu) => {
   const res = (await request({
-    url: `${PREFIX_API_THUONGHIEU_PERMITALL}`,
+    url: `${PREFIX_API_THUONGHIEU_PERMITALL}/get-all/thuong-hieu-trang-chu`,
     method: 'GET',
     params: params
   })) as AxiosResponse<DefaultResponse<PaginationResponse<ThuongHieuResponse[]>>>

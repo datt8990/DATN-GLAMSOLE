@@ -15,7 +15,7 @@
         <img src="/images/logo.jpg" alt="Logo" class="jp-logo-img me-3" style="height:48px;width:48px;object-fit:cover;">
         <div class="position-relative d-none d-md-inline-block" style="display: inline-block;">
           <span class="fw-bold text-uppercase" style="font-size:1.7rem; letter-spacing:0.04em; color:#D32F2F; text-shadow: 1px 1px 6px #ccc; display:inline-block; padding-bottom:10px;">
-            GLAME SOLE
+            GLAMESOLE
             <span style="position:absolute; left:0; right:0; bottom:0; height:5px; background:#D32F2F; border-radius:3px; width:100%; display:block; content:'';"></span>
           </span>
         </div>
@@ -64,6 +64,7 @@
                   </div>
                 </div>
                 <a href="/thong-tin-ca-nhan" class="jp-dropdown-link">Trang cá nhân</a>
+                <a href="/don-mua" class="jp-dropdown-link">Đơn mua</a>
                 <button class="jp-dropdown-link logout" @click="logout">Đăng xuất</button>
               </template>
               <template v-else>
@@ -233,7 +234,7 @@ const fetchCategory = async () => {
   try {
     const payload = { page: 1, size: 100000 }
     const res = await GetAllThuongHieusTrangChu(payload)
-    menuItems.value = res.data.data
+    menuItems.value = res.data.content
   } catch (error) {
     console.error('Lỗi lấy thương hiệu:', error)
     menuItems.value = []

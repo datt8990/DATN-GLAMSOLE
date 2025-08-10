@@ -12,6 +12,8 @@ public interface ADHoaDonService {
 
     ResponseObject<?> getAllHoaDonCT(ADHoaDonDetailRequest request);
 
+    ResponseObject<?> getAllHoaDonCT1(ADHoaDonDetailRequest request);
+
     ResponseObject<?> changeStatus(ADChangeStatusRequest adChangeStatusRequest);
 
     ResponseObject<?> getLSTTHD(String id);

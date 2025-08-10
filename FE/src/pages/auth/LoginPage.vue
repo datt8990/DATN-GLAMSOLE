@@ -143,7 +143,9 @@ const onLogin = async () => {
         accessToken,
         refreshToken
       })
-      router.push({ name: ROUTES_CONSTANTS.USERS.children.TRANGCHU.name })
+      router.push({ name: ROUTES_CONSTANTS.USERS.children.TRANGCHU.name }).then(() => {
+        window.location.reload();
+      })
     } catch (err: any) {
       const errorMessage = err?.response?.data?.message ?? 'Đã xảy ra lỗi. Vui lòng thử lại.'
       errors.password = errorMessage
