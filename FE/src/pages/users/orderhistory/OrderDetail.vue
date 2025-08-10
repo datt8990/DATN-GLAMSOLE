@@ -39,7 +39,8 @@
             ]"
           >
             <div class="timeline-icon">
-              <i :class="step.icon"></i>
+              <!-- Fixed: Display emoji directly instead of using class binding -->
+              <span class="timeline-emoji">{{ step.icon }}</span>
             </div>
             <div class="timeline-content">
               <h4 class="timeline-title">{{ step.title }}</h4>
@@ -117,11 +118,11 @@
         <div class="payment-summary">
           <div class="payment-row">
             <span class="payment-label">Tổng tiền hàng:</span>
-            <span class="payment-value">{{ formatCurrency(orderDetail.tongTien || 0) }}</span>
+            <span class="payment-value">{{ formatCurrency(orderDetail.thanhTien || 0) }}</span>
           </div>
-          <div class="payment-row" v-if="orderDetail.giaTriVoucher">
-            <span class="payment-label">Voucher ({{ orderDetail.maVoucher }}):</span>
-            <span class="payment-value discount">-{{ formatCurrency(orderDetail.giaTriVoucher) }}</span>
+          <div class="payment-row">
+            <span class="payment-label">Voucher ({{ orderDetail.tenVoucher || 'Không áp dụng' }}):</span>
+            <span class="payment-value discount">-{{ formatCurrency((orderDetail.thanhTien + orderDetail.phiVanChuyen) - orderDetail.tongTienSauGiam) }}</span>
           </div>
           <div class="payment-row">
             <span class="payment-label">Phí vận chuyển:</span>
@@ -129,7 +130,7 @@
           </div>
           <div class="payment-row total">
             <span class="payment-label">Tổng thanh toán:</span>
-            <span class="payment-value total-amount">{{ formatCurrency(orderDetail.tongTienSauGiam || orderDetail.thanhTien) }}</span>
+            <span class="payment-value total-amount">{{ formatCurrency(orderDetail.tongTienSauGiam) }}</span>
           </div>
           <div class="payment-method">
             <span class="payment-method-label">Phương thức thanh toán:</span>
@@ -676,12 +677,17 @@ defineExpose({
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
       margin-right: 16px;
       flex-shrink: 0;
       z-index: 2;
       position: relative;
       border: 2px solid transparent;
+
+      .timeline-emoji {
+        font-size: 20px;
+        display: block;
+        line-height: 1;
+      }
     }
 
     .timeline-content {
@@ -898,7 +904,7 @@ defineExpose({
 
     .product-quantity {
       margin: 0;
-      color: #999;
+      color: #666;
       font-size: 13px;
       font-weight: 500;
     }
@@ -906,21 +912,21 @@ defineExpose({
 
   .product-price {
     text-align: right;
-    min-width: 80px;
+    flex-shrink: 0;
 
     .price {
       font-size: 16px;
-      font-weight: 600;
-      color: #ff4d4f;
+      font-weight: 700;
+      color: #58bddb;
       display: block;
       margin-bottom: 4px;
     }
 
     .subtotal {
       font-size: 13px;
-      color: #666;
+      color: #999;
       margin: 0;
-      font-weight: 500;
+      font-style: italic;
     }
   }
 }
@@ -929,59 +935,74 @@ defineExpose({
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 16px;
+  padding: 20px;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #58bddb;
+  gap: 16px;
 
   .delivery-details {
     flex: 1;
 
     .customer-name {
       margin: 0 0 8px 0;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 600;
       color: #333;
     }
 
     .customer-phone {
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
       color: #666;
       font-size: 14px;
       font-weight: 500;
     }
 
     .customer-email {
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
       color: #666;
       font-size: 14px;
     }
 
     .customer-address {
       margin: 0;
-      color: #666;
+      color: #333;
       font-size: 14px;
       line-height: 1.5;
-      padding: 8px 0;
-      border-top: 1px solid #e8e8e8;
+      background: #fff;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #e8e8e8;
     }
   }
 
   .delivery-icon {
-    font-size: 24px;
-    color: #58bddb;
-    margin-left: 16px;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #58bddb, #3fa3b9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+
+    i {
+      font-size: 20px;
+      color: white;
+    }
   }
 }
 
 .payment-summary {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+
   .payment-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
-    border-bottom: 1px solid #f5f5f5;
+    border-bottom: 1px solid #e8e8e8;
 
     &:last-child {
       border-bottom: none;
@@ -990,33 +1011,32 @@ defineExpose({
     &.total {
       margin-top: 12px;
       padding-top: 16px;
-      border-top: 2px solid #f0f0f0;
-      font-size: 18px;
-      font-weight: 700;
+      border-top: 2px solid #58bddb;
+      border-bottom: none;
 
       .payment-label {
+        font-size: 16px;
+        font-weight: 700;
         color: #333;
-        font-size: 18px;
       }
 
       .total-amount {
-        color: #ff4d4f;
         font-size: 20px;
+        font-weight: 700;
+        color: #58bddb;
       }
     }
 
     .payment-label {
-      color: #666;
       font-size: 14px;
-      flex: 1;
+      color: #666;
+      font-weight: 500;
     }
 
     .payment-value {
-      color: #333;
-      font-weight: 600;
       font-size: 14px;
-      min-width: 100px;
-      text-align: right;
+      font-weight: 600;
+      color: #333;
 
       &.discount {
         color: #52c41a;
@@ -1025,44 +1045,49 @@ defineExpose({
   }
 
   .payment-method {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e8e8e8;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e8e8e8;
 
     .payment-method-label {
-      color: #666;
       font-size: 14px;
+      color: #666;
+      font-weight: 500;
     }
 
     .payment-method-value {
-      color: #333;
-      font-weight: 600;
       font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      background: #e6f7ff;
+      padding: 4px 8px;
+      border-radius: 4px;
     }
   }
 }
 
 .order-actions {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   gap: 12px;
-  margin-top: 20px;
-  padding: 0 24px;
+  flex-wrap: wrap;
 
   button {
-    flex: 1;
     padding: 12px 24px;
     border-radius: 8px;
-    border: none;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
+    border: none;
     transition: all 0.3s ease;
-    min-height: 44px;
+    flex: 1;
+    min-width: 120px;
 
     &:hover {
       transform: translateY(-1px);
@@ -1075,70 +1100,50 @@ defineExpose({
   }
 
   .btn-cancel {
-    background: #ff4d4f;
+    background: linear-gradient(135deg, #ff4d4f, #cf1322);
     color: white;
 
     &:hover {
-      background: #ff7875;
-    }
-
-    &:active {
-      background: #d9363e;
+      background: linear-gradient(135deg, #ff7875, #ff4d4f);
     }
   }
 
   .btn-reorder {
-    background: #58bddb;
+    background: linear-gradient(135deg, #58bddb, #3fa3b9);
     color: white;
 
     &:hover {
-      background: #69c0db;
-    }
-
-    &:active {
-      background: #3fa3b9;
+      background: linear-gradient(135deg, #69c0ff, #58bddb);
     }
   }
 
   .btn-contact {
-    background: #f5f5f5;
-    color: #666;
-    border: 1px solid #d9d9d9;
+    background: linear-gradient(135deg, #52c41a, #389e0d);
+    color: white;
 
     &:hover {
-      background: #e6f7ff;
-      color: #1890ff;
-      border-color: #91d5ff;
-    }
-
-    &:active {
-      background: #bae7ff;
+      background: linear-gradient(135deg, #73d13d, #52c41a);
     }
   }
 }
 
 .error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 60px 20px;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   .error-icon {
     font-size: 48px;
     margin-bottom: 16px;
-    opacity: 0.6;
   }
 
   h3 {
     margin: 0 0 12px 0;
     font-size: 20px;
-    color: #333;
     font-weight: 600;
+    color: #333;
   }
 
   p {
@@ -1149,23 +1154,29 @@ defineExpose({
   }
 
   .btn-back {
-    padding: 10px 24px;
-    background: #58bddb;
+    background: linear-gradient(135deg, #58bddb, #3fa3b9);
     color: white;
     border: none;
-    border-radius: 6px;
+    padding: 12px 32px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 
     &:hover {
-      background: #3fa3b9;
+      background: linear-gradient(135deg, #69c0ff, #58bddb);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(88, 189, 219, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
 }
 
-// Responsive design
+// Responsive Design
 @media (max-width: 768px) {
   .order-detail-container {
     padding: 16px;
@@ -1202,53 +1213,62 @@ defineExpose({
     gap: 12px;
 
     .product-image {
-      width: 100%;
-      height: 120px;
+      width: 60px;
+      height: 60px;
       align-self: center;
-      max-width: 120px;
     }
 
     .product-details {
-      width: 100%;
       text-align: center;
+      width: 100%;
+
+      .product-name {
+        font-size: 15px;
+      }
     }
 
     .product-price {
-      width: 100%;
       text-align: center;
+      width: 100%;
+
+      .price {
+        font-size: 16px;
+      }
     }
   }
 
   .delivery-info {
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 12px;
 
     .delivery-icon {
-      align-self: center;
-      margin-left: 0;
-    }
-  }
-
-  .order-actions {
-    flex-direction: column;
-    padding: 0 16px;
-
-    button {
-      width: 100%;
+      order: -1;
     }
   }
 
   .payment-row {
-    font-size: 13px;
+    font-size: 13px !important;
 
     &.total {
       .payment-label {
-        font-size: 16px;
+        font-size: 15px !important;
       }
 
       .total-amount {
-        font-size: 18px;
+        font-size: 18px !important;
       }
+    }
+  }
+
+  .order-actions {
+    padding: 16px;
+
+    button {
+      min-width: 100px;
+      font-size: 13px;
+      padding: 10px 20px;
     }
   }
 
@@ -1256,21 +1276,29 @@ defineExpose({
     .timeline-icon {
       width: 40px;
       height: 40px;
-      font-size: 16px;
-    }
 
-    .timeline-line {
-      left: 20px;
+      .timeline-emoji {
+        font-size: 18px;
+      }
     }
 
     .timeline-content {
       .timeline-title {
-        font-size: 14px;
+        font-size: 15px;
       }
 
       .timeline-time {
         font-size: 12px;
       }
+
+      .timeline-note {
+        font-size: 11px;
+      }
+    }
+
+    .timeline-line {
+      left: 20px;
+      top: 40px;
     }
   }
 }
@@ -1284,21 +1312,24 @@ defineExpose({
   .timeline-section,
   .products-section,
   .delivery-section,
-  .payment-section {
+  .payment-section,
+  .order-actions {
     padding: 12px;
   }
 
-  .back-button {
-    font-size: 13px;
+  .order-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+      min-width: unset;
+    }
   }
 
-  .order-code {
-    font-size: 14px;
-  }
-
-  .order-status {
-    font-size: 11px;
-    padding: 4px 8px;
+  .payment-method {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
 </style>
