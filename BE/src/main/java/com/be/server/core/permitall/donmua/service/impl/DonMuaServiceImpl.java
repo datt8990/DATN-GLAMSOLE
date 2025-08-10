@@ -1,13 +1,12 @@
 package com.be.server.core.permitall.donmua.service.impl;
 
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
-import com.be.server.core.admin.hoadon.model.response.HoaDonPageResponse;
+import com.be.server.core.admin.hoadon.model.response.HoaDonPageResponse1;
 import com.be.server.core.admin.hoadon.repository.ADHoaDonRepository;
 import com.be.server.core.common.base.ResponseObject;
 import com.be.server.core.permitall.donmua.service.DonMuaService;
 import com.be.server.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +19,7 @@ public class DonMuaServiceImpl implements DonMuaService {
     @Override
     public ResponseObject<?> getAllHoaDon(ADHoaDonSearchRequest request) {
         try {
-            Pageable pageable = Helper.createPageable(request, "created_date");
-            HoaDonPageResponse result = adHoaDonRepository.getAllHoaDonResponse1(request, pageable);
+            HoaDonPageResponse1 result = adHoaDonRepository.getAllHoaDonResponse1(request);
 
             return new ResponseObject<>(
                     result,

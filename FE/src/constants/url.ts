@@ -77,3 +77,5 @@ export const PREFIX_API_CART_PERMITALL = `${PREFIX_API_PERMITALL}/cart` as strin
 
 export const PREFIX_API_PROFILE_PERMITALL = `${PREFIX_API_PERMITALL}/profile` as string;
 export const PREFIX_API_PROFILE_ORDER_HISTORY = `${PREFIX_API_PERMITALL}/don-mua` as string;
+export const PREFIX_API_PROFILE_ORDER_HISTORY_DETAIL = `${PREFIX_API_PERMITALL}/don-mua/:id` as string;
+

@@ -38,6 +38,10 @@ export const ROUTES_CONSTANTS = {
         path: 'don-mua',
         name: 'don-mua'
       },
+      DONMUA_DETAIL: {
+        path: 'don-mua-detail/:maHoaDon/:id',
+        name: 'don-mua-detail'
+      },
       THONGTINCANHAN: {
         path: 'thong-tin-ca-nhan',
         name: 'thong-tin-ca-nhan'

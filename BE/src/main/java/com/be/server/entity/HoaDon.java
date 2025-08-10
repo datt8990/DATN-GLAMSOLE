@@ -80,4 +80,7 @@ public class HoaDon extends PrimaryEntity implements Serializable {
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LichSuTrangThaiHoaDon> statusHistory = new ArrayList<>();
 
+    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<HoaDonChiTiet> hoaDonChiTiets = new ArrayList<>();
+
 }
