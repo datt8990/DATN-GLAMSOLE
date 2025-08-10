@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
@@ -143,5 +144,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             @Param("startDate") Long startDate,
             @Param("endDate") Long endDate
     );
+
+    Optional<HoaDon> findByMa(String ma);
 
 }
