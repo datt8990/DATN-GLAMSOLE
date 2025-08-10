@@ -1,16 +1,16 @@
 <template>
   <div v-if="products == null" class="breadcrumb-section">
-    <BreadcrumbDefault :pageTitle="'Quản lý thêm sản phẩm chi tiết'" :routes="[
+    <BreadcrumbDefault :pageTitle="'Thêm sản phẩm chi tiết'" :routes="[
       { path: '/admin/san-pham/', name: 'Quản lý sản phẩm ' },
-      { path: '/admin/san-pham-chi-tiet', name: 'Quản lý thêm sản phẩm chi tiết' }
+      { path: '/admin/san-pham-chi-tiet', name: 'Thêm sản phẩm chi tiết' }
     ]" />
   </div>
 
   <div v-if="products != null" class="breadcrumb-section">
-    <BreadcrumbDefault :pageTitle="'Quản Lý thêm sản phẩm chi tiết'" :routes="[
+    <BreadcrumbDefault :pageTitle="'Thêm sản phẩm chi tiết'" :routes="[
       { path: '/admin/san-pham', name: 'Quản lý sản phẩm ' },
       { path: '/admin/san-pham-chi-tiet?id=' + products.id, name: 'Quản lý sản phẩm chi tiết' },
-      { path: '/admin/them-san-pham-chi-tiet', name: 'Quản lý thêm sản phẩm chi tiết' }
+      { path: '/admin/them-san-pham-chi-tiet', name: 'Thêm sản phẩm chi tiết' }
     ]" />
   </div>
 
@@ -23,7 +23,7 @@
         <a-form-item name="ten" :label-col="{ span: 24 }">
           <template #label>
             <span style="color: red;">* </span>
-            <span>Tên sản phẩm</span>
+            <span> Tên sản phẩm</span>
           </template>
           <a-auto-complete v-model:value="formData.ten" :options="filteredProductNames"
             @search="handleProductNameSearch" @select="handleProductNameSelect"
@@ -83,7 +83,7 @@
         </a-form-item>
 
         <a-form-item name="idChatLieu" style="margin-top: 18px;" :label-col="{ span: 24 }">
-          <span style="color: red;">* </span>
+          <span style="color: red;">*</span>
           <span>Chất liệu</span>
           <div class="input-with-button">
             <a-select v-model:value="formData.idChatLieu" :options="chatLieuOptions" placeholder="Chọn chất liệu"
@@ -95,12 +95,12 @@
       </div>
 
       <div class="form-container">
-        <h2>Kích thước và màu sắc</h2>
+        <h2>Kích cỡ và màu sắc</h2>
 
         <div class="form-row1">
           <div class="selected-sizes">
             <span style="color: red; font-size: 20px;">* </span>
-            <label class="size-label">Kích thước:</label>
+            <label class="size-label">Kích cỡ:</label>
 
             <div v-for="(size, index) in selectedSizes" :key="index" class="size-box">
               <div class="color-label" style="margin-right: 10px;">{{ size.label }}</div>
@@ -109,7 +109,7 @@
             </div>
             <a-button @click="isSizeModalVisible = true" style="background-color: #54bddb; color: white;"
               class="add-btn">+
-              Chọn kích thước</a-button>
+              Chọn kích cỡ</a-button>
           </div>
 
           <div class="selected-colors">
@@ -209,8 +209,8 @@
     </template>
   </a-modal>
 
-  <a-modal v-model:open="isSizeModalVisible" title="Chọn kích thước" width="400px" @cancel="handleCloseSizeModal">
-    <a-button class="input-button-model" @click="handleAddSizeClick">+ Thêm kích thước</a-button>
+  <a-modal v-model:open="isSizeModalVisible" title="Chọn kích cỡ" width="400px" @cancel="handleCloseSizeModal">
+    <a-button class="input-button-model" @click="handleAddSizeClick">+ Thêm kích cỡ</a-button>
     <div class="color-picker">
       <a-button v-for="(size, index) in SizeOptions" :key="index" class="size-color-btn" @click="handleSelectSize(size)"
         :class="{ 'selected-option-border': selectedSizes.some(s => s.value === size.value) }">
@@ -651,7 +651,7 @@ const applyBatchValues = () => {
 const columns: TableColumnsType = [
   { title: 'STT', key: 'stt', dataIndex: 'stt', width: 60, customRender: ({ index }) => index + 1 },
   { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten' },
-  { title: 'Kích thước', key: 'size', customRender: ({ record }) => selectedSizes.value.find(s => s.value === record.idSize)?.label },
+  { title: 'Kích cỡ', key: 'size', customRender: ({ record }) => selectedSizes.value.find(s => s.value === record.idSize)?.label },
   { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong' },
   { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan' },
   { title: 'Hành động', key: 'operation' },
@@ -737,7 +737,7 @@ const handleSubmit = async () => {
       return;
     }
     if (selectedSizes.value.length === 0) {
-      toast.warning("Vui lòng chọn ít nhất một kích thước.");
+      toast.warning("Vui lòng chọn ít nhất một kích cỡ.");
       return;
     }
     if (productVariants.value.length === 0) {
@@ -815,7 +815,7 @@ const handleSubmit = async () => {
         toast.error("Tên sản phẩm bạn nhập đã tồn tại. Vui lòng chọn từ gợi ý hoặc nhập tên khác.");
         return;
       }
-      if (res.message === 'Sản phẩm chi tiết với màu với kích thước này đã tồn tại') {
+      if (res.message === 'Sản phẩm chi tiết với màu với kích cỡ này đã tồn tại') {
         toast.error(res.message);
         return;
       }
@@ -1101,5 +1101,92 @@ body {
 .tab-title-with-error {
   display: flex;
   align-items: center;
+}
+
+:deep(.ant-input:hover),
+:deep(.ant-input:focus),
+:deep(.ant-input-focused) {
+  border-color: #58bddb !important;
+  /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng màu xanh đậm */
+}
+
+/* Style cho a-input-number khi hover, focus, và focused */
+:deep(.ant-input-number:hover),
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused) {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+/* Style cho a-date-picker khi hover, focus, và focused */
+:deep(.ant-picker:hover),
+:deep(.ant-picker-focused),
+/* Khi DatePicker đã mở và focus vào */
+:deep(.ant-picker-focused .ant-picker-input > input),
+/* Đảm bảo input bên trong cũng bị ảnh hưởng */
+:deep(.ant-picker:focus-within)
+
+/* Dùng cho các component phức tạp có nhiều phần tử con */
+  {
+  border-color: #58bddb !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+:deep(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+:deep(.ant-select-focused:not(.ant-select-disabled) .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng màu xanh đậm */
+}
+
+/* Đảm bảo hiệu ứng khi focus hoặc mở dropdown */
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-select-open .ant-select-selector) {
+  border-color: #58bddb !important;
+  /* Màu xanh đậm hơn */
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng màu xanh đậm */
+}
+
+/* Style cho option khi hover trong dropdown */
+:deep(.ant-select-item-option-active) {
+  background-color: #e6f7ff !important;
+  /* Nền xanh nhạt khi hover trên option */
+}
+
+/* Đảm bảo các combobox trong form không bị ảnh hưởng bởi style khác */
+:deep(.ant-select-selector) {
+  border-radius: 4px !important;
+  /* Giữ đồng nhất với các input */
+}
+
+/* Style cho a-button khi hover */
+:deep(.ant-btn:hover),
+:deep(.ant-btn:focus) {
+  background-color: #4aa8c6 !important;
+  /* Màu xanh đậm hơn khi hover */
+  border-color: #4aa8c6 !important;
+  color: white !important;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
+  /* Đổ bóng xanh */
+}
+
+/* Style cho a-radio khi hover */
+:deep(.ant-radio-wrapper:hover .ant-radio-inner) {
+  border-color: #58bddb !important;
+  /* Viền xanh khi hover */
+}
+
+:deep(.ant-radio-wrapper:hover .ant-radio .ant-radio-inner::after) {
+  background-color: #58bddb !important;
+  /* Điểm chọn xanh khi hover */
 }
 </style>

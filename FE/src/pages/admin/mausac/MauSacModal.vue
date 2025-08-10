@@ -1,11 +1,11 @@
 <template>  
-  <a-modal :open="open" :title="props.title" width="400px">  
+  <a-modal :open="open" :title="props.title" @cancel="closeModal" width="400px">  
     <template #footer>  
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý"  
         cancel-text="Huỷ">  
         <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>  
       </a-popconfirm>  
-      <a-button style="background-color: #54bddb; color: white;" @click="closeModal">Huỷ</a-button>  
+      <a-button @click="closeModal">Huỷ</a-button>  
     </template>  
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">  
@@ -92,7 +92,7 @@ const handleSubmit = async () => {
     const res = await modifyMember(formData);  
     closeModal();  
     emit('success');  
-     if (res.message == 'màu sắc này đã tồn tại') {
+     if (res.message == 'Màu sắc này đã tồn tại') {
       toast.error(res.message);
     } else {
       toast.success(res.message);

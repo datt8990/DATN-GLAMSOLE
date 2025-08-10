@@ -2,11 +2,11 @@
     <DivCustom label="Danh sách màu sắc" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                {{ products.length }} màu sắc
+                
             </div>
 
             <div>
-                <a-tooltip title="Thêm máu sắc">
+                <a-tooltip title="Thêm màu sắc">
                     <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
                         class="d-flex justify-content-center align-items-center px-4">
                         <PlusCircleOutlined /> Thêm mới màu sắc
@@ -48,7 +48,7 @@
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-tooltip title="Thay đổi trạng thái màu sắc">
+                            <a-tooltip title="Đổi trạng thái màu sắc">
                                 <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                     @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
                                     <a-button type="primary" style="background-color: #9b6dc7;"

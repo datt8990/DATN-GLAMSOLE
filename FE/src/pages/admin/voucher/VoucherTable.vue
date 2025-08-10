@@ -2,7 +2,7 @@
     <DivCustom label="Danh sách phiếu giảm giá" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                {{ products.length }} phiếu giảm giá
+
             </div>
 
             <div>
@@ -38,15 +38,16 @@
                         {{ products.indexOf(record) + 1 }}
                     </div>
                     <template v-if="column.key === 'operation'">
-                        <div class="d-flex gap-1 justify-center">
-                            <a-tooltip title="Chỉnh sửa phiếu giảm giá">
+                        <div class="d-flex justify-content-center align-items-center gap-1 w-100 h-100">
+                            <a-tooltip v-if="record.status == 'INACTIVE'" title="Chỉnh sửa phiếu giảm giá">
                                 <a-button style="background-color: #54bddb;" type="primary"
                                     @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center add-customer-btn">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-tooltip title="Thay đổi trạng thái phiếu giảm giá">
+
+                            <a-tooltip title="Đổi trạng thái phiếu giảm giá">
                                 <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                     @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
                                     <a-button style="background-color: #9b6dc7;" type="primary"
@@ -57,6 +58,7 @@
                             </a-tooltip>
                         </div>
                     </template>
+
                 </template>
             </a-table>
         </div>

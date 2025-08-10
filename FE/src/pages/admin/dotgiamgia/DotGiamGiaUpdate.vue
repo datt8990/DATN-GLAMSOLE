@@ -315,7 +315,7 @@
               @show-size-change="
                 (current, size) => {
                   detailPageSize = size;
-                  detailCurrentPage = 1; // Reset về trang 1 khi thay đổi kích thước trang
+                  detailCurrentPage = 1;
                 }
               "
             />
@@ -396,7 +396,7 @@ const colors = ref([]);
 // --- BIẾN MỚI CHO PHÂN TRANG CHI TIẾT SẢN PHẨM ---
 const detailCurrentPage = ref(1);
 const detailPageSize = ref(5);
-const detailPageSizeOptions = ["5", "10", "20", "50"]; // Tùy chọn kích thước trang
+const detailPageSizeOptions = ["5", "10", "20", "50"]; 
 // --------------------------------------------------
 
 const fetchColors = async () => {

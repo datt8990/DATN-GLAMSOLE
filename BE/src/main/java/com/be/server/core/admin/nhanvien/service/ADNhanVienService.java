@@ -14,6 +14,8 @@ public interface ADNhanVienService {
 
     ResponseObject<?> changeNhanVienStatus(String id);
 
+    ResponseObject<?> changeNhanVienRole(String id);
+
     boolean checkDuplicateField(String field, String value, String excludeId);
 
 }

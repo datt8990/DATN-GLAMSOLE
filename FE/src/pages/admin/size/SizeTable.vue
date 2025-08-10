@@ -2,14 +2,14 @@
     <DivCustom label="" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                {{ products.length }} kích thước
+               
             </div>
 
             <div>
-                <a-tooltip title="Thêm kích thước">
+                <a-tooltip title="Thêm kích cỡ">
                     <a-button style="background-color: #54bddb;" type="primary" @click="handleAddClick"
                         class="d-flex justify-content-center align-items-center px-4">
-                        <PlusCircleOutlined /> Thêm mới kích thước
+                        <PlusCircleOutlined /> Thêm mới kích cỡ
                     </a-button>
                 </a-tooltip>
             </div>
@@ -34,14 +34,14 @@
                     </div>
                     <template v-if="column.key === 'operation'">
                         <div class="d-flex gap-1 justify-center center-flex-buttons">
-                            <a-tooltip title="Chỉnh sửa kích thước">
+                            <a-tooltip title="Chỉnh sửa kích cỡ">
                                 <a-button type="primary" style="background-color: #54bddb;"
                                     @click="handleViewClick(record.id)"
                                     class="p-2 d-flex justify-content-center align-items-center">
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-tooltip title="Thay đổi trạng thái kích thước">
+                            <a-tooltip title="Đổi trạng thái kích cỡ">
                                 <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                     @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
                                     <a-button type="primary" style="background-color: #9b6dc7;"
@@ -79,8 +79,8 @@ const emit = defineEmits(['page-change', 'add', 'view', 'changeStatus'])
 
 const columns: TableColumnsType = [
     { title: 'STT', key: 'stt', dataIndex: 'stt', width: 50, align: 'center' },
-    { title: 'Mã kích thước', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
-    { title: 'Tên kích thước', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
+    { title: 'Mã kích cỡ', key: 'ma', dataIndex: 'ma', width: 50, align: 'center' },
+    { title: 'Tên kích cỡ', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',

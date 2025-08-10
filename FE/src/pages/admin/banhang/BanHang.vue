@@ -65,7 +65,9 @@
               <p class="quet">Chọn sản phẩm</p>
             </button>
             <button class="btn-add-product" @click="openQrModal">
-              <p class="quet">Quét QR</p>
+              <p class="quet">
+                <QrcodeOutlined /> Quét QR
+              </p>
             </button>
           </div>
           <div v-if="state.gioHang.length > 0">
@@ -106,12 +108,18 @@
                   </div>
                 </template>
                 <template v-if="column.key === 'operation'">
-                  <div class="d-flex gap-1 justify-center">
+                  <div class="d-flex gap-1 justify-content-center align-items-center">
                     <a-tooltip title="Hủy sản phẩm">
                       <a-button type="primary" @click="deleteProduc(record.id, record.idHDCT)"
-                        style="background-color: #54bddb; color: white;"
+                        style="color: white; justify-content: center; background-color: #EE0000;"
                         class="p-2 d-flex justify-content-center align-items-center">
-                        Hủy
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                          class="bi bi-trash" viewBox="0 0 16 16">
+                          <path
+                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                          <path
+                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H9.5a1 1 0 0 1 1 1H14a1 1 0 0 1 1 1zM4.118 4 .5 3.993 1.5 2h13l-1 2H4.118z" />
+                        </svg>
                       </a-button>
                     </a-tooltip>
                   </div>
@@ -202,9 +210,9 @@
                 </div>
 
                 <div class="filter-item search-input-group">
-                  <label for="search-size" class="filter-label">Kích thước:</label>
+                  <label for="search-size" class="filter-label">Kích cỡ:</label>
                   <a-select id="search-size" v-model:value="localSize" @change="handleSizeChange" allow-clear
-                    :options="SizeOptions" placeholder="Chọn kích thước" size="small" />
+                    :options="SizeOptions" placeholder="Chọn kích cỡ" size="small" />
                 </div>
 
                 <div class="filter-item">
@@ -638,6 +646,7 @@ import { GetListChatLieu, GetListDanhMuc, GetListLoaiDe, GetListThuongHieu } fro
 import { debounce } from 'lodash';
 import { localStorageAction } from '@/utils/storage';
 import { USER_INFO_STORAGE_KEY } from '@/constants/storageKey';
+import { QrcodeOutlined } from '@ant-design/icons-vue';
 const debouncedFetchProducts = debounce(async () => {
   stateSP.searchQuery = localSearchQuery.value;
   stateSP.selectedCategory = localSelectedCategory.value;
@@ -1731,13 +1740,13 @@ const columnsGiohang: TableColumnsType = [
   { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 90, align: 'center' },
   { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 120, align: 'center' },
   { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 110, align: 'center' },
-  { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 80, align: 'center' },
+  { title: 'Kích cỡ', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 80, align: 'center' },
   { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 80, align: 'center' },
   { title: 'tổng tiền', key: 'status', dataIndex: 'status', width: 80, align: 'center' },
   {
     title: 'Thao tác',
     key: 'operation',
-    width: 80,
+    width: 100,
     align: 'center'
   }
 ]
@@ -1747,7 +1756,7 @@ const columns: TableColumnsType = [ // For product selection modal
   { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 100, align: 'center' },
   { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 100, align: 'center' },
   { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 100, align: 'center' },
-  { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 100, align: 'center' },
+  { title: 'Kích cỡ', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 100, align: 'center' },
   { title: 'Thương hiệu', key: 'tenThuongHieu', dataIndex: 'tenThuongHieu', width: 100, align: 'center' },
   { title: 'Loại đế', key: 'tenLoaiDe', dataIndex: 'tenLoaiDe', width: 100, align: 'center' },
   { title: 'Chất liệu', key: 'tenChatLieu', dataIndex: 'tenChatLieu', width: 100, align: 'center' },
@@ -1860,6 +1869,8 @@ const xacNhan = async () => {
     return
   }
 
+
+
   // Validate delivery info if enabled
   if (isDeliveryEnabled.value) {
     if (!deliveryInfo.tenNguoiNhan || !deliveryInfo.sdtNguoiNhan || !deliveryInfo.diaChiCuThe ||
@@ -1873,6 +1884,22 @@ const xacNhan = async () => {
     }
   }
 
+  const form = ref({
+
+  tinh: null as string | null,
+  huyen: null as string | null,
+  phuong: null as string | null,
+
+});
+
+  console.log('va',deliveryInfo.tinhThanhPho)
+
+  const selectedProvince = provinces.value.find((p) => p.code === deliveryInfo.tinhThanhPho);
+  const selectedDistrict = districts.value.find((d) => d.code === deliveryInfo.quanHuyen);
+  const selectedWard = wards.value.find((w) => w.code === deliveryInfo.phuongXa);
+
+  console.log('Selected Province:', selectedProvince);
+  
 
   try {
 
@@ -1880,10 +1907,10 @@ const xacNhan = async () => {
     formData.append('idNV', idNV.userId)
     formData.append('tienHang', tienHang.value.toString())
     formData.append('idHD', idHDS.value)
-    formData.append('tongTien', tongTien.value.toString()) // Total after discount and shipping
+    formData.append('tongTien', tongTien.value.toString())
     formData.append('ten', deliveryInfo.tenNguoiNhan);
     formData.append('sdt', deliveryInfo.sdtNguoiNhan);
-    formData.append('diaChi', deliveryInfo.diaChiCuThe);
+    formData.append('diaChi', `${deliveryInfo.diaChiCuThe}, ${selectedWard?.label}, ${selectedDistrict?.label}, ${selectedProvince?.label}`);
     formData.append('tienShip', shippingFee.value.toString());
     formData.append('phuongThucThanhToan', state.currentPaymentMethod);
     if (selectedDiscount.value?.id) {
@@ -3030,7 +3057,7 @@ textarea.input-full-width {
 
   padding: 5px;
   font-size: 14px;
-  /* Điều chỉnh kích thước font */
+
 }
 
 .search-icon-top {
@@ -3291,7 +3318,7 @@ textarea.input-full-width {
 
 /* Nút trong modal footer */
 :deep(.ant-modal-footer .ant-btn-primary) {
-  background-color: #54bddb;
+  /* background-color: #54bddb; */
   border-color: #54bddb;
   border-radius: 8px;
   padding: 8px 20px;
@@ -3867,7 +3894,8 @@ textarea.input-full-width {
   margin-top: 16px;
   /* Giữ khoảng cách trên như ban đầu của add-button */
   padding: 0 20px 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  /* Subtle shadow */
   /* Thêm padding ngang và dưới để căn chỉnh với body card */
   /* Nếu bạn muốn button-group-customer nằm trong card-body, hãy di chuyển nó vào trong đó */
   /* Hiện tại tôi đang giả định nó nằm ngay sau div đóng của detailKhachHang/v-else */
@@ -4306,13 +4334,15 @@ textarea.input-full-width {
 }
 
 .reset-button-group {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  /* Subtle shadow */
   display: flex;
   align-items: flex-end;
 }
 
 .reset-button {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  /* Subtle shadow */
   width: 100%;
   height: 40px;
   border-radius: 8px;
@@ -4548,12 +4578,14 @@ textarea.input-full-width {
   border-color: #58bddb !important;
   box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2) !important;
 }
+
 :deep(.ant-btn) {
-  background-color: #4aa8c6 !important;
+  /* background-color: #4aa8c6 !important; */
   /* Màu xanh đậm hơn khi hover */
-  border-color: #4aa8c6 !important;
+  /* border-color: #4aa8c6 !important; */
   color: white !important;
-   box-shadow: 0 2px 8px rgba(0, 0, 0, 1); /* Subtle shadow */
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 1); */
+  /* Subtle shadow */
   /* Đổ bóng xanh */
 }
 </style>

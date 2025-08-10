@@ -15,12 +15,10 @@
         </a-select>
       </div>
       <div class="filter-item reset-button-group">
-        <a-tooltip title="Làm mới bộ lọc">
           <a-button style="background-color: dimgrey; color: white;" @click="resetFilters" class="reset-button">
             Đặt lại bộ lọc
             <ReloadOutlined />
           </a-button>
-        </a-tooltip>
       </div>
     </div> 
   </DivCustom>

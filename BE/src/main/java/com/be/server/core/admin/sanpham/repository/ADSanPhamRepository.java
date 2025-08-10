@@ -34,6 +34,7 @@ public interface ADSanPhamRepository extends SanPhamRepository {
         cl.id AS idChatLieu,
         sp.moTa AS moTa,
         SUM(spct.soLuong) AS tongSP,
+
         sp.status AS status
     FROM
         SanPham sp

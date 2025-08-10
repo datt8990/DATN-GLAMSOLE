@@ -57,7 +57,7 @@ const menuGroups = ref([
             routeName: ROUTES_CONSTANTS.ADMIN.children.LOAI_GIAY.name,
           },
           {
-            label: "Kích thước",
+            label: "Kích cỡ",
             routeName: ROUTES_CONSTANTS.ADMIN.children.SIZE.name,
           },
           {

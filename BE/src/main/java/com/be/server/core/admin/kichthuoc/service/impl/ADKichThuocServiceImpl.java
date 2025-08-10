@@ -67,13 +67,13 @@ public class ADKichThuocServiceImpl implements ADKichThuocService {
 
                 sizeRepository.save(size);
 
-                return new ResponseObject<>(size, HttpStatus.OK, "Cập nhật size thành công");
+                return new ResponseObject<>(size, HttpStatus.OK, "Cập nhật kích cớ thành công");
             }
         }
 
 
         if(sizeRepository.findByTenContaining(request.getTen()).size() > 0) {
-            return new ResponseObject<>(null, HttpStatus.OK, "kích thước này đã tồn tại");
+            return new ResponseObject<>(null, HttpStatus.OK, "Kích cớ này đã tồn tại");
         }
 
 

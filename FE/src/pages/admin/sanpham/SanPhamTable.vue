@@ -2,7 +2,7 @@
     <DivCustom label="Danh sách sản phẩm" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                {{ products.length }} sản phẩm
+            
             </div>
 
             <div>
@@ -59,7 +59,7 @@
                             <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
 
-                                <a-tooltip title="Thay đổi trạng thái sản phẩm">
+                                <a-tooltip title="Đổi trạng thái sản phẩm">
                                     <a-button style="background-color: #9b6dc7;" type="primary"
 
                                         class="p-2 d-flex justify-content-center align-items-center">
@@ -141,7 +141,7 @@ const handleChangeStatusClick = async (id: string) => {
 
 const handlePageChange = (pagination: any) => {
     emit('page-change', { page: pagination.current, pageSize: pagination.pageSize })
-}
+} 
 
 const handleClick = (idSanPham: string) => {
     if (idSanPham) {

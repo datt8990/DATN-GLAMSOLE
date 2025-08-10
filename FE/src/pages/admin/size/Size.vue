@@ -2,9 +2,9 @@
   <div class="page-container">
     <div class="breadcrumb-section">
       <BreadcrumbDefault
-        :pageTitle="'Quản lý Kích Thước'"
+        :pageTitle="'Quản lý kích cỡ'"
         :routes="[
-          { path: '/admin/sizes', name: 'Quản lý kích thước' }
+          { path: '/admin/sizes', name: 'Quản lý kích cỡ' }
         ]"
       />
     </div>
@@ -20,7 +20,7 @@
     />
   
     <p class="section-title">
-      <UnorderedListOutlined /> Danh sách kích thước
+      
     </p>
     <ProductTable
       :products="state.products"
@@ -67,7 +67,7 @@ const state = reactive({
 });
 
 const modalTitle = computed(() => {
-  return state.selectedProductId ? 'Cập nhật kích thước' : 'Thêm kích thước';
+  return state.selectedProductId ? 'Cập nhật kích cỡ' : 'Thêm kích cỡ';
 });
 
 const updateSearchQuery = (newQuery: string) => {

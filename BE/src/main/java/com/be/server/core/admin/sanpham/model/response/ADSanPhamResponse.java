@@ -14,6 +14,8 @@ public interface ADSanPhamResponse {
 
      Integer getTongSP();
 
+     Integer getSoLuongSP();
+
      String getIdThuongHieu();
 
      String getTenThuongHieu();

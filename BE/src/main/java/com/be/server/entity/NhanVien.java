@@ -2,6 +2,7 @@ package com.be.server.entity;
 
 import com.be.server.entity.base.PrimaryEntity;
 import com.be.server.infrastructure.constant.EntityRole;
+import com.be.server.infrastructure.constant.EntityVaiTro;
 import com.be.server.infrastructure.listener.CreateMauSacEntityListener;
 import com.be.server.infrastructure.listener.CreateNhanVIenEntityListener;
 import jakarta.persistence.Column;
@@ -60,6 +61,9 @@ public class NhanVien extends PrimaryEntity implements Serializable {
 
     @Column(name = "cccd")
     private String cccd;
+
+    @Column(name = "vai_tro")
+    private EntityVaiTro vaitro;
 
     @Column(name = "gioi_timh")
     private Boolean gioiTimh;

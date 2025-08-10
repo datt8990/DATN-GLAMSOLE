@@ -1,16 +1,16 @@
 <template>
-  <a-modal :open="open" :title="props.title" width="400px">
+  <a-modal :open="open" @cancel="closeModal" :title="props.title" width="400px">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý"
         cancel-text="Huỷ">
         <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
       </a-popconfirm>
-      <a-button style="background-color: #54bddb;" @click="closeModal">Huỷ</a-button>
+      <a-button @click="closeModal">Huỷ</a-button>
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="Kích thước" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
-        <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập kích thước" style="border-radius: 4px;" />
+      <a-form-item label="Kích cỡ" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+        <a-input v-if="product" v-model:value="product.ten" placeholder="Nhập kích cỡ" style="border-radius: 4px;" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -28,7 +28,7 @@ const product = ref<SizeResponse>({ ten: '', mau: '#000000', ma: '', id: '' });
 const productForm = ref();
 
 const rules = {
-  ten: [{ required: true, message: 'Kích thước không được để trống!', trigger: 'blur' }],
+  ten: [{ required: true, message: 'Kích cỡ không được để trống!', trigger: 'blur' }],
 };
 
 const generateCode = () => {
@@ -82,7 +82,7 @@ const handleSubmit = async () => {
     const res = await modifySize(formData);
     closeModal();
     emit('success');
-    if (res.message == 'kích thước này đã tồn tại') {
+    if (res.message == 'Kích cỡ này đã tồn tại') {
       toast.error(res.message);
     } else {
       toast.success(res.message);

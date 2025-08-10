@@ -2,7 +2,7 @@
     <DivCustom label="Danh sách khách hàng" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                {{ products.length }} khách hàng
+             
             </div>
 
             <div>
@@ -55,7 +55,7 @@
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-tooltip title="thay đổi trạng thái khách hàng">
+                            <a-tooltip title="Đổi trạng thái khách hàng">
                                 <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                                     @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
                                     <a-button style="background-color: #9b6dc7;" type="primary"

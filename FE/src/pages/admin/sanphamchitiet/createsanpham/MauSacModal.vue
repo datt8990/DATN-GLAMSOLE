@@ -92,7 +92,7 @@ const handleSubmit = async () => {
     const res = await modifyMember(formData);  
     closeModal();  
     emit('success');  
-     if (res.message == 'màu sắc này đã tồn tại') {
+     if (res.message == 'Màu sắc này đã tồn tại') {
       toast.error(res.message);
     } else {
       toast.success(res.message);

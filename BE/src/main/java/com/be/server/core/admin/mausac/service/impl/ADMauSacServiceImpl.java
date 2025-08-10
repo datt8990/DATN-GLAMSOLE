@@ -55,8 +55,8 @@ public class ADMauSacServiceImpl implements ADMauSacService {
     @Override
     public ResponseObject<?> modifyMauSac(ADMauSacRequest request) {
 
-        if(mauSacRepository.findByTenContaining(request.getTen()).size() > 0) {
-            return new ResponseObject<>(null, HttpStatus.OK, "màu sắc này đã tồn tại");
+        if(mauSacRepository.findByTen(request.getTen()).size() > 0) {
+            return new ResponseObject<>(null, HttpStatus.OK, "Màu sắc này đã tồn tại");
         }
 
         if (request.getId() != null && StringUtils.hasLength(request.getId())) {

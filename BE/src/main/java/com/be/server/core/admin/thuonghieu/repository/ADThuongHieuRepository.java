@@ -13,6 +13,6 @@ public interface ADThuongHieuRepository extends ThuongHieuRepository {
 
     Page<ThuongHieu> findByMaContainingOrTenContaining(String ma, String ten, Pageable pageable);
 
-    List<ThuongHieu> findByTenContaining(String ten);
+    List<ThuongHieu> findByTen(String ten);
 
 }

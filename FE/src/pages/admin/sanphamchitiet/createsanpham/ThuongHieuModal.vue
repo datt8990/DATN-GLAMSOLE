@@ -90,7 +90,7 @@ const handleSubmit = async () => {
     const res = await modifyThuongHieu(formData);
     closeModal();
     emit('success');
-        if (res.message == 'thương hiệu này đã tồn tại') {
+        if (res.message == 'Thương hiệu này đã tồn tại') {
       toast.error(res.message);
     } else {
       toast.success(res.message);

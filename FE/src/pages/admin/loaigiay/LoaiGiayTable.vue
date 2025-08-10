@@ -2,7 +2,7 @@
     <DivCustom label="Danh sách danh mục" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                {{ products.length }} danh mục
+               
             </div>
 
             <div>

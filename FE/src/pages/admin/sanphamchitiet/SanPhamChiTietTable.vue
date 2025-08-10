@@ -2,7 +2,7 @@
   <DivCustom label="Danh sách sản phẩm chi tiết" customClasses="mt-5">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-        {{ products.length }} sản phẩm chi tiết
+
       </div>
 
       <div style="display: flex; gap: 10px;">
@@ -62,7 +62,7 @@
             <div class="d-flex gap-1 justify-center">
               <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
                 @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                <a-tooltip title="Thay đổi trạng thái sản phẩm">
+                <a-tooltip title="Đổi trạng thái sản phẩm">
                   <a-button style="background-color: #9b6dc7;" type="primary"
                     class="p-2 d-flex justify-content-center align-items-center">
                     <RedoOutlined />
@@ -153,7 +153,7 @@ const columns: TableColumnsType = [
   },
   { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 70, align: 'center' },
   { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 90, align: 'right' },
-  { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 80, align: 'center' },
+  { title: 'Kích cỡ', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 80, align: 'center' },
   { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 100, align: 'center' },
 
   { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 130, align: 'center' },

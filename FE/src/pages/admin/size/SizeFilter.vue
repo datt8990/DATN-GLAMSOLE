@@ -2,7 +2,7 @@
   <DivCustom>
     <div class="filter-container">
       <div class="filter-item search-input-group">
-        <label for="search-query" class="filter-label">Tìm kiếm kích thước</label>
+        <label for="search-query" class="filter-label">Tìm kiếm kích cỡ</label>
         <a-input id="search-query" v-model:value="localSearchQuery" placeholder="Nhập mã / tên để tìm kiếm..."
           class="search-input" />
       </div>

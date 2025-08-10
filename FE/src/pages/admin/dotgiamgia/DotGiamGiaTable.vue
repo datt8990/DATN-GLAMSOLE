@@ -2,7 +2,7 @@
   <DivCustom label="Danh sách đợt giảm giá" customClasses="mt-5">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <div style="font-size: 13px; margin-left: 15px;color: #58bddb;">
-        {{ products.length }} đợt giảm giá
+
       </div>
 
       <div>
@@ -50,21 +50,19 @@
           </template>
 
           <template v-if="column.key === 'operation'">
-            <div class="d-flex gap-1 justify-center w-100">
+            <div class="d-flex gap-1 justify-content-center align-items-center w-100 h-100">
               <template v-if="record.trangThai !== 'HET_HAN_KICH_HOAT'">
                 <a-tooltip title="Cập nhật đợt giảm giá">
-                  <a-button
-                  type="primary"
-                  @click="handleViewClick(record.id)"
-                  class="p-2 d-flex justify-content-center align-items-center"
-                  style="background-color: #54bddb; border-color: #096dd9; color: white;"
-                  >
-                  <EditOutlined style="font-size: 18px;" />
+                  <a-button type="primary" @click="handleViewClick(record.id)"
+                    class="p-2 d-flex justify-content-center align-items-center"
+                    style="background-color: #54bddb; border-color: #096dd9; color: white;">
+                    <EditOutlined style="font-size: 18px;" />
                   </a-button>
                 </a-tooltip>
               </template>
             </div>
           </template>
+
         </template>
       </a-table>
     </div>

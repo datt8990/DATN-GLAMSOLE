@@ -68,8 +68,8 @@ public class ADChatLieuServiceImpl implements ADChatLieuService {
         }
 
 
-        if(adChatLieuRepository.findByTenContaining(request.getTen()).size() > 0) {
-            return new ResponseObject<>(null, HttpStatus.OK, "chất liệu này đã tồn tại");
+        if(adChatLieuRepository.findByTen(request.getTen()).size() > 0) {
+            return new ResponseObject<>(null, HttpStatus.OK, "Chất liệu này đã tồn tại");
         }
 
 

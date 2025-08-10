@@ -43,6 +43,12 @@ public class ADNhanVienController {
         return Helper.createResponseEntity(service.changeNhanVienStatus(id));
     }
 
+    @PutMapping("/{id}/change-role")
+    public ResponseEntity<?> changeRole(@PathVariable("id") String id) {
+        return Helper.createResponseEntity(service.changeNhanVienRole(id));
+    }
+
+
     @PostMapping("/check-duplicate")
     public ResponseEntity checkDuplicate(@RequestBody CheckDuplicateRequest request) {
         boolean exists = service.checkDuplicateField(

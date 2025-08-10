@@ -32,7 +32,7 @@ const product = ref<SizeResponse>({ ten: '', mau: '#000000', ma: '', id: '' });
 const productForm = ref();
 
 const rules = {
-  ten: [{ required: true, message: 'Kích thước không được để trống!', trigger: 'blur' }],
+  ten: [{ required: true, message: 'Kích cỡ không được để trống!', trigger: 'blur' }],
 };
 
 const generateCode = () => {
@@ -86,7 +86,7 @@ const handleSubmit = async () => {
     const res = await modifySize(formData);
     closeModal();
     emit('success');
-       if (res.message == 'chất liệu này đã tồn tại') {
+       if (res.message == 'Chất liệu này đã tồn tại') {
       toast.error(res.message);
     } else {
       toast.success(res.message);

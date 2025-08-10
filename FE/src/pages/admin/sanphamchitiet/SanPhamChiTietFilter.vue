@@ -62,14 +62,14 @@
         </div>
 
         <div class="filter-item search-input-group">
-          <label for="search-size" class="filter-label">Kích thước:</label>
+          <label for="search-size" class="filter-label">Kích cỡ:</label>
           <a-select
             id="search-size"
             v-model:value="localSize"
             @change="handleSizeChange"
             allow-clear
             :options="SizeOptions"
-            placeholder="Chọn kích thước"
+            placeholder="Chọn kích cỡ"
             style="width: 450px"
             size="small"
           />

@@ -54,8 +54,8 @@ public class ADLoaiGiayServiceImpl implements ADLoaiGiayService {
 
 
 
-        if(adLoaiGiayRepository.findByTenContaining(request.getTen()).size() > 0) {
-            return new ResponseObject<>(null, HttpStatus.OK, "danh mục này đã tồn tại");
+        if(adLoaiGiayRepository.findByTen(request.getTen()).size() > 0) {
+            return new ResponseObject<>(null, HttpStatus.OK, "Danh mục này đã tồn tại");
         }
 
         if (request.getId() != null && StringUtils.hasLength(request.getId())) {

@@ -9,6 +9,7 @@ import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.NhanVien;
 import com.be.server.infrastructure.constant.EntityRole;
 import com.be.server.infrastructure.constant.EntityStatus;
+import com.be.server.infrastructure.constant.EntityVaiTro;
 import com.be.server.service.EmailService;
 import com.be.server.utils.CloudinaryUtils;
 import com.be.server.utils.Helper;
@@ -149,6 +150,8 @@ public class ADNhanVienServiceImpl implements ADNhanVienService {
 
         nhanVien.setTinh(request.getTinh());
 
+        nhanVien.setVaitro(EntityVaiTro.NHAN_VIEN);
+
         nhanVien.setCccd(request.getCccd());
 
         nhanVien.setMatKhau("$2y$10$ey6ASnw6etj4YQtRFKZTjOlzjynNjDYgKXzf9/LDibTIXjEOdOgwa");
@@ -199,6 +202,20 @@ public class ADNhanVienServiceImpl implements ADNhanVienService {
 
         return nemberOptional
                 .map(product -> ResponseObject.successForward(HttpStatus.OK, "Đổi trạng thái thành công"))
+                .orElseGet(() -> ResponseObject.successForward(HttpStatus.NOT_FOUND, "Không tìm nhân viên "));
+    }
+
+    @Override
+    public ResponseObject<?> changeNhanVienRole(String id) {
+        Optional<NhanVien> nemberOptional = adNhanVienRepository.findById(id);
+
+        nemberOptional.map(nember -> {
+            nember.setVaitro(nember.getVaitro() == EntityVaiTro.NHAN_VIEN ? EntityVaiTro.QUAN_LY : EntityVaiTro.NHAN_VIEN);
+            return new ResponseObject(adNhanVienRepository.save(nember), HttpStatus.OK, "Thay đổi vai trò nhân viên thành công");
+        });
+
+        return nemberOptional
+                .map(product -> ResponseObject.successForward(HttpStatus.OK, "Đổi vai trò nhân viên thành công"))
                 .orElseGet(() -> ResponseObject.successForward(HttpStatus.NOT_FOUND, "Không tìm nhân viên "));
     }
 

@@ -105,7 +105,7 @@
 
           <!-- Kích thước -->
           <div>
-            <label class="form-label small fw-semibold mb-1">Kích thước</label>
+            <label class="form-label small fw-semibold mb-1">Kích cỡ</label>
             <div class="d-flex flex-wrap gap-2">
               <span
                 v-for="size in filteredSizes"
@@ -267,7 +267,7 @@ const displayedDescription = computed(() =>
 const hasMoreDescription = computed(() => (product.value?.moTa || "").split("\n").length > 2);
 
 const errValidate = computed(() => {
-  if (!currentVariant.value) return { cart: "Vui lòng chọn đủ màu và kích thước" };
+  if (!currentVariant.value) return { cart: "Vui lòng chọn đủ màu và kích cỡ" };
   if (cart.value.quantity > currentVariant.value.soLuong) return { cart: "Vượt quá tồn kho" };
   if (cart.value.quantity < 1) return { cart: "Số lượng không hợp lệ" };
   return { cart: "" };
