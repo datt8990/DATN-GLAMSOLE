@@ -64,7 +64,7 @@
       { title: 'Tên sản phẩm', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
       { title: 'Số lượng', key: 'soLuong', dataIndex: 'soLuong', width: 150, align: 'center' },
       { title: 'Giá bán', key: 'giaBan', dataIndex: 'giaBan', width: 150, align: 'center' },
-      { title: 'Kích thước', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 150, align: 'center' },
+      { title: 'Kích cỡ', key: 'kichThuoc', dataIndex: 'kichThuoc', width: 150, align: 'center' },
       { title: 'Màu sắc', key: 'mau', dataIndex: 'mau', width: 150, align: 'center' },
       { title: 'Ảnh', key: 'anh', dataIndex: 'anh', width: 150, align: 'center' },
       { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },

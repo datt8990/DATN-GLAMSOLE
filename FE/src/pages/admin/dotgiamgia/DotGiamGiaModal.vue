@@ -1,13 +1,10 @@
 <template>
   <div class="add-discount-page p-6">
     <div class="breadcrumb-section">
-      <BreadcrumbDefault
-        :pageTitle="'Thêm đợt giảm giá'"
-        :routes="[
-          { path: '/admin/dot-giam-gia', name: 'Quản lý đợt giảm giá' },
-          { path: '/admin/add-dot-giam-gia', name: 'Thêm đợt giảm giá' },
-        ]"
-      />
+      <BreadcrumbDefault :pageTitle="'Thêm đợt giảm giá'" :routes="[
+        { path: '/admin/dot-giam-gia', name: 'Quản lý đợt giảm giá' },
+        { path: '/admin/add-dot-giam-gia', name: 'Thêm đợt giảm giá' },
+      ]" />
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
@@ -17,54 +14,33 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Tên khuyến mãi
+            <span class="required">*</span>Tên khuyến mãi 
             </label>
-            <a-input
-              v-model:value="formData.tenKhuyenMai"
-              placeholder="Tên khuyến mãi"
-              size="large"
-            />
+            <a-input v-model:value="formData.tenKhuyenMai" placeholder="Tên khuyến mãi" size="large" />
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Giá trị giảm
+            <span class="required">*</span>Giá trị giảm
             </label>
-            <a-input
-              v-model:value="formData.giaTriGiam"
-              placeholder="Giá trị giảm"
-              size="large"
-              suffix="%"
-              class="hover-input"
-            />
+            <a-input v-model:value="formData.giaTriGiam" placeholder="Giá trị giảm" size="large" suffix="%"
+              class="hover-input" />
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Ngày bắt đầu
+             <span class="required">*</span>Ngày bắt đầu
             </label>
-            <a-date-picker
-              v-model:value="formData.ngayBatDau"
-              placeholder="Ngày bắt đầu"
-              size="large"
-              class="w-full"
-              format="DD/MM/YYYY HH:mm:ss"
-              :show-time="true"
-            />
+            <a-date-picker v-model:value="formData.ngayBatDau" placeholder="Ngày bắt đầu" size="large" class="w-full"
+              format="DD/MM/YYYY HH:mm:ss" :show-time="true" />
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Ngày kết thúc
+             <span class="required">*</span>Ngày kết thúc
             </label>
-            <a-date-picker
-              v-model:value="formData.ngayKetThuc"
-              placeholder="Ngày kết thúc"
-              size="large"
-              class="w-full"
-              format="DD/MM/YYYY HH:mm:ss"
-              :show-time="true"
-            />
+            <a-date-picker v-model:value="formData.ngayKetThuc" placeholder="Ngày kết thúc" size="large" class="w-full"
+              format="DD/MM/YYYY HH:mm:ss" :show-time="true" />
           </div>
 
           <!-- <a-popconfirm
@@ -90,13 +66,8 @@
         </div>
 
         <div class="mb-4">
-          <a-input
-            v-model:value="searchTerm"
-            placeholder="Mã hoặc tên sản phẩm"
-            size="large"
-            class="w-full"
-            @pressEnter="handleSearch"
-          >
+          <a-input v-model:value="searchTerm" placeholder="Mã hoặc tên sản phẩm" size="large" class="w-full"
+            @pressEnter="handleSearch">
             <template #prefix>
               <SearchOutlined />
             </template>
@@ -107,11 +78,7 @@
           <div class="bg-gray-200 text-black px-4 py-2 rounded-t-lg">
             <div class="grid grid-cols-12 gap-2 text-sm font-medium">
               <div class="col-span-1 text-center">
-                <a-checkbox
-                  :indeterminate="indeterminate"
-                  :checked="checkAll"
-                  @change="onCheckAllChange"
-                />
+                <a-checkbox :indeterminate="indeterminate" :checked="checkAll" @change="onCheckAllChange" />
               </div>
               <div class="col-span-1 text-center">STT</div>
               <div class="col-span-4 text-center">Tên sản phẩm</div>
@@ -120,35 +87,23 @@
             </div>
           </div>
 
-          <div
-            class="border border-gray-200 rounded-b-lg max-h-64 overflow-y-auto"
-          >
+          <div class="border border-gray-200 rounded-b-lg max-h-64 overflow-y-auto">
             <div v-if="loading" class="p-8 text-center text-gray-500">
               <a-spin />
               <div class="mt-2">Đang tải dữ liệu...</div>
             </div>
 
-            <div
-              v-else-if="filteredProducts.length === 0"
-              class="p-8 text-center text-gray-500"
-            >
+            <div v-else-if="filteredProducts.length === 0" class="p-8 text-center text-gray-500">
               Không tìm thấy sản phẩm nào
             </div>
 
-            <div
-              v-else
-              v-for="(product, index) in filteredProducts"
-              :key="product.id"
-              class="grid grid-cols-12 gap-2 p-3 border-b border-gray-100 hover:bg-gray-50 text-sm"
-            >
+            <div v-else v-for="(product, index) in filteredProducts" :key="product.id"
+              class="grid grid-cols-12 gap-2 p-3 border-b border-gray-100 hover:bg-gray-50 text-sm">
               <div class="col-span-1 text-center">
-                <a-checkbox
-                  :checked="selectedProductIds.includes(product.id)"
-                  :loading="loadingDetails.has(product.id)"
+                <a-checkbox :checked="selectedProductIds.includes(product.id)" :loading="loadingDetails.has(product.id)"
                   @change="
                     (e) => handleProductSelect(product.id, e.target.checked)
-                  "
-                />
+                  " />
               </div>
               <div class="col-span-1 text-center">{{ index + 1 }}</div>
               <div class="col-span-4 text-center">{{ product.ten }}</div>
@@ -168,62 +123,39 @@
           </div>
         </div>
 
-        <div class="flex justify-end">
-          <a-pagination
-            :current="currentPage"
-            :total="totalProducts"
-            :page-size="pageSize"
-            @change="handlePageChange"
-            size="small"
-            show-size-changer
-            :page-size-options="['10', '20', '30', '50']"
-            @show-size-change="
+        <div class="pagination-container">
+          <a-pagination :current="currentPage" :total="totalProducts" :page-size="pageSize" @change="handlePageChange"
+            size="small" show-size-changer :page-size-options="['10', '20', '30', '50']" @show-size-change="
               (current, size) => {
                 pageSize = size;
                 currentPage = 1;
                 fetchProducts();
               }
-            "
-          />
+            " />
         </div>
 
         <div class="mt-6">
           <h3 class="text-md font-semibold mb-4">
             Chi tiết sản phẩm
-            <span class="text-blue-500 font-normal"
-              >({{ paginatedProductDetails.length }} /
-              {{ filteredProductDetails.length }} sản phẩm)</span
-            >
+            <span class="text-blue-500 font-normal">({{ paginatedProductDetails.length }} /
+              {{ filteredProductDetails.length }} sản phẩm)</span>
           </h3>
           <div class="row">
             <div class="col-md-3 mb-3">
               <label class="form-label hover-input d-flex align-items-center">
                 <span class="ms-2 hover-input">Tìm sản phẩm</span>
               </label>
-              <a-input
-                v-model:value="productNameSearch"
-                placeholder="Nhập tên sản phẩm..."
-                size="large"
+              <a-input v-model:value="productNameSearch" placeholder="Nhập tên sản phẩm..." size="large"
                 @input="handleDetailSearch"
-                class="w-full shadow-sm hover:shadow-md transition-shadow duration-200 hover-input"
-              />
+                class="w-full shadow-sm hover:shadow-md transition-shadow duration-200 hover-input" />
             </div>
 
             <div class="col-md-3 mb-3">
               <label class="form-label">Kích cỡ</label>
-              <a-select
-                v-model:value="selectedSize"
-                placeholder="Chọn kích cỡ"
-                size="large"
-                class="w-full shadow-sm hover:shadow-md transition-shadow duration-200"
-                @change="handleDetailSearch"
-                :allowClear="true"
-              >
-                <a-select-option
-                  v-for="size in sizes"
-                  :key="size.id"
-                  :value="size.id"
-                >
+              <a-select v-model:value="selectedSize" placeholder="Chọn kích cỡ" size="large"
+                class="w-full shadow-sm hover:shadow-md transition-shadow duration-200" @change="handleDetailSearch"
+                :allowClear="true">
+                <a-select-option v-for="size in sizes" :key="size.id" :value="size.id">
                   {{ size.ten }}
                 </a-select-option>
               </a-select>
@@ -231,32 +163,18 @@
 
             <div class="col-md-3 mb-3">
               <label class="form-label">Màu sắc</label>
-              <a-select
-                v-model:value="selectedColor"
-                placeholder="Chọn màu sắc"
-                size="large"
-                class="w-full shadow-sm hover:shadow-md transition-shadow duration-200"
-                @change="handleDetailSearch"
-                :allowClear="true"
-              >
-                <a-select-option
-                  v-for="color in colors"
-                  :key="color.id"
-                  :value="color.id"
-                >
+              <a-select v-model:value="selectedColor" placeholder="Chọn màu sắc" size="large"
+                class="w-full shadow-sm hover:shadow-md transition-shadow duration-200" @change="handleDetailSearch"
+                :allowClear="true">
+                <a-select-option v-for="color in colors" :key="color.id" :value="color.id">
                   {{ color.ten }}
                 </a-select-option>
               </a-select>
             </div>
 
             <div class="col-md-2 mb-3" style="margin-top: 32px">
-              <a-button
-                @click="clearDetailFilters"
-                size="large"
-                type="default"
-                class="mr-2 text-white"
-              >
-                Reset bộ lọc
+              <a-button @click="clearDetailFilters" style="background-color: gray;" size="large" type="default" class="mr-2 text-white">
+                Đặt lại bộ lọc
               </a-button>
             </div>
           </div>
@@ -264,11 +182,8 @@
           <div class="bg-gray-200 text-black px-4 py-2 rounded-t-lg">
             <div class="grid grid-cols-12 gap-2 text-sm font-medium">
               <div class="col-span-1 text-center">
-                <a-checkbox
-                  :indeterminate="detailsIndeterminate"
-                  :checked="detailsCheckAll"
-                  @change="onCheckAllDetailsChange"
-                />
+                <a-checkbox :indeterminate="detailsIndeterminate" :checked="detailsCheckAll"
+                  @change="onCheckAllDetailsChange" />
               </div>
               <div class="col-span-1 text-center">STT</div>
               <div class="col-span-2 text-center">Ảnh sản phẩm</div>
@@ -284,10 +199,7 @@
               <div class="mt-2">Đang tải chi tiết sản phẩm...</div>
             </div>
 
-            <div
-              v-else-if="paginatedProductDetails.length === 0"
-              class="p-8 text-center text-gray-500"
-            >
+            <div v-else-if="paginatedProductDetails.length === 0" class="p-8 text-center text-gray-500">
               {{
                 selectedProductDetails.length === 0
                   ? "Chưa có sản phẩm nào được chọn"
@@ -295,35 +207,21 @@
               }}
             </div>
 
-            <div
-              v-else
-              v-for="(detail, index) in paginatedProductDetails"
-              :key="detail.id"
-              class="grid grid-cols-12 gap-2 p-3 border-b border-gray-100 text-sm hover:bg-gray-50"
-            >
+            <div v-else v-for="(detail, index) in paginatedProductDetails" :key="detail.id"
+              class="grid grid-cols-12 gap-2 p-3 border-b border-gray-100 text-sm hover:bg-gray-50">
               <div class="col-span-1 text-center">
-                <a-checkbox
-                  :checked="detail.selected"
-                  @change="
-                    (e) =>
-                      handleProductDetailSelect(detail.id, e.target.checked)
-                  "
-                />
+                <a-checkbox :checked="detail.selected" @change="
+                  (e) =>
+                    handleProductDetailSelect(detail.id, e.target.checked)
+                " />
               </div>
               <div class="col-span-1 text-center">
                 {{ getDetailGlobalIndex(index) }}
               </div>
               <div class="col-span-2 text-center">
-                <div
-                  class="w-10 h-10 bg-gray-200 rounded mx-auto flex items-center justify-center"
-                >
-                  <img
-                    v-if="detail.anh || detail.hinhAnh"
-                    :src="detail.anh || detail.hinhAnh"
-                    :alt="getProductName(detail)"
-                    class="w-full h-full object-cover rounded"
-                    @error="onImageError"
-                  />
+                <div class="w-10 h-10 bg-gray-200 rounded mx-auto flex items-center justify-center">
+                  <img v-if="detail.anh || detail.hinhAnh" :src="detail.anh || detail.hinhAnh"
+                    :alt="getProductName(detail)" class="w-full h-full object-cover rounded" @error="onImageError" />
                   <span v-else class="text-xs text-gray-400">N/A</span>
                 </div>
               </div>
@@ -338,31 +236,17 @@
             </div>
           </div>
           <div v-if="filteredProductDetails.length > 0" class="mt-4">
-            <a-pagination
-              v-model:current="currentDetailPageIndex"
-              v-model:page-size="detailPageSize"
-              :total="filteredProductDetails.length"
-              show-size-changer
-              :page-size-options="['5', '10', '20', '50']"
-              @change="handleDetailPageChange"
-              @showSizeChange="handleDetailShowSizeChange"
-            />
+            <a-pagination v-model:current="currentDetailPageIndex" v-model:page-size="detailPageSize"
+              :total="filteredProductDetails.length" show-size-changer :page-size-options="['5', '10', '20', '50']"
+              @change="handleDetailPageChange" @showSizeChange="handleDetailShowSizeChange" />
           </div>
         </div>
-        <a-popconfirm
-            title="Bạn có chắc chắn muốn lưu thay đổi?"
-            @confirm="handleSubmit"
-          >
-            <a-button
-              type="primary"
-              size="large"
-              ok-text="Đồng ý"
-              cancel-text="Hủy"
-              style="background-color: #54bddb; border-color: #54bddb;margin-top: 2%;"
-            >
-              Thêm mới đợt giảm giá
-            </a-button>
-          </a-popconfirm>
+        <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit">
+          <a-button type="primary" size="large" ok-text="Đồng ý" cancel-text="Hủy"
+            style="background-color: #54bddb; border-color: #54bddb;margin-top: 2%;">
+            Thêm mới đợt giảm giá
+          </a-button>
+        </a-popconfirm>
       </div>
     </div>
   </div>
@@ -425,6 +309,8 @@ const validateForm = () => {
   const errors = [];
   if (!formData.value.tenKhuyenMai) {
     errors.push("Tên khuyến mãi không được để trống.");
+  } else if (!/^[a-zA-Z0-9\s]*$/.test(formData.value.tenKhuyenMai)) {
+    errors.push("Tên khuyến mãi không được chứa ký tự đặc biệt.");
   }
   if (!formData.value.giaTriGiam) {
     errors.push("Giá trị giảm không được để trống.");
@@ -836,9 +722,9 @@ const handleDetailPageChange = (page: number, pageSize: number) => {
   detailPageSize.value = pageSize;
 };
 
-// **Thêm phương thức mới cho việc thay đổi kích thước trang chi tiết sản phẩm**
+
 const handleDetailShowSizeChange = (current: number, size: number) => {
-  currentDetailPageIndex.value = 1; // Đặt lại về trang đầu tiên khi thay đổi kích thước trang
+  currentDetailPageIndex.value = 1;
   detailPageSize.value = size;
 };
 
@@ -856,7 +742,8 @@ onMounted(() => {
 <style scoped>
 /* Add any custom styles here if needed */
 .hover-input:hover {
-  border-color: #54bddb; /* Example hover effect */
+  border-color: #54bddb;
+  /* Example hover effect */
 }
 </style>
 
@@ -1009,7 +896,7 @@ onMounted(() => {
   margin-top: 1.5rem;
 }
 
-.space-y-4 > * + * {
+.space-y-4>*+* {
   margin-top: 1rem;
 }
 
@@ -1268,6 +1155,11 @@ onMounted(() => {
   box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
 }
 
+
+.required {
+  color: red;
+}
+
 /* Hover effect cho Ant Design Input */
 :deep(.ant-input:hover) {
   border-color: #58bddb !important;
@@ -1292,5 +1184,30 @@ onMounted(() => {
 :deep(.ant-picker-focused) {
   border-color: #58bddb !important;
   box-shadow: 0 0 0 2px rgba(88, 189, 219, 0.2) !important;
+}
+
+/* Existing styles remain unchanged */
+.flex {
+  display: flex;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+/* Ensure the pagination container takes full width and aligns content to the right */
+
+.pagination-container {
+  display: block;
+  text-align: right;
+  width: 100%;
+  padding-right: 1rem; /* Adjust as needed */
+  margin-top: 1rem; /* Add spacing above the pagination */
+}
+
+/* Optional: Style the pagination component itself */
+:deep(.ant-pagination) {
+  margin-top: 1rem;
+  /* Add some spacing above the pagination */
 }
 </style>

@@ -9,10 +9,10 @@
 
     <DivCustom :label="label" customClasses="mt-5">
       <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-        <a-button style="color: white; background-color: #54bddb; margin-left: 1300px; width: 150px;"
-          @click="openQrModal">Quét QR</a-button>
-        <a-row :gutter="16">
 
+        <a-button style="color: white; background-color: #54bddb; margin-left: 900px; width: 150px;"
+          @click="openQrModal"><QrcodeOutlined/>  Quét QR</a-button>
+        <a-row :gutter="16">
           <a-col :span="8">
             <a-form-item label="Ảnh đại diện" name="avatar" :label-col="{ span: 24 }">
               <a-upload :before-upload="handleImageUpload" accept="image/*" :show-upload-list="false">
@@ -141,6 +141,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { useRoute, useRouter } from 'vue-router';
 import BreadcrumbDefault from '@/components/ui/Breadcrumbs/BreadcrumbDefault.vue';
 import { getGHNProvinces, getGHNDistricts, getGHNWards } from '@/services/api/ghn.api';
+import { QrcodeOutlined } from '@ant-design/icons-vue';
 
 // Token GHN (thay bằng token thực tế từ GHN)
 const GHN_TOKEN = '72f634c6-58a2-11f0-8a1e-1e10d8df3c04';

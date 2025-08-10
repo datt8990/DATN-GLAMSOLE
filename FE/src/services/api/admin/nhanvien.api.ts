@@ -71,6 +71,14 @@ export const modifyStatusMember = async (id: string) => {
   return res.data;
 }
 
+export const changeStatusMember = async (id: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_NHAN_VIEN_ADMIN}/${id}/change-role`,
+    method: 'PUT'
+  })) as AxiosResponse<DefaultResponse<NhanVienResponse>>
+
+  return res.data;
+}
 
 export const getTinh = async () => {
   const res = (await request({

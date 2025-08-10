@@ -76,10 +76,10 @@
           </a-col>
 
           <a-col :span="6">
-            <a-form-item label="Kích thước" name="facilityId" :label-col="{ span: 24 }">
+            <a-form-item label="Kích cỡ" name="facilityId" :label-col="{ span: 24 }">
               <div class="input-with-button">
                 <a-select v-model:value="product.idKichThuoc" :options="kichThuocOptions"
-                  placeholder="Chọn Kích thước" />
+                  placeholder="Chọn Kích cỡ" />
               </div>
             </a-form-item>
           </a-col>
@@ -290,7 +290,7 @@ const fetchKichThuoc = async () => {
       value: size.id,
     }));
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách kích thước:', error);
+    console.error('Lỗi khi lấy danh sách kích cỡ:', error);
   }
 };
 
@@ -378,7 +378,7 @@ const handleSubmit = async () => {
     // END: Thêm ảnh nếu có
 
     const res = await updateSanPham(formData);
-    if (res.message == 'Sản phẩm chi tiết với màu với kích thước này đã tồn tại') {
+    if (res.message == 'Sản phẩm chi tiết với màu với kích cỡ này đã tồn tại') {
       toast.error(res.message);
       return;
     } else {

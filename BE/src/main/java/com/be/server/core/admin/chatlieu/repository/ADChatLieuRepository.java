@@ -17,6 +17,6 @@ public interface ADChatLieuRepository extends ChatLieuRepository {
 
 
 
-    List<ChatLieu> findByTenContaining(String ten);
+    List<ChatLieu> findByTen(String ten);
 
 }

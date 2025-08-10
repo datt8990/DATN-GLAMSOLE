@@ -62,8 +62,9 @@ public class ADLoaiDeServiceImpl implements ADLoaiDeService {
     public ResponseObject<?> modify(ADLoaiDeRequest request) {
 
 
-        if(adLoaiDeRepository.findByTenContaining(request.getTen()).size() > 0) {
-            return new ResponseObject<>(null, HttpStatus.OK, "loại để này đã tồn tại");
+        if(adLoaiDeRepository.findByTen(
+                request.getTen()).size() > 0) {
+            return new ResponseObject<>(null, HttpStatus.OK, "Loại để này đã tồn tại");
         }
 
         if (request.getId() != null && StringUtils.hasLength(request.getId())) {

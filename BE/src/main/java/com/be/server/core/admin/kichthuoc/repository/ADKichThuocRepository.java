@@ -15,6 +15,6 @@ public interface ADKichThuocRepository extends SizeRepository {
     Page<KichCo> findByMaContainingOrTenContaining(String ma, String ten, Pageable pageable);
 
 
-    Collection<Object> findByTenContaining(String ten);
+    Collection<Object> findByTen(String ten);
 
 }

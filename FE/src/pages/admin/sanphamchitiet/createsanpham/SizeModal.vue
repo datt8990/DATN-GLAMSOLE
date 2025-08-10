@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="open" title="Thêm kích thước" width="400px" @cancel="closeModal">
+  <a-modal :open="open" title="Thêm kích cỡ" width="400px" @cancel="closeModal">
     <template #footer>
       <a-popconfirm title="Bạn có chắc chắn muốn lưu thay đổi?" @confirm="handleSubmit" ok-text="Đồng ý" cancel-text="Huỷ">
         <a-button style="background-color: #54bddb;" type="primary">Xác nhận</a-button>
@@ -8,11 +8,11 @@
     </template>
 
     <a-form :model="product" ref="productForm" name="productForm" autocomplete="off">
-      <a-form-item label="Kích thước" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
+      <a-form-item label="Kích cỡ" name="ten" :label-col="{ span: 24 }" :rules="rules.ten">
         <a-input
           v-if="product"
           v-model:value="product.ten"
-          placeholder="Nhập kích thước"
+          placeholder="Nhập kích cỡ"
           style="border-radius: 4px;"
         />
       </a-form-item>
@@ -34,7 +34,7 @@ const productForm = ref();
 // --- START: MODIFIED RULES ---
 const rules = {
   ten: [
-    { required: true, message: 'Kích thước không được để trống!', trigger: 'blur' },
+    { required: true, message: 'Kích cỡ không được để trống!', trigger: 'blur' },
     {
       validator: async (_rule: any, value: string) => {
         if (!value) {
@@ -44,16 +44,16 @@ const rules = {
         const numValue = Number(value);
 
         if (isNaN(numValue)) {
-          return Promise.reject('Kích thước phải là một số!');
+          return Promise.reject('Kích cỡ phải là một số!');
         }
 
         if (numValue < 26 || numValue > 50) {
-          return Promise.reject('Kích thước phải từ 26 đến 50!');
+          return Promise.reject('Kích cỡ phải từ 26 đến 50!');
         }
 
         // Check if it's an integer (optional, but common for sizes)
         if (!Number.isInteger(numValue)) {
-          return Promise.reject('Kích thước phải là số nguyên!');
+          return Promise.reject('Kích cỡ phải là số nguyên!');
         }
 
         return Promise.resolve();
@@ -115,7 +115,7 @@ const handleSubmit = async () => {
     const res = await modifySize(formData);
     closeModal();
     emit('success');
-    if (res.message === 'kích thước này đã tồn tại') { // Use strict equality (===)
+    if (res.message === 'Kích cỡ này đã tồn tại') { // Use strict equality (===)
       toast.error(res.message);
     } else {
       toast.success(res.message);
@@ -128,7 +128,7 @@ const handleSubmit = async () => {
     } else if (error?.response?.data?.message) {
       toast.error(error?.response?.data?.message);
     } else {
-      toast.error('Có lỗi xảy ra khi lưu kích thước.');
+      toast.error('Có lỗi xảy ra khi lưu kích cỡ.');
     }
   }
 };

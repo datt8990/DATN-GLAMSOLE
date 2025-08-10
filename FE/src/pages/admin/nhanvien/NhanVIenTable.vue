@@ -1,8 +1,8 @@
 <template>
     <DivCustom label="Danh sách nhân viên" customClasses="mt-5">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <div  style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
-                {{ products.length }} nhân viên
+            <div style="font-size: 13px; color: #5FB3B3; margin-left: 15px;">
+
             </div>
 
             <div>
@@ -36,9 +36,9 @@
                         </div>
                     </template>
 
-                    <template v-if="column.key === 'gioiTimh'">
-                        <a-tag :color="record.gioiTimh ? 'red' : 'yellow'">
-                            {{ record.gioiTimh ? 'Nam' : 'Nữ' }}
+                    <template v-if="column.key === 'vaitro'">
+                        <a-tag :color="record.vaitro == 'NHAN_VIEN' ? 'green' : 'yellow'">
+                            {{ record.vaitro == 'NHAN_VIEN' ? 'Nhân viên' : 'Quản lý' }}
                         </a-tag>
                     </template>
 
@@ -52,7 +52,7 @@
                     </template>
 
                     <template v-if="column.key === 'operation'">
-                        <div class="d-flex gap-1 justify-center">
+                        <div class="d-flex gap-1 justify-content-center align-items-center w-100 h-100">
                             <a-tooltip title="Chỉnh sửa nhân viên">
                                 <a-button style="background-color: #54bddb;" type="primary"
                                     @click="handleViewClick(record.id)"
@@ -60,17 +60,29 @@
                                     <EditOutlined />
                                 </a-button>
                             </a-tooltip>
-                            <a-tooltip title="Thay đổi trạng thái">
-                            <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
-                                @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
-                                <a-button style="background-color: #9b6dc7;" type="primary"
-                                    class="p-2 d-flex justify-content-center align-items-center">
-                                    <RedoOutlined />
-                                </a-button>
-                            </a-popconfirm>
+
+                            <a-tooltip title="Đổi trạng thái nhân viên">
+                                <a-popconfirm title="Bạn có chắc chắn muốn thay đổi trạng thái không?"
+                                    @confirm="handleChangeStatusClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+                                    <a-button style="background-color: #9b6dc7;" type="primary"
+                                        class="p-2 d-flex justify-content-center align-items-center">
+                                        <RedoOutlined />
+                                    </a-button>
+                                </a-popconfirm>
+                            </a-tooltip>
+
+                            <a-tooltip title="Đổi vai trò">
+                                <a-popconfirm title="Bạn có chắc chắn muốn thay đổi vai trò không?"
+                                    @confirm="handleChangeRoleClick(record.id)" ok-text="Đồng ý" cancel-text="Huỷ">
+                                    <a-button style="background-color: #dd9bb1;" type="primary"
+                                        class="p-2 d-flex justify-content-center align-items-center">
+                                        <UserSwitchOutlined />
+                                    </a-button>
+                                </a-popconfirm>
                             </a-tooltip>
                         </div>
                     </template>
+
                 </template>
             </a-table>
         </div>
@@ -80,8 +92,8 @@
 <script setup lang="ts">
 //   import DivCustom from '@/components/custom/Div/DivCustom.vue' 
 import DivCustom from '@/components/custom/Div/DivCustomTable.vue'
-import { modifyStatusMember } from '@/services/api/admin/nhanvien.api'
-import { EditOutlined, PlusCircleOutlined, RedoOutlined } from '@ant-design/icons-vue'
+import { changeStatusMember, modifyStatusMember } from '@/services/api/admin/nhanvien.api'
+import { EditOutlined, PlusCircleOutlined, RedoOutlined, UserSwitchOutlined } from '@ant-design/icons-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import { defineEmits, defineProps } from 'vue'
 import { useRouter } from 'vue-router'
@@ -102,8 +114,9 @@ const columns: TableColumnsType = [
     { title: 'Mã nhân viên', key: 'ma', dataIndex: 'ma', width: 150, align: 'center' },
     { title: 'Tên nhân viên', key: 'ten', dataIndex: 'ten', width: 150, align: 'center' },
     { title: 'Email', key: 'email', dataIndex: 'email', width: 150, align: 'center' },
-    { title: 'Số điện thoại', key: 'sdt', dataIndex: 'sdt', width: 150, align: 'center' },
-    { title: 'Ngày tham gia', key: 'createdDate', dataIndex: 'createdDate', width: 150, align: 'center' },
+    { title: 'Số điện thoại', key: 'sdt', dataIndex: 'sdt', width: 120, align: 'center' },
+    { title: 'Vai trò', key: 'vaitro', dataIndex: 'vaiTro', width: 100, align: 'center' },
+    { title: 'Ngày tham gia', key: 'createdDate', dataIndex: 'createdDate', width: 130, align: 'center' },
     { title: 'Trạng thái', key: 'status', dataIndex: 'status', width: 150, align: 'center' },
     {
         title: 'Hành động',
@@ -141,6 +154,19 @@ const handleChangeStatusClick = async (id: string) => {
     }
 }
 
+const handleChangeRoleClick = async (id: string) => {
+    try {
+        const res = await changeStatusMember(id);
+        emit('changeStatus');
+        toast.success(res.message);
+    } catch (error) {
+        console.log(error);
+        if (error?.response?.data?.message) {
+            toast.error(error?.response?.data?.message);
+        }
+    }
+}
+
 const handleViewClick = (id: string) => {
     router.push({
         name: 'them-nhan-vien-admin',
@@ -161,21 +187,20 @@ const handleViewClick = (id: string) => {
 }
 
 :deep(.ant-btn) {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-  &:hover {
-    transform: scale(1.00);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  }
+    &:hover {
+        transform: scale(1.00);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
 }
 
 :deep(.ant-btn-primary) {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-  &:hover {
-    transform: scale(1.00);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  }
+    &:hover {
+        transform: scale(1.00);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
 }
-
 </style>

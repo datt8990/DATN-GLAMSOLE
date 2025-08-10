@@ -100,7 +100,7 @@ const handleSubmit = async () => {
     const res = await modifySize(formData);
     closeModal();
     emit('success');
-    if (res.message == 'loại đế này đã tồn tại') {
+    if (res.message == 'Loại đế này đã tồn tại') {
       toast.error(res.message);
     } else {
       toast.success(res.message);

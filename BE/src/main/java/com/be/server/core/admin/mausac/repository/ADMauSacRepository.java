@@ -14,7 +14,7 @@ public interface ADMauSacRepository extends MauSacRepository {
 
     Page<MauSac> findByMaContainingOrTenContaining(String ma, String ten, Pageable pageable);
 
-    List<MauSac> findByTenContaining(String ten);
+    List<MauSac> findByTen(String ten);
 
 
 }

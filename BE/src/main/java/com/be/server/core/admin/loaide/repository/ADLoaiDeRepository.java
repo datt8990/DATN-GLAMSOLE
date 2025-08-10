@@ -29,6 +29,6 @@ public interface ADLoaiDeRepository extends LoaiDeRepository {
 """)
     Page<LoaiDe> getAllKhachHang(Pageable pageable, @Param("q") String q, @Param("status") EntityStatus status);
 
-    List<LoaiDe> findByTenContaining(String ten);
+    List<LoaiDe> findByTen(String ten);
 
 }
