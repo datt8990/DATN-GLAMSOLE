@@ -101,6 +101,13 @@ export const routes: RouteRecordRaw[] = [
   },
 
   {
+    path: ROUTES_CONSTANTS.LOGIN.path,
+    name: ROUTES_CONSTANTS.LOGIN.name,
+    component: () => import('@/pages/auth/LoginAdmin.vue'),
+
+  },
+
+  {
     path: ROUTES_CONSTANTS.ADMIN.path,
     redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.MAUSAC.path}`,
     component: () => import("@/layout/Admin.vue"),
@@ -114,13 +121,6 @@ export const routes: RouteRecordRaw[] = [
         //   requiresAuth: true
         // }
       },
-
-      {
-        path: ROUTES_CONSTANTS.ADMIN.children.LOGIN.path,
-        name: ROUTES_CONSTANTS.ADMIN.children.LOGIN.name,
-        component: () => import('@/pages/auth/LoginAdmin.vue'),
-
-      }
     ]
 
   },

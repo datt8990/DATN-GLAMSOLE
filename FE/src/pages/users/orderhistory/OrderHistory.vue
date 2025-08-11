@@ -128,7 +128,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { getDonMua, type DonMuaRequest } from "@/services/api/permitall/donmua/donmua.api";
+import { getDonMua, changeStatus, type DonMuaRequest } from "@/services/api/permitall/donmua/donmua.api";
 import { useRouter } from "vue-router";
 import { message } from "ant-design-vue";
 import { localStorageAction } from '@/utils/storage';
@@ -281,9 +281,25 @@ const handleSearch = () => {
   fetchInvoices();
 };
 
-const cancelOrder = (maHoaDon: string) => {
+const cancelOrder = async (maHoaDon: string) => {
   message.info(`Hủy đơn hàng ${maHoaDon}`);
-  // Implement cancel order logic
+
+  try {
+    const response = await changeStatus({
+      maHoaDon: maHoaDon,
+      status: 'DA_HUY',
+      note: 'Khách hàng hủy đơn hàng'
+    });
+
+    if (response.success) {
+      message.success('Hủy đơn hàng thành công');
+      // load lại danh sách đơn hàng nếu cần
+    } else {
+      message.error(response.message || 'Hủy đơn hàng thất bại');
+    }
+  } catch (error) {
+    message.error('Có lỗi xảy ra khi hủy đơn hàng');
+  }
 };
 
 const viewOrderDetail = (maHoaDon?: string, id?: string) => {

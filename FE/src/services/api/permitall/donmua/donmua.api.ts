@@ -52,6 +52,16 @@ export const getSuaThongTin = async (params: ParamsGetHoaDonCT) => {
   return res.data
 }
 
+export const changeStatus = async (params: ParamsGetHoaDonCT) => {
+  const res = (await request({
+    url: `${PREFIX_API_PROFILE_ORDER_HISTORY}/change-status`,
+    method: 'PUT',
+    params: params
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<DonMuaResponse>>>>
+
+  return res.data
+}
+
 
 export const GetLSTTHD = async (id: string) => {
   const res = (await request({

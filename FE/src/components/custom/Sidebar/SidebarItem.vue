@@ -5,10 +5,11 @@
       :to="{ name: item.routeName }"
       class="nav-link"
       :class="{ active: isActive }"
+      :title="isCollapsed ? item.label : ''"
       tabindex="0"
     >
       <span class="icon" v-html="item.icon"></span>
-      <span class="label">{{ item.label }}</span>
+      <span v-if="!isCollapsed" class="label">{{ item.label }}</span>
     </router-link>
 
     <div v-else class="dropdown-container">
@@ -19,12 +20,13 @@
         @keydown.enter.prevent="toggleDropdown"
         @keydown.space.prevent="toggleDropdown"
         :aria-expanded="isOpen"
+        :title="isCollapsed ? item.label : ''"
         class="nav-link nav-dropdown"
         :class="{ active: isActive, open: isOpen }"
       >
         <span class="icon" v-html="item.icon"></span>
-        <span class="label">{{ item.label }}</span>
-        <span class="dropdown-arrow" :class="{ rotate: isOpen }" aria-hidden="true">
+        <span v-if="!isCollapsed" class="label">{{ item.label }}</span>
+        <span v-if="!isCollapsed" class="dropdown-arrow" :class="{ rotate: isOpen }" aria-hidden="true">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
@@ -32,11 +34,31 @@
       </button>
       
       <SidebarDropdown 
+        v-if="!isCollapsed"
         :key="`dropdown-${item.label}`"
         :items="item.children" 
         :isOpen="isOpen" 
         @item-click="handleChildClick" 
       />
+      
+      <!-- Tooltip cho collapsed mode -->
+      <div v-if="isCollapsed && isOpen" class="collapsed-tooltip">
+        <div class="tooltip-content">
+          <h4 class="tooltip-title">{{ item.label }}</h4>
+          <ul class="tooltip-list">
+            <li v-for="child in item.children" :key="child.routeName">
+              <router-link
+                :to="{ name: child.routeName }"
+                class="tooltip-link"
+                :class="{ active: $route.name === child.routeName }"
+                @click="isOpen = false"
+              >
+                {{ child.label }}
+              </router-link>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </li>
 </template>
@@ -50,6 +72,10 @@ const props = defineProps({
   item: {
     type: Object,
     required: true,
+  },
+  isCollapsed: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -66,15 +92,28 @@ const isActive = computed(() => {
   return false;
 });
 
-// Auto open dropdown if has active child item
+// Auto open dropdown if has active child item (chỉ khi không collapsed)
 watch(isActive, (active) => {
-  if (active && props.item.children && props.item.children.length) {
+  if (active && props.item.children && props.item.children.length && !props.isCollapsed) {
     isOpen.value = true;
   }
 });
 
+// Đóng dropdown khi chuyển sang collapsed mode
+watch(() => props.isCollapsed, (collapsed) => {
+  if (collapsed) {
+    isOpen.value = false;
+  }
+});
+
 function toggleDropdown() {
-  isOpen.value = !isOpen.value;
+  if (props.isCollapsed && props.item.children) {
+    // Trong chế độ collapsed, click sẽ hiển thị tooltip
+    isOpen.value = !isOpen.value;
+  } else if (!props.isCollapsed) {
+    // Chế độ bình thường
+    isOpen.value = !isOpen.value;
+  }
 }
 
 function handleChildClick(index) {
@@ -85,6 +124,7 @@ function handleChildClick(index) {
 <style scoped>
 .sidebar-item {
   margin-bottom: 2px;
+  position: relative;
 }
 
 .nav-link {
@@ -102,10 +142,16 @@ function handleChildClick(index) {
   position: relative;
   background-color: transparent;
   border: none;
-  /* Cố định width và box-sizing */
   width: 100%;
   box-sizing: border-box;
   text-align: left;
+  justify-content: flex-start;
+}
+
+/* Collapsed mode adjustments */
+:deep(.sidebar.collapsed) .nav-link {
+  padding: 0.75rem 0.5rem;
+  justify-content: center;
 }
 
 .sidebar-item > .nav-link:hover {
@@ -140,6 +186,12 @@ function handleChildClick(index) {
   justify-content: center;
   flex-shrink: 0;
   color: inherit;
+  transition: margin-right 0.3s ease;
+}
+
+/* Collapsed mode - không có margin right cho icon */
+:deep(.sidebar.collapsed) .icon {
+  margin-right: 0;
 }
 
 .icon :deep(svg) {
@@ -153,6 +205,8 @@ function handleChildClick(index) {
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4;
+  opacity: 1;
+  transition: opacity 0.3s ease;
 }
 
 .nav-dropdown {
@@ -189,16 +243,104 @@ function handleChildClick(index) {
   position: relative;
 }
 
-/* Đảm bảo container có width cố định */
 .sidebar-item {
   width: 100%;
 }
 
-/* Đảm bảo tất cả nav-link có cùng width */
 .nav-link,
 .nav-dropdown {
   width: 100% !important;
   max-width: 100%;
   min-width: 0;
+}
+
+/* Collapsed Tooltip Styles */
+.collapsed-tooltip {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  z-index: 1000;
+  margin-left: 8px;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.tooltip-content {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 12px 0;
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.tooltip-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  padding: 0 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 8px;
+}
+
+.tooltip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tooltip-list li {
+  margin: 0;
+}
+
+.tooltip-link {
+  display: block;
+  padding: 8px 12px;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.tooltip-link:hover {
+  background-color: #f8fafc;
+  color: #59bddb;
+  border-left-color: #59bddb;
+}
+
+.tooltip-link.active {
+  background-color: #59bddb;
+  color: white;
+  border-left-color: #59bddb;
+  font-weight: 500;
+}
+
+/* Arrow cho tooltip */
+.tooltip-content::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 20px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 6px solid white;
+}
+
+.tooltip-content::after {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 20px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 6px solid #e5e7eb;
 }
 </style>

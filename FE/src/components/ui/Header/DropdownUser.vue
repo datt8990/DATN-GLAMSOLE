@@ -47,6 +47,11 @@ const handleLogout = () => {
   //   router.push({ name: ROUTES_CONSTANTS.AUTHENTICATION.children.LOGIN.name })
   // }
   // userAuthStore.logout()
+
+  localStorage.removeItem("accessToken");
+  sessionStorage.clear();
+  
+  router.push({ path: ROUTES_CONSTANTS.LOGIN.path });
 }
 
 // const showRoleUser = computed(() => {

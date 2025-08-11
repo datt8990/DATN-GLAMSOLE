@@ -69,10 +69,6 @@ export const ROUTES_CONSTANTS = {
     path: '/admin',
     name: 'admin',
     children: {
-      LOGIN: {
-        path: 'login',
-        name: 'login-admin'
-      },
       MAUSAC: {
         path: 'mau-sac',
         name: 'mau-sac-admin'
@@ -181,6 +177,11 @@ export const ROUTES_CONSTANTS = {
   FORBIDDEN: {
     path: '/error/403',
     name: 'Forbidden'
+  },
+
+  LOGIN: {
+    path: '/admin/login',
+    name: 'login-admin'
   },
 
   UNAUTHORIZED: {

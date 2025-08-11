@@ -1,7 +1,10 @@
 <script setup>
 import { ref, computed, defineProps } from 'vue'
+import { useRouter } from 'vue-router'
 import { useSidebarStore } from '@/stores/sidebar'
 import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
 
 const { toggleSidebar } = useSidebarStore()
 const sidebarStore = useSidebarStore()
@@ -24,7 +27,6 @@ const showDropdown = ref(false) // to toggle dropdown visibility
 
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value
-  console.log("Dropdown toggled: ", showDropdown.value) // Kiểm tra khi nhấn avatar
 }
 
 const closeDropdown = () => {
@@ -32,15 +34,12 @@ const closeDropdown = () => {
 }
 
 const logout = () => {
-  authStore.logout() // Assuming you have a logout method in your auth store
+  authStore.logout() // Xóa dữ liệu đăng nhập
   closeDropdown()
-}
-
-const goToLogin = () => {
-  // Bạn có thể sử dụng RouterLink hoặc this.$router.push() để chuyển hướng đến trang đăng nhập.
-  this.$router.push('/login/admin');
+  router.push('/admin/login') // Điều hướng đúng cách
 }
 </script>
+
 
 <template>
   <header :class="['position-sticky top-0 z-3 w-100 shadow-sm', props.isNoSidebarPage ? 'bg-dark' : 'bg-white']"

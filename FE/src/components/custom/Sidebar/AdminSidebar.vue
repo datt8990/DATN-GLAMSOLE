@@ -97,28 +97,75 @@ const menuGroups = ref([
     ],
   },
 ]);
+
+// Toggle sidebar function
+const toggleSidebar = () => {
+  sidebarStore.toggleSidebar();
+};
+
+// Check if sidebar is collapsed (thu gọn)
+const isCollapsed = ref(false);
+
+const toggleCollapse = () => {
+  isCollapsed.value = !isCollapsed.value;
+};
 </script>
 
 <template>
   <aside class="sidebar" :class="{
     'translate-x-0': !sidebarStore.isSidebarOpen,
     '-translate-x-full': sidebarStore.isSidebarOpen,
+    'collapsed': isCollapsed
   }">
+    <!-- Header with Logo and Toggle Button -->
     <div class="header">
+      <!-- Toggle Button ở trên -->
+      <div class="toggle-container">
+        <button 
+          @click="toggleCollapse"
+          class="toggle-button"
+          type="button"
+          :title="isCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'"
+          aria-label="Toggle sidebar collapse"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke-width="2" 
+            stroke="currentColor" 
+            class="toggle-icon"
+            :class="{ 'rotate-180': isCollapsed }"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Logo Container -->
       <div class="logo-container">
-        <router-link to="/">
+        <router-link to="/" class="logo-link">
           <img src="/images/logo.jpg" alt="Tên thương hiệu logo, biểu tượng màu sắc chủ đạo trắng đen tinh tế"
-            class="logo" />
+            class="logo" 
+            :class="{ 'collapsed': isCollapsed }" />
         </router-link>
       </div>
     </div>
 
+    <!-- Navigation Menu -->
     <nav class="menu" aria-label="Menu điều hướng chính">
       <template v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
         <div>
           <ul class="list-unstyled" role="menu">
-            <SidebarItem v-for="(menuItem, index) in menuGroup.menuItems" :item="menuItem" :key="index" :index="index"
-              class="nav-link" role="menuitem" />
+            <SidebarItem 
+              v-for="(menuItem, index) in menuGroup.menuItems" 
+              :item="menuItem" 
+              :key="index" 
+              :index="index"
+              :isCollapsed="isCollapsed"
+              class="nav-link" 
+              role="menuitem" 
+            />
           </ul>
         </div>
       </template>
@@ -133,7 +180,7 @@ const menuGroups = ref([
   height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
   color: #374151;
   border-right: 1px solid #e5e7eb;
   user-select: none;
@@ -142,17 +189,37 @@ const menuGroups = ref([
   z-index: 100;
 }
 
+/* Trạng thái thu gọn */
+.sidebar.collapsed {
+  width: 70px;
+}
+
 .header {
   background-color: #ffffff;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  padding: 0.5rem 0;
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
   border-bottom: 1px solid #e5e7eb;
   min-height: 80px;
+  position: relative;
+}
+
+.toggle-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 0.5rem;
 }
 
 .logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.logo-link {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,6 +230,39 @@ const menuGroups = ref([
   max-width: 80%;
   height: auto;
   object-fit: contain;
+  transition: opacity 0.3s ease;
+}
+
+/* Toggle Button Styles */
+.toggle-button {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  width: 28px;
+  height: 28px;
+}
+
+.toggle-button:hover {
+  background-color: #59bddb;
+  color: white;
+  border-color: #59bddb;
+}
+
+.toggle-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.toggle-icon.rotate-180 {
+  transform: rotate(180deg);
 }
 
 .menu {
@@ -196,6 +296,24 @@ const menuGroups = ref([
   list-style: none;
 }
 
+/* Footer Styles */
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f8fafc;
+}
+
+.version-info {
+  text-align: center;
+}
+
+.version-text {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Sidebar States */
 .translate-x-0 {
   transform: translateX(0);
 }
@@ -204,9 +322,26 @@ const menuGroups = ref([
   transform: translateX(-100%);
 }
 
+/* Overlay for mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  transition: opacity 0.3s ease;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .sidebar {
     width: 260px;
+  }
+  
+  .sidebar.collapsed {
+    width: 60px;
   }
 
   .menu {
@@ -216,5 +351,21 @@ const menuGroups = ref([
   .list-unstyled {
     padding: 0 0.75rem;
   }
+  
+  .sidebar.collapsed .list-unstyled {
+    padding: 0 0.25rem;
+  }
+}
+
+/* Focus styles for accessibility */
+.toggle-button:focus {
+  outline: 2px solid #59bddb;
+  outline-offset: 2px;
+}
+
+.logo-link:focus {
+  outline: 2px solid #59bddb;
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 </style>

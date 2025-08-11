@@ -9,7 +9,12 @@
 
       <div class="order-info">
         <span class="order-code">Mã đơn hàng: {{ orderDetail?.maHoaDon }}</span>
-        <span :class="['order-status', getStatusClass(orderDetail?.trangThaiHoaDon)]">
+        <span
+          :class="[
+            'order-status',
+            getStatusClass(orderDetail?.trangThaiHoaDon),
+          ]"
+        >
           {{ getStatusText(orderDetail?.trangThaiHoaDon) }}
         </span>
       </div>
@@ -26,14 +31,18 @@
       <!-- Order Timeline -->
       <div class="timeline-section">
         <div class="timeline-container">
-          <div v-for="(step, index) in orderTimeline" :key="index" :class="[
-            'timeline-step',
-            {
-              completed: step.completed,
-              current: step.current,
-              pending: !step.completed && !step.current,
-            },
-          ]">
+          <div
+            v-for="(step, index) in orderTimeline"
+            :key="index"
+            :class="[
+              'timeline-step',
+              {
+                completed: step.completed,
+                current: step.current,
+                pending: !step.completed && !step.current,
+              },
+            ]"
+          >
             <div class="timeline-icon">
               <span class="timeline-emoji">{{ step.icon }}</span>
             </div>
@@ -42,7 +51,10 @@
               <p v-if="step.time" class="timeline-time">{{ step.time }}</p>
               <p v-if="step.note" class="timeline-note">{{ step.note }}</p>
             </div>
-            <div v-if="index < orderTimeline.length - 1" class="timeline-line"></div>
+            <div
+              v-if="index < orderTimeline.length - 1"
+              class="timeline-line"
+            ></div>
           </div>
         </div>
       </div>
@@ -51,10 +63,18 @@
       <div class="products-section">
         <h3 class="section-title">Sản phẩm đã đặt</h3>
         <div class="products-list">
-          <div v-for="(product, index) in orderDetail.products" :key="index" class="product-item">
+          <div
+            v-for="(product, index) in orderDetail.products"
+            :key="index"
+            class="product-item"
+          >
             <div class="product-image">
-              <img v-if="product.anhSanPham" :src="product.anhSanPham" :alt="product.tenSanPham"
-                @error="handleImageError" />
+              <img
+                v-if="product.anhSanPham"
+                :src="product.anhSanPham"
+                :alt="product.tenSanPham"
+                @error="handleImageError"
+              />
               <div v-else class="product-image-placeholder">
                 <span>📦</span>
               </div>
@@ -87,11 +107,17 @@
           <div class="delivery-details">
             <h4 class="customer-name">{{ orderDetail.tenKhachHang }}</h4>
             <p class="customer-phone">{{ orderDetail.sdtKH }}</p>
-            <p class="customer-email" v-if="orderDetail.email">{{ orderDetail.email }}</p>
+            <p class="customer-email" v-if="orderDetail.email">
+              {{ orderDetail.email }}
+            </p>
             <p class="customer-address">{{ orderDetail.diaChi }}</p>
           </div>
           <div class="delivery-icon">
-            <button class="btn-view-delivery" @click="showDeliveryModal" :disabled="isNotPending">
+            <button
+              class="btn-view-delivery"
+              @click="showDeliveryModal"
+              :disabled="isNotPending"
+            >
               <i>✏️</i>
             </button>
           </div>
@@ -99,51 +125,121 @@
       </div>
 
       <!-- Delivery Modal -->
-      <a-modal v-model:visible="deliveryModalVisible" title="Chỉnh sửa thông tin giao hàng" :width="500" centered
-        @ok="handleSaveDelivery" @cancel="handleCancelDelivery">
+      <a-modal
+        v-model:visible="deliveryModalVisible"
+        title="Chỉnh sửa thông tin giao hàng"
+        :width="500"
+        centered
+        @ok="handleSaveDelivery"
+        @cancel="handleCancelDelivery"
+      >
         <a-form :model="deliveryForm" layout="vertical" ref="deliveryFormRef">
-          <a-form-item label="Họ tên" name="tenKhachHang"
-            :rules="[{ required: true, message: 'Vui lòng nhập họ tên' }]">
-            <a-input v-model:value="deliveryForm.tenKhachHang" placeholder="Nhập họ tên" />
+          <a-form-item
+            label="Họ tên"
+            name="tenKhachHang"
+            :rules="[{ required: true, message: 'Vui lòng nhập họ tên' }]"
+          >
+            <a-input
+              v-model:value="deliveryForm.tenKhachHang"
+              placeholder="Nhập họ tên"
+            />
           </a-form-item>
-          <a-form-item label="Số điện thoại" name="sdtKH"
-            :rules="[{ required: true, message: 'Vui lòng nhập số điện thoại', pattern: /^[0-9]{10}$/, message: 'Số điện thoại phải là 10 số' }]">
-            <a-input v-model:value="deliveryForm.sdtKH" placeholder="Nhập số điện thoại" />
+          <a-form-item
+            label="Số điện thoại"
+            name="sdtKH"
+            :rules="[
+              {
+                required: true,
+                message: 'Vui lòng nhập số điện thoại',
+                pattern: /^[0-9]{10}$/,
+                message: 'Số điện thoại phải là 10 số',
+              },
+            ]"
+          >
+            <a-input
+              v-model:value="deliveryForm.sdtKH"
+              placeholder="Nhập số điện thoại"
+            />
           </a-form-item>
           <a-form-item label="Email" name="email">
-            <a-input v-model:value="deliveryForm.email" placeholder="Nhập email (không bắt buộc)" />
+            <a-input
+              v-model:value="deliveryForm.email"
+              placeholder="Nhập email (không bắt buộc)"
+            />
           </a-form-item>
-          <a-form-item label="Tỉnh/Thành phố" name="provinceId"
-            :rules="[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố' }]">
-            <a-select v-model:value="deliveryForm.provinceId" placeholder="Chọn tỉnh/thành phố"
-              @change="handleProvinceChange" :disabled="isNotPending">
-              <a-select-option v-for="province in provinces" :key="province.ProvinceID" :value="province.ProvinceID">
+          <a-form-item
+            label="Tỉnh/Thành phố"
+            name="provinceId"
+            :rules="[
+              { required: true, message: 'Vui lòng chọn tỉnh/thành phố' },
+            ]"
+          >
+            <a-select
+              v-model:value="deliveryForm.provinceId"
+              placeholder="Chọn tỉnh/thành phố"
+              @change="handleProvinceChange"
+              :disabled="isNotPending"
+            >
+              <a-select-option
+                v-for="province in provinces"
+                :key="province.ProvinceID"
+                :value="province.ProvinceID"
+              >
                 {{ province.ProvinceName }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="Quận/Huyện" name="districtId"
-            :rules="[{ required: true, message: 'Vui lòng chọn quận/huyện' }]">
-            <a-select v-model:value="deliveryForm.districtId" placeholder="Chọn quận/huyện"
-              @change="handleDistrictChange" :disabled="isNotPending || !deliveryForm.provinceId">
-              <a-select-option v-for="district in districts" :key="district.DistrictID" :value="district.DistrictID">
+          <a-form-item
+            label="Quận/Huyện"
+            name="districtId"
+            :rules="[{ required: true, message: 'Vui lòng chọn quận/huyện' }]"
+          >
+            <a-select
+              v-model:value="deliveryForm.districtId"
+              placeholder="Chọn quận/huyện"
+              @change="handleDistrictChange"
+              :disabled="isNotPending || !deliveryForm.provinceId"
+            >
+              <a-select-option
+                v-for="district in districts"
+                :key="district.DistrictID"
+                :value="district.DistrictID"
+              >
                 {{ district.DistrictName }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="Phường/Xã" name="wardCode"
-            :rules="[{ required: true, message: 'Vui lòng chọn phường/xã' }]">
-            <a-select v-model:value="deliveryForm.wardCode" placeholder="Chọn phường/xã"
-              :disabled="isNotPending || !deliveryForm.districtId">
-              <a-select-option v-for="ward in wards" :key="ward.WardCode" :value="ward.WardCode">
+          <a-form-item
+            label="Phường/Xã"
+            name="wardCode"
+            :rules="[{ required: true, message: 'Vui lòng chọn phường/xã' }]"
+          >
+            <a-select
+              v-model:value="deliveryForm.wardCode"
+              placeholder="Chọn phường/xã"
+              :disabled="isNotPending || !deliveryForm.districtId"
+            >
+              <a-select-option
+                v-for="ward in wards"
+                :key="ward.WardCode"
+                :value="ward.WardCode"
+              >
                 {{ ward.WardName }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="Địa chỉ cụ thể" name="diaChiCuThe"
-            :rules="[{ required: true, message: 'Vui lòng nhập địa chỉ cụ thể' }]">
-            <a-input v-model:value="deliveryForm.diaChiCuThe" placeholder="Nhập địa chỉ cụ thể (số nhà, đường)"
-              :disabled="isNotPending" />
+          <a-form-item
+            label="Địa chỉ cụ thể"
+            name="diaChiCuThe"
+            :rules="[
+              { required: true, message: 'Vui lòng nhập địa chỉ cụ thể' },
+            ]"
+          >
+            <a-input
+              v-model:value="deliveryForm.diaChiCuThe"
+              placeholder="Nhập địa chỉ cụ thể (số nhà, đường)"
+              :disabled="isNotPending"
+            />
           </a-form-item>
         </a-form>
       </a-modal>
@@ -154,33 +250,53 @@
         <div class="payment-summary">
           <div class="payment-row">
             <span class="payment-label">Tổng tiền hàng:</span>
-            <span class="payment-value">{{ formatCurrency(orderDetail.thanhTien || 0) }}</span>
+            <span class="payment-value">{{
+              formatCurrency(orderDetail.thanhTien || 0)
+            }}</span>
           </div>
           <div class="payment-row">
-            <span class="payment-label">Voucher ({{ orderDetail.tenVoucher || 'Không áp dụng' }}):</span>
-            <span class="payment-value discount">-{{ formatCurrency(voucherValue) }}</span>
+            <span class="payment-label"
+              >Voucher ({{ orderDetail.tenVoucher || "Không áp dụng" }}):</span
+            >
+            <span class="payment-value discount"
+              >-{{ formatCurrency(voucherValue) }}</span
+            >
           </div>
           <div class="payment-row">
             <span class="payment-label">Phí vận chuyển:</span>
-            <span class="payment-value">{{ formatCurrency(orderDetail.phiVanChuyen || 0) }}</span>
+            <span class="payment-value">{{
+              formatCurrency(orderDetail.phiVanChuyen || 0)
+            }}</span>
           </div>
           <div class="payment-row total">
             <span class="payment-label">Tổng thanh toán:</span>
-            <span class="payment-value total-amount">{{ formatCurrency(orderDetail.tongTienSauGiam) }}</span>
+            <span class="payment-value total-amount">{{
+              formatCurrency(orderDetail.tongTienSauGiam)
+            }}</span>
           </div>
           <div class="payment-method">
             <span class="payment-method-label">Phương thức thanh toán:</span>
-            <span class="payment-method-value">{{ getPaymentMethodText(orderDetail.loaiHoaDon) }}</span>
+            <span class="payment-method-value">{{
+              getPaymentMethodText(orderDetail.loaiHoaDon)
+            }}</span>
           </div>
         </div>
       </div>
 
       <!-- Order Actions -->
       <div class="order-actions">
-        <button v-if="orderDetail.trangThaiHoaDon === '0'" class="btn-cancel" @click="cancelOrder">
+        <button
+          v-if="orderDetail.trangThaiHoaDon === '0'"
+          class="btn-cancel"
+          @click="cancelOrder"
+        >
           Hủy đơn hàng
         </button>
-        <button v-if="orderDetail.trangThaiHoaDon === '4'" class="btn-reorder" @click="reorder">
+        <button
+          v-if="orderDetail.trangThaiHoaDon === '4'"
+          class="btn-reorder"
+          @click="reorder"
+        >
           Mua lại
         </button>
         <button class="btn-contact" @click="contactSupport">
@@ -202,11 +318,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { message } from "ant-design-vue";
+import { Modal, message } from "ant-design-vue";
 import {
   getHoaDonChiTiets,
   GetLSTTHD,
   getSuaThongTin,
+  changeStatus,
   type ParamsGetHoaDonCT,
 } from "@/services/api/permitall/donmua/donmua.api";
 import {
@@ -309,10 +426,14 @@ const districts = ref<District[]>([]);
 const wards = ref<Ward[]>([]);
 
 // Computed
-const isNotPending = computed(() => orderDetail.value?.trangThaiHoaDon !== '0');
+const isNotPending = computed(() => orderDetail.value?.trangThaiHoaDon !== "0");
 const voucherValue = computed(() => {
   if (orderDetail.value) {
-    return (orderDetail.value.thanhTien + orderDetail.value.phiVanChuyen) - orderDetail.value.tongTienSauGiam;
+    return (
+      orderDetail.value.thanhTien +
+      orderDetail.value.phiVanChuyen -
+      orderDetail.value.tongTienSauGiam
+    );
   }
   return 0;
 });
@@ -330,8 +451,10 @@ const orderTimeline = computed<TimelineStep[]>(() => {
     { code: "4", title: "Hoàn thành", icon: "🎉" },
   ];
 
-  if (currentStatus === "-1") {
-    const cancelledStep = timelineStatusData.value.find(item => item.trangThai === "-1");
+  if (currentStatus === "5") {
+    const cancelledStep = timelineStatusData.value.find(
+      (item) => item.trangThai === "5"
+    );
     return [
       {
         title: "Đơn hàng đã tạo",
@@ -353,7 +476,9 @@ const orderTimeline = computed<TimelineStep[]>(() => {
   }
 
   return statusSteps.map((step, index) => {
-    const statusData = timelineStatusData.value.find(item => item.trangThai === step.code);
+    const statusData = timelineStatusData.value.find(
+      (item) => item.trangThai === step.code
+    );
     const stepStatus = parseInt(step.code);
     const currentStatusNum = parseInt(currentStatus);
 
@@ -373,7 +498,7 @@ const loadProvinces = async () => {
   try {
     provinces.value = await getGHNProvinces(GHN_TOKEN);
   } catch (error) {
-    message.error('Không thể tải danh sách tỉnh/thành phố');
+    message.error("Không thể tải danh sách tỉnh/thành phố");
   }
 };
 
@@ -382,22 +507,22 @@ const handleProvinceChange = async (value: number) => {
   districts.value = [];
   wards.value = [];
   deliveryForm.districtId = undefined;
-  deliveryForm.wardCode = '';
+  deliveryForm.wardCode = "";
   try {
     districts.value = await getGHNDistricts(value, GHN_TOKEN);
   } catch (error) {
-    message.error('Không thể tải danh sách quận/huyện');
+    message.error("Không thể tải danh sách quận/huyện");
   }
 };
 
 // Handle district change
 const handleDistrictChange = async (value: number) => {
   wards.value = [];
-  deliveryForm.wardCode = '';
+  deliveryForm.wardCode = "";
   try {
     wards.value = await getGHNWards(value, GHN_TOKEN);
   } catch (error) {
-    message.error('Không thể tải danh sách phường/xã');
+    message.error("Không thể tải danh sách phường/xã");
   }
 };
 
@@ -410,9 +535,9 @@ const fetchOrderDetail = async (orderId: string) => {
 
     const response = await getHoaDonChiTiets({ maHoaDon });
 
-    if (response.status === 'OK' && response.data && response.data.length > 0) {
+    if (response.status === "OK" && response.data && response.data.length > 0) {
       const firstItem = response.data[0];
-      const products = response.data.map(item => ({
+      const products = response.data.map((item) => ({
         maHoaDonChiTiet: item.maHoaDonChiTiet,
         tenSanPham: item.tenSanPham,
         thuongHieu: item.thuongHieu,
@@ -448,14 +573,18 @@ const fetchOrderDetail = async (orderId: string) => {
 
       try {
         const statusResponse = await GetLSTTHD(idHoaDon);
-        if (statusResponse && statusResponse.status === 'OK' && statusResponse.data) {
+        if (
+          statusResponse &&
+          statusResponse.status === "OK" &&
+          statusResponse.data
+        ) {
           timelineStatusData.value = statusResponse.data;
         }
       } catch (statusError) {
         console.warn("Lỗi khi lấy dữ liệu timeline:", statusError);
       }
     } else {
-      message.error('Không thể tải chi tiết đơn hàng');
+      message.error("Không thể tải chi tiết đơn hàng");
       orderDetail.value = null;
     }
   } catch (error) {
@@ -473,12 +602,28 @@ const goBack = () => {
 };
 
 const cancelOrder = () => {
-  message.confirm({
+  const maHoaDon = route.params.maHoaDon as string;
+
+  Modal.confirm({
     title: "Xác nhận hủy đơn hàng",
     content: "Bạn có chắc chắn muốn hủy đơn hàng này không?",
-    onOk() {
-      message.success("Đơn hàng đã được hủy thành công");
-      fetchOrderDetail(route.params.id as string);
+    async onOk() {
+      try {
+        const response = await changeStatus({
+          maHoaDon: maHoaDon,
+          status: "DA_HUY", // Enum từ backend
+          note: "Khách hàng hủy đơn hàng",
+        });
+
+        if (response.success) {
+          message.success("Hủy đơn hàng thành công");
+          fetchOrderDetail(route.params.id as string);
+        } else {
+          message.error(response.message || "Hủy đơn hàng thất bại");
+        }
+      } catch (error) {
+        message.error("Có lỗi xảy ra khi hủy đơn hàng");
+      }
     },
   });
 };
@@ -493,10 +638,10 @@ const contactSupport = () => {
 
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement;
-  target.style.display = 'none';
+  target.style.display = "none";
   const placeholder = target.nextElementSibling as HTMLElement;
   if (placeholder) {
-    placeholder.style.display = 'flex';
+    placeholder.style.display = "flex";
   }
 };
 
@@ -506,7 +651,9 @@ const showDeliveryModal = async () => {
     deliveryForm.sdtKH = orderDetail.value.sdtKH;
     deliveryForm.email = orderDetail.value.email || "";
     deliveryForm.diaChiCuThe = "";
-    const addressParts = orderDetail.value.diaChi.split(', ').map(part => part.trim());
+    const addressParts = orderDetail.value.diaChi
+      .split(", ")
+      .map((part) => part.trim());
     if (addressParts.length === 4 && !isNotPending.value) {
       deliveryForm.diaChiCuThe = addressParts[0];
       const wardName = addressParts[1];
@@ -514,15 +661,19 @@ const showDeliveryModal = async () => {
       const provinceName = addressParts[3];
 
       await loadProvinces();
-      const selectedProvince = provinces.value.find(p => p.ProvinceName === provinceName);
+      const selectedProvince = provinces.value.find(
+        (p) => p.ProvinceName === provinceName
+      );
       if (selectedProvince) {
         deliveryForm.provinceId = selectedProvince.ProvinceID;
         await handleProvinceChange(selectedProvince.ProvinceID);
-        const selectedDistrict = districts.value.find(d => d.DistrictName === districtName);
+        const selectedDistrict = districts.value.find(
+          (d) => d.DistrictName === districtName
+        );
         if (selectedDistrict) {
           deliveryForm.districtId = selectedDistrict.DistrictID;
           await handleDistrictChange(selectedDistrict.DistrictID);
-          const selectedWard = wards.value.find(w => w.WardName === wardName);
+          const selectedWard = wards.value.find((w) => w.WardName === wardName);
           if (selectedWard) {
             deliveryForm.wardCode = selectedWard.WardCode;
           }
@@ -540,16 +691,24 @@ const handleSaveDelivery = async () => {
     await deliveryFormRef.value.validate();
 
     if (orderDetail.value) {
-      if (orderDetail.value.trangThaiHoaDon !== '0') {
-        message.warning("Chỉ có thể chỉnh sửa thông tin giao hàng khi đơn hàng đang chờ xác nhận");
+      if (orderDetail.value.trangThaiHoaDon !== "0") {
+        message.warning(
+          "Chỉ có thể chỉnh sửa thông tin giao hàng khi đơn hàng đang chờ xác nhận"
+        );
         return;
       }
 
-      const selectedProvince = provinces.value.find(p => p.ProvinceID === deliveryForm.provinceId);
-      const selectedDistrict = districts.value.find(d => d.DistrictID === deliveryForm.districtId);
-      const selectedWard = wards.value.find(w => w.WardCode === deliveryForm.wardCode);
+      const selectedProvince = provinces.value.find(
+        (p) => p.ProvinceID === deliveryForm.provinceId
+      );
+      const selectedDistrict = districts.value.find(
+        (d) => d.DistrictID === deliveryForm.districtId
+      );
+      const selectedWard = wards.value.find(
+        (w) => w.WardCode === deliveryForm.wardCode
+      );
 
-      let fullAddress = '';
+      let fullAddress = "";
       if (selectedProvince && selectedDistrict && selectedWard) {
         fullAddress = `${deliveryForm.diaChiCuThe}, ${selectedWard.WardName}, ${selectedDistrict.DistrictName}, ${selectedProvince.ProvinceName}`;
       }
@@ -559,7 +718,10 @@ const handleSaveDelivery = async () => {
         from_district: SHOP_DISTRICT_ID,
         to_district: deliveryForm.districtId!,
       };
-      const availableServicesResponse = await getAvailableServices(GHN_TOKEN, availableServicesRequestBody);
+      const availableServicesResponse = await getAvailableServices(
+        GHN_TOKEN,
+        availableServicesRequestBody
+      );
 
       const selectedServiceId = availableServicesResponse.data[0].service_id;
 
@@ -578,14 +740,19 @@ const handleSaveDelivery = async () => {
           InsuranceValue: insuranceValue,
           Coupon: null,
           PickShift: null,
-        }
+        },
       };
 
-      const feeResponse: ShippingFeeResponse = await calculateFee(myRequest, GHN_TOKEN, SHOP_ID);
+      const feeResponse: ShippingFeeResponse = await calculateFee(
+        myRequest,
+        GHN_TOKEN,
+        SHOP_ID
+      );
       const newPhi = feeResponse.data.total;
 
       const currentVoucherValue = orderDetail.value.giaTriVoucher || 0;
-      const newTongTienSauGiam = orderDetail.value.thanhTien + newPhi - currentVoucherValue;
+      const newTongTienSauGiam =
+        orderDetail.value.thanhTien + newPhi - currentVoucherValue;
 
       const updateDeliveryDTO = {
         maHoaDon: orderDetail.value.maHoaDon,
@@ -610,7 +777,9 @@ const handleSaveDelivery = async () => {
         tongTienSauGiam: newTongTienSauGiam,
       };
 
-      message.success("Cập nhật thông tin giao hàng và phí vận chuyển thành công");
+      message.success(
+        "Cập nhật thông tin giao hàng và phí vận chuyển thành công"
+      );
       deliveryModalVisible.value = false;
     }
   } catch (error) {
@@ -631,7 +800,7 @@ const getStatusClass = (status: string) => {
     "2": "preparing",
     "3": "shipping",
     "4": "completed",
-    "-1": "cancelled",
+    "5": "cancelled",
   };
   return classMap[status] || "default";
 };
@@ -643,7 +812,7 @@ const getStatusText = (status: string) => {
     "2": "Chuẩn bị hàng",
     "3": "Đang giao hàng",
     "4": "Hoàn thành",
-    "-1": "Đã hủy",
+    "5": "Đã hủy",
   };
   return textMap[status] || "Không rõ";
 };
@@ -666,7 +835,7 @@ const formatApiDateTime = (dateTimeString: string | number) => {
   if (!dateTimeString) return "";
 
   let date: Date;
-  if (typeof dateTimeString === 'number') {
+  if (typeof dateTimeString === "number") {
     date = new Date(dateTimeString);
   } else {
     date = new Date(dateTimeString);

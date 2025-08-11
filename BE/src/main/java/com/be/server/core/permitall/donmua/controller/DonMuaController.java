@@ -1,5 +1,6 @@
 package com.be.server.core.permitall.donmua.controller;
 
+import com.be.server.core.admin.hoadon.model.request.ADChangeStatusRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonDetailRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
 import com.be.server.core.admin.hoadon.service.ADHoaDonService;
@@ -31,6 +32,11 @@ public class DonMuaController {
     @PostMapping("/sua-thong-tin")
     public ResponseEntity<?> suaThongTin(@ModelAttribute UpdateDeliveryDTO request) {
         return Helper.createResponseEntity(service.suaThongTin(request));
+    }
+
+    @PutMapping("/change-status")
+    public ResponseEntity<?> changeStatus(@ModelAttribute ADChangeStatusRequest adChangeStatusRequest) {
+        return Helper.createResponseEntity(serviceHD.changeStatus(adChangeStatusRequest));
     }
 
     @GetMapping("/all")
