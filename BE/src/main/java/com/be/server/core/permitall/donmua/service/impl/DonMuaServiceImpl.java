@@ -9,12 +9,15 @@ import com.be.server.core.permitall.donmua.service.DonMuaService;
 import com.be.server.entity.HoaDon;
 import com.be.server.infrastructure.constant.EntityTrangThaiHoaDon;
 import com.be.server.repository.HoaDonRepository;
+import com.be.server.service.EmailService;
 import com.be.server.utils.Helper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class DonMuaServiceImpl implements DonMuaService {
     public final ADHoaDonRepository adHoaDonRepository;
 
     private final HoaDonRepository hoaDonRepository;
+
     @Override
     public ResponseObject<?> getAllHoaDon(ADHoaDonSearchRequest request) {
         try {
@@ -63,6 +67,17 @@ public class DonMuaServiceImpl implements DonMuaService {
 
         // Lưu hóa đơn
          hoaDonRepository.save(hoaDon);
+
+        String email = request.getEmail();
+        System.out.println(email);
+        String trackingUrl = "http://localhost:6688/don-mua-detail/" + hoaDon.getMa() + "/" + hoaDon.getId();
+        String subject = "Thay đổi thông tin đơn hàng";
+        String content = "Chào " + hoaDon.getTenKH() + "đơn hàng với mã hóa đơn là:  "+ hoaDon.getMa()+ " đã có thay đổi thông tin " +"\n" +
+                "Bạn có thể truy cập vào: " + trackingUrl +" để xem chi tiết"+ "\n" +
+                "Trân trọng cảm ơn.";
+
+
+        CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
 
         return new ResponseObject<>(
                 hoaDon,

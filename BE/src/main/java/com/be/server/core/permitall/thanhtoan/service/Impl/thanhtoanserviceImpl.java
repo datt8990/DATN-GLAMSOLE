@@ -72,6 +72,8 @@ public class thanhtoanserviceImpl {
 
         hoaDon.setPhuongThucThanhToan(order.getHinhThucThanhToan() == "VNPAY" ? EntityPhuongThucThanhToan.CHUYEN_KHOAN : EntityPhuongThucThanhToan.TIEN_MAT);
 
+        hoaDon.setEmail(order.getEmail());
+
         hoaDon.setGhiChu(order.getGhiChu());
 
         hoaDon.setPhiVanChuyen(order.getPhiShip());
@@ -118,6 +120,8 @@ public class thanhtoanserviceImpl {
                 hoaDon.setVoucher(phieuGiamGia);
             }
         }
+
+        System.out.println('1');
 
         if (order.getKhachHang() != null) {
 
@@ -201,9 +205,12 @@ public class thanhtoanserviceImpl {
         String email = order.getEmail();
         System.out.println(email);
         String subject = "Thanh toán đơn hàng thành công";
+        String trackingUrl = "http://localhost:6688/don-mua-detail/" + hoaDon.getMa() + "/" + hoaDon.getId();
         String content = "Chào " + order.getHoTen() + "\n" +
-                "Đơn hàng với mã hóa đơn " + hoaDon.getMa() + " đã được thanh toán thành công" +"\n" +
-                "Trân trọng cảm ơn";
+                "Đơn hàng với mã hóa đơn " + hoaDon.getMa() + " đã được thanh toán thành công." + "\n" +
+                "Bạn có thể theo dõi trạng thái đơn hàng tại đây: " + trackingUrl + "\n" +
+                "Trân trọng cảm ơn.";
+
 
         CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
 
@@ -327,6 +334,30 @@ public class thanhtoanserviceImpl {
 
     }
 
-    ;
+    ;public ResponseObject<?> getAllApplicablePGG(String idKH, Double tongTien) {
+        List<PhieuGiamGia> allPGG = adVoucherRepository.findAvailableVouchers(idKH); // Viết query chỉ lấy voucher ACTIVE
+        List<PhieuGiamGia> applicable = new ArrayList<>();
+
+        for (PhieuGiamGia pgg : allPGG) {
+            if (pgg.getSoLuongPhieu() <= 0) continue; // Hết số lượng
+            if (pgg.getDieuKien() > tongTien) continue; // Không đủ điều kiện tối thiểu
+
+            // Tính giá trị giảm thực tế
+            double giamThucTe;
+            if (pgg.getKieuGiam() == false) {
+                giamThucTe = pgg.getGiaGiam();
+            } else {
+                giamThucTe = Math.min((tongTien * pgg.getPhanTramGiam() / 100), pgg.getGiaGiam());
+            }
+            pgg.setGiaTriGiamThucTe(giamThucTe);
+            applicable.add(pgg);
+        }
+
+        // Sắp xếp để voucher tốt nhất đứng đầu
+        applicable.sort((a, b) -> Double.compare(b.getGiaTriGiamThucTe(), a.getGiaTriGiamThucTe()));
+
+        return new ResponseObject<>(applicable, HttpStatus.OK, "Danh sách phiếu giảm giá hợp lệ");
+    }
+
 
 }

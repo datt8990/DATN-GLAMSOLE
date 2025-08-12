@@ -57,4 +57,13 @@ public class PMThanhToanController {
         return ResponseEntity.ok(orderService.getPhieuGiamGia(req));
     }
 
+    @PostMapping("/pgg/list")
+    public ResponseEntity<?> getAllApplicablePGG( PMPhieuGiamGia req) {
+
+        System.out.println(req.getTongTien());
+
+        return ResponseEntity.ok(orderService.getAllApplicablePGG(req.getIdKH(), req.getTongTien()));
+    }
+
+
 }

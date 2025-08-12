@@ -84,7 +84,7 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                     ) AS thanhTien,
                     hd.ten_khach_hang AS tenKhachHang,
                     hd.so_dien_thoai_khach_hang AS sdtKH,
-                    kh.email AS email,
+                    hd.email AS email,
                     hd.dia_chi_giao_hang AS diaChi,
                     hd.loai_hoa_don AS loaiHoaDon,
                     hd.trang_thai_hoa_don AS trangThaiHoaDon,
