@@ -15,5 +15,7 @@ public interface ThanhToanService {
 
      String handleVNPayReturn(Map<String, String> vnpParams);
 
+    ResponseObject<?> getAllApplicablePGG(PMPhieuGiamGia req);
+
     ResponseObject<?> getPhieuGiamGia(PMPhieuGiamGia req);
 }

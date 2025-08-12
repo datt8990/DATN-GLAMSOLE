@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios";
 import type { ParamsPhieuGiamGia, PhieuGiamGiaResponse } from "../../admin/banhang.api";
-import request from '@/services/request'
+import request from "@/services/request";
 import type { DefaultResponse, PaginationResponse } from "@/types/api.common";
 
 interface ParamsThanhToan {
@@ -35,6 +35,16 @@ export const getPGG = async (data: ParamsPhieuGiamGia) => {
     url: `http://localhost:8386/api/orders/pgg`,
     method: "POST",
     params: data,
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<PhieuGiamGiaResponse>>>>;
+
+  return res.data;
+};
+
+export const getListPGG = async (data: ParamsPhieuGiamGia) => {
+  const res = (await request({
+    url: `http://localhost:8386/api/orders/pgg/list`,
+    method: "POST",
+    params: data, // <-- gửi JSON body
   })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<PhieuGiamGiaResponse>>>>;
 
   return res.data;

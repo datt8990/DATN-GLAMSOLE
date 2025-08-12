@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="checkout-page container py-4">
     <div class="mb-3">
@@ -45,7 +46,6 @@
                 </a-form-item>
               </div>
               <div class="col-sm-4">
-
                 <img src="/images/ghn-logo.webp" alt="Giỏ hàng nhanh"
                   style="width: 100px; height: 90px; margin-left: 20px ; object-fit: contain;" class="me-1" />
               </div>
@@ -54,11 +54,7 @@
                 <a-form-item label="Địa chỉ cụ thể" name="diaChi">
                   <a-input v-model:value="form.diaChi" placeholder="Số nhà, tên đường..." />
                 </a-form-item>
-
               </div>
-
-
-
 
               <div class="col-12">
                 <a-form-item label="Ghi chú">
@@ -92,8 +88,11 @@
           </ul>
 
           <div class="d-flex mb-3">
-            <a-input v-model:value="form.maGiamGia" placeholder="Mã giảm giá" class="me-2" />
-            <a-button @click="handleApplyDiscount">Áp dụng</a-button>
+            <a-input v-model:value="form.maGiamGia" placeholder="Mã giảm giá" class="me-2" disabled />
+            <a-button @click="handleShowVouchers">Chọn</a-button>
+          </div>
+          <div v-if="isBestVoucher && form.maGiamGia" class="text-success small mt-1">
+            Đã áp dụng phiếu giảm giá tốt nhất!
           </div>
 
           <div class="border-top pt-3">
@@ -140,8 +139,18 @@
     :confirm-loading="loadingCheckout" ok-text="Xác nhận" cancel-text="Hủy">
     <p>Bạn có chắc chắn muốn đặt đơn hàng này với tổng cộng là **{{ tongCong.toLocaleString("vi-VN") }}₫** không?</p>
     <p>Phương thức thanh toán: **{{ form.thanhToan === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 'Thanh toán VnPay'
-      }}**</p>
+    }}**</p>
     <p class="text-danger mt-3">Vui lòng kiểm tra lại thông tin nhận hàng và đơn hàng trước khi xác nhận.</p>
+  </a-modal>
+
+  <a-modal v-model:open="showVoucherModal" title="Chọn phiếu giảm giá" @ok="applySelectedVoucher" ok-text="Áp dụng"
+    cancel-text="Hủy">
+    <a-radio-group v-model:value="selectedVoucher" class="d-flex flex-column gap-2">
+      <a-radio v-for="voucher in vouchers" :key="voucher.ma" :value="voucher.ma">
+        {{ voucher.ten }} - Giảm {{ voucher.giaTriGiamThucTe.toLocaleString("vi-VN") }}₫
+      </a-radio>
+    </a-radio-group>
+    <p v-if="!vouchers.length" class="text-danger">Không có phiếu giảm giá áp dụng.</p>
   </a-modal>
 </template>
 
@@ -164,7 +173,7 @@ import {
 } from "@/services/api/ghn.api";
 import { localStorageAction } from "@/utils/storage";
 import { USER_INFO_STORAGE_KEY, CHECKOUT_STORAGE_KEY } from "@/constants/storageKey";
-import { getPGG, ThanhToan, createCartDetail } from "@/services/api/permitall/thanhtoan/thanhtoan.api";
+import { getPGG, ThanhToan, createCartDetail, getListPGG } from "@/services/api/permitall/thanhtoan/thanhtoan.api";
 
 // Interface definitions
 interface CartItem {
@@ -184,6 +193,17 @@ interface CartItem {
   idChiTietSanPham?: string;
   soLuongTrongKho?: number;
 }
+
+interface Voucher {
+  ma: string;
+  ten: string;
+  giaTriGiamThucTe: number;
+}
+
+const showVoucherModal = ref(false);
+const vouchers = ref<Voucher[]>([]);
+const selectedVoucher = ref<string | null>(null);
+const isBestVoucher = ref(true); // Biến để kiểm soát hiển thị thông báo "phiếu giảm giá tốt nhất"
 
 const breadcrumbRoutes = [
   { name: "Trang chủ", path: "/" },
@@ -272,6 +292,117 @@ const tongCong = computed(() =>
   Math.max(tongTien.value + phiShip.value - giamGia.value, 0)
 );
 
+watch(tongTienTruocGiam, (newValue) => {
+  console.log("tongTienTruocGiam thay đổi:", newValue);
+  if (form.value.maGiamGia) {
+    handleApplyDiscount(); // Gọi lại để cập nhật giamGia với TongTien mới
+  }
+});
+
+// Hàm mới để áp dụng phiếu giảm giá tốt nhất mà không mở modal
+const applyBestVoucher = async () => {
+  try {
+    const req = {
+      idKH: idKH?.userId || "khách lẻ",
+      TongTien: tongTienTruocGiam.value,
+      maPGG: "",
+    };
+
+    const found = await getListPGG(req);
+    vouchers.value = found.data || [];
+
+    if (!vouchers.value.length) {
+      message.warning("Không có phiếu giảm giá nào áp dụng được!");
+      isBestVoucher.value = false;
+      return;
+    }
+
+    // Áp dụng voucher tốt nhất (đầu tiên)
+    selectedVoucher.value = vouchers.value[0].ma;
+    form.value.maGiamGia = vouchers.value[0].ma;
+    giamGia.value = Math.min(vouchers.value[0].giaTriGiamThucTe, tongTienTruocGiam.value);
+    isBestVoucher.value = true;
+    message.success(`✅ Tự động áp dụng phiếu giảm giá "${vouchers.value[0].ten}" giảm ${giamGia.value.toLocaleString("vi-VN")}₫`);
+  } catch (error) {
+    console.error("Lỗi khi áp dụng phiếu giảm giá tốt nhất:", error);
+    message.error("Có lỗi khi áp dụng phiếu giảm giá!");
+    isBestVoucher.value = false;
+  }
+};
+
+const handleShowVouchers = async () => {
+  try {
+    const req = {
+      idKH: idKH?.userId || "khách lẻ",
+      TongTien: tongTienTruocGiam.value,
+      maPGG: "",
+    };
+
+    const found = await getListPGG(req);
+    vouchers.value = found.data || [];
+
+    if (!vouchers.value.length) {
+      message.warning("Không có phiếu giảm giá nào áp dụng được!");
+      isBestVoucher.value = false;
+      return;
+    }
+
+    // Không tự động áp dụng, chỉ mở modal
+    showVoucherModal.value = true;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách phiếu giảm giá:", error);
+    message.error("Có lỗi khi lấy danh sách phiếu giảm giá!");
+    isBestVoucher.value = false;
+  }
+};
+
+const applySelectedVoucher = () => {
+  const voucher = vouchers.value.find((v) => v.ma === selectedVoucher.value);
+  if (voucher) {
+    form.value.maGiamGia = voucher.ma;
+    giamGia.value = Math.min(voucher.giaTriGiamThucTe, tongTienTruocGiam.value);
+    message.success(`✅ Áp dụng phiếu giảm giá "${voucher.ten}" giảm ${giamGia.value.toLocaleString("vi-VN")}₫`);
+    
+    // Nếu chọn voucher khác với voucher đầu tiên, ẩn thông báo
+    if (voucher.ma !== vouchers.value[0]?.ma) {
+      isBestVoucher.value = false;
+    }
+  }
+  showVoucherModal.value = false;
+};
+
+const handleApplyDiscount = async () => {
+  if (!form.value.maGiamGia) return;
+
+  console.log("Áp dụng mã giảm giá:", tongTienTruocGiam.value);
+
+  try {
+    const req = {
+      idKH: idKH?.userId || "khách lẻ",
+      TongTien: tongTienTruocGiam.value,
+      maPGG: form.value.maGiamGia,
+    };
+
+    const found = await getListPGG(req);
+    const voucher = found.data[0]; // Giả sử lấy được voucher cụ thể
+    if (voucher) {
+      giamGia.value = Math.min(voucher.giaTriGiamThucTe, tongTienTruocGiam.value);
+      message.success(`✅ Cập nhật giảm giá: ${giamGia.value.toLocaleString("vi-VN")}₫`);
+    }
+  } catch (error) {
+    console.error("Lỗi khi cập nhật phiếu giảm giá:", error);
+    message.error("Có lỗi khi cập nhật phiếu giảm giá!");
+  }
+};
+
+watch([tongTien, phiShip, giamGia], () => {
+  console.log("tongTien:", tongTien.value);
+  console.log("phiShip:", phiShip.value);
+  console.log("giamGia:", giamGia.value);
+  console.log("tongCong:", tongCong.value);
+  console.log("tongCong:", tongTienTruocGiam.value);
+});
+
 // Validation rules
 const rules = {
   hoTen: [{ required: true, message: "Vui lòng nhập họ tên", trigger: "blur" }],
@@ -286,7 +417,6 @@ const rules = {
   diaChi: [{ required: true, message: "Nhập địa chỉ cụ thể", trigger: "blur" }],
 };
 
-// Fetch provinces and load checkout items
 onMounted(async () => {
   try {
     loadingProvinces.value = true;
@@ -297,7 +427,6 @@ onMounted(async () => {
     loadingProvinces.value = false;
   }
 
-  // Load checkout items from localStorage
   const storedItems = localStorageAction.get(CHECKOUT_STORAGE_KEY);
   if (storedItems) {
     listSanPham.value = storedItems;
@@ -307,6 +436,9 @@ onMounted(async () => {
     message.warning("Không có sản phẩm để thanh toán. Vui lòng quay lại giỏ hàng!");
     router.push("/gio-hang");
   }
+
+  // Tự động áp dụng phiếu giảm giá tốt nhất mà không mở modal
+  await applyBestVoucher();
 });
 
 // Handle province change
@@ -396,60 +528,10 @@ const calculateShippingFee = async () => {
 // Watch ward changes
 watch(() => form.value.phuong, calculateShippingFee);
 
-// Apply discount
-const handleApplyDiscount = async () => {
-  const ma = form.value.maGiamGia?.trim();
-  if (!ma) {
-    message.warning("⚠️ Vui lòng nhập mã giảm giá");
-    return;
-  }
-
-  const feeRequest = {
-    idKH: idKH?.userId || "khách lẻ",
-    maPGG: ma,
-    TongTien: tongTienTruocGiam.value,
-  };
-
-  try {
-    const found = await getPGG(feeRequest);
-    const data = found.data;
-
-    if (!found || found.message === "Phiếu giảm giá không tồn tại") {
-      giamGia.value = 0;
-      message.error("❌ Mã giảm giá không hợp lệ!");
-      return;
-    }
-
-    if (found.message === "Phiếu giảm giá không áp dụng cho tài khoản này") {
-      message.warning(found.message);
-      return;
-    }
-
-    if (found.message.startsWith("Đơn")) {
-      message.warning(found.message);
-      return;
-    }
-
-    if (data.kieuGiam === false) {
-      giamGia.value = data.giaGiam;
-      message.success(`✅ Giảm ${data.giaGiam.toLocaleString("vi-VN")}₫ cho đơn hàng!`);
-    } else if (data.kieuGiam === true) {
-      giamGia.value = Math.min((tongTienTruocGiam.value * data.phanTramGiam) / 100, data.dieuKien);
-      message.success(`✅ Giảm ${giamGia.value.toLocaleString("vi-VN")}₫ cho đơn hàng!`);
-    }
-  } catch (error) {
-    console.error("Lỗi khi áp dụng mã giảm giá:", error);
-    giamGia.value = 0;
-    message.error("❌ Có lỗi khi áp dụng mã giảm giá!");
-  }
-};
-
 const router = useRouter();
 
-// Function to open the confirmation modal
 const confirmCheckout = async () => {
   try {
-    // Validate form before opening modal
     await formRef.value.validate();
     showConfirmModal.value = true;
   } catch (err) {
@@ -458,18 +540,15 @@ const confirmCheckout = async () => {
   }
 };
 
-// Function to handle confirmation (OK button in modal)
 const handleConfirmOk = async () => {
   showConfirmModal.value = false;
   await performCheckout();
 };
 
-// Function to handle modal cancellation (Cancel button or close icon)
 const handleConfirmCancel = () => {
   showConfirmModal.value = false;
 };
 
-// Original handleCheckout logic, now renamed and called after confirmation
 const performCheckout = async () => {
   try {
     loadingCheckout.value = true;
@@ -535,4 +614,9 @@ const performCheckout = async () => {
 .text-decoration-line-through {
   text-decoration: line-through;
 }
+.text-success {
+  color: #28a745;
+  font-style: italic;
+}
 </style>
+```
