@@ -546,6 +546,17 @@
       </a-form>
     </a-modal>
 
+    <a-modal :open="showDeliveryModal" title="Áp dụng phiếu giảm giá tốt hơn" width="400px" @cancel="closeModal">
+      <template #footer>
+        <a-popconfirm title="Bạn có chắc chắn muốn chọn phiếu giảm giá này" @confirm="confirmQuantityP" ok-text="Đồng ý"
+          cancel-text="Huỷ">
+          <a-button type="primary" style="background-color: #54bddb; color: white;">Xác nhận</a-button>
+        </a-popconfirm>
+        <a-button @click="closeModalP">Huỷ</a-button>
+      </template>
+      <p>Đang có 1 phiếu giảm giá tốt hơn bạn có muốn áp dụng không</p>
+    </a-modal>
+
     <a-modal v-model:visible="isQrModalVisible" title="Quét mã QR sản phẩm" @cancel="closeQrModal" :footer="null">
       <div id="reader" style="width: 100%; max-width: 500px; margin: auto;"></div>
       <p v-if="!hasCamera" style="color: red; text-align: center;">Không tìm thấy camera hoặc không có quyền truy
@@ -1862,6 +1873,8 @@ const huy = async (idHD: string) => {
   }
 }
 
+
+
 const xacNhan = async () => {
   if (!idHDS.value) {
     toast.error('Vui lòng chọn một hóa đơn để xác nhận thanh toán!')
@@ -1941,9 +1954,11 @@ const xacNhan = async () => {
 
       if (res.message.startsWith("Đã")) {
         console.log(res.message)
-        toast.error(res.message);
+        // toast.error(res.message);
+        showDeliveryModal.value = true;
         await fetchDiscounts(idHDS.value)
-        applyBestDiscount();
+        // applyBestDiscount();
+        isBestDiscountApplied.value = false; // Reset best discount flag
         return;
       }
     }
@@ -2118,6 +2133,10 @@ async function createInvoice() {
 
 const closeModal = () => {
   state.isModalOpen = false
+}
+
+const closeModalP = () => {
+  showDeliveryModal.value = false
 }
 
 const showKhachHangModal = ref(false)
@@ -2348,6 +2367,11 @@ const confirmQuantity = async () => {
       toast.error('Thêm sản phẩm vào giỏ hàng thất bại!')
     }
   }
+}
+
+const confirmQuantityP = async () => {
+  showDeliveryModal.value = false
+  applyBestDiscount();
 }
 
 // Hàm định dạng tiền tệ
