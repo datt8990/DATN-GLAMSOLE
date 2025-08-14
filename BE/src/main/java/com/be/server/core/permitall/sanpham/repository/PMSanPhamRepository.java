@@ -102,10 +102,10 @@ public interface PMSanPhamRepository extends SanPhamRepository {
             Pageable pageable,
             @Param("request") PMDanhSachSanPhamSearchRequest request,
             @Param("sortBy") String sortBy,
-            @Param("thuongHieuIds") List<Long> thuongHieuIds,
-            @Param("chatLieuIds") List<Long> chatLieuIds,
-            @Param("loaiDeIds") List<Long> loaiDeIds,
-            @Param("danhMucIds") List<Long> danhMucIds
+            @Param("thuongHieuIds") List<String> thuongHieuIds,
+            @Param("chatLieuIds") List<String> chatLieuIds,
+            @Param("loaiDeIds") List<String> loaiDeIds,
+            @Param("danhMucIds") List<String> danhMucIds
     );
 
     @Query(value = """

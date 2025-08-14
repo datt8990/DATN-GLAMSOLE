@@ -190,7 +190,66 @@ public class ADHoaDonRepositoryImpl implements ADHoaDonRepositoryCustom {
         return new HoaDonPageResponse1(hoaDonList, totalRecords, countByStatusMap);
     }
 
+    @Override
+    public HoaDonPageResponse1 getAllHoaDonResponse1(String code) {
+        String hql = """
+        SELECT new com.be.server.core.admin.hoadon.model.response.ADHoaDonResponse1(
+                        hd.id,
+                        hd.ma,
+                        spct.anh,
+                        spct.sanPham.ten,
+                        spct.sanPham.thuongHieu.ten,
+                        spct.mauSac.ten,
+                        spct.kichCo.ten,
+                        hdct.soLuong,
+                        hdct.gia,
+                        hd.trangThaiHoaDon,
+                        hd.tongTienSauGiam
+                    )
+        FROM HoaDon hd
+        JOIN hd.hoaDonChiTiets hdct
+        JOIN hdct.spct spct
+        WHERE hd.ma = :code
+        ORDER BY hd.createdDate, hd.ma ASC
+    """;
 
+        String countByStatusHql = """
+        SELECT hd.trangThaiHoaDon, COUNT(hd.id)
+        FROM HoaDon hd
+        WHERE hd.ma = :code
+        GROUP BY hd.trangThaiHoaDon
+    """;
+
+        String totalCountHql = """
+        SELECT COUNT(hd.id)
+        FROM HoaDon hd
+        WHERE hd.ma = :code
+    """;
+
+        // Lấy danh sách hóa đơn
+        List<ADHoaDonResponse1> hoaDonList = entityManager.createQuery(hql, ADHoaDonResponse1.class)
+                .setParameter("code", code)
+                .getResultList();
+
+        // Tổng số bản ghi
+        Long totalRecords = (Long) entityManager.createQuery(totalCountHql)
+                .setParameter("code", code)
+                .getSingleResult();
+
+        // Đếm số lượng theo trạng thái
+        List<Object[]> countByStatusList = entityManager.createQuery(countByStatusHql)
+                .setParameter("code", code)
+                .getResultList();
+
+        Map<EntityTrangThaiHoaDon, Long> countByStatusMap = new HashMap<>();
+        for (Object[] row : countByStatusList) {
+            EntityTrangThaiHoaDon status = (EntityTrangThaiHoaDon) row[0];
+            Long count = (Long) row[1];
+            countByStatusMap.put(status, count);
+        }
+
+        return new HoaDonPageResponse1(hoaDonList, totalRecords, countByStatusMap);
+    }
 
     @Override
     public List<ADHoaDonChiTietResponseDetail> getAllHoaDonChiTietResponse(String maHoaDon) {

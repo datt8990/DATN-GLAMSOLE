@@ -15,6 +15,8 @@ public interface ADHoaDonRepositoryCustom {
 
     HoaDonPageResponse1 getAllHoaDonResponse1(ADHoaDonSearchRequest request);
 
+    HoaDonPageResponse1 getAllHoaDonResponse1(String code);
+
     List<ADHoaDonChiTietResponseDetail> getAllHoaDonChiTietResponse(String maHoaDon);
 
     HoaDon updateTrangThaiHoaDon(String maHoaDon, EntityTrangThaiHoaDon TrangThai);

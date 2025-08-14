@@ -8,5 +8,7 @@ public interface DonMuaService {
 
     ResponseObject<?> getAllHoaDon(ADHoaDonSearchRequest request);
 
+    ResponseObject<?> getAllHoaDon1(String code);
+
     ResponseObject<?>  suaThongTin(UpdateDeliveryDTO request);
 }

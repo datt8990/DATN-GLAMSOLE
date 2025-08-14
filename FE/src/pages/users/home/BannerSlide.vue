@@ -1,3 +1,4 @@
+```vue
 <template>
   <div id="bannerCarousel" class="carousel slide w-100" data-bs-ride="carousel"
     style="max-width: 100vw; margin: 0 auto;">
@@ -27,6 +28,8 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
+
 const banners = [
   {
     id: 1,
@@ -40,7 +43,21 @@ const banners = [
     id: 3,
     image: 'http://introngoi.com/wp-content/uploads/2017/03/mau-in-poster-an-tuong-2.jpg',
   },
-]
+];
+
+// Initialize Bootstrap carousel on component mount
+onMounted(() => {
+  const carouselElement = document.getElementById('bannerCarousel');
+  if (carouselElement) {
+    // Ensure Bootstrap's Carousel is available
+    if (typeof window.bootstrap !== 'undefined') {
+      new window.bootstrap.Carousel(carouselElement, {
+        interval: 5000, // Auto-slide every 5 seconds
+        ride: 'carousel',
+      });
+    }
+  }
+});
 </script>
 
 <style scoped>
@@ -77,3 +94,4 @@ const banners = [
   }
 }
 </style>
+```

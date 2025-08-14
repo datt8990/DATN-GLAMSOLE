@@ -15,17 +15,16 @@
           <div class="d-flex align-items-center gap-2">
             <input
               v-model="keyword"
-              class="form-control form-control-sm"
+              class="form-control form-control-sm border-red"
               placeholder="Tìm kiếm sản phẩm..."
-              @input="currentPage.value = 1"
+              @input="handleSearchInput"
             />
-            <p class="fw-bold mb-0">
-              Showing {{ allProducts.length }} results
+            <p class="fw-bold mb-0 text-red">
               <span v-if="filtersApplied" class="text-muted small">({{ filtersApplied }})</span>
             </p>
           </div>
           <div class="d-flex gap-3">
-            <select class="form-select form-select-sm text-secondary border-secondary" v-model="sortBy">
+            <select class="form-select form-select-sm text-red border-red" v-model="sortBy">
               <option value="createdAt_desc">Hàng mới nhất</option>
               <option value="createdAt_asc">Hàng cũ nhất</option>
               <option value="giaBan_asc">Giá tăng dần</option>
@@ -37,10 +36,10 @@
         </div>
 
         <div v-if="isLoading && allProducts.length === 0" class="text-center py-5">
-          <div class="spinner-border text-primary" role="status">
+          <div class="spinner-border text-red" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
-          <p class="mt-2">Đang tải sản phẩm...</p>
+          <p class="mt-2 text-red">Đang tải sản phẩm...</p>
         </div>
         <div v-if="error" class="alert alert-danger mt-3">
           {{ error }}
@@ -58,7 +57,7 @@
                      draggable="false" />
               </div>
               <div class="card-body py-2">
-                <h6 class="card-title fw-semibold text-truncate mb-2" :title="item.tenSanPham">
+                <h6 class="card-title fw-semibold text-red text-truncate mb-2" :title="item.tenSanPham">
                   {{ item.tenSanPham }}
                 </h6>
                 <div class="mb-1">
@@ -68,7 +67,7 @@
                   <span v-if="item.dotGiamGia" class="origin-price ms-2">
                     {{ item.giaBan }}₫
                   </span>
-                  <span v-if="item.dotGiamGia" class="badge bg-danger ms-2" style="font-size:12px;">
+                  <span v-if="item.dotGiamGia" class="badge bg-red ms-2" style="font-size:12px;">
                     -{{ item.dotGiamGia.phanTramGiam }}%
                   </span>
                 </div>
@@ -94,14 +93,14 @@
           <nav aria-label="Product page navigation">
             <ul class="pagination">
               <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                <a class="page-link" href="#" @click.prevent="prevPage">Trước</a>
+                <a class="page-link text-red" href="#" @click.prevent="prevPage">Trước</a>
               </li>
               <li class="page-item" v-for="page in totalPages" :key="page"
                   :class="{ active: page === currentPage }">
-                <a class="page-link" href="#" @click.prevent="goToPage(page)">{{ page }}</a>
+                <a class="page-link text-white" href="#" @click.prevent="goToPage(page)">{{ page }}</a>
               </li>
               <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                <a class="page-link" href="#" @click.prevent="nextPage">Sau</a>
+                <a class="page-link text-red" href="#" @click.prevent="nextPage">Sau</a>
               </li>
             </ul>
           </nav>
@@ -118,7 +117,7 @@ import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue';
 import { useRouter } from 'vue-router';
 import { GetDanhSachSanPhamTrangSanPham, type ParamsGetSanPhamMoi, type SanPhamMoiResponse } from '@/services/api/permitall/sanpham/pmsanpham.api';
 
-const keyword = ref<string>('Tất cả sản phẩm');
+const keyword = ref<string>('');
 const breadcrumbRoutes = [
   { name: 'Trang chủ', path: '/' },
   { name: 'Sản phẩm', path: '/san-pham' }
@@ -177,18 +176,22 @@ const handleFilter = (newFilters: any) => {
   fetchProducts();
 };
 
+const handleSearchInput = () => {
+  currentPage.value = 1; // Reset về trang 1 khi nhập tìm kiếm
+  fetchProducts(); // Gọi fetchProducts ngay khi có input
+};
+
 const fetchProducts = async () => {
   isLoading.value = true;
   allProducts.value = [];
   error.value = null;
 
   try {
-   const params = {
+    const params: ParamsGetSanPhamMoi = {
       page: currentPage.value,
       size: pageSize,
       sortBy: sortBy.value,
-      q: keyword.value !== 'Tất cả sản phẩm' ? keyword.value : undefined,
-      // Chuyển mảng thành chuỗi phân tách bằng dấu phẩy
+      q: keyword.value !== 'Tất cả sản phẩm' ? keyword.value.trim() : undefined,
       thuongHieuIds: filters.value.thuongHieu.length > 0 ? filters.value.thuongHieu.join(',') : undefined,
       chatLieuIds: filters.value.chatLieu.length > 0 ? filters.value.chatLieu.join(',') : undefined,
       loaiDeIds: filters.value.loaiDe.length > 0 ? filters.value.loaiDe.join(',') : undefined,
@@ -198,26 +201,24 @@ const fetchProducts = async () => {
     };
 
     console.log("Fetching products with params:", JSON.stringify(params, null, 2));
-    const res = await GetDanhSachSanPhamTrangSanPham(params); // Truyền đối tượng
+    const res = await GetDanhSachSanPhamTrangSanPham(params);
     console.log("API response:", res);
 
     if (res.data && res.data.data) {
       allProducts.value = res.data.data;
-      totalElements.value = res.data.totalElements || 0; // Đảm bảo giá trị hợp lệ
+      totalElements.value = res.data.totalElements || 0;
     } else {
       throw new Error('Dữ liệu trả về từ API không hợp lệ');
     }
 
-    // Tính totalPages nếu chưa có
     const calculatedTotalPages = Math.ceil(totalElements.value / pageSize);
     if (!totalPages.value && calculatedTotalPages > 0) {
       totalPages.value = calculatedTotalPages;
     }
 
-    // Kiểm tra và gọi lại nếu cần, tránh vòng lặp vô hạn
     if (currentPage.value > totalPages.value && totalPages.value > 0 && currentPage.value !== totalPages.value) {
       currentPage.value = totalPages.value;
-      await fetchProducts(); // Sử dụng await để đảm bảo tuần tự
+      await fetchProducts();
     }
   } catch (err) {
     console.error("Lỗi khi tải sản phẩm:", err);
@@ -227,8 +228,8 @@ const fetchProducts = async () => {
   }
 };
 
-// Chỉ theo dõi currentPage và sortBy
-watch([currentPage, sortBy], () => {
+// Theo dõi thay đổi của keyword, currentPage, và sortBy
+watch([keyword, currentPage, sortBy], () => {
   fetchProducts();
 });
 
@@ -263,12 +264,20 @@ const nextPage = () => {
   }
 };
 </script>
+
 <style scoped>
 .form-control-sm {
   max-width: 200px;
 }
 
-/* Giữ nguyên các style hiện tại */
+.border-red {
+  border-color: #FF0000 !important;
+}
+
+.text-red {
+  color: #FF0000 !important;
+}
+
 .img-wrapper {
   width: 100%;
   height: 200px;
@@ -286,6 +295,33 @@ const nextPage = () => {
 
 .product-card {
   cursor: pointer;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(255, 0, 0, 0.2);
+}
+
+.product-img-wrapper {
+  width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.product-img-main {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.34s cubic-bezier(.4, 0, .2, 1), transform 0.35s cubic-bezier(.4, 0, .2, 1);
 }
 
 .hover-overlay {
@@ -301,7 +337,7 @@ const nextPage = () => {
   color: #333;
 }
 
-.img-wrapper:hover .hover-overlay {
+.product-img-wrapper:hover .hover-overlay {
   transform: translateY(0%);
 }
 
@@ -336,23 +372,23 @@ const nextPage = () => {
 }
 
 .page-link {
-  color: #333;
+  color: #FF0000;
   background-color: #fff;
-  border: 1px solid #dee2e6;
+  border: 1px solid #FF0000;
   border-radius: 4px;
   padding: 8px 12px;
   transition: all 0.3s ease;
 }
 
 .page-link:hover {
-  background-color: #f8f9fa;
-  color: #007bff;
+  background-color: #ffebee;
+  color: #FF0000;
 }
 
 .page-item.active .page-link {
-  background-color: #007bff;
+  background-color: #FF0000;
   color: #fff;
-  border-color: #007bff;
+  border-color: #FF0000;
 }
 
 .page-item.disabled .page-link {
@@ -362,41 +398,10 @@ const nextPage = () => {
   pointer-events: none;
 }
 
-.product-img-wrapper {
-  width: 100%;
-  aspect-ratio: 1/1;
-  overflow: hidden;
-  background-color: #f8f9fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.product-img-main {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  transition: opacity 0.34s cubic-bezier(.4, 0, .2, 1), transform 0.35s cubic-bezier(.4, 0, .2, 1);
-}
-
-.product-card {
-  transition: transform 0.18s, box-shadow 0.18s;
-  cursor: pointer;
-  background: #fff;
-  border-radius: 15px;
-}
-
-.product-card:hover {
-  transform: translateY(-4px) scale(1.035);
-  box-shadow: 0 4px 18px rgba(44, 124, 255, 0.12);
-}
-
 .main-price {
   font-size: 1.14rem;
   font-weight: 700;
-  color: #174b9c;
+  color: #FF0000;
   letter-spacing: 0.4px;
 }
 
@@ -408,12 +413,12 @@ const nextPage = () => {
   vertical-align: middle;
 }
 
-.badge.bg-danger {
+.badge.bg-red {
   vertical-align: middle;
-  background: linear-gradient(90deg, #ff4d4f 80%, #ffb14c 100%);
+  background: linear-gradient(90deg, #FF0000 80%, #FF3333 100%);
   font-weight: 600;
   letter-spacing: 0.2px;
-  border-radius: 8px 8px 8px 8px;
+  border-radius: 8px;
 }
 
 .brand-row {
@@ -422,24 +427,6 @@ const nextPage = () => {
 
 .brand-label {
   color: #a2a2a2;
-}
-
-.color-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1px solid #ccc;
-  display: inline-block;
-}
-
-.size-box {
-  display: inline-block;
-  padding: 2px 7px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: #f9f9f9;
-  margin-right: 3px;
 }
 
 .gift-big {

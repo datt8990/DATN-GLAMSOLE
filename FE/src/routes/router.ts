@@ -46,6 +46,27 @@ export const routes: RouteRecordRaw[] = [
 
       },
       {
+        path: ROUTES_CONSTANTS.USERS.children.LIENHE.path,
+        name: ROUTES_CONSTANTS.USERS.children.LIENHE.name,
+
+        component: () => import("@/pages/users/home/ContactPage.vue"),
+
+      },
+      {
+        path: ROUTES_CONSTANTS.USERS.children.GIOITHIEU.path,
+        name: ROUTES_CONSTANTS.USERS.children.GIOITHIEU.name,
+
+        component: () => import("@/pages/users/home/GioiThieu.vue"),
+
+      },
+      {
+        path: ROUTES_CONSTANTS.USERS.children.TRACUU.path,
+        name: ROUTES_CONSTANTS.USERS.children.TRACUU.name,
+
+        component: () => import("@/pages/users/home/TraCuu.vue"),
+
+      },
+      {
         path: ROUTES_CONSTANTS.USERS.children.SANPHAM.path,
         name: ROUTES_CONSTANTS.USERS.children.SANPHAM.name,
         component: () => import("@/pages/users/products/ProductsView.vue"),

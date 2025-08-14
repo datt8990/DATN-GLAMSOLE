@@ -32,6 +32,15 @@ export const getDonMua = async (params: DonMuaRequest) => {
   return res.data
 }
 
+export const getDonMuaByCode = async (code: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_PROFILE_ORDER_HISTORY}/all/${code}`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<DonMuaResponse>>
+
+  return res.data
+}
+
 export const getHoaDonChiTiets = async (params: ParamsGetHoaDonCT) => {
   const res = (await request({
     url: `${PREFIX_API_PROFILE_ORDER_HISTORY}/all`,

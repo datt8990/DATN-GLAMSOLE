@@ -29,6 +29,11 @@ public class DonMuaController {
         return Helper.createResponseEntity(service.getAllHoaDon(request));
     }
 
+    @GetMapping("/all/{code}")
+    public ResponseEntity<?> getAll1(@PathVariable String code) {
+        return Helper.createResponseEntity(service.getAllHoaDon1(code));
+    }
+
     @PostMapping("/sua-thong-tin")
     public ResponseEntity<?> suaThongTin(@ModelAttribute UpdateDeliveryDTO request) {
         return Helper.createResponseEntity(service.suaThongTin(request));

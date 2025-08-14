@@ -46,6 +46,24 @@ public class DonMuaServiceImpl implements DonMuaService {
         }
     }
 
+    public ResponseObject<?> getAllHoaDon1(String code) {
+        try {
+            HoaDonPageResponse1 result = adHoaDonRepository.getAllHoaDonResponse1(code);
+
+            return new ResponseObject<>(
+                    result,
+                    HttpStatus.OK,
+                    "Lấy danh sách lịch sử đơn hàng thành công"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Lỗi khi lấy danh sách đơn hàng: " + e.getMessage()
+            );
+        }
+    }
+
     @Override
     public ResponseObject<?> suaThongTin(UpdateDeliveryDTO request) {
         // Tìm hóa đơn

@@ -94,12 +94,12 @@ public class PMSanPhamServiceImpl implements PMSanPhamService {
         );
     }
 
-    private List<Long> convertStringToListLong(String idString) {
+    private List<String> convertStringToList(String idString) {
         if (idString == null || idString.trim().isEmpty()) {
             return null; // Trả về null để khớp với điều kiện IS NULL trong HQL
         }
         return Arrays.stream(idString.split(","))
-                .map(Long::parseLong)
+                .map(String::toString)
                 .collect(Collectors.toList());
     }
 
@@ -119,10 +119,10 @@ public class PMSanPhamServiceImpl implements PMSanPhamService {
 
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize(), sort);
 
-        List<Long> thuongHieuIdsList = convertStringToListLong(request.getThuongHieuIds());
-        List<Long> chatLieuIdsList = convertStringToListLong(request.getChatLieuIds());
-        List<Long> loaiDeIdsList = convertStringToListLong(request.getLoaiDeIds());
-        List<Long> danhMucIdsList = convertStringToListLong(request.getDanhMucIds());
+        List<String> thuongHieuIdsList = convertStringToList(request.getThuongHieuIds());
+        List<String> chatLieuIdsList = convertStringToList(request.getChatLieuIds());
+        List<String> loaiDeIdsList = convertStringToList(request.getLoaiDeIds());
+        List<String> danhMucIdsList = convertStringToList(request.getDanhMucIds());
 
 
         Page<PMSanPhamMoiResponse> page = pmsanphamRepository.getDanhSachSanPhamResponsePage(
