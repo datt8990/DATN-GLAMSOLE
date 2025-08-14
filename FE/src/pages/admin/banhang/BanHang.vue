@@ -1958,6 +1958,7 @@ const xacNhan = async () => {
         showDeliveryModal.value = true;
         await fetchDiscounts(idHDS.value)
         // applyBestDiscount();
+        isBestDiscountApplied.value = false; // Reset best discount flag
         return;
       }
     }
