@@ -24,6 +24,7 @@ import com.be.server.core.admin.nhanvien.repository.ADNhanVienRepository;
 import com.be.server.core.common.base.ResponseObject;
 import com.be.server.entity.HoaDon;
 import com.be.server.entity.KhachHang;
+import com.be.server.entity.PhieuGiamGia;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -63,6 +64,8 @@ public interface ADBanHangService {
     ResponseObject<?> thanhToanThanhCong(ADThanhToanRequest id);
 
     ResponseObject<?> danhSachPhieuGiamGia(ChonPhieuGiamGiaRequest id);
+
+    List<PhieuGiamGia> danhSachPhieuGiamGia1(ChonPhieuGiamGiaRequest id);
 
     ResponseObject<?> danhSachPhieuGiamGiaKoDuDieuKien(ChonPhieuGiamGiaRequest id);
 

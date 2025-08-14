@@ -1886,20 +1886,20 @@ const xacNhan = async () => {
 
   const form = ref({
 
-  tinh: null as string | null,
-  huyen: null as string | null,
-  phuong: null as string | null,
+    tinh: null as string | null,
+    huyen: null as string | null,
+    phuong: null as string | null,
 
-});
+  });
 
-  console.log('va',deliveryInfo.tinhThanhPho)
+  console.log('va', deliveryInfo.tinhThanhPho)
 
   const selectedProvince = provinces.value.find((p) => p.code === deliveryInfo.tinhThanhPho);
   const selectedDistrict = districts.value.find((d) => d.code === deliveryInfo.quanHuyen);
   const selectedWard = wards.value.find((w) => w.code === deliveryInfo.phuongXa);
 
   console.log('Selected Province:', selectedProvince);
-  
+
 
   try {
 
@@ -1929,6 +1929,21 @@ const xacNhan = async () => {
       if (res.message.startsWith("Số")) {
         console.log(res.message)
         toast.error(res.message);
+        return;
+      }
+
+      if (res.message.startsWith("Phiếu")) {
+        console.log(res.message)
+        toast.error(res.message);
+        await fetchDiscounts(idHDS.value)
+        return;
+      }
+
+      if (res.message.startsWith("Đã")) {
+        console.log(res.message)
+        toast.error(res.message);
+        await fetchDiscounts(idHDS.value)
+        applyBestDiscount();
         return;
       }
     }
