@@ -397,13 +397,18 @@ public class ADBanHangServiceImpl implements ADBanHangService {
                 chonPhieuGiamGiaRequest.setIdKH(hoaDon.getKhachHang().getId());
 
             }
-            List<PhieuGiamGia> list = danhSachPhieuGiamGia1(chonPhieuGiamGiaRequest);
 
-            if(list.get(0).getGiaTriGiamThucTe() > phieuGiamGia1.getGiaTriGiamThucTe() ){
+            if(id.getCheck() == 1){
+                List<PhieuGiamGia> list = danhSachPhieuGiamGia1(chonPhieuGiamGiaRequest);
 
-                return new ResponseObject<>(null, HttpStatus.OK, "Đã có 1 phiếu giảm giá tốt hơn");
+                if(list.get(0).getGiaTriGiamThucTe() > phieuGiamGia1.getGiaTriGiamThucTe() ){
 
+                    return new ResponseObject<>(null, HttpStatus.OK, "Đã có 1 phiếu giảm giá tốt hơn");
+
+                }
             }
+
+
 
         }
 

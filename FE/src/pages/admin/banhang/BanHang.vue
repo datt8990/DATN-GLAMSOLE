@@ -434,7 +434,7 @@
               </button>
             </div>
             <a-popconfirm title="Bạn có chắc chắn muốn xác nhận thanh toán hóa đơn này?" ok-text="Đồng ý"
-              cancel-text="Hủy" style="background-color: #54bddb;" @confirm="xacNhan" @cancel="() => { }">
+              cancel-text="Hủy" style="background-color: #54bddb;" @confirm="xacNhan(1)" @cancel="() => { }">
               <button v-if="isDeliveryEnabled == false" class="btn-confirm-payment">Xác nhận thanh toán</button>
               <button v-else="isDeliveryEnabled == true " class="btn-confirm-payment">Xác nhận giao hàng</button>
             </a-popconfirm>
@@ -1875,7 +1875,7 @@ const huy = async (idHD: string) => {
 
 
 
-const xacNhan = async () => {
+const xacNhan = async (check: number) => {
   if (!idHDS.value) {
     toast.error('Vui lòng chọn một hóa đơn để xác nhận thanh toán!')
     console.error('Lỗi: idHDS.value là null khi xác nhận thanh toán.')
@@ -1926,6 +1926,7 @@ const xacNhan = async () => {
     formData.append('diaChi', `${deliveryInfo.diaChiCuThe}, ${selectedWard?.label}, ${selectedDistrict?.label}, ${selectedProvince?.label}`);
     formData.append('tienShip', shippingFee.value.toString());
     formData.append('phuongThucThanhToan', state.currentPaymentMethod);
+    formData.append('check', check.toString());
     if (selectedDiscount.value?.id) {
       formData.append('idPGG', selectedDiscount.value.id)
     }
@@ -2137,6 +2138,7 @@ const closeModal = () => {
 
 const closeModalP = () => {
   showDeliveryModal.value = false
+  xacNhan(0)
 }
 
 const showKhachHangModal = ref(false)
@@ -2372,6 +2374,7 @@ const confirmQuantity = async () => {
 const confirmQuantityP = async () => {
   showDeliveryModal.value = false
   applyBestDiscount();
+  xacNhan(0)
 }
 
 // Hàm định dạng tiền tệ

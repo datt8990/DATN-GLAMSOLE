@@ -175,7 +175,7 @@ const fetchCartFromServer = async () => {
     console.log('Unique items from server:', uniqueItems.size) // Debug
   } catch (error) {
     console.error('Lỗi khi lấy giỏ hàng từ server:', error)
-    toast.error('Không thể tải số lượng giỏ hàng.')
+    // toast.error('Không thể tải số lượng giỏ hàng.')
     cartItemCount.value = 0
   }
 }
