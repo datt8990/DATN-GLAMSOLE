@@ -376,6 +376,44 @@ public class ADBanHangServiceImpl implements ADBanHangService {
     @Override
     public ResponseObject<?> thanhToanThanhCong(ADThanhToanRequest id) {
 
+
+
+        if(id.getIdPGG() != null){
+
+            PhieuGiamGia phieuGiamGia1 = adVoucherRepository.findById(id.getIdPGG()).get();
+
+            if(phieuGiamGia1.getStatus() == EntityStatus.INACTIVE){
+                return new ResponseObject<>(null, HttpStatus.OK, "Phiếu giảm giá đã ngừng hoạt động");
+            }
+
+            HoaDon hoaDon = adTaoHoaDonRepository.findById(id.getIdHD()).get();
+
+            ChonPhieuGiamGiaRequest chonPhieuGiamGiaRequest = new ChonPhieuGiamGiaRequest();
+
+            chonPhieuGiamGiaRequest.setIdHD(id.getTienHang());
+
+            if(hoaDon.getKhachHang() != null){
+
+                chonPhieuGiamGiaRequest.setIdKH(hoaDon.getKhachHang().getId());
+
+            }
+
+            if(id.getCheck() == 1){
+                List<PhieuGiamGia> list = danhSachPhieuGiamGia1(chonPhieuGiamGiaRequest);
+
+                if(list.get(0).getGiaTriGiamThucTe() > phieuGiamGia1.getGiaTriGiamThucTe() ){
+
+                    return new ResponseObject<>(null, HttpStatus.OK, "Đã có 1 phiếu giảm giá tốt hơn");
+
+                }
+            }
+
+
+
+        }
+
+
+
         List<String> idHDCTS = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(id.getIdHD());
 
         for (int i = 0; i < idHDCTS.size(); i++) {
@@ -396,6 +434,8 @@ public class ADBanHangServiceImpl implements ADBanHangService {
             adSanPhamBanHangRepository.save(sanPhamChiTiet);
 
         }
+
+
 
         HoaDon hoaDon = adTaoHoaDonRepository.findById(id.getIdHD()).get();
 
@@ -614,6 +654,49 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         return new ResponseObject<>(phieuGiamGias, HttpStatus.CREATED, "Lây giá trị phiếu giảm giá thành công");
 
+    }
+
+    @Override
+    public List<PhieuGiamGia> danhSachPhieuGiamGia1(ChonPhieuGiamGiaRequest id) {
+        Double tongTien = id.getIdHD();
+
+        if (tongTien == null) {
+
+        }
+
+        List<PhieuGiamGia> phieuGiamGias = adTaoHoaDonRepository.getPhieuGiamGia(id.getIdKH(), id.getIdHD());
+        if (phieuGiamGias == null) {
+            phieuGiamGias = new ArrayList<>();
+        }
+        if (phieuGiamGias.size() == 0) {
+
+        }
+
+        System.out.println(phieuGiamGias.size());
+
+        if (phieuGiamGias.size() > 0) {
+            phieuGiamGias.forEach(pg -> {
+                if (pg.getPhanTramGiam() != null && pg.getGiaGiam() != null) {
+                    if (pg.getKieuGiam() == true) {
+                        pg.setGiaTriGiamThucTe(tongTien * (pg.getPhanTramGiam() / 100));
+                        if (pg.getGiaTriGiamThucTe() >= pg.getGiaGiam()) {
+                            pg.setGiaTriGiamThucTe(pg.getGiaGiam());
+                        }
+                    } else {
+
+                        pg.setGiaTriGiamThucTe(tongTien - (tongTien - pg.getPhanTramGiam()));
+                    }
+                }
+            });
+        }
+
+        if (phieuGiamGias.size() > 0) {
+            phieuGiamGias = phieuGiamGias.stream().sorted(Comparator.comparing(PhieuGiamGia::getGiaTriGiamThucTe, Comparator.reverseOrder())).collect(Collectors.toList());
+        } else {
+            phieuGiamGias = new ArrayList<>();
+        }
+
+        return phieuGiamGias;
     }
 
     @Override

@@ -434,7 +434,7 @@
               </button>
             </div>
             <a-popconfirm title="Bạn có chắc chắn muốn xác nhận thanh toán hóa đơn này?" ok-text="Đồng ý"
-              cancel-text="Hủy" style="background-color: #54bddb;" @confirm="xacNhan" @cancel="() => { }">
+              cancel-text="Hủy" style="background-color: #54bddb;" @confirm="xacNhan(1)" @cancel="() => { }">
               <button v-if="isDeliveryEnabled == false" class="btn-confirm-payment">Xác nhận thanh toán</button>
               <button v-else="isDeliveryEnabled == true " class="btn-confirm-payment">Xác nhận giao hàng</button>
             </a-popconfirm>
@@ -544,6 +544,17 @@
             style="width: 100%; border-radius: 4px;" />
         </a-form-item>
       </a-form>
+    </a-modal>
+
+    <a-modal :open="showDeliveryModal" title="Áp dụng phiếu giảm giá tốt hơn" width="400px" @cancel="closeModal">
+      <template #footer>
+        <a-popconfirm title="Bạn có chắc chắn muốn chọn phiếu giảm giá này" @confirm="confirmQuantityP" ok-text="Đồng ý"
+          cancel-text="Huỷ">
+          <a-button type="primary" style="background-color: #54bddb; color: white;">Xác nhận</a-button>
+        </a-popconfirm>
+        <a-button @click="closeModalP">Huỷ</a-button>
+      </template>
+      <p>Đang có 1 phiếu giảm giá tốt hơn bạn có muốn áp dụng không</p>
     </a-modal>
 
     <a-modal v-model:visible="isQrModalVisible" title="Quét mã QR sản phẩm" @cancel="closeQrModal" :footer="null">
@@ -1862,7 +1873,9 @@ const huy = async (idHD: string) => {
   }
 }
 
-const xacNhan = async () => {
+
+
+const xacNhan = async (check: number) => {
   if (!idHDS.value) {
     toast.error('Vui lòng chọn một hóa đơn để xác nhận thanh toán!')
     console.error('Lỗi: idHDS.value là null khi xác nhận thanh toán.')
@@ -1886,20 +1899,20 @@ const xacNhan = async () => {
 
   const form = ref({
 
-  tinh: null as string | null,
-  huyen: null as string | null,
-  phuong: null as string | null,
+    tinh: null as string | null,
+    huyen: null as string | null,
+    phuong: null as string | null,
 
-});
+  });
 
-  console.log('va',deliveryInfo.tinhThanhPho)
+  console.log('va', deliveryInfo.tinhThanhPho)
 
   const selectedProvince = provinces.value.find((p) => p.code === deliveryInfo.tinhThanhPho);
   const selectedDistrict = districts.value.find((d) => d.code === deliveryInfo.quanHuyen);
   const selectedWard = wards.value.find((w) => w.code === deliveryInfo.phuongXa);
 
   console.log('Selected Province:', selectedProvince);
-  
+
 
   try {
 
@@ -1913,6 +1926,7 @@ const xacNhan = async () => {
     formData.append('diaChi', `${deliveryInfo.diaChiCuThe}, ${selectedWard?.label}, ${selectedDistrict?.label}, ${selectedProvince?.label}`);
     formData.append('tienShip', shippingFee.value.toString());
     formData.append('phuongThucThanhToan', state.currentPaymentMethod);
+    formData.append('check', check.toString());
     if (selectedDiscount.value?.id) {
       formData.append('idPGG', selectedDiscount.value.id)
     }
@@ -1929,6 +1943,23 @@ const xacNhan = async () => {
       if (res.message.startsWith("Số")) {
         console.log(res.message)
         toast.error(res.message);
+        return;
+      }
+
+      if (res.message.startsWith("Phiếu")) {
+        console.log(res.message)
+        toast.error(res.message);
+        await fetchDiscounts(idHDS.value)
+        return;
+      }
+
+      if (res.message.startsWith("Đã")) {
+        console.log(res.message)
+        // toast.error(res.message);
+        showDeliveryModal.value = true;
+        await fetchDiscounts(idHDS.value)
+        // applyBestDiscount();
+        isBestDiscountApplied.value = false; // Reset best discount flag
         return;
       }
     }
@@ -2103,6 +2134,11 @@ async function createInvoice() {
 
 const closeModal = () => {
   state.isModalOpen = false
+}
+
+const closeModalP = () => {
+  showDeliveryModal.value = false
+  xacNhan(0)
 }
 
 const showKhachHangModal = ref(false)
@@ -2333,6 +2369,12 @@ const confirmQuantity = async () => {
       toast.error('Thêm sản phẩm vào giỏ hàng thất bại!')
     }
   }
+}
+
+const confirmQuantityP = async () => {
+  showDeliveryModal.value = false
+  applyBestDiscount();
+  xacNhan(0)
 }
 
 // Hàm định dạng tiền tệ
