@@ -160,6 +160,28 @@ public interface ADSanPhamRepository extends SanPhamRepository {
                     select 
                            th.ten as ten,
                            th.id as id
+                          from KichCo th 
+                          where th.status = 0
+                    """
+    )
+    List<ADListThuongHieu> getListSize();
+
+    @Query(value=
+            """
+                    select 
+                           th.ten as ten,
+                           th.id as id
+                          from MauSac th 
+                          where th.status = 0
+                    """
+    )
+    List<ADListThuongHieu> getListMau();
+
+    @Query(value=
+            """
+                    select 
+                           th.ten as ten,
+                           th.id as id
                           from ChatLieu th 
                           where th.status = 0
                     """

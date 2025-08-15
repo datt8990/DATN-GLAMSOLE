@@ -287,8 +287,7 @@
 </template>
 
 <script lang="ts" setup>
-import { GetListChatLieu, GetListDanhMuc, GetListLoaiDe, GetListThuongHieu } from '@/services/api/permitall/sanpham/pmsanpham.api'
-import { GetListColor, GetListSize } from '@/services/api/admin/sanphamchitiet.api'
+import { GetListChatLieu, GetListDanhMuc, GetListLoaiDe, GetListThuongHieu,  GetListColor, GetListSize } from '@/services/api/permitall/sanpham/pmsanpham.api'
 import { reactive, ref, defineEmits, onMounted, computed, watch } from 'vue'
 
 const emit = defineEmits(['filter'])

@@ -51,6 +51,20 @@ public class PMSanPhamController {
 
     }
 
+    @GetMapping("/list-size")
+    public ResponseEntity<?> getListSize() {
+
+        return Helper.createResponseEntity(sanPhamService.getListSize());
+
+    }
+
+    @GetMapping("/list-mau")
+    public ResponseEntity<?> getListMau() {
+
+        return Helper.createResponseEntity(sanPhamService.getListMau());
+
+    }
+
     @GetMapping("/list-loai-de")
     public ResponseEntity<?> getListLoaiDe() {
 

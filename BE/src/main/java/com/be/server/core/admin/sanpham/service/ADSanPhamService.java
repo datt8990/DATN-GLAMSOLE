@@ -22,5 +22,9 @@ public interface ADSanPhamService {
 
     ResponseObject<?> getListDanhMuc();
 
+    ResponseObject<?> getListSize();
+
+    ResponseObject<?> getListMau();
+
     ResponseObject<?> getListChetLieu();
 }

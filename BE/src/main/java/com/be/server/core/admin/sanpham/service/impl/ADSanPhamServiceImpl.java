@@ -268,6 +268,16 @@ public class ADSanPhamServiceImpl implements ADSanPhamService {
     }
 
     @Override
+    public ResponseObject<?> getListSize() {
+        return new ResponseObject<>(adSanPhamRepository.getListSize(), HttpStatus.OK, "Lấy thành công danh sách size");
+    }
+
+    @Override
+    public ResponseObject<?> getListMau() {
+        return new ResponseObject<>(adSanPhamRepository.getListMau(), HttpStatus.OK, "Lấy thành công danh sách màu");
+    }
+
+    @Override
     public ResponseObject<?> getListChetLieu() {
         return new ResponseObject<>(adSanPhamRepository.getListChatLieu(), HttpStatus.OK, "Lấy thành công danh sách thương hiệu");
     }

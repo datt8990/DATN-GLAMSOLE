@@ -45,6 +45,17 @@
           <button class="rounded-circle d-flex align-items-center justify-content-center p-0 ms-2" style="width:44px; height:44px; background:#EA2F38; border:none;" @click="callHotline" aria-label="Gọi điện">
             <PhoneOutlined style="font-size:1.22rem; color:#fff;" />
           </button>
+          <div
+            v-if="isLogin"
+            class="jp-account-status text-nowrap me-2"
+            style="color: #ea2f38; font-size: 1rem; font-weight: 500"
+          >
+            Xin chào, {{ userLogin.fullName || "Người dùng" }}
+            <span style="color: #000">{{
+              JSON.stringify(userLogin.value)
+            }}</span>
+            <!-- Debug -->
+          </div>
         </div>
 
         <!-- Account dropdown -->
@@ -65,9 +76,11 @@
                 </div>
                 <a href="/thong-tin-ca-nhan" class="jp-dropdown-link">Trang cá nhân</a>
                 <a href="/don-mua" class="jp-dropdown-link">Đơn mua</a>
+                <a href="/tra-cuu" class="jp-dropdown-link">Tra cứu đơn hàng</a>
                 <button class="jp-dropdown-link logout" @click="logout">Đăng xuất</button>
               </template>
               <template v-else>
+                <a href="/tra-cuu" class="jp-dropdown-link">Tra cứu đơn hàng</a>
                 <a href="/login" class="jp-dropdown-link">Đăng nhập</a>
                 <a href="/register" class="jp-dropdown-link">Đăng ký</a>
               </template>
@@ -105,6 +118,12 @@
         <li v-for="item in menuItems" :key="item.id" class="jp-menu-item">
           <a href="#" class="jp-menu-link" @click.prevent="onMenuClick(item.id)">{{ item.ten }}</a>
         </li>
+        <li class="jp-menu-item" key="menu-trang-chu">
+          <a href="/gioi-thieu" class="jp-menu-link">GIỚI THIỆU</a>
+        </li>
+        <li class="jp-menu-item" key="menu-trang-chu">
+          <a href="/lien-he" class="jp-menu-link">LIÊN HỆ</a>
+        </li>
       </ul>
     </nav>
 
@@ -138,6 +157,12 @@
           <li v-for="item in menuItems" :key="item.id" class="jp-side-menu-item">
             <a href="#" class="jp-side-menu-link" @click.prevent="() => { onMenuClick(item.id); closeSideMenu(); }">{{ item.ten }}</a>
           </li>
+          <li class="jp-menu-item" key="menu-trang-chu">
+          <a href="/gioi-thieu" class="jp-menu-link">GIỚI THIỆU</a>
+        </li>
+        <li class="jp-menu-item" key="menu-trang-chu">
+          <a href="/lien-he" class="jp-menu-link">LIÊN HỆ</a>
+        </li>
         </ul>
       </aside>
     </transition>

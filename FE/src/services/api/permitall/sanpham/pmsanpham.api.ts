@@ -111,6 +111,23 @@ export const GetListChatLieu= async () => {
   return res.data
 }
 
+export const GetListSize = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SANPHAM_PERMITALL}/list-size`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
+
+export const GetListColor = async () => {
+  const res = (await request({
+    url: `${PREFIX_API_SANPHAM_PERMITALL}/list-mau`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<SanPhamResponse>>>
+
+  return res.data
+}
 
 export const GetListLoaiDe = async () => {
   const res = (await request({
