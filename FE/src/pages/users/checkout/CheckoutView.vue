@@ -173,7 +173,7 @@ import {
 } from "@/services/api/ghn.api";
 import { localStorageAction } from "@/utils/storage";
 import { USER_INFO_STORAGE_KEY, CHECKOUT_STORAGE_KEY } from "@/constants/storageKey";
-import { getPGG, ThanhToan, createCartDetail, getListPGG } from "@/services/api/permitall/thanhtoan/thanhtoan.api";
+import { getPGG, ThanhToan, getListPGG, getKhachHangDetail } from "@/services/api/permitall/thanhtoan/thanhtoan.api";
 
 // Interface definitions
 interface CartItem {
@@ -251,7 +251,7 @@ const loadingWards = ref(false);
 const selectedServiceId = ref<number | null>(null);
 const loadingCheckout = ref(false);
 const showConfirmModal = ref(false);
-
+const idUser = localStorageAction.get(USER_INFO_STORAGE_KEY);
 // Computed options for select components
 const provinceOptions = computed(() =>
   provinces.value.map((p) => ({
@@ -362,7 +362,7 @@ const applySelectedVoucher = () => {
     form.value.maGiamGia = voucher.ma;
     giamGia.value = Math.min(voucher.giaTriGiamThucTe, tongTienTruocGiam.value);
     message.success(`✅ Áp dụng phiếu giảm giá "${voucher.ten}" giảm ${giamGia.value.toLocaleString("vi-VN")}₫`);
-    
+
     // Nếu chọn voucher khác với voucher đầu tiên, ẩn thông báo
     if (voucher.ma !== vouchers.value[0]?.ma) {
       isBestVoucher.value = false;
@@ -439,6 +439,84 @@ onMounted(async () => {
 
   // Tự động áp dụng phiếu giảm giá tốt nhất mà không mở modal
   await applyBestVoucher();
+});
+
+
+const fetchProductDetails = async (id: string) => {
+  try {
+    const response = await getKhachHangDetail(id);
+    const data = response.data;
+
+    // Điền thông tin khách hàng vào form
+    form.value.hoTen = data.ten || "";
+    form.value.soDienThoai = data.sdt || "";
+    form.value.email = data.email || "";
+    form.value.diaChi = data.diaChi || "";
+    form.value.tinh = null; // Sẽ được cập nhật sau khi lấy danh sách tỉnh
+    form.value.huyen = null; // Sẽ được cập nhật sau khi lấy danh sách huyện
+    form.value.phuong = null; // Sẽ được cập nhật sau khi lấy danh sách phường
+    console.log("Dữ liệu khách hàng:", data.tinh, data.huyen, data.xa);
+    // Nếu có dữ liệu địa chỉ, tìm tỉnh, huyện, phường tương ứng từ API GHN
+    if (data.tinh && data.huyen && data.xa) {
+      // Tải danh sách tỉnh
+      loadingProvinces.value = true;
+      provinces.value = await getGHNProvinces(GHN_TOKEN);
+      loadingProvinces.value = false;
+
+      // Tìm tỉnh phù hợp
+      const selectedProvince = provinces.value.find(
+        (p) => p.ProvinceID == data.tinh
+      );
+              console.log("Selected Province:", data.tinh);
+        console.log("Selected Province:", provinces.value);
+          console.log("Selected Province:", selectedProvince);
+      if (selectedProvince) {
+        form.value.tinh = selectedProvince.ProvinceID;
+
+        // Tải danh sách huyện
+        loadingDistricts.value = true;
+        districts.value = await getGHNDistricts(selectedProvince.ProvinceID, GHN_TOKEN);
+        loadingDistricts.value = false;
+
+        // Tìm huyện phù hợp
+        const selectedDistrict = districts.value.find(
+          (d) => d.DistrictID == data.huyen
+        );
+        if (selectedDistrict) {
+          form.value.huyen = selectedDistrict.DistrictID;
+
+          // Tải danh sách phường
+          loadingWards.value = true;
+          wards.value = await getGHNWards(selectedDistrict.DistrictID, GHN_TOKEN);
+          loadingWards.value = false;
+
+          // Tìm phường phù hợp
+          const selectedWard = wards.value.find((w) => w.WardCode == data.xa);
+          if (selectedWard) {
+            form.value.phuong = selectedWard.WardCode;
+          }
+        }
+      }
+    }
+
+    // Tính phí vận chuyển sau khi điền địa chỉ
+    if (form.value.tinh && form.value.huyen && form.value.phuong) {
+      await calculateShippingFee();
+    }
+
+    message.success("Đã tải thông tin khách hàng!");
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin khách hàng:", error);
+    message.error("Không thể tải thông tin khách hàng!");
+  }
+};
+
+onMounted(async () => {
+
+  if (idKH.userId != null) {
+    console.log("Fetching product details for user ID:", idKH.userId);
+    fetchProductDetails(idKH.userId);
+  }
 });
 
 // Handle province change
@@ -614,6 +692,7 @@ const performCheckout = async () => {
 .text-decoration-line-through {
   text-decoration: line-through;
 }
+
 .text-success {
   color: #28a745;
   font-style: italic;

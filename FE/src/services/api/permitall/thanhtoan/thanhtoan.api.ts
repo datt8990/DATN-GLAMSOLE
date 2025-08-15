@@ -40,11 +40,20 @@ export const getPGG = async (data: ParamsPhieuGiamGia) => {
   return res.data;
 };
 
+export const getKhachHangDetail = async (id: string) => {
+  const res = (await request({
+    url: `http://localhost:8386/api/orders/khach-hang/${id}`,
+    method: "POST",
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<PhieuGiamGiaResponse>>>>;
+
+  return res.data;
+};
+
 export const getListPGG = async (data: ParamsPhieuGiamGia) => {
   const res = (await request({
     url: `http://localhost:8386/api/orders/pgg/list`,
     method: "POST",
-    params: data, // <-- gửi JSON body
+    params: data, 
   })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<PhieuGiamGiaResponse>>>>;
 
   return res.data;
