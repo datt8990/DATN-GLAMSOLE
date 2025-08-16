@@ -8,12 +8,10 @@
       </button>
       <div class="order-info">
         <span class="order-code">Mã đơn hàng: {{ orderDetail?.maHoaDon }}</span>
-        <span
-          :class="[
-            'order-status',
-            getStatusClass(orderDetail?.trangThaiHoaDon),
-          ]"
-        >
+        <span :class="[
+          'order-status',
+          getStatusClass(orderDetail?.trangThaiHoaDon),
+        ]">
           {{ getStatusText(orderDetail?.trangThaiHoaDon) }}
         </span>
       </div>
@@ -28,18 +26,14 @@
       <!-- Order Timeline -->
       <div class="timeline-section">
         <div class="timeline-container">
-          <div
-            v-for="(step, index) in orderTimeline"
-            :key="index"
-            :class="[
-              'timeline-step',
-              {
-                completed: step.completed,
-                current: step.current,
-                pending: !step.completed && !step.current,
-              },
-            ]"
-          >
+          <div v-for="(step, index) in orderTimeline" :key="index" :class="[
+            'timeline-step',
+            {
+              completed: step.completed,
+              current: step.current,
+              pending: !step.completed && !step.current,
+            },
+          ]">
             <div class="timeline-icon">
               <span class="timeline-emoji">{{ step.icon }}</span>
             </div>
@@ -48,10 +42,7 @@
               <p v-if="step.time" class="timeline-time">{{ step.time }}</p>
               <p v-if="step.note" class="timeline-note">{{ step.note }}</p>
             </div>
-            <div
-              v-if="index < orderTimeline.length - 1"
-              class="timeline-line"
-            ></div>
+            <div v-if="index < orderTimeline.length - 1" class="timeline-line"></div>
           </div>
         </div>
       </div>
@@ -59,28 +50,16 @@
       <div class="products-section">
         <div class="section-header">
           <h3 class="section-title">Sản phẩm đã đặt</h3>
-          <button
-            v-if="orderDetail.trangThaiHoaDon === '0'"
-            class="btn-add-product"
-            @click="openProductSelectionModal"
-          >
+          <button v-if="orderDetail.trangThaiHoaDon === '0'" class="btn-add-product" @click="openProductSelectionModal">
             <span class="add-icon">➕</span>
             Thêm sản phẩm
           </button>
         </div>
         <div class="products-list">
-          <div
-            v-for="(product, index) in orderDetail.products"
-            :key="index"
-            class="product-item"
-          >
+          <div v-for="(product, index) in orderDetail.products" :key="index" class="product-item">
             <div class="product-image">
-              <img
-                v-if="product.anhSanPham"
-                :src="product.anhSanPham"
-                :alt="product.tenSanPham"
-                @error="handleImageError"
-              />
+              <img v-if="product.anhSanPham" :src="product.anhSanPham" :alt="product.tenSanPham"
+                @error="handleImageError" />
               <div v-else class="product-image-placeholder">
                 <span>📦</span>
               </div>
@@ -118,143 +97,72 @@
             <p class="customer-address">{{ orderDetail.diaChi }}</p>
           </div>
           <div class="delivery-icon">
-            <button
-              class="btn-view-delivery"
-              @click="showDeliveryModal"
-              :disabled="isNotPending"
-            >
+            <button class="btn-view-delivery" @click="showDeliveryModal" :disabled="isNotPending">
               <i>✏️</i>
             </button>
           </div>
         </div>
       </div>
       <!-- Delivery Modal -->
-      <a-modal
-        v-model:visible="deliveryModalVisible"
-        title="Chỉnh sửa thông tin giao hàng"
-        :width="500"
-        centered
-        @ok="handleSaveDelivery"
-        @cancel="handleCancelDelivery"
-      >
+      <a-modal v-model:visible="deliveryModalVisible" title="Chỉnh sửa thông tin giao hàng" :width="500" centered
+        @ok="handleSaveDelivery" @cancel="handleCancelDelivery">
         <a-form :model="deliveryForm" layout="vertical" ref="deliveryFormRef">
-          <a-form-item
-            label="Họ tên"
-            name="tenKhachHang"
-            :rules="[{ required: true, message: 'Vui lòng nhập họ tên' }]"
-          >
-            <a-input
-              v-model:value="deliveryForm.tenKhachHang"
-              placeholder="Nhập họ tên"
-            />
+          <a-form-item label="Họ tên" name="tenKhachHang"
+            :rules="[{ required: true, message: 'Vui lòng nhập họ tên' }]">
+            <a-input v-model:value="deliveryForm.tenKhachHang" placeholder="Nhập họ tên" />
           </a-form-item>
-          <a-form-item
-            label="Số điện thoại"
-            name="sdtKH"
-            :rules="[
-              {
-                required: true,
-                message: 'Vui lòng nhập số điện thoại',
-                pattern: /^[0-9]{10}$/,
-                message: 'Số điện thoại phải là 10 số',
-              },
-            ]"
-          >
-            <a-input
-              v-model:value="deliveryForm.sdtKH"
-              placeholder="Nhập số điện thoại"
-            />
+          <a-form-item label="Số điện thoại" name="sdtKH" :rules="[
+            {
+              required: true,
+              message: 'Vui lòng nhập số điện thoại',
+              pattern: /^[0-9]{10}$/,
+              message: 'Số điện thoại phải là 10 số',
+            },
+          ]">
+            <a-input v-model:value="deliveryForm.sdtKH" placeholder="Nhập số điện thoại" />
           </a-form-item>
           <a-form-item label="Email" name="email">
-            <a-input
-              v-model:value="deliveryForm.email"
-              placeholder="Nhập email (không bắt buộc)"
-            />
+            <a-input v-model:value="deliveryForm.email" placeholder="Nhập email (không bắt buộc)" />
           </a-form-item>
-          <a-form-item
-            label="Tỉnh/Thành phố"
-            name="provinceId"
-            :rules="[
-              { required: true, message: 'Vui lòng chọn tỉnh/thành phố' },
-            ]"
-          >
-            <a-select
-              v-model:value="deliveryForm.provinceId"
-              placeholder="Chọn tỉnh/thành phố"
-              @change="handleProvinceChange"
-              :disabled="isNotPending"
-            >
-              <a-select-option
-                v-for="province in provinces"
-                :key="province.ProvinceID"
-                :value="province.ProvinceID"
-              >
+          <a-form-item label="Tỉnh/Thành phố" name="provinceId" :rules="[
+            { required: true, message: 'Vui lòng chọn tỉnh/thành phố' },
+          ]">
+            <a-select v-model:value="deliveryForm.provinceId" placeholder="Chọn tỉnh/thành phố"
+              @change="handleProvinceChange" :disabled="isNotPending">
+              <a-select-option v-for="province in provinces" :key="province.ProvinceID" :value="province.ProvinceID">
                 {{ province.ProvinceName }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item
-            label="Quận/Huyện"
-            name="districtId"
-            :rules="[{ required: true, message: 'Vui lòng chọn quận/huyện' }]"
-          >
-            <a-select
-              v-model:value="deliveryForm.districtId"
-              placeholder="Chọn quận/huyện"
-              @change="handleDistrictChange"
-              :disabled="isNotPending || !deliveryForm.provinceId"
-            >
-              <a-select-option
-                v-for="district in districts"
-                :key="district.DistrictID"
-                :value="district.DistrictID"
-              >
+          <a-form-item label="Quận/Huyện" name="districtId"
+            :rules="[{ required: true, message: 'Vui lòng chọn quận/huyện' }]">
+            <a-select v-model:value="deliveryForm.districtId" placeholder="Chọn quận/huyện"
+              @change="handleDistrictChange" :disabled="isNotPending || !deliveryForm.provinceId">
+              <a-select-option v-for="district in districts" :key="district.DistrictID" :value="district.DistrictID">
                 {{ district.DistrictName }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item
-            label="Phường/Xã"
-            name="wardCode"
-            :rules="[{ required: true, message: 'Vui lòng chọn phường/xã' }]"
-          >
-            <a-select
-              v-model:value="deliveryForm.wardCode"
-              placeholder="Chọn phường/xã"
-              :disabled="isNotPending || !deliveryForm.districtId"
-            >
-              <a-select-option
-                v-for="ward in wards"
-                :key="ward.WardCode"
-                :value="ward.WardCode"
-              >
+          <a-form-item label="Phường/Xã" name="wardCode"
+            :rules="[{ required: true, message: 'Vui lòng chọn phường/xã' }]">
+            <a-select v-model:value="deliveryForm.wardCode" placeholder="Chọn phường/xã"
+              :disabled="isNotPending || !deliveryForm.districtId">
+              <a-select-option v-for="ward in wards" :key="ward.WardCode" :value="ward.WardCode">
                 {{ ward.WardName }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item
-            label="Địa chỉ cụ thể"
-            name="diaChiCuThe"
-            :rules="[
-              { required: true, message: 'Vui lòng nhập địa chỉ cụ thể' },
-            ]"
-          >
-            <a-input
-              v-model:value="deliveryForm.diaChiCuThe"
-              placeholder="Nhập địa chỉ cụ thể (số nhà, đường)"
-              :disabled="isNotPending"
-            />
+          <a-form-item label="Địa chỉ cụ thể" name="diaChiCuThe" :rules="[
+            { required: true, message: 'Vui lòng nhập địa chỉ cụ thể' },
+          ]">
+            <a-input v-model:value="deliveryForm.diaChiCuThe" placeholder="Nhập địa chỉ cụ thể (số nhà, đường)"
+              :disabled="isNotPending" />
           </a-form-item>
         </a-form>
       </a-modal>
       <!-- Product Selection Modal -->
-      <a-modal
-        v-model:visible="showProductModal"
-        title="Chọn sản phẩm"
-        :width="'90vw'"
-        centered
-        @cancel="showProductModal = false"
-      >
+      <a-modal v-model:visible="showProductModal" title="Chọn sản phẩm" :width="'90vw'" centered
+        @cancel="showProductModal = false">
         <div class="modal-content">
           <div class="card">
             <div class="card-header">
@@ -264,112 +172,46 @@
               <div class="filter-container">
                 <div class="filter-grid">
                   <div class="filter-item">
-                    <label for="search-query" class="filter-label"
-                      >🔍 Tìm kiếm sản phẩm</label
-                    >
-                    <a-input
-                      id="search-query"
-                      v-model:value="localSearchQuery"
-                      placeholder="Nhập mã / tên..."
-                      class="filter-input"
-                      @press-enter="fetchProducts"
-                      allow-clear
-                    />
+                    <label for="search-query" class="filter-label">🔍 Tìm kiếm sản phẩm</label>
+                    <a-input id="search-query" v-model:value="localSearchQuery" placeholder="Nhập mã / tên..."
+                      class="filter-input" @press-enter="fetchProducts" allow-clear />
                   </div>
                   <div class="filter-item">
-                    <label for="search-color" class="filter-label"
-                      >🎨 Màu:</label
-                    >
-                    <a-select
-                      id="search-color"
-                      v-model:value="localColor"
-                      @change="handleColorChange"
-                      allow-clear
-                      :options="ColorOptions"
-                      placeholder="Chọn màu sắc"
-                      size="large"
-                      class="filter-select"
-                    />
+                    <label for="search-color" class="filter-label">🎨 Màu:</label>
+                    <a-select id="search-color" v-model:value="localColor" @change="handleColorChange" allow-clear
+                      :options="ColorOptions" placeholder="Chọn màu sắc" size="large" class="filter-select" />
                   </div>
                   <div class="filter-item">
-                    <label for="search-size" class="filter-label"
-                      >📏 Kích cỡ:</label
-                    >
-                    <a-select
-                      id="search-size"
-                      v-model:value="localSize"
-                      @change="handleSizeChange"
-                      allow-clear
-                      :options="SizeOptions"
-                      placeholder="Chọn kích cỡ"
-                      size="large"
-                      class="filter-select"
-                    />
+                    <label for="search-size" class="filter-label">📏 Kích cỡ:</label>
+                    <a-select id="search-size" v-model:value="localSize" @change="handleSizeChange" allow-clear
+                      :options="SizeOptions" placeholder="Chọn kích cỡ" size="large" class="filter-select" />
                   </div>
                   <div class="filter-item">
-                    <label for="category-select" class="filter-label"
-                      >📋 Danh mục:</label
-                    >
-                    <a-select
-                      id="category-select"
-                      class="filter-select"
-                      allow-clear
-                      :options="danhMucOptions"
-                      placeholder="Chọn danh mục"
-                      v-model:value="localSelectedCategory"
-                      size="large"
-                    />
+                    <label for="category-select" class="filter-label">📋 Danh mục:</label>
+                    <a-select id="category-select" class="filter-select" allow-clear :options="danhMucOptions"
+                      placeholder="Chọn danh mục" v-model:value="localSelectedCategory" size="large" />
                   </div>
                   <div class="filter-item">
-                    <label for="material-select" class="filter-label"
-                      >🧵 Chất liệu:</label
-                    >
-                    <a-select
-                      id="material-select"
-                      class="filter-select"
-                      allow-clear
-                      :options="chatLieuOptions"
-                      placeholder="Chọn chất liệu"
-                      v-model:value="localSelectedMaterial"
-                      size="large"
-                    />
+                    <label for="material-select" class="filter-label">🧵 Chất liệu:</label>
+                    <a-select id="material-select" class="filter-select" allow-clear :options="chatLieuOptions"
+                      placeholder="Chọn chất liệu" v-model:value="localSelectedMaterial" size="large" />
                   </div>
                   <div class="filter-item">
-                    <label for="brand-select" class="filter-label"
-                      >🏷️ Thương hiệu:</label
-                    >
-                    <a-select
-                      id="brand-select"
-                      class="filter-select"
-                      allow-clear
-                      :options="thuongHieuOptions"
-                      placeholder="Chọn thương hiệu"
-                      v-model:value="localSelectedBrand"
-                      size="large"
-                    />
+                    <label for="brand-select" class="filter-label">🏷️ Thương hiệu:</label>
+                    <a-select id="brand-select" class="filter-select" allow-clear :options="thuongHieuOptions"
+                      placeholder="Chọn thương hiệu" v-model:value="localSelectedBrand" size="large" />
                   </div>
                   <div class="filter-item">
-                    <label for="sole-type-select" class="filter-label"
-                      >👞 Loại đế:</label
-                    >
-                    <a-select
-                      id="sole-type-select"
-                      class="filter-select"
-                      allow-clear
-                      :options="loaiDeOptions"
-                      placeholder="Chọn loại đế"
-                      v-model:value="localSelectedSoleType"
-                      size="large"
-                    />
+                    <label for="sole-type-select" class="filter-label">👞 Loại đế:</label>
+                    <a-select id="sole-type-select" class="filter-select" allow-clear :options="loaiDeOptions"
+                      placeholder="Chọn loại đế" v-model:value="localSelectedSoleType" size="large" />
                   </div>
                   <div class="filter-item reset-button">
                     <a-tooltip title="Làm mới bộ lọc">
-                      <a-button
-                        type="primary"
-                        @click="resetFilters"
-                        class="reset-button"
-                      >
-                        <template #icon><ReloadOutlined /></template>
+                      <a-button type="primary" @click="resetFilters" class="reset-button">
+                        <template #icon>
+                          <ReloadOutlined />
+                        </template>
                         Làm mới
                       </a-button>
                     </a-tooltip>
@@ -377,24 +219,16 @@
                 </div>
               </div>
               <div class="product-selection-table">
-                <a-table
-                  :columns="columns"
-                  :data-source="stateSP.products"
-                  :pagination="{
-                    current: stateSP.paginationParams.page,
-                    pageSize: stateSP.paginationParams.size,
-                    total: stateSP.totalItems,
-                    showSizeChanger: true,
-                    pageSizeOptions: ['10', '20', '30', '40', '50'],
-                  }"
-                  :scroll="{ y: 240 }"
-                  @change="handleTableChange"
-                >
+                <a-table :columns="columns" :data-source="stateSP.products" :pagination="{
+                  current: stateSP.paginationParams.page,
+                  pageSize: stateSP.paginationParams.size,
+                  total: stateSP.totalItems,
+                  showSizeChanger: true,
+                  pageSizeOptions: ['10', '20', '30', '40', '50'],
+                }" :scroll="{ y: 240 }" @change="handleTableChange">
                   <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'status'">
-                      <a-tag
-                        :color="record.status == 'ACTIVE' ? 'green' : 'red'"
-                      >
+                      <a-tag :color="record.status == 'ACTIVE' ? 'green' : 'red'">
                         {{
                           record.status == "ACTIVE"
                             ? "Hoạt động"
@@ -410,36 +244,26 @@
                     </div>
                     <template v-if="column.key === 'anh'">
                       <div class="center-cell">
-                        <img
-                          :src="record.anh"
-                          class="anh"
-                          style="width: 50px; height: 50px; border-radius: 50%"
-                        />
+                        <img :src="record.anh" class="anh" style="width: 50px; height: 50px; border-radius: 50%" />
                       </div>
                     </template>
                     <template v-if="column.key === 'mau'">
                       <div class="center-cell">
-                        <div
-                          class="color"
-                          :style="{
-                            width: '30px',
-                            height: '30px',
-                            backgroundColor: record.mau,
-                            border: '1px solid #000',
-                          }"
-                        ></div>
+                        <div class="color" :style="{
+                          width: '30px',
+                          height: '30px',
+                          backgroundColor: record.mau,
+                          border: '1px solid #000',
+                        }"></div>
                       </div>
                     </template>
                     <template v-if="column.key === 'operation'">
                       <div class="center-cell">
                         <div class="d-flex gap-1 justify-center">
                           <a-tooltip title="chọn sản phẩm">
-                            <a-button
-                              type="primary"
-                              style="background-color: #54bddb; color: white"
+                            <a-button type="primary" style="background-color: #54bddb; color: white"
                               class="p-2 d-flex justify-content-center align-items-center btn-choose-product"
-                              @click="addProductToOrder(record)"
-                            >
+                              @click="addProductToOrder(record)">
                               Chọn
                             </a-button>
                           </a-tooltip>
@@ -461,50 +285,38 @@
             <span class="payment-label">Tổng tiền hàng:</span>
             <span class="payment-value">{{
               formatCurrency(orderDetail.thanhTien || 0)
-            }}</span>
+              }}</span>
           </div>
           <div class="payment-row">
-            <span class="payment-label"
-              >Voucher ({{ orderDetail.tenVoucher || "Không áp dụng" }}):</span
-            >
-            <span class="payment-value discount"
-              >-{{ formatCurrency(voucherValue) }}</span
-            >
+            <span class="payment-label">Voucher ({{ orderDetail.tenVoucher || "Không áp dụng" }}):</span>
+            <span class="payment-value discount">-{{ formatCurrency(voucherValue) }}</span>
           </div>
           <div class="payment-row">
             <span class="payment-label">Phí vận chuyển:</span>
             <span class="payment-value">{{
               formatCurrency(orderDetail.phiVanChuyen || 0)
-            }}</span>
+              }}</span>
           </div>
           <div class="payment-row total">
             <span class="payment-label">Tổng thanh toán:</span>
             <span class="payment-value total-amount">{{
               formatCurrency(orderDetail.tongTienSauGiam)
-            }}</span>
+              }}</span>
           </div>
           <div class="payment-method">
             <span class="payment-method-label">Phương thức thanh toán:</span>
             <span class="payment-method-value">{{
               getPaymentMethodText(orderDetail.loaiHoaDon)
-            }}</span>
+              }}</span>
           </div>
         </div>
       </div>
       <!-- Order Actions -->
       <div class="order-actions">
-        <button
-          v-if="orderDetail.trangThaiHoaDon === '0'"
-          class="btn-cancel"
-          @click="cancelOrder"
-        >
+        <button v-if="orderDetail.trangThaiHoaDon === '0'" class="btn-cancel" @click="cancelOrder">
           Hủy đơn hàng
         </button>
-        <button
-          v-if="orderDetail.trangThaiHoaDon === '4'"
-          class="btn-reorder"
-          @click="reorder"
-        >
+        <button v-if="orderDetail.trangThaiHoaDon === '4'" class="btn-reorder" @click="reorder">
           Mua lại
         </button>
         <button class="btn-contact" @click="contactSupport">
@@ -535,6 +347,7 @@ import {
   type ParamsGetHoaDonCT,
   type SanPhamResponse,
   type ParamsGetSanPham,
+  themSanPhamOnl,
 } from "@/services/api/permitall/donmua/donmua.api";
 import {
   getGHNProvinces,
@@ -551,6 +364,7 @@ import {
 } from "@/services/api/ghn.api";
 import axios from "axios";
 import type { TableColumnsType } from "ant-design-vue";
+import { toast } from "vue3-toastify";
 
 const localSearchQuery = ref("");
 const localColor = ref<string | null>(null);
@@ -867,29 +681,102 @@ const fetchProducts = async () => {
 
 const addProductToOrder = async (product: SanPhamResponse) => {
   try {
-    if (!orderDetail.value) return;
-    const newProduct: ProductItem = {
-      maHoaDonChiTiet: `temp_${Date.now()}`,
-      tenSanPham: product.ten,
-      thuongHieu: product.tenThuongHieu,
-      mauSac: product.mau,
-      size: product.kichThuoc,
-      soLuong: 1,
-      giaBan: product.giaBan,
-      anhSanPham: product.anh,
-      xuatSu: product.xuatSu || "",
-    };
-    orderDetail.value.products.push(newProduct);
-    orderDetail.value.thanhTien += product.giaBan;
-    orderDetail.value.tongTienSauGiam =
-      orderDetail.value.thanhTien +
-      orderDetail.value.phiVanChuyen -
-      (orderDetail.value.giaTriVoucher || 0);
-    message.success(`Đã thêm sản phẩm ${product.ten} vào đơn hàng`);
-    showProductModal.value = false;
+    const idHoaDon = route.params.id as string;
+    const formData = new FormData();
+    formData.append('idHD', idHoaDon);
+    formData.append('idSP', product.id);
+
+    // Gọi API để thêm sản phẩm
+    const res = await themSanPhamOnl(formData);
+      showProductModal.value = false;
+    if (res.status === "OK") {
+      // Lấy lại chi tiết đơn hàng để cập nhật danh sách sản phẩm
+      await fetchOrderDetail(idHoaDon);
+
+      if (orderDetail.value) {
+        // Tính toán lại tổng tiền hàng (thanhTien)
+        const thanhTien = orderDetail.value.products.reduce(
+          (total, item) => total + item.giaBan * item.soLuong,
+          0
+        );
+
+        // Tính toán lại phí vận chuyển
+        let newPhiVanChuyen = orderDetail.value.phiVanChuyen || 0;
+        if (orderDetail.value.toDistrictID && orderDetail.value.toWardCode) {
+          const availableServicesRequestBody: AvailableServiceRequest = {
+            shop_id: SHOP_ID,
+            from_district: SHOP_DISTRICT_ID,
+            to_district: orderDetail.value.toDistrictID!,
+          };
+          const availableServicesResponse = await getAvailableServices(
+            GHN_TOKEN,
+            availableServicesRequestBody
+          );
+          const selectedServiceId = availableServicesResponse.data[0].service_id;
+
+          const shippingFeeRequest: ShippingFeeRequest = {
+            myRequest: {
+              FromDistrictID: SHOP_DISTRICT_ID,
+              FromWardCode: SHOP_WARD_CODE,
+              ServiceID: selectedServiceId,
+              ToDistrictID: orderDetail.value.toDistrictID!,
+              ToWardCode: orderDetail.value.toWardCode!,
+              Height: DEFAULT_HEIGHT,
+              Length: DEFAULT_LENGTH,
+              Weight: DEFAULT_WEIGHT,
+              Width: DEFAULT_WIDTH,
+              InsuranceValue: thanhTien, // Sử dụng tổng tiền hàng làm giá trị bảo hiểm
+              Coupon: null,
+              PickShift: null,
+            },
+          };
+          const feeResponse: ShippingFeeResponse = await calculateFee(
+            shippingFeeRequest,
+            GHN_TOKEN,
+            SHOP_ID
+          );
+          newPhiVanChuyen = feeResponse.data.total;
+        }
+
+        // Tính toán lại tổng tiền sau giảm giá
+        const currentVoucherValue = orderDetail.value.giaTriVoucher || 0;
+        const tongTienSauGiam = thanhTien + newPhiVanChuyen - currentVoucherValue;
+
+        // Cập nhật thông tin đơn hàng về backend
+        const updateDeliveryDTO = {
+          maHoaDon: orderDetail.value.maHoaDon,
+          tenKhachHang: orderDetail.value.tenKhachHang,
+          sdtKhachHang: orderDetail.value.sdtKH,
+          email: orderDetail.value.email,
+          diaChi: orderDetail.value.diaChi,
+          phiVanChuyen: newPhiVanChuyen,
+          thanhTien: thanhTien,
+          tongTienSauGiam: tongTienSauGiam,
+        };
+
+        const response = await getSuaThongTin(updateDeliveryDTO);
+        // if (response.status === "OK") {
+        //   // Cập nhật lại orderDetail
+        //   orderDetail.value = {
+        //     ...orderDetail.value,
+        //     thanhTien: thanhTien,
+        //     phiVanChuyen: newPhiVanChuyen,
+        //     tongTienSauGiam: tongTienSauGiam,
+        //   };
+        //   toast.success("Thêm sản phẩm và cập nhật giá thành công");
+        // } else {
+        //   message.error("Cập nhật thông tin đơn hàng thất bại");
+        // }
+      }
+
+      // Đóng modal chọn sản phẩm
+
+    } else {
+      message.error("Thêm sản phẩm thất bại");
+    }
   } catch (error) {
     console.error("Error adding product to order:", error);
-    message.error("Thêm sản phẩm thất bại");
+    message.error("Có lỗi xảy ra khi thêm sản phẩm");
   }
 };
 
@@ -1349,6 +1236,7 @@ defineExpose({
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -1496,9 +1384,11 @@ defineExpose({
   0% {
     box-shadow: 0 0 0 0 rgba(88, 189, 219, 0.4);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(88, 189, 219, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(88, 189, 219, 0);
   }

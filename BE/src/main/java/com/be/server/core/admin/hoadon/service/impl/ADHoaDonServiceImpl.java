@@ -119,9 +119,24 @@ public class ADHoaDonServiceImpl implements ADHoaDonService {
         String email = hoaDon.getEmail();
         String trackingUrl = "http://localhost:6688/don-mua-detail/" + hoaDon.getMa() + "/" + hoaDon.getId();
         String subject = "Hủy đơn hàng";
-        String content = "Chào " + hoaDon.getTenKH() + "đơn hàng với mã hóa đơn là:  "+ hoaDon.getMa()+ " đã có được hủy" +"\n" +
-                "Bạn có thể truy cập vào: " + trackingUrl +" để xem chi tiết"+ "\n" +
-                "Trân trọng cảm ơn.";
+
+        String content =
+                "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden;'>"
+                        + "  <div style='background:#fff; padding:20px; text-align:center;'>"
+                        + "    <h2 style='color:#333; margin:0;'>GLAMSOLE</h2>"
+                        + "    <p style='color:#666; margin:8px 0 0;'>Đơn đặt hàng số: <b>" + hoaDon.getMa() + "</b></p>"
+                        + "  </div>"
+                        + "  <hr style='border:none; border-top:1px solid #eee;'/>"
+                        + "  <div style='padding:20px;'>"
+                        + "    <h3 style='color:#333; margin-top:0;'>Đơn hàng đã hủy</h3>"
+                        + "    <p style='color:#555;'>Xin chào <b>" + hoaDon.getTenKH() + "</b>, đơn hàng của bạn đã hủy.</p>"
+                        + "    <p style='color:#555;'>Bạn có thể theo dõi trạng thái đơn hàng bằng cách nhấn vào nút bên dưới:</p>"
+                        + "    <div style='text-align:center; margin:30px 0;'>"
+                        + "      <a href='" + trackingUrl + "' style='background:#f5c542; color:#000; text-decoration:none; padding:12px 20px; border-radius:6px; font-weight:bold;'>Xem đơn đặt hàng</a>"
+                        + "    </div>"
+                        + "    <p style='color:#777; font-size:14px;'>-- GLAMSOLE team --</p>"
+                        + "  </div>"
+                        + "</div>";
 
         CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
         return new ResponseObject<>(

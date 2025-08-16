@@ -11,6 +11,7 @@ import com.be.server.core.admin.banhang.model.response.ADChonKhachHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADGioHangRespones;
 import com.be.server.core.admin.banhang.model.response.ADPhuongThucThanhToanRespones;
 import com.be.server.core.admin.banhang.model.response.ADThanhToanRespones;
+import com.be.server.core.permitall.donmua.model.request.PMThemSanPhamRequest;
 import com.be.server.entity.HoaDon;
 import com.be.server.entity.KhachHang;
 import com.be.server.repository.HoaDonChiTietRepository;
@@ -63,6 +64,17 @@ public interface ADTaoHoaDonChiTietRepository extends HoaDonChiTietRepository {
     order by hdct.createdDate DESC
 """)
     List<String> checkGioHang(@Param("rep") ADThemSanPhamRequest req);
+
+
+
+    @Query(value = """
+    select hdct.id from HoaDonChiTiet hdct
+    left join SanPhamChiTiet spct on spct.id = hdct.spct.id
+    where hdct.hoaDon.id = :#{#rep.idHD} and hdct.spct.id = :#{#rep.idSP}
+    order by hdct.createdDate DESC
+""")
+    List<String> checkGioHangV2(@Param("rep") PMThemSanPhamRequest req);
+
 
     @Query(value = """
     select hdct.id from HoaDonChiTiet hdct
