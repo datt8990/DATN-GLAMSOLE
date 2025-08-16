@@ -203,14 +203,27 @@ public class thanhtoanserviceImpl {
         }
 
         String email = order.getEmail();
-        System.out.println(email);
         String subject = "Thanh toán đơn hàng thành công";
-        String trackingUrl = "http://localhost:6688/don-mua-detail/" + hoaDon.getMa() + "/" + hoaDon.getId();
-        String content = "Chào " + order.getHoTen() + "\n" +
-                "Đơn hàng với mã hóa đơn " + hoaDon.getMa() + " đã được thanh toán thành công." + "\n" +
-                "Bạn có thể theo dõi trạng thái đơn hàng tại đây: " + trackingUrl + "\n" +
-                "Trân trọng cảm ơn.";
 
+        String trackingUrl = "http://localhost:6688/don-mua-detail/" + hoaDon.getMa() + "/" + hoaDon.getId();
+
+        String content =
+                "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden;'>"
+                        + "  <div style='background:#fff; padding:20px; text-align:center;'>"
+                        + "    <h2 style='color:#333; margin:0;'>GLAMSOLE</h2>"
+                        + "    <p style='color:#666; margin:8px 0 0;'>Đơn đặt hàng số: <b>" + hoaDon.getMa() + "</b></p>"
+                        + "  </div>"
+                        + "  <hr style='border:none; border-top:1px solid #eee;'/>"
+                        + "  <div style='padding:20px;'>"
+                        + "    <h3 style='color:#333; margin-top:0;'>Cảm ơn bạn đã đặt hàng</h3>"
+                        + "    <p style='color:#555;'>Xin chào <b>" + order.getHoTen() + "</b>, đơn hàng của bạn đã được thanh toán thành công và sẵn sàng để vận chuyển.</p>"
+                        + "    <p style='color:#555;'>Bạn có thể theo dõi trạng thái đơn hàng bằng cách nhấn vào nút bên dưới:</p>"
+                        + "    <div style='text-align:center; margin:30px 0;'>"
+                        + "      <a href='" + trackingUrl + "' style='background:#f5c542; color:#000; text-decoration:none; padding:12px 20px; border-radius:6px; font-weight:bold;'>Xem đơn đặt hàng</a>"
+                        + "    </div>"
+                        + "    <p style='color:#777; font-size:14px;'>-- GLAMSOLE team --</p>"
+                        + "  </div>"
+                        + "</div>";
 
         CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
 

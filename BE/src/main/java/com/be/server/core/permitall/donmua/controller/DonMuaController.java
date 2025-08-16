@@ -2,10 +2,12 @@ package com.be.server.core.permitall.donmua.controller;
 
 import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
 import com.be.server.core.admin.SanPhamChiTiet.service.ADSanPhamChiTietService;
+import com.be.server.core.admin.banhang.model.request.ADThemSanPhamRequest;
 import com.be.server.core.admin.hoadon.model.request.ADChangeStatusRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonDetailRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
 import com.be.server.core.admin.hoadon.service.ADHoaDonService;
+import com.be.server.core.permitall.donmua.model.request.PMThemSanPhamRequest;
 import com.be.server.core.permitall.donmua.model.request.UpdateDeliveryDTO;
 import com.be.server.core.permitall.donmua.service.DonMuaService;
 import com.be.server.infrastructure.constant.MappingConstants;
@@ -62,5 +64,10 @@ public class DonMuaController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getLSHD(@PathVariable String id) {
         return Helper.createResponseEntity(serviceHD.getLSTTHD(id));
+    }
+
+    @PostMapping("them-san-pham")
+    public ResponseEntity<?> modifyProduct(@ModelAttribute PMThemSanPhamRequest request) {
+        return Helper.createResponseEntity(service.createThemSanPham(request));
     }
 }

@@ -73,6 +73,17 @@ export const getDonMuaByCode = async (code: string) => {
   return res.data
 }
 
+export const themSanPhamOnl = async (data: ParamsGetSanPham) => {
+  const res = (await request({
+    url: `${PREFIX_API_PROFILE_ORDER_HISTORY}/them-san-pham`,
+    method: "POST",
+    data: data,
+  })) as AxiosResponse<DefaultResponse<DonMuaResponse>>;
+
+  return res.data;
+};
+
+
 export const getHoaDonChiTiets = async (params: ParamsGetHoaDonCT) => {
   const res = (await request({
     url: `${PREFIX_API_PROFILE_ORDER_HISTORY}/all`,

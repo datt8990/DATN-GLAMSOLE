@@ -49,6 +49,8 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
             LEFT JOIN ChatLieu AS cl ON cl.id = sp.chatLieu.id  
             LEFT JOIN MauSac AS ms ON ms.id = spct.mauSac.id
     WHERE 
+        sp.status = 0 and spct.soLuong >  0
+            and (
         ( :#{#rep.idSP} IS NULL OR spct.sanPham.id = :#{#rep.idSP} ) 
         AND ( :#{#rep.q} IS NULL OR sp.ten LIKE CONCAT('%', :#{#rep.q}, '%') 
         AND spct.ma LIKE CONCAT('%', :#{#rep.q}, '%') )
@@ -56,7 +58,7 @@ public interface ADSanPhamChiTietRepository extends SanPhamChiTietRepository {
         AND (:#{#rep.priceMin} IS NULL OR spct.giaBan >= :#{#rep.priceMin})
         AND (:#{#rep.priceMax} IS NULL OR spct.giaBan <= :#{#rep.priceMax}) 
         AND (:#{#rep.idKT} IS NULL OR kc.id = :#{#rep.idKT})    
-        AND (:#{#rep.idMS} IS NULL OR ms.id = :#{#rep.idMS})       
+        AND (:#{#rep.idMS} IS NULL OR ms.id = :#{#rep.idMS})     )  
     ORDER BY spct.createdDate DESC
     """, countQuery = """
     SELECT 
