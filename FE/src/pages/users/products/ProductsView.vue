@@ -57,15 +57,15 @@
                      draggable="false" />
               </div>
               <div class="card-body py-2">
-                <h6 class="card-title fw-semibold text-red text-truncate mb-2" :title="item.tenSanPham">
+                <h6 class="card-title fw-semibold text-black text-truncate mb-2" :title="item.tenSanPham">
                   {{ item.tenSanPham }}
                 </h6>
                 <div class="mb-1">
                   <span class="main-price">
-                    {{ (item.giaSauGiam ?? item.giaBan)}}₫
+                    {{ formatVND(item.giaSauGiam ?? item.giaBan) }}
                   </span>
                   <span v-if="item.dotGiamGia" class="origin-price ms-2">
-                    {{ item.giaBan }}₫
+                    {{ formatVND(item.giaBan) }}
                   </span>
                   <span v-if="item.dotGiamGia" class="badge bg-red ms-2" style="font-size:12px;">
                     -{{ item.dotGiamGia.phanTramGiam }}%
@@ -116,6 +116,12 @@ import FilterBox from './FilterBox.vue';
 import BreadCrumbUser from '@/components/ui/Breadcrumbs/BreadCrumbUser.vue';
 import { useRouter } from 'vue-router';
 import { GetDanhSachSanPhamTrangSanPham, type ParamsGetSanPhamMoi, type SanPhamMoiResponse } from '@/services/api/permitall/sanpham/pmsanpham.api';
+
+// Format price to VND
+const formatVND = (price: number | undefined): string => {
+  if (price === undefined || price === null) return '0 ₫';
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' ₫';
+};
 
 const keyword = ref<string>('');
 const breadcrumbRoutes = [

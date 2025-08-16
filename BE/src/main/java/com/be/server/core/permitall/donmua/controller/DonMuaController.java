@@ -1,5 +1,7 @@
 package com.be.server.core.permitall.donmua.controller;
 
+import com.be.server.core.admin.SanPhamChiTiet.model.request.ADSPCTSearchRequest;
+import com.be.server.core.admin.SanPhamChiTiet.service.ADSanPhamChiTietService;
 import com.be.server.core.admin.hoadon.model.request.ADChangeStatusRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonDetailRequest;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
@@ -24,9 +26,17 @@ public class DonMuaController {
 
     public final ADHoaDonService serviceHD;
 
+    private final ADSanPhamChiTietService adSanPhamChiTietService;
+
     @GetMapping
     public ResponseEntity<?> getAll(ADHoaDonSearchRequest request) {
         return Helper.createResponseEntity(service.getAllHoaDon(request));
+    }
+
+    @GetMapping("/spct")
+    public ResponseEntity<?> getALlSPCT(ADSPCTSearchRequest request) {
+
+        return Helper.createResponseEntity(adSanPhamChiTietService.getAll(request));
     }
 
     @GetMapping("/all/{code}")

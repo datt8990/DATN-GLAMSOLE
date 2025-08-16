@@ -14,8 +14,30 @@ export type DonMuaResponse = ResponseList & {
   status: string,
 }
 
+export type SanPhamResponse = ResponseList & {
+  id: string
+  ma: string,
+  ten: string,
+  moTa: string,
+  mau: string,
+  idSP: string,
+  idCL: string,
+  idLG: string,
+  idLD: string,
+  idXX: string,
+  idMau: string,
+  idSize: string,
+  status: string,
+}
+
 export interface ParamsGetHoaDonCT extends PaginationParams {
   maHoaDon?: string | ''
+}
+
+export interface ParamsGetSanPham extends PaginationParams {
+  q?: string | ''
+  idSP?: string | undefined
+  status?: number | null
 }
 
 export interface DonMuaRequest {
@@ -28,6 +50,16 @@ export const getDonMua = async (params: DonMuaRequest) => {
     method: 'GET',
     params: params
   })) as AxiosResponse<DefaultResponse<DonMuaResponse>>
+
+  return res.data
+}
+
+export const GetSanPhams = async (params: ParamsGetSanPham) => {
+  const res = (await request({
+    url: `${PREFIX_API_PROFILE_ORDER_HISTORY}/spct`,
+    method: 'GET',
+    params: params
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<SanPhamResponse>>>>
 
   return res.data
 }
