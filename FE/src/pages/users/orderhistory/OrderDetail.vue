@@ -50,10 +50,14 @@
       <div class="products-section">
         <div class="section-header">
           <h3 class="section-title">Sản phẩm đã đặt</h3>
-          <button v-if="orderDetail.trangThaiHoaDon === '0'" class="btn-add-product" @click="openProductSelectionModal">
-            <span class="add-icon">➕</span>
-            Thêm sản phẩm
-          </button>
+          <a-tooltip
+            :title="orderDetail.trangThaiHoaDon === '0' ? 'Thêm sản phẩm vào đơn hàng' : 'Chỉ có thể thêm sản phẩm khi đơn hàng đang chờ xác nhận'">
+            <button v-if="orderDetail.trangThaiHoaDon === '0'" class="btn-add-product"
+              @click="openProductSelectionModal" :disabled="orderDetail.trangThaiHoaDon !== '0'">
+              <span class="add-icon">➕</span>
+              Thêm sản phẩm
+            </button>
+          </a-tooltip>
         </div>
         <div class="products-list">
           <div v-for="(product, index) in orderDetail.products" :key="index" class="product-item">
@@ -285,7 +289,7 @@
             <span class="payment-label">Tổng tiền hàng:</span>
             <span class="payment-value">{{
               formatCurrency(orderDetail.thanhTien || 0)
-              }}</span>
+            }}</span>
           </div>
           <div class="payment-row">
             <span class="payment-label">Voucher ({{ orderDetail.tenVoucher || "Không áp dụng" }}):</span>
@@ -295,19 +299,19 @@
             <span class="payment-label">Phí vận chuyển:</span>
             <span class="payment-value">{{
               formatCurrency(orderDetail.phiVanChuyen || 0)
-              }}</span>
+            }}</span>
           </div>
           <div class="payment-row total">
             <span class="payment-label">Tổng thanh toán:</span>
             <span class="payment-value total-amount">{{
               formatCurrency(orderDetail.tongTienSauGiam)
-              }}</span>
+            }}</span>
           </div>
           <div class="payment-method">
             <span class="payment-method-label">Phương thức thanh toán:</span>
             <span class="payment-method-value">{{
               getPaymentMethodText(orderDetail.loaiHoaDon)
-              }}</span>
+            }}</span>
           </div>
         </div>
       </div>
@@ -688,7 +692,7 @@ const addProductToOrder = async (product: SanPhamResponse) => {
 
     // Gọi API để thêm sản phẩm
     const res = await themSanPhamOnl(formData);
-      showProductModal.value = false;
+    showProductModal.value = false;
     if (res.status === "OK") {
       // Lấy lại chi tiết đơn hàng để cập nhật danh sách sản phẩm
       await fetchOrderDetail(idHoaDon);
