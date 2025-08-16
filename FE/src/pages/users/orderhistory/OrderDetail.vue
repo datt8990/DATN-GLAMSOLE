@@ -50,14 +50,10 @@
       <div class="products-section">
         <div class="section-header">
           <h3 class="section-title">Sản phẩm đã đặt</h3>
-          <a-tooltip
-            :title="orderDetail.trangThaiHoaDon === '0' ? 'Thêm sản phẩm vào đơn hàng' : 'Chỉ có thể thêm sản phẩm khi đơn hàng đang chờ xác nhận'">
-            <button v-if="orderDetail.trangThaiHoaDon === '0'" class="btn-add-product"
-              @click="openProductSelectionModal" :disabled="orderDetail.trangThaiHoaDon !== '0'">
-              <span class="add-icon">➕</span>
-              Thêm sản phẩm
-            </button>
-          </a-tooltip>
+          <button v-if="orderDetail.trangThaiHoaDon === '0'" class="btn-add-product" @click="openProductSelectionModal">
+            <span class="add-icon">➕</span>
+            Thêm sản phẩm
+          </button>
         </div>
         <div class="products-list">
           <div v-for="(product, index) in orderDetail.products" :key="index" class="product-item">
@@ -716,7 +712,7 @@ const addProductToOrder = async (product: SanPhamResponse) => {
             GHN_TOKEN,
             availableServicesRequestBody
           );
-          const selectedServiceId = availableServicesResponse.data[0].service_id;
+          const selectedServiceId = availableServicesResponse.data[0]?.service_id || DEFAULT_SERVICE_ID;
 
           const shippingFeeRequest: ShippingFeeRequest = {
             myRequest: {
@@ -739,7 +735,7 @@ const addProductToOrder = async (product: SanPhamResponse) => {
             GHN_TOKEN,
             SHOP_ID
           );
-          newPhiVanChuyen = feeResponse.data.total;
+          newPhiVanChuyen = feeResponse.data.total || 0;
         }
 
         // Tính toán lại tổng tiền sau giảm giá
@@ -759,6 +755,7 @@ const addProductToOrder = async (product: SanPhamResponse) => {
         };
 
         const response = await getSuaThongTin(updateDeliveryDTO);
+
         // if (response.status === "OK") {
         //   // Cập nhật lại orderDetail
         //   orderDetail.value = {
