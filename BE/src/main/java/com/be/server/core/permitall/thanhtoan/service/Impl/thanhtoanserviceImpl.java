@@ -70,7 +70,13 @@ public class thanhtoanserviceImpl {
 
         hoaDon.setStatus(EntityStatus.ACTIVE);
 
-        hoaDon.setPhuongThucThanhToan(order.getHinhThucThanhToan() == "VNPAY" ? EntityPhuongThucThanhToan.CHUYEN_KHOAN : EntityPhuongThucThanhToan.TIEN_MAT);
+        System.out.println(order.getHinhThucThanhToan());
+
+        hoaDon.setPhuongThucThanhToan(order.getHinhThucThanhToan().equals("VNPAY")  ? EntityPhuongThucThanhToan.CHUYEN_KHOAN : EntityPhuongThucThanhToan.TIEN_MAT);
+
+        System.out.println(order.getMaGiamGia());
+
+        System.out.println(hoaDon.getPhuongThucThanhToan());
 
         hoaDon.setEmail(order.getEmail());
 
