@@ -94,7 +94,10 @@ public interface ADHoaDonChiTietRepository extends HoaDonChiTietRepository {
                     pgg.ten_phieu_giam_gia AS tenVoucher,
                     pgg.gia_giam_toi_da AS giaTriVoucher,
                     hd.tong_tien_sau_giam AS tongTienSauGiam,
-                    (hdct.gia_ban * hdct.so_luong ) AS tongTien
+                    (hdct.gia_ban * hdct.so_luong ) AS tongTien,
+                    hd.phuong_thuc_thanh_toan as phuongThucThanhToan,
+                    hd.du_no AS duNo,
+                    hd.hoan_phi AS hoanPhi
                 FROM hoa_don_chi_tiet hdct
                 LEFT JOIN hoa_don hd ON hdct.id_hoa_don = hd.id
                 LEFT JOIN phieu_giam_gia pgg ON hd.id_voucher = pgg.id

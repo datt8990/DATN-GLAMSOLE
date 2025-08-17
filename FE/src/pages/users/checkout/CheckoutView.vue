@@ -122,7 +122,7 @@
           <h5 class="fw-semibold mb-3">Hình thức thanh toán</h5>
 
           <a-radio-group v-model:value="form.thanhToan" class="d-flex flex-column gap-2">
-            <a-radio value="COD">Thanh toán khi nhận hàng (COD)</a-radio>
+            <a-radio value="TIEN_MAT">Thanh toán khi nhận hàng (COD)</a-radio>
             <a-radio value="VNPAY">Thanh toán VnPay</a-radio>
           </a-radio-group>
 
@@ -138,7 +138,7 @@
   <a-modal v-model:open="showConfirmModal" title="Xác nhận đặt hàng" @ok="handleConfirmOk" @cancel="handleConfirmCancel"
     :confirm-loading="loadingCheckout" ok-text="Xác nhận" cancel-text="Hủy">
     <p>Bạn có chắc chắn muốn đặt đơn hàng này với tổng cộng là **{{ tongCong.toLocaleString("vi-VN") }}₫** không?</p>
-    <p>Phương thức thanh toán: **{{ form.thanhToan === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 'Thanh toán VnPay'
+    <p>Phương thức thanh toán: **{{ form.thanhToan === 'TIEN_MAT' ? 'Thanh toán khi nhận hàng (COD)' : 'Thanh toán VnPay'
     }}**</p>
     <p class="text-danger mt-3">Vui lòng kiểm tra lại thông tin nhận hàng và đơn hàng trước khi xác nhận.</p>
   </a-modal>
@@ -221,7 +221,7 @@ const form = ref({
   phuong: null as string | null,
   diaChi: "",
   ghiChu: "",
-  thanhToan: "COD",
+  thanhToan: "TIEN_MAT",
   maGiamGia: "",
 });
 
@@ -626,6 +626,10 @@ const handleConfirmOk = async () => {
 const handleConfirmCancel = () => {
   showConfirmModal.value = false;
 };
+
+watch(() => form.value.thanhToan, (newValue) => {
+  console.log('form.thanhToan updated:', newValue);
+});
 
 const performCheckout = async () => {
   try {

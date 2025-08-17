@@ -310,7 +310,7 @@
           <div class="payment-method">
             <span class="payment-method-label">Phương thức thanh toán:</span>
             <span class="payment-method-value">{{
-              getPaymentMethodText(orderDetail.loaiHoaDon)
+              getPaymentMethodText(orderDetail.phuongThucThanhToan)
             }}</span>
           </div>
         </div>
@@ -409,6 +409,7 @@ interface OrderDetail {
   thanhTien: number;
   tongTienSauGiam: number;
   loaiHoaDon: string;
+  phuongThucThanhToan: string,
   maVoucher?: string;
   tenVoucher?: string;
   giaTriVoucher?: number;
@@ -817,6 +818,7 @@ const fetchOrderDetail = async (orderId: string) => {
         thanhTien: firstItem.thanhTien,
         tongTienSauGiam: firstItem.tongTienSauGiam,
         loaiHoaDon: firstItem.loaiHoaDon,
+        phuongThucThanhToan: firstItem.phuongThucThanhToan,
         maVoucher: firstItem.maVoucher,
         tenVoucher: firstItem.tenVoucher,
         giaTriVoucher: firstItem.giaTriVoucher,
@@ -1073,9 +1075,8 @@ const getStatusText = (status: string) => {
 
 const getPaymentMethodText = (method?: string) => {
   const methodMap: Record<string, string> = {
-    "1": "Thanh toán online",
-    "2": "Thanh toán khi nhận hàng (COD)",
-    "0": "Tại quầy",
+    "0": "Thanh toán qua thẻ",
+    "1": "Thanh toán khi nhận hàng (COD)",
   };
   return methodMap[method || ""] || "Chưa xác định";
 };

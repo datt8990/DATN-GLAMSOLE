@@ -179,36 +179,36 @@ public class DonMuaServiceImpl implements DonMuaService {
         hoaDon.setPhiVanChuyen(request.getPhiVanChuyen());
 
         if (hoaDon.getTongTienSauGiam() > request.getTongTienSauGiam()) {
-            if (hoaDon.getHoanPhi() != null) {
-                hoaDon.setHoanPhi(hoaDon.getHoanPhi() + (hoaDon.getTongTienSauGiam() - request.getTongTienSauGiam()));
-                if (hoaDon.getDuNo() != null) {
-                    if (hoaDon.getDuNo() > 0) {
-                        if (hoaDon.getDuNo() - (request.getTongTienSauGiam() - hoaDon.getTongTienSauGiam()) <= 0) {
-                            hoaDon.setDuNo(0D);
-                        } else {
-                            hoaDon.setDuNo(hoaDon.getHoanPhi() - (hoaDon.getTongTienSauGiam() - request.getTongTienSauGiam()));
-                            hoaDon.setHoanPhi(0D);
-                        }
-                    }
-                }
-            } else {
-                hoaDon.setDuNo(request.getTongTienSauGiam() - hoaDon.getTongTienSauGiam());
-            }
-        } else if (hoaDon.getTongTienSauGiam() < request.getTongTienSauGiam()) {
             if (hoaDon.getDuNo() != null) {
-                hoaDon.setDuNo(hoaDon.getDuNo() + (request.getTongTienSauGiam() - hoaDon.getTongTienSauGiam()));
+                hoaDon.setDuNo(hoaDon.getDuNo() + (hoaDon.getTongTienSauGiam() - request.getTongTienSauGiam()));
                 if (hoaDon.getHoanPhi() != null) {
                     if (hoaDon.getHoanPhi() > 0) {
-                        if (hoaDon.getHoanPhi() - (hoaDon.getTongTienSauGiam() - request.getTongTienSauGiam()) <= 0) {
-                            hoaDon.setHoanPhi(0D);
-                        } else {
-                            hoaDon.setHoanPhi(hoaDon.getHoanPhi() - (hoaDon.getTongTienSauGiam() - request.getTongTienSauGiam()));
+                        if (hoaDon.getHoanPhi() - (request.getTongTienSauGiam() - hoaDon.getTongTienSauGiam()) <= 0) {
                             hoaDon.setDuNo(0D);
+                        } else {
+                            hoaDon.setDuNo(hoaDon.getDuNo() - (hoaDon.getTongTienSauGiam() - request.getTongTienSauGiam()));
+                            hoaDon.setHoanPhi(0D);
                         }
                     }
                 }
             } else {
                 hoaDon.setHoanPhi(request.getTongTienSauGiam() - hoaDon.getTongTienSauGiam());
+            }
+        } else if (hoaDon.getTongTienSauGiam() < request.getTongTienSauGiam()) {
+            if (hoaDon.getHoanPhi() != null) {
+                hoaDon.setHoanPhi(hoaDon.getHoanPhi() + (request.getTongTienSauGiam() - hoaDon.getTongTienSauGiam()));
+                if (hoaDon.getDuNo() != null) {
+                    if (hoaDon.getDuNo() > 0) {
+                        if (hoaDon.getDuNo() - (hoaDon.getTongTienSauGiam() - request.getTongTienSauGiam()) <= 0) {
+                            hoaDon.setDuNo(0D);
+                        } else {
+                            hoaDon.setDuNo(hoaDon.getDuNo() - (hoaDon.getTongTienSauGiam() - request.getTongTienSauGiam()));
+                            hoaDon.setDuNo(0D);
+                        }
+                    }
+                }
+            } else {
+                hoaDon.setDuNo(request.getTongTienSauGiam() - hoaDon.getTongTienSauGiam());
             }
         }
 

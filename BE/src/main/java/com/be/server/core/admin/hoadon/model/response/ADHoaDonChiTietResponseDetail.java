@@ -34,4 +34,7 @@ public interface ADHoaDonChiTietResponseDetail {
     Double getGiaTriVoucher();
     Double getTongTienSauGiam();
     Double getTongTien();
+    String getPhuongThucThanhToan();
+    Double getDuNo();
+    Double getHoanPhi();
 }
