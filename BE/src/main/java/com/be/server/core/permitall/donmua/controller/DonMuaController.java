@@ -70,4 +70,9 @@ public class DonMuaController {
     public ResponseEntity<?> modifyProduct(@ModelAttribute PMThemSanPhamRequest request) {
         return Helper.createResponseEntity(service.createThemSanPham(request));
     }
+
+    @GetMapping("/lich_su_thanh_toan/{id}")
+    public ResponseEntity<?> getLSTT(@PathVariable String id) {
+        return Helper.createResponseEntity(service.getLSTT(id));
+    }
 }

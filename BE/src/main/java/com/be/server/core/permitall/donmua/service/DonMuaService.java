@@ -15,4 +15,6 @@ public interface DonMuaService {
     ResponseObject<?> createThemSanPham(PMThemSanPhamRequest adThemSanPhamRequest);
 
     ResponseObject<?>  suaThongTin(UpdateDeliveryDTO request);
+
+    ResponseObject<?> getLSTT(String id);
 }

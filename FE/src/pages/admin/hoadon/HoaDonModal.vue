@@ -135,43 +135,6 @@
           <div class="order-info-column">
             <div class="order-info-row">
               <span class="label">Trạng thái:</span>
-              <!-- <a-tag style="margin-left: auto;"
-              :color="
-                displayStatus === 'Chờ xác nhận'
-                  ? 'orange'
-                  : displayStatus === 'Đã xác nhận'
-                  ? 'gold'
-                  : displayStatus === 'Chờ giao'
-                  ? 'blue'
-                  : displayStatus === 'Đang giao'
-                  ? 'cyan'
-                  : displayStatus === 'Xác nhận thanh toán'
-                  ? 'purple'
-                  : displayStatus === 'Hoàn thành'
-                  ? 'green'
-                  : displayStatus === 'Đã hủy'
-                  ? 'red'
-                  : 'default'
-              "
-            >
-              {{
-                displayStatus === "Chờ xác nhận"
-                  ? "Chờ xác nhận"
-                  : displayStatus === "Đã xác nhận"
-                  ? "Đã xác nhận"
-                  : displayStatus === "Chờ giao"
-                  ? "Chờ giao"
-                  : displayStatus === "Đang giao"
-                  ? "Đang giao"
-                  : displayStatus === "Xác nhận thanh toán"
-                  ? "Xác nhận thanh toán"
-                  : displayStatus === "Hoàn thành"
-                  ? "Hoàn thành"
-                  : displayStatus === "Đã hủy"
-                  ? "Đã hủy"
-                  : "Không rõ"
-              }}
-            </a-tag> -->
               <span class="value status">{{ displayStatus }}</span>
             </div>
             <div class="order-info-row">
@@ -196,6 +159,18 @@
                 }}
               </span>
             </div>
+            <div v-if="hoaDon?.phuongThucThanhToan == '0' && ((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen) - tongTienThanhToan > 0 && hoaDon.loaiHoaDon == 'ONLINE'" class="order-info-row">
+              <span class="label">Dư nợ:</span>
+              <span class="value price">{{
+                formatCurrency(((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen) - tongTienThanhToan)
+              }}</span>
+            </div>
+            <div v-if="hoaDon?.phuongThucThanhToan == '0' && ((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen) - tongTienThanhToan < 0 && hoaDon.loaiHoaDon == 'ONLINE'" class="order-info-row">
+              <span class="label">Hoàn phí:</span>
+              <span class="value price">{{
+                formatCurrency(Math.abs(((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen) - tongTienThanhToan))
+              }}</span>
+            </div>
           </div>
           <!-- Cột phải -->
           <div class="order-info-column">
@@ -218,11 +193,38 @@
                 formatCurrency(hoaDon?.giaTriPGG || 0)
               }}</span>
             </div>
-            <div class="order-info-row">
+            <div v-if="hoaDon?.phuongThucThanhToan == '0' && hoaDon?.loaiHoaDon == 'ONLINE'" class="order-info-row">
+              <span class="label">Đã thanh toán:</span>
+              <span class="value price">{{
+                formatCurrency(tongTienThanhToan)
+              }}</span>
+            </div>
+            <div v-if="hoaDon?.phuongThucThanhToan == '0' && ((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen) - tongTienThanhToan >= 0 && hoaDon?.loaiHoaDon == 'ONLINE'" class="order-info-row">
               <span class="label">Phải thanh toán:</span>
               <span class="value total">{{
                 // formatCurrency(finalTotalAmount)
-                formatCurrency((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen)
+                formatCurrency(((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen) - tongTienThanhToan)
+              }}</span>
+            </div>
+            <div v-if="hoaDon?.phuongThucThanhToan == '0' && ((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen) - tongTienThanhToan < 0 && hoaDon?.loaiHoaDon == 'ONLINE'" class="order-info-row">
+              <span class="label">Phải thanh toán:</span>
+              <span class="value total">{{
+                // formatCurrency(finalTotalAmount)
+                formatCurrency(0)
+              }}</span>
+            </div>
+            <div v-if="hoaDon?.phuongThucThanhToan == '1' && hoaDon?.loaiHoaDon == 'ONLINE'" class="order-info-row">
+              <span class="label">Phải thanh toán:</span>
+              <span class="value total">{{
+                // formatCurrency(finalTotalAmount)
+                formatCurrency(((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen))
+              }}</span>
+            </div>
+            <div v-if="hoaDon?.loaiHoaDon == 'OFFLINE' || hoaDon?.loaiHoaDon == 'GIAO_HANG'" class="order-info-row">
+              <span class="label">Phải thanh toán:</span>
+              <span class="value total">{{
+                // formatCurrency(finalTotalAmount)
+                formatCurrency(((hoaDon?.thanhTien - hoaDon?.giaTriPGG) + hoaDon?.phiVanChuyen))
               }}</span>
             </div>
           </div>
@@ -692,6 +694,10 @@ const setDefaultTemplate = (status: string) => {
   statusNote.value = statusTemplates[selectedStatusTemplate.value] || "";
 };
 
+const tongTienThanhToan = computed(() =>
+  (lichSuThanhToan.value || []).reduce((sum, item) => sum + (item.soTien || 0), 0)
+);
+
 // 1. Thêm vào phần khai báo biến reactive (sau dòng paymentLoading)
 const printLoading = ref(false);
 
@@ -762,61 +768,6 @@ const downloadPDF = (blob: Blob, fileName: string) => {
   } catch (error) {
     console.error("Lỗi khi download PDF:", error);
     toast.error("Có lỗi xảy ra khi tải file PDF");
-  }
-};
-
-const printButtonText = computed(() => {
-  const loaiHoaDon = hoaDon.value?.loaiHoaDon;
-  if (loaiHoaDon === EntityLoaiHoaDon.OFFLINE) {
-    return "In PDF (Offline)";
-  } else if (loaiHoaDon === EntityLoaiHoaDon.GIAO_HANG) {
-    return "In PDF (Giao hàng)";
-  } else if (loaiHoaDon === EntityLoaiHoaDon.ONLINE) {
-    return "In PDF (Online)";
-  }
-  return "In PDF";
-});
-
-const handleViewPDF = async () => {
-  if (!hoaDon.value?.maHoaDon) {
-    toast.error("Không tìm thấy mã hóa đơn");
-    return;
-  }
-
-  printLoading.value = true;
-
-  try {
-    const maHoaDon = hoaDon.value.maHoaDon;
-    let blob;
-
-    if (hoaDon.value.loaiHoaDon === EntityLoaiHoaDon.OFFLINE) {
-      blob = await inPDFOFFLINE(maHoaDon);
-    } else {
-      blob = await inPDFONLINE(maHoaDon);
-    }
-
-    // Tạo URL cho blob và mở trong tab mới
-    const url = window.URL.createObjectURL(blob);
-    const newWindow = window.open(url, "_blank");
-
-    if (!newWindow) {
-      // Fallback nếu popup bị block
-      downloadPDF(blob, `HoaDon_${maHoaDon}.pdf`);
-    } else {
-      // Cleanup URL sau khi tab đã load
-      newWindow.addEventListener("load", () => {
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 1000);
-      });
-    }
-
-    toast.success("Mở PDF thành công");
-  } catch (error) {
-    console.error("Lỗi khi mở PDF:", error);
-    toast.error("Có lỗi xảy ra khi mở PDF: " + (error as Error).message);
-  } finally {
-    printLoading.value = false;
   }
 };
 
@@ -1328,18 +1279,6 @@ const handleConfirmOrderClick = () => {
   openStatusModal(getNextStatus());
 };
 
-const canCompleteOrder = computed(() => {
-  if (hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE) {
-    return (
-      currentStatus.value === EntityTrangThaiHoaDon.CHO_XAC_NHAN &&
-      hasPaymentHistory.value
-    );
-  }
-  return (
-    currentStatus.value === EntityTrangThaiHoaDon.DANG_GIAO &&
-    hasPaymentHistory.value
-  );
-});
 
 const getNextStatus = () => {
   if (hoaDon.value?.loaiHoaDon === EntityLoaiHoaDon.OFFLINE) {
@@ -1452,11 +1391,6 @@ const formatCurrency = (value: number | undefined | null) => {
   return value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 };
 
-const props = defineProps<{
-  paginationParams: { page: number; size: number };
-  totalItems: number;
-  chiTietList: any[];
-}>();
 
 const emit = defineEmits(["page-change"]);
 
@@ -1593,6 +1527,7 @@ onMounted(async () => {
             ? EntityLoaiHoaDon.GIAO_HANG
             : EntityLoaiHoaDon.ONLINE,
         trangThaiHoaDon: hoaDonData.trangThaiHoaDon,
+        phuongThucThanhToan: hoaDonData.phuongThucThanhToan,
         ngayTao: hoaDonData.ngayTao,
         phiVanChuyen: hoaDonData.phiVanChuyen,
         maPGG: hoaDonData.maVoucher,

@@ -301,10 +301,40 @@
               formatCurrency(orderDetail.phiVanChuyen || 0)
             }}</span>
           </div>
-          <div class="payment-row total">
+          <div v-if="orderDetail.phuongThucThanhToan == '1'" class="payment-row total">
             <span class="payment-label">Tổng thanh toán:</span>
             <span class="payment-value total-amount">{{
               formatCurrency(orderDetail.tongTienSauGiam)
+            }}</span>
+          </div>
+          <div v-if="orderDetail.phuongThucThanhToan == '0'" class="payment-row">
+            <span class="payment-label">Đã thanh toán qua thẻ:</span>
+            <span class="payment-value">{{
+              formatCurrency(tongTienThanhToan)
+            }}</span>
+          </div>
+          <div v-if="orderDetail.phuongThucThanhToan == '0' && orderDetail.tongTienSauGiam - tongTienThanhToan > 0" class="payment-row">
+            <span class="payment-label">Dư nợ:</span>
+            <span class="payment-value">{{
+              formatCurrency(orderDetail.tongTienSauGiam - tongTienThanhToan)
+            }}</span>
+          </div>
+          <div v-if="orderDetail.phuongThucThanhToan == '0' && orderDetail.tongTienSauGiam - tongTienThanhToan < 0" class="payment-row">
+            <span class="payment-label">Hoàn phí:</span>
+            <span class="payment-value">{{
+              formatCurrency(Math.abs(orderDetail.tongTienSauGiam - tongTienThanhToan))
+            }}</span>
+          </div>
+          <div v-if="orderDetail.phuongThucThanhToan == '0' && orderDetail.tongTienSauGiam - tongTienThanhToan < 0" class="payment-row total">
+            <span class="payment-label">Tổng thanh toán:</span>
+            <span class="payment-value total-amount">{{
+              formatCurrency(0)
+            }}</span>
+          </div>
+          <div v-if="orderDetail.phuongThucThanhToan == '0' && orderDetail.tongTienSauGiam - tongTienThanhToan >= 0" class="payment-row total">
+            <span class="payment-label">Tổng thanh toán:</span>
+            <span class="payment-value total-amount">{{
+              formatCurrency(orderDetail.tongTienSauGiam - tongTienThanhToan)
             }}</span>
           </div>
           <div class="payment-method">
@@ -312,6 +342,9 @@
             <span class="payment-method-value">{{
               getPaymentMethodText(orderDetail.phuongThucThanhToan)
             }}</span>
+          </div>
+          <div v-if="orderDetail.phuongThucThanhToan == '0' && orderDetail.tongTienSauGiam - tongTienThanhToan < 0" class="payment-method">
+            <span class="payment-method-label">Lưu ý: Đối với đơn hàng được hoàn phí hãy nhấn vào phần liên hệ lấy thông tin để được hỗ trợ.</span>
           </div>
         </div>
       </div>
@@ -348,6 +381,7 @@ import {
   getSuaThongTin,
   changeStatus,
   GetSanPhams,
+  GetLSTT,
   type ParamsGetHoaDonCT,
   type SanPhamResponse,
   type ParamsGetSanPham,
@@ -538,6 +572,7 @@ const provinces = ref<Province[]>([]);
 const districts = ref<District[]>([]);
 const wards = ref<Ward[]>([]);
 const showProductModal = ref(false);
+const lichSuThanhToan = ref<any[]>([]);
 
 // Computed
 const isNotPending = computed(() => orderDetail.value?.trangThaiHoaDon !== "0");
@@ -601,6 +636,25 @@ const orderTimeline = computed<TimelineStep[]>(() => {
     };
   });
 });
+
+const loadPaymentHistory = async () => {
+  try {
+    const idHoaDon = route.params.id as string;
+    const response = await GetLSTT(idHoaDon);
+
+    if (response && response.success && response.data) {
+      lichSuThanhToan.value = response.data;
+    }
+    console.log(lichSuThanhToan.value)
+  } catch (error) {
+    console.error("Lỗi khi tải lịch sử thanh toán:", error);
+  }
+};
+
+const tongTienThanhToan = computed(() =>
+  (lichSuThanhToan.value || []).reduce((sum, item) => sum + (item.soTien || 0), 0)
+);
+
 
 // Load provinces
 const loadProvinces = async () => {
@@ -760,6 +814,9 @@ const addProductToOrder = async (product: SanPhamResponse) => {
         };
 
         const response = await getSuaThongTin(updateDeliveryDTO);
+
+        window.location.reload();
+
         // if (response.status === "OK") {
         //   // Cập nhật lại orderDetail
         //   orderDetail.value = {
@@ -1107,6 +1164,7 @@ onMounted(() => {
   const orderId = route.params.id as string;
   if (orderId) {
     fetchOrderDetail(orderId);
+    loadPaymentHistory();
   } else {
     message.error("Không tìm thấy mã đơn hàng");
     router.push({ name: "don-mua" });

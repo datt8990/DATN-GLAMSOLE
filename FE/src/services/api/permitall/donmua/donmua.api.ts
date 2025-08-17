@@ -64,6 +64,15 @@ export const GetSanPhams = async (params: ParamsGetSanPham) => {
   return res.data
 }
 
+export const GetLSTT = async (id: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_PROFILE_ORDER_HISTORY}/lich_su_thanh_toan/${id}`,
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<PaginationResponse<Array<DonMuaResponse>>>>
+
+  return res.data
+}
+
 export const getDonMuaByCode = async (code: string) => {
   const res = (await request({
     url: `${PREFIX_API_PROFILE_ORDER_HISTORY}/all/${code}`,

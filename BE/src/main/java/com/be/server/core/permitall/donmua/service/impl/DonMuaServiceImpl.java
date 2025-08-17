@@ -5,7 +5,9 @@ import com.be.server.core.admin.banhang.repository.ADTaoHoaDonChiTietRepository;
 import com.be.server.core.admin.banhang.repository.ADTaoHoaDonRepository;
 import com.be.server.core.admin.hoadon.model.request.ADHoaDonSearchRequest;
 import com.be.server.core.admin.hoadon.model.response.HoaDonPageResponse1;
+import com.be.server.core.admin.hoadon.model.response.LichSuThanhToanResponse;
 import com.be.server.core.admin.hoadon.repository.ADHoaDonRepository;
+import com.be.server.core.admin.hoadon.repository.ADLichSuThanhToanRepository;
 import com.be.server.core.common.base.ResponseObject;
 import com.be.server.core.permitall.donmua.model.request.PMThemSanPhamRequest;
 import com.be.server.core.permitall.donmua.model.request.UpdateDeliveryDTO;
@@ -36,6 +38,7 @@ public class DonMuaServiceImpl implements DonMuaService {
     public final ADTaoHoaDonChiTietRepository adTaoHoaDonChiTietRepository;
     private final HoaDonRepository hoaDonRepository;
     public final ADSanPhamChiTietRepository adSanPhamRepository;
+    public final ADLichSuThanhToanRepository adLichSuThanhToanRepository;
 
     @Override
     public ResponseObject<?> getAllHoaDon(ADHoaDonSearchRequest request) {
@@ -246,5 +249,15 @@ public class DonMuaServiceImpl implements DonMuaService {
                 hoaDon,
                 HttpStatus.OK,
                 "Lấy danh sách lịch sử đơn hàng thành công");
+    }
+
+    @Override
+    public ResponseObject<?> getLSTT(String id) {
+        List<LichSuThanhToanResponse> lichSuThanhToans = adLichSuThanhToanRepository.getLichSuThanhToanByHoaDonId(id);
+        return new ResponseObject<>(
+                lichSuThanhToans,
+                HttpStatus.OK,
+                "Lấy danh sách lịch sử thanh toán hóa đơn thành công"
+        );
     }
 }
