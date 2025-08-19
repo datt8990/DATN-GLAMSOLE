@@ -36,7 +36,7 @@ public class PMThanhToanController {
     @PostMapping("/create")
     public ResponseEntity<?> createOrder(@RequestBody PMThanhToan order, HttpServletRequest request) {
         long startTime = System.currentTimeMillis();
-        System.out.println("Start createOrder - HoTen: " + order.getHoTen());
+
         HoaDon savedOrder = orderService.createOrder(order);
         System.out.println("Time to create order: " + (System.currentTimeMillis() - startTime) + "ms");
 
