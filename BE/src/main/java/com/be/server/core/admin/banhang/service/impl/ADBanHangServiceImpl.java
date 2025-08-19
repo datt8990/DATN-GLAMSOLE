@@ -377,12 +377,11 @@ public class ADBanHangServiceImpl implements ADBanHangService {
     public ResponseObject<?> thanhToanThanhCong(ADThanhToanRequest id) {
 
 
-
-        if(id.getIdPGG() != null){
+        if (id.getIdPGG() != null) {
 
             PhieuGiamGia phieuGiamGia1 = adVoucherRepository.findById(id.getIdPGG()).get();
 
-            if(phieuGiamGia1.getStatus() == EntityStatus.INACTIVE){
+            if (phieuGiamGia1.getStatus() == EntityStatus.INACTIVE) {
                 return new ResponseObject<>(null, HttpStatus.OK, "Phiếu giảm giá đã ngừng hoạt động");
             }
 
@@ -392,16 +391,16 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
             chonPhieuGiamGiaRequest.setIdHD(id.getTienHang());
 
-            if(hoaDon.getKhachHang() != null){
+            if (hoaDon.getKhachHang() != null) {
 
                 chonPhieuGiamGiaRequest.setIdKH(hoaDon.getKhachHang().getId());
 
             }
 
-            if(id.getCheck() == 1){
+            if (id.getCheck() == 1) {
                 List<PhieuGiamGia> list = danhSachPhieuGiamGia1(chonPhieuGiamGiaRequest);
 
-                if(list.get(0).getGiaTriGiamThucTe() > phieuGiamGia1.getGiaTriGiamThucTe() ){
+                if (list.get(0).getGiaTriGiamThucTe() > phieuGiamGia1.getGiaTriGiamThucTe()) {
 
                     return new ResponseObject<>(null, HttpStatus.OK, "Đã có 1 phiếu giảm giá tốt hơn");
 
@@ -409,9 +408,7 @@ public class ADBanHangServiceImpl implements ADBanHangService {
             }
 
 
-
         }
-
 
 
         List<String> idHDCTS = adTaoHoaDonChiTietRepository.getHoaDonChiTiet(id.getIdHD());
@@ -423,7 +420,7 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
             SanPhamChiTiet sanPhamChiTiet = adSanPhamBanHangRepository.findById(idSPCT).get();
 
-            if(sanPhamChiTiet.getSoLuong() < hoaDonChiTiet.getSoLuong()){
+            if (sanPhamChiTiet.getSoLuong() < hoaDonChiTiet.getSoLuong()) {
 
                 return new ResponseObject<>(null, HttpStatus.OK, "Số lượng sản phẩm không đủ");
 
@@ -434,7 +431,6 @@ public class ADBanHangServiceImpl implements ADBanHangService {
             adSanPhamBanHangRepository.save(sanPhamChiTiet);
 
         }
-
 
 
         HoaDon hoaDon = adTaoHoaDonRepository.findById(id.getIdHD()).get();
@@ -465,13 +461,17 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
             hoaDon.setTongTienSauGiam(id.getTongTien());
 
-            PhieuGiamGia phieuGiamGia = adVoucherRepository.findById(id.getIdPGG()).get();
+            if (id.getIdPGG() != null) {
 
-            phieuGiamGia.setSoLuongPhieu(phieuGiamGia.getSoLuongPhieu() - 1);
+                PhieuGiamGia phieuGiamGia = adVoucherRepository.findById(id.getIdPGG()).get();
 
-            adVoucherRepository.save(phieuGiamGia);
+                phieuGiamGia.setSoLuongPhieu(phieuGiamGia.getSoLuongPhieu() - 1);
 
-            hoaDon.setVoucher(phieuGiamGia);
+                adVoucherRepository.save(phieuGiamGia);
+
+                hoaDon.setVoucher(phieuGiamGia);
+
+            }
 
             adTaoHoaDonRepository.save(hoaDon);
 
@@ -561,13 +561,18 @@ public class ADBanHangServiceImpl implements ADBanHangService {
 
         hoaDon.setTongTienSauGiam(id.getTongTien());
 
-        PhieuGiamGia phieuGiamGia = adVoucherRepository.findById(id.getIdPGG()).get();
+        if (id.getIdPGG() != null) {
 
-        phieuGiamGia.setSoLuongPhieu(phieuGiamGia.getSoLuongPhieu() - 1);
+            PhieuGiamGia phieuGiamGia = adVoucherRepository.findById(id.getIdPGG()).get();
 
-        adVoucherRepository.save(phieuGiamGia);
+            phieuGiamGia.setSoLuongPhieu(phieuGiamGia.getSoLuongPhieu() - 1);
 
-        hoaDon.setVoucher(phieuGiamGia);
+            adVoucherRepository.save(phieuGiamGia);
+
+            hoaDon.setVoucher(phieuGiamGia);
+
+        }
+
 
         adTaoHoaDonRepository.save(hoaDon);
 
@@ -602,9 +607,6 @@ public class ADBanHangServiceImpl implements ADBanHangService {
         lichSu.setMaGiaoDich(UUID.randomUUID().toString());
 
         adLichSuThanhToanRepository.save(lichSu);
-
-
-
 
 
         return new ResponseObject<>(null, HttpStatus.CREATED, "Thanh toán thành công");
