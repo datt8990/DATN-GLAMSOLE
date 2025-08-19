@@ -26,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -110,11 +111,12 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
                 voucher.setSoLuongPhieu(request.getSoLuongPhieu());
 
-                if (request.getLoaiGiam() == true) {
+                if (request.getKieuGiam() == true) {
                     voucher.setPhanTramGiam(request.getLoiPhanNay());
                 } else {
                     voucher.setPhanTramGiam(request.getGiaGiam());
                 }
+
 
                 advoucherRepository.save(voucher);
 
@@ -169,27 +171,27 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
         voucher.setKieuGiam(request.getKieuGiam());
 
-        System.out.println(request.getLoiPhanNay());
-
-        System.out.println(request.getLoaiGiam());
-
         if (request.getKieuGiam() == true) {
             voucher.setPhanTramGiam(request.getLoiPhanNay());
         } else {
             voucher.setPhanTramGiam(request.getGiaGiam());
         }
 
+        LocalDate today = LocalDate.now();
 
-        voucher.setStatus(EntityStatus.ACTIVE);
+        if ((today.isEqual(request.getNgayBatDau().toLocalDate()) || today.isAfter(request.getNgayBatDau().toLocalDate()))
+                && (today.isEqual(request.getNgayKetThuc().toLocalDate()) || today.isBefore(request.getNgayKetThuc().toLocalDate()))) {
+            voucher.setStatus(EntityStatus.ACTIVE);
+        } else {
+            voucher.setStatus(EntityStatus.INACTIVE);
+        }
 
         advoucherRepository.save(voucher);
 
         if (request.getKhachHangIds() != null) {
             for (int i = 0; i < request.getKhachHangIds().size(); i++) {
-                System.out.println(request.getKhachHangIds().get(i));
 
                 KhachHang khachHang = adKhachHangRepository.findById(request.getKhachHangIds().get(i)).get();
-
 
                 PhieuGiamGiaChiTiet phieuGiamGiaChiTiet = new PhieuGiamGiaChiTiet();
 
@@ -199,19 +201,14 @@ public class ADVoucherServiceImpl implements ADVoucherService {
 
                 phieuGiamGiaChiTietRepository.save(phieuGiamGiaChiTiet);
 
-
                 String email = khachHang.getEmail();
                 String subject = "Khuyến mại của cửa hàng";
                 String content = "Chào " + khachHang.getTen() + ",\n\n" + "Cửa hàng chúng tôi chúc mừng bạn đã được 1 phiếu giảm giá từ cửa hàng chúng tôi\n" + "Mã phiếu giảm giá là: " + voucher.getMa() + "\n" + "Cảm ơn đã tin tưởng cửa hàng của chúng tôi";
 
                 CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
 
-
             }
-
-
         }
-
         return new ResponseObject<>(voucher, HttpStatus.CREATED, "Tạo size thành công");
     }
 
