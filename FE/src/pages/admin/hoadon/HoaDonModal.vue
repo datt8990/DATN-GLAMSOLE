@@ -280,7 +280,6 @@
       <div class="flex justify-end mb-4">
         <a-button
           style="background-color: #58bddb; box-shadow: gray 1px 2px 2px;"
-          v-if="canConfirmPayment"
           :key="hoaDon?.trangThaiHoaDon"
           type="primary"
           class="bg-yellow-500 hover:bg-yellow-600 border-yellow-500 confirm-payment-btn"
@@ -563,7 +562,6 @@
         <a-button
           type="primary"
           :loading="paymentLoading"
-          :disabled="!canConfirmPayment"
           class="confirm-payment-btn"
         >
           Thanh toán
