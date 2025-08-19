@@ -70,9 +70,9 @@ public class thanhtoanserviceImpl {
 
         hoaDon.setStatus(EntityStatus.ACTIVE);
 
-        System.out.println(order.getHinhThucThanhToan()+"aaaaa");
+        System.out.println(order.getHinhThucThanhToan() + "aaaaa");
 
-        if(order.getHinhThucThanhToan().equals("TIEN_MAT")){
+        if (order.getHinhThucThanhToan().equals("TIEN_MAT")) {
             hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT);
 
             hoaDon.setEmail(order.getEmail());
@@ -82,12 +82,17 @@ public class thanhtoanserviceImpl {
             hoaDon.setPhiVanChuyen(order.getPhiShip());
 
             hoaDon.setTrangThaiHoaDon(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
+            System.out.println('1');
+            if (order.getMaGiamGia() != null && !order.getMaGiamGia().equals("") && !order.getMaGiamGia().isEmpty()) {
+                System.out.println("sd"+order.getMaGiamGia()) ;
+                String idPGG1 = pmPhieuGiamGiaThanhToan.getPGG(order.getMaGiamGia());
 
-            String idPGG1 = pmPhieuGiamGiaThanhToan.getPGG(order.getMaGiamGia());
+                PhieuGiamGia phieuGiamGia1 = adVoucherRepository.findById(idPGG1).get();
 
-            PhieuGiamGia phieuGiamGia1 = adVoucherRepository.findById(idPGG1).get();
+                hoaDon.setVoucher(phieuGiamGia1);
+            }
 
-            hoaDon.setVoucher(phieuGiamGia1);
+            System.out.println('2');
 
             pmHoaDonReposiitory.save(hoaDon);
 
@@ -102,8 +107,7 @@ public class thanhtoanserviceImpl {
             lichSuTrangThaiHoaDon.setTrangThai(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
 
             lichSuTrangThaiHoaDonRepository.save(lichSuTrangThaiHoaDon);
-        }
-        else {
+        } else {
             hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.CHUYEN_KHOAN);
 
             hoaDon.setEmail(order.getEmail());
@@ -113,47 +117,52 @@ public class thanhtoanserviceImpl {
             hoaDon.setPhiVanChuyen(order.getPhiShip());
 
             hoaDon.setTrangThaiHoaDon(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
+            System.out.println('1');
+            if(order.getMaGiamGia() != null && !order.getMaGiamGia().equals("") && !order.getMaGiamGia().isEmpty()){
 
-            String idPGG1 = pmPhieuGiamGiaThanhToan.getPGG(order.getMaGiamGia());
+                String idPGG1 = pmPhieuGiamGiaThanhToan.getPGG(order.getMaGiamGia());
 
-            PhieuGiamGia phieuGiamGia1 = adVoucherRepository.findById(idPGG1).get();
+                PhieuGiamGia phieuGiamGia1 = adVoucherRepository.findById(idPGG1).get();
 
-            hoaDon.setVoucher(phieuGiamGia1);
+                hoaDon.setVoucher(phieuGiamGia1);
+
+            }
+
+            System.out.println('2');
 
             pmHoaDonReposiitory.save(hoaDon);
 
-        LichSuTrangThaiHoaDon lichSuTrangThaiHoaDon = new LichSuTrangThaiHoaDon();
+            LichSuTrangThaiHoaDon lichSuTrangThaiHoaDon = new LichSuTrangThaiHoaDon();
 
-        lichSuTrangThaiHoaDon.setThoiGian(LocalDateTime.now());
+            lichSuTrangThaiHoaDon.setThoiGian(LocalDateTime.now());
 
-        lichSuTrangThaiHoaDon.setNote("Đơn hàng đã được đặt và chờ được xác nhận.");
+            lichSuTrangThaiHoaDon.setNote("Đơn hàng đã được đặt và chờ được xác nhận.");
 
-        lichSuTrangThaiHoaDon.setHoaDon(hoaDon);
+            lichSuTrangThaiHoaDon.setHoaDon(hoaDon);
 
-        lichSuTrangThaiHoaDon.setTrangThai(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
+            lichSuTrangThaiHoaDon.setTrangThai(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
 
-        lichSuTrangThaiHoaDonRepository.save(lichSuTrangThaiHoaDon);
+            lichSuTrangThaiHoaDonRepository.save(lichSuTrangThaiHoaDon);
 
-        LichSuThanhToan lichSu = new LichSuThanhToan();
-        lichSu.setHoaDon(hoaDon);
-        lichSu.setSoTien(order.getTongCong());
-        if(order.getHinhThucThanhToan().equals("VNPAY")) {
-            lichSu.setLoaiGiaoDich("CHUYEN_KHOAN");
-        }
-        else {
-            lichSu.setLoaiGiaoDich("TIEN_MAT");
-        }
-        lichSu.setThoiGian(LocalDateTime.now());
-        lichSu.setMaGiaoDich(UUID.randomUUID().toString());
+            LichSuThanhToan lichSu = new LichSuThanhToan();
+            lichSu.setHoaDon(hoaDon);
+            lichSu.setSoTien(order.getTongCong());
+            if (order.getHinhThucThanhToan().equals("VNPAY")) {
+                lichSu.setLoaiGiaoDich("CHUYEN_KHOAN");
+            } else {
+                lichSu.setLoaiGiaoDich("TIEN_MAT");
+            }
+            lichSu.setThoiGian(LocalDateTime.now());
+            lichSu.setMaGiaoDich(UUID.randomUUID().toString());
 
-        adLichSuThanhToanRepository.save(lichSu);
+            adLichSuThanhToanRepository.save(lichSu);
         }
 
         if (order.getMaGiamGia() != null && !order.getMaGiamGia().isEmpty() && !order.getMaGiamGia().equals("")) {
 
             String idPGG = pmPhieuGiamGiaThanhToan.getPGG(order.getMaGiamGia());
 
-            if (idPGG == null) {
+            if (idPGG != null) {
                 PhieuGiamGia phieuGiamGia = adVoucherRepository.findById(idPGG).get();
 
                 phieuGiamGia.setSoLuongPhieu(phieuGiamGia.getSoLuongPhieu() - 1);
@@ -168,6 +177,8 @@ public class thanhtoanserviceImpl {
 
         if (order.getKhachHang() != null) {
 
+            System.out.println('1');
+
             if (order.getKhachHang().equals("khách lẻ")) {
 
             } else {
@@ -178,7 +189,7 @@ public class thanhtoanserviceImpl {
             }
 
         }
-
+        System.out.println('1');
         pmHoaDonReposiitory.save(hoaDon);
 
 
@@ -222,27 +233,27 @@ public class thanhtoanserviceImpl {
 
                 System.out.println(order.getKhachHang());
 
+                System.out.println('2');
 
                 if (!order.getKhachHang().equals("khách lẻ")) {
 
-                    KhachHang khachHang1  =  adKhachHangRepository.findById(order.getKhachHang()).get();
+                    KhachHang khachHang1 = adKhachHangRepository.findById(order.getKhachHang()).get();
                     String idCart = cartRepository.findByIdKH(khachHang1.getId());
 
                     Cart cart = cartRepository.findById(idCart).get();
 
-                    String  idGHCT = pmChiTietGioHangRepository.getIDGioHang(sanPhamChiTiet.getId() , cart.getId());
+                    String idGHCT = pmChiTietGioHangRepository.getIDGioHang(sanPhamChiTiet.getId(), cart.getId());
 
-                    if(idGHCT != null){
+                    if (idGHCT != null) {
+
                         CartDetail cartDetail = pmChiTietGioHangRepository.findById(idGHCT).get();
 
                         pmChiTietGioHangRepository.deleteById(cartDetail.getId());
-                    }
 
+                    }
                 }
 
             }
-
-
         }
 
         String email = order.getEmail();
@@ -269,7 +280,6 @@ public class thanhtoanserviceImpl {
                         + "</div>";
 
         CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
-
 
 
         return hoaDon;
@@ -390,8 +400,10 @@ public class thanhtoanserviceImpl {
 
     }
 
-    ;public ResponseObject<?> getAllApplicablePGG(String idKH, Double tongTien) {
-        List<PhieuGiamGia> allPGG = adVoucherRepository.findAvailableVouchers(idKH); // Viết query chỉ lấy voucher ACTIVE
+    ;
+
+    public ResponseObject<?> getAllApplicablePGG(String idKH, Double tongTien) {
+        List<PhieuGiamGia> allPGG = adVoucherRepository.findAvailableVouchers(idKH);
         List<PhieuGiamGia> applicable = new ArrayList<>();
 
         for (PhieuGiamGia pgg : allPGG) {
