@@ -114,13 +114,16 @@
         <li class="jp-menu-item" key="menu-trang-chu">
           <a href="/" class="jp-menu-link">TRANG CHỦ</a>
         </li>
+
         <!-- Các mục thương hiệu duyệt bình thường -->
-        <li v-for="item in menuItems" :key="item.id" class="jp-menu-item">
-          <a href="#" class="jp-menu-link" @click.prevent="onMenuClick(item.id)">{{ item.ten }}</a>
+        <li class="jp-menu-item">
+          <a href="/san-pham" class="jp-menu-link">Sản phẩm</a>
         </li>
+
         <li class="jp-menu-item" key="menu-trang-chu">
           <a href="/gioi-thieu" class="jp-menu-link">GIỚI THIỆU</a>
         </li>
+
         <li class="jp-menu-item" key="menu-trang-chu">
           <a href="/lien-he" class="jp-menu-link">LIÊN HỆ</a>
         </li>
@@ -292,7 +295,6 @@ const route = useRoute()
 const onMenuClick = (idThuongHieu: string) => {
   router.push({
     path: '/san-pham',
-    query: { ...route.query, idThuongHieu }
   })
 }
 
