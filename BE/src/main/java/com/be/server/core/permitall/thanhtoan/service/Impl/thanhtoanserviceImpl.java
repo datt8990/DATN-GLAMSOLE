@@ -73,6 +73,7 @@ public class thanhtoanserviceImpl {
         System.out.println(order.getHinhThucThanhToan() + "aaaaa");
 
         if (order.getHinhThucThanhToan().equals("TIEN_MAT")) {
+
             hoaDon.setPhuongThucThanhToan(EntityPhuongThucThanhToan.TIEN_MAT);
 
             hoaDon.setEmail(order.getEmail());
@@ -82,7 +83,9 @@ public class thanhtoanserviceImpl {
             hoaDon.setPhiVanChuyen(order.getPhiShip());
 
             hoaDon.setTrangThaiHoaDon(EntityTrangThaiHoaDon.CHO_XAC_NHAN);
+
             System.out.println('1');
+
             if (order.getMaGiamGia() != null && !order.getMaGiamGia().equals("") && !order.getMaGiamGia().isEmpty()) {
                 System.out.println("sd"+order.getMaGiamGia()) ;
                 String idPGG1 = pmPhieuGiamGiaThanhToan.getPGG(order.getMaGiamGia());
@@ -175,9 +178,9 @@ public class thanhtoanserviceImpl {
 
         System.out.println('1');
 
-        if (order.getKhachHang() != null) {
+        if (order.getKhachHang() != null && !order.getKhachHang().equals("") && !order.getKhachHang().isEmpty()) {
 
-            System.out.println('1');
+            System.out.println('3');
 
             if (order.getKhachHang().equals("khách lẻ")) {
 
@@ -186,9 +189,11 @@ public class thanhtoanserviceImpl {
                 KhachHang voucher = adKhachHangRepository.findById(order.getKhachHang()).get();
 
                 hoaDon.setKhachHang(voucher);
+                
             }
 
         }
+
         System.out.println('1');
         pmHoaDonReposiitory.save(hoaDon);
 
