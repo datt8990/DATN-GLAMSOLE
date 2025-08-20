@@ -144,14 +144,42 @@
   </a-modal>
 
   <a-modal v-model:open="showVoucherModal" title="Chọn phiếu giảm giá" @ok="applySelectedVoucher" ok-text="Áp dụng"
-    cancel-text="Hủy">
-    <a-radio-group v-model:value="selectedVoucher" class="d-flex flex-column gap-2">
-      <a-radio v-for="voucher in vouchers" :key="voucher.ma" :value="voucher.ma">
-        {{ voucher.ten }} - Giảm {{ voucher.giaTriGiamThucTe.toLocaleString("vi-VN") }}₫
-      </a-radio>
-    </a-radio-group>
-    <p v-if="!vouchers.length" class="text-danger">Không có phiếu giảm giá áp dụng.</p>
-  </a-modal>
+  cancel-text="Hủy">
+  <a-radio-group v-model:value="selectedVoucher" class="d-flex flex-column gap-2">
+  <a-radio
+    v-for="(voucher, index) in vouchers"
+    :key="voucher.ma"
+    :value="voucher.ma"
+    class="voucher-option"
+  >
+    <div class="voucher-card">
+      <div class="voucher-header">
+        <span class="voucher-amount">{{ voucher.ten }}</span>
+        <span v-if="index === 0" class="voucher-badge">Tốt nhất</span>
+      </div>
+
+      <div class="voucher-condition">Đơn tối thiểu {{ voucher.dieuKien }}₫</div>
+
+      <div class="voucher-details">
+        <span class="voucher-method" v-if="!voucher.kieuGiam">
+          Giá trị giảm: {{ voucher.giaGiam }} đ
+        </span>
+        <span class="voucher-method" v-else>
+          Giá trị giảm: {{ voucher.giaGiam }} %
+        </span>
+      </div>
+
+      <div class="voucher-footer">
+        <span class="voucher-expiry">HSD: {{ formatDate(voucher.ngayKetThuc) }}</span>
+      </div>
+    </div>
+  </a-radio>
+</a-radio-group>
+
+  <p v-if="!vouchers.length" class="text-danger">Không có phiếu giảm giá áp dụng.</p>
+</a-modal>
+ 
+
 </template>
 
 <script setup lang="ts">
@@ -204,6 +232,15 @@ const showVoucherModal = ref(false);
 const vouchers = ref<Voucher[]>([]);
 const selectedVoucher = ref<string | null>(null);
 const isBestVoucher = ref(true); // Biến để kiểm soát hiển thị thông báo "phiếu giảm giá tốt nhất"
+
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}.${month}.${year}`;
+}
+
 
 const breadcrumbRoutes = [
   { name: "Trang chủ", path: "/" },
@@ -701,5 +738,91 @@ const performCheckout = async () => {
   color: #28a745;
   font-style: italic;
 }
+
+.voucher-option {
+  width: 100%;
+}
+
+.voucher-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 200px;              /* luôn full ngang */
+  min-height: 120px;        /* chiều cao bằng nhau */
+  padding: 12px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  background: #fff;
+  position: relative;
+  transition: all 0.2s ease;
+  box-sizing: border-box;   /* để padding không phá layout */
+}
+
+.voucher-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background: #ff5722;
+  border-radius: 6px 0 0 6px;
+}
+
+.voucher-card:hover {
+  border-color: #ff5722;
+  box-shadow: 0 2px 6px rgba(255, 87, 34, 0.2);
+}
+
+.voucher-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;          /* tránh tràn */
+}
+
+.voucher-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #d0021b;
+}
+
+.voucher-badge {
+  background: #ff5722;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.voucher-condition {
+  font-size: 13px;
+  color: #555;
+  margin: 4px 0;
+}
+
+.voucher-details {
+  margin: 4px 0;
+}
+
+.voucher-method {
+  padding: 2px 6px;
+  border: 1px solid #ff5722;
+  color: #ff5722;
+  border-radius: 3px;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.voucher-footer {
+  font-size: 12px;
+  color: #555;
+}
+
+.voucher-expiry {
+  font-weight: 500;
+}
+
+
 </style>
-```
