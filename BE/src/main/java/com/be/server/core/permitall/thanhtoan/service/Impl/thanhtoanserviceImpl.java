@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -194,7 +195,6 @@ public class thanhtoanserviceImpl {
 
         }
 
-        System.out.println('1');
         pmHoaDonReposiitory.save(hoaDon);
 
 
@@ -224,8 +224,6 @@ public class thanhtoanserviceImpl {
                 hoaDonChiTiet.setGia(sanPhamChiTiet.getGiaBan());
                 adTaoHoaDonChiTietRepository.save(hoaDonChiTiet);
 
-                System.out.println(sanPhamChiTiet.getSoLuong());
-                System.out.println(order.getSanPham().get(i).getQuantity());
                 if (sanPhamChiTiet.getSoLuong() < order.getSanPham().get(i).getQuantity()) {
 
                     return null;
@@ -235,10 +233,6 @@ public class thanhtoanserviceImpl {
                 sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - order.getSanPham().get(i).getQuantity());
 
                 adSanPhamRepository.save(sanPhamChiTiet);
-
-                System.out.println(order.getKhachHang());
-
-                System.out.println('2');
 
                 if (!order.getKhachHang().equals("khách lẻ")) {
 
@@ -261,6 +255,42 @@ public class thanhtoanserviceImpl {
             }
         }
 
+        NumberFormat currencyFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+
+        StringBuilder productTable = new StringBuilder();
+
+        productTable.append("<table style='width:100%; border-collapse:collapse; margin-top:20px;'>")
+                .append("<thead>")
+                .append("<tr>")
+                .append("<th style='border:1px solid #ddd; padding:8px; text-align:left;'>Sản phẩm</th>")
+                .append("<th style='border:1px solid #ddd; padding:8px; text-align:left;'>Màu</th>")
+                .append("<th style='border:1px solid #ddd; padding:8px; text-align:left;'>Kích cỡ</th>")
+                .append("<th style='border:1px solid #ddd; padding:8px; text-align:center;'>Số lượng</th>")
+                .append("<th style='border:1px solid #ddd; padding:8px; text-align:right;'>Đơn giá</th>")
+                .append("<th style='border:1px solid #ddd; padding:8px; text-align:right;'>Thành tiền</th>")
+                .append("</tr>")
+                .append("</thead><tbody>");
+
+        for (int i = 0; i < order.getSanPham().size(); i++) {
+            var sp = order.getSanPham().get(i);
+            SanPhamChiTiet spct = adSanPhamRepository.findById(sp.getId()).get();
+            String giaBan = currencyFormat.format(spct.getGiaBan()) + " đ";
+            String thanhTien = currencyFormat.format(spct.getGiaBan() * order.getSanPham().get(i).getQuantity()) + " đ";
+
+
+            productTable.append("<tr>")
+                    .append("<td style='border:1px solid #ddd; padding:8px;'>" + spct.getSanPham().getTen() + "</td>")
+                    .append("<td style='border:1px solid #ddd; padding:8px; text-align:center;'>" + spct.getMauSac().getTen() + "</td>")
+                    .append("<td style='border:1px solid #ddd; padding:8px; text-align:center;'>" + spct.getKichCo().getTen() + "</td>")
+                    .append("<td style='border:1px solid #ddd; padding:8px; text-align:center;'>" + order.getSanPham().get(i).getQuantity() + "</td>")
+                    .append("<td style='border:1px solid #ddd; padding:8px; text-align:right;'>" + giaBan + " </td>")
+                    .append("<td style='border:1px solid #ddd; padding:8px; text-align:right;'>" + thanhTien + " </td>")
+                    .append("</tr>");
+        }
+
+        productTable.append("</tbody></table>");
+
+
         String email = order.getEmail();
         String subject = "Thanh toán đơn hàng thành công";
 
@@ -276,13 +306,15 @@ public class thanhtoanserviceImpl {
                         + "  <div style='padding:20px;'>"
                         + "    <h3 style='color:#333; margin-top:0;'>Cảm ơn bạn đã đặt hàng</h3>"
                         + "    <p style='color:#555;'>Xin chào <b>" + order.getHoTen() + "</b>, đơn hàng của bạn đã được thanh toán thành công và sẵn sàng để vận chuyển.</p>"
-                        + "    <p style='color:#555;'>Bạn có thể theo dõi trạng thái đơn hàng bằng cách nhấn vào nút bên dưới:</p>"
+                        + "    <p style='color:#555;'>Danh sách sản phẩm của bạn:</p>"
+                        +          productTable.toString()
                         + "    <div style='text-align:center; margin:30px 0;'>"
                         + "      <a href='" + trackingUrl + "' style='background:#f5c542; color:#000; text-decoration:none; padding:12px 20px; border-radius:6px; font-weight:bold;'>Xem đơn đặt hàng</a>"
                         + "    </div>"
                         + "    <p style='color:#777; font-size:14px;'>-- GLAMSOLE team --</p>"
                         + "  </div>"
                         + "</div>";
+
 
         CompletableFuture.runAsync(() -> EmailService.sendEmail(email, subject, content));
 
